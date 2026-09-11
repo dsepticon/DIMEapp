@@ -1,0 +1,459 @@
+/* styles.css */
+
+
+body {
+  margin: 0;
+  max-width: 318px;
+  max-height: 500px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.container {
+  background: initial;
+  width: 300px;
+  height: 400px;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Updated to flex-start */
+  align-items: center;
+  z-index: 1;
+}
+
+.main-container {
+  background: linear-gradient(to bottom right, teal, purple);
+  padding: 5px;
+  width: 308px;
+  height: 480px;
+  overflow-y: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 1;
+}
+
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+}
+
+/* Add styles for the scrollbar */
+.main-container::-webkit-scrollbar {
+  width: 2px; /* Set the width of the scrollbar */
+}
+
+.main-container::-webkit-scrollbar-thumb {
+  background-color: slateblue; /* Color of the thumb */
+}
+
+.main-container::-webkit-scrollbar-track {
+  background-color: darkslateblue; /* Color of the track */
+}
+
+
+.tabs {
+  display: flex;
+}
+
+.shop-tab,
+.inventory-tab{
+  cursor: pointer;
+  padding: 6px 18px 4px 18px;
+  background-color: initial;
+  color: turquoise;
+  border: none; /* Remove border */
+  border-radius: 5px 5px 0 0;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Shadow effect */
+}
+
+
+.tab {
+  cursor: pointer;
+  padding: 4px 4px ;
+  background-color: initial;
+  color: turquoise;
+  border: none; /* Remove border */
+  border-radius: 5px 5px 0 0;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Shadow effect */
+  
+}
+
+.shop-tab:hover,
+.inventory-tab:hover,
+.tab:hover {
+  background-color: darkslateblue;
+}
+
+.shop-tab.active,
+.inventory-tab.active,
+.tab.active {
+  background-color: slateblue;
+}
+
+.tab-content {
+  width: 300px;
+}
+
+.tab-content .tab:nth-child(7) {
+  margin-top: 10px;
+  z-index: 1;
+}
+
+
+.button,
+.link {
+  display: block;
+  border-radius: 8px;
+ 
+  color: turquoise;
+  padding: 10px;
+  margin: 5px auto;
+  cursor: pointer;
+  width: 80%;
+  max-width: 300px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  border: none; /* Added to remove button border */
+}
+
+
+
+.button,
+.link {
+  display: block;
+  border-radius: 8px;
+  color: turquoise;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+  width: 48%; /* Updated to 48% to fit two buttons in a row */
+  max-width: 150px; /* Adjusted max-width */
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.button:hover,
+.link:hover {
+  background-color: darkslateblue;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  background-color: darkslateblue;
+  box-shadow: none;
+}
+
+.image-container {
+  position: relative;
+}
+
+.image {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.centered {
+  display: block;
+  margin: 0 auto;
+}
+
+.pulse {
+  animation: pulse 1s infinite;
+}
+
+ul {
+  list-style-type: none;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.info {
+  color: turquoise;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+
+.button-container {
+  display: flex;
+  margin-top: 10px;
+  flex-direction: row; /* Updated to row */
+  justify-content: space-between; /* Added to create space between buttons */
+}
+
+.link,
+.button {
+  color: rgb(231, 243, 243);
+  margin-top: 5px;
+  display: block;
+  text-decoration: none;
+}
+
+.link:hover,
+.button:hover {
+  text-decoration: none;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.option {
+  background-color: teal;
+  color: turquoise;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 5px auto;
+  cursor: pointer;
+  width: 80%;
+  max-width: 300px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.option:hover {
+  background-color: darkslateblue;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.option:disabled {
+  cursor: not-allowed;
+  background-color: grey;
+  box-shadow: none;
+}
+
+
+.equip-button:hover {
+  background-color: darkslateblue;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.close-button {
+  background: none;
+  font-weight: bold;
+  color: turquoise;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+
+}
+
+.close-button:hover {
+  color: purple;
+}
+
+/* Add these styles to bottom-container and selection-container */
+.bottom-container {
+  position: relative;
+
+  z-index: 1; /* Ensure the bottom-container is on top */
+}
+
+
+.selection-container {
+  background: linear-gradient(to bottom right, teal, purple);
+  width: 300px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+/* Additional styling for mining buttons within the Mine tab */
+
+.mine-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 6px;
+}
+
+/* Apply button styling to mining buttons */
+
+.mine-options .mining-button {
+  cursor: pointer;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: teal;
+  color: turquoise;
+  border: none; /* Remove border */
+  border-radius: 8px;
+  width: 80%;
+  max-width: 300px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Shadow effect */
+}
+
+.mine-options .mining-button:hover {
+  background-color: darkslateblue;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.mine-options .mining-button.active {
+  background-color: slateblue;
+}
+
+p{
+  color: turquoise;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.notification{
+  color: turquoise;
+  font-weight: bold;
+  display: block;
+  border-radius: 8px;
+  background: slateblue;
+  padding: 10px;
+  margin: 5px auto;
+  cursor: pointer;
+  max-width: 200px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+
+}
+label{
+  color: turquoise;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+
+.equip-button,
+select,
+input,
+option,
+.active-method,
+.inventory-details{
+  background: linear-gradient(to bottom right, teal, purple);
+  background-color: darkslateblue;
+  color: turquoise;
+  border: none;
+  text-align: center;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px;
+  width: 80%;
+  max-width: 300px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgb(0, 0, 0);
+}
+
+.preview-amounts{
+  margin-top: -15px;
+}
+
+.method-buttons{
+  display: flex;
+  flex-flow: wrap;
+}
+
+
+.work-order{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(to bottom right, teal, purple);
+  background-color: darkslateblue;
+  color: turquoise;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgb(0, 0, 0);
+}
+
+.inventory-list{
+  margin-top: 20px;
+}
+
+.communityimage {
+  margin-top: 15px;
+  width: 100px;
+  height: 100px;
+}
+
+
+.imageh {
+  text-align: center;
+  width: 100px;
+  height: 100px;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.image-home {
+  
+  background: linear-gradient(to bottom right, teal, purple);
+  padding: 20px;
+  text-align: center;
+  max-width: 180px;
+  max-height: 275px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin-top: 60px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgb(0, 0, 0);
+
+}
+
+.image-mine {
+  
+  background: linear-gradient(to bottom right, teal, purple);
+  padding: 20px;
+  text-align: center;
+  max-width: 180px;
+  max-height: 275px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin-top: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 2px 2px 4px rgb(0, 0, 0);
+
+}

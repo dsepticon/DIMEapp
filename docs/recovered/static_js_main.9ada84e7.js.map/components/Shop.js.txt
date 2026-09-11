@@ -1,0 +1,270 @@
+import React, { useState } from 'react';
+import { useMiningContext } from './MiningContext.js';
+
+const Shop = () => {
+  const { wallet, setWallet, ships, setShips, MiningHeads, setMiningHeads, Crew, setCrew } = useMiningContext();
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedItem, setSelectedItem] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [quantityOwned, setQuantityOwned] = useState(0);
+  const [notification, setNotification] = useState(null);
+
+  const categories = ['Ships', 'Mining Heads', 'Crew'];
+
+  const shipPrices = {
+    'Roc': 103950,
+    'Prospector': 2929500,
+    'Mole': 8930250,
+    'Cutlass Black': 2116800,
+    'Hull A': 1701000,
+    'Freelancer': 3118500,
+    'RAFT': 3543750,
+    'Constellation Andromeda': 10160640,
+    'Mercury Starrunner': 12285000,
+    'Freelancer MAX': 4252500,
+    'Constellation Taurus': 8043840,
+    'Caterpillar': 12474000,
+    'C2 Hercules Starlifter': 18900000,
+  };
+
+  const miningHeadPrices = {
+    'Hofstede S1': 12750,
+    'Impact I': 57750,
+    'Helix I': 108000,
+    'Hofstede S2': 12750,
+    'Impact II': 57750,
+    'Helix II': 108000,
+  };
+
+  const crewPrices = {
+    'Terraphon': 250000,
+    'Andirr': 250000,
+    'Dora': 500000,
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setSelectedItem('');
+    setQuantity(1);
+    setQuantityOwned(0);
+  };
+
+  const handleItemChange = (item) => {
+    setSelectedItem(item);
+    setQuantity(1);
+
+    switch (selectedCategory) {
+      case 'Ships':
+        setQuantityOwned(ships[item] || 0);
+        break;
+      case 'Mining Heads':
+        setQuantityOwned(MiningHeads[item] || 0);
+        break;
+      case 'Crew':
+        setQuantityOwned(Crew[item] || 0);
+        break;
+      default:
+        setQuantityOwned(0);
+        break;
+    }
+  };
+
+  const handleQuantityChange = (e) => {
+    setQuantity(parseInt(e.target.value, 10) || 1);
+  };
+
+  const handlePurchase = () => {
+    if (!selectedItem || quantity <= 0) {
+      setNotification('Please select an item and enter a valid quantity.');
+      return;
+    }
+
+    let price;
+    switch (selectedCategory) {
+      case 'Ships':
+        price = shipPrices[selectedItem];
+        break;
+      case 'Mining Heads':
+        price = miningHeadPrices[selectedItem];
+        break;
+      case 'Crew':
+        price = crewPrices[selectedItem];
+        break;
+      default:
+        break;
+    }
+
+    const total = price * quantity;
+
+    if (wallet < total) {
+      setNotification('Insufficient funds to purchase.');
+      return;
+    }
+
+    setWallet((prevWallet) => prevWallet - total);
+
+    // Update inventories after the purchase
+    switch (selectedCategory) {
+      case 'Ships':
+        setShips((prevShips) => ({
+          ...prevShips,
+          [selectedItem]: (prevShips[selectedItem] || 0) + quantity,
+        }));
+        break;
+      case 'Mining Heads':
+        setMiningHeads((prevMiningHeads) => ({
+          ...prevMiningHeads,
+          [selectedItem]: (prevMiningHeads[selectedItem] || 0) + quantity,
+        }));
+        break;
+      case 'Crew':
+        setCrew((prevCrew) => ({
+          ...prevCrew,
+          [selectedItem]: (prevCrew[selectedItem] || 0) + quantity,
+        }));
+        break;
+      default:
+        break;
+    }
+
+    // Update the quantity owned after purchase
+    setQuantityOwned((prevQuantityOwned) => prevQuantityOwned + quantity);
+
+    setNotification(`Purchased ${quantity} ${selectedItem} for ${total} aUEC.`);
+  };
+
+  const handleSell = () => {
+    if (!selectedItem || quantity <= 0 || quantity > quantityOwned) {
+      setNotification('Invalid sell operation.');
+      return;
+    }
+
+    let price;
+    switch (selectedCategory) {
+      case 'Ships':
+        price = shipPrices[selectedItem];
+        break;
+      case 'Mining Heads':
+        price = miningHeadPrices[selectedItem];
+        break;
+      case 'Crew':
+        price = crewPrices[selectedItem];
+        break;
+      default:
+        break;
+    }
+
+    const total = price * quantity;
+
+    setWallet((prevWallet) => prevWallet + total);
+
+    // Update the quantity owned in the inventories after selling
+    switch (selectedCategory) {
+      case 'Ships':
+        setShips((prevShips) => ({
+          ...prevShips,
+          [selectedItem]: prevShips[selectedItem] - quantity,
+        }));
+        break;
+      case 'Mining Heads':
+        setMiningHeads((prevMiningHeads) => ({
+          ...prevMiningHeads,
+          [selectedItem]: prevMiningHeads[selectedItem] - quantity,
+        }));
+        break;
+      case 'Crew':
+        setCrew((prevCrew) => ({
+          ...prevCrew,
+          [selectedItem]: prevCrew[selectedItem] - quantity,
+        }));
+        break;
+      default:
+        break;
+    }
+
+    // Update the quantity owned after selling
+    setQuantityOwned((prevQuantityOwned) => prevQuantityOwned - quantity);
+
+    setNotification(`Sold ${quantity} ${selectedItem} for ${total} aUEC.`);
+  };
+
+  return (
+    <div className="container">
+      <div className="inventory-tabs">
+        {categories.map((category) => (
+          <button
+            key={category}
+            className={`shop-tab ${selectedCategory === category ? 'active' : ''}`}
+            onClick={() => handleCategoryChange(category)}
+            style={{ border: 'none' }}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      {selectedCategory && (
+        <div className="sell-container">
+          <p>
+            <label className="info">Select Item:</label>
+            <select
+              value={selectedItem}
+              onChange={(e) => handleItemChange(e.target.value)}
+              className="select"
+            >
+              <option value="" disabled>Select an item</option>
+              {selectedCategory === 'Ships' ? (
+                Object.keys(shipPrices).map((item) => (
+                  <option key={item} value={item}>{item} - {shipPrices[item]} aUEC</option>
+                ))
+              ) : selectedCategory === 'Mining Heads' ? (
+                Object.keys(miningHeadPrices).map((item) => (
+                  <option key={item} value={item}>{item} - {miningHeadPrices[item]} aUEC</option>
+                ))
+              ) : (
+                Object.keys(crewPrices).map((item) => (
+                  <option key={item} value={item}>{item} - {crewPrices[item]} aUEC</option>
+                ))
+              )}
+            </select>
+          </p>
+
+          <input
+            type="number"
+            value={quantity}
+            onChange={handleQuantityChange}
+            className="input"
+          />
+
+          <button
+            className="button"
+            onClick={handlePurchase}
+            disabled={!selectedItem || quantity <= 0}
+          >
+            Purchase
+          </button>
+
+          <button
+            className="button"
+            onClick={handleSell}
+            disabled={!selectedItem || quantity <= 0 || quantity > quantityOwned}
+          >
+            Sell
+          </button>
+          <p>Amount Owned: {quantityOwned}</p>
+        </div>
+      )}
+
+      <p>Wallet: {wallet?.toLocaleString()} aUEC</p>
+
+      {notification && (
+        <div className="notification">
+          {notification}
+          <button onClick={() => setNotification(null)}>Close</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Shop;

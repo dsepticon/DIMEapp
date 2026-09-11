@@ -1,0 +1,208 @@
+import React, { useState } from 'react';
+import './styles.css';
+import { useMiningContext } from './MiningContext'; // Import MiningContext
+import Shop from './Shop.js';
+import Refinery from './Refinery.js';
+import Inventory from './Inventory.js';
+import HandMining from './HandMining.js';
+import RocMining from './RocMining.js';
+import ProspectorMining from './ProspectorMining.js';
+import MoleMining from './MoleMining.js';
+import WorkOrders from './WorkOrders.js';
+import ASOP from './ASOP'; // Import ASOP component
+
+const Home = () => {
+  const { currentLocation, travelInProgress } = useMiningContext(); // Get current location and travel state from context
+  const [selectedTab, setSelectedTab] = useState('');
+  const [workOrders, setWorkOrders] = useState([]);
+  const [notification, setNotification] = useState('');
+
+  const handleTabSelect = (tab) => {
+    if (travelInProgress) {
+      setNotification('You cannot access other tabs while traveling.');
+      return;
+    }
+
+    if (tab === 'Shop' && currentLocation !== 'Area-18') {
+      setNotification('You must be at Area-18 to access the Shop.');
+      return;
+    }
+    if ((tab === 'Refine' || tab === 'WorkOrders') && currentLocation !== 'ARC-L1') {
+      setNotification('You must be at ARC-L1 to access the Refinery or Work Orders.');
+      return;
+    }
+    setSelectedTab(tab);
+    setNotification('');
+  };
+
+  const handleCloseTab = () => {
+    setSelectedTab('');
+  };
+
+  const closeNotification = () => {
+    setNotification('');
+  };
+
+  return (
+    <div className="main-container">
+      {notification && (
+        <div className="notification">
+          {notification}
+          <button onClick={closeNotification} style={{ marginLeft: '10px' }}>Close</button>
+        </div>
+      )}
+      <div className="header">
+        <div className="tabs">
+        <button
+            className={`tab asop-tab ${selectedTab === 'ASOP' ? 'active' : ''}`}
+            onClick={() => handleTabSelect('ASOP')}
+          >
+            ASOP
+          </button>
+          <button
+            className={`tab mine-tab ${selectedTab === 'Mine' ? 'active' : ''}`}
+            onClick={() => handleTabSelect('Mine')}
+            disabled={travelInProgress}
+          >
+            Mine
+          </button>
+          <button
+            className={`tab shop-tab ${selectedTab === 'Shop' ? 'active' : ''}`}
+            onClick={() => handleTabSelect('Shop')}
+            disabled={travelInProgress}
+          >
+            Shop
+          </button>
+          <button
+            className={`tab refine-tab ${selectedTab === 'Refine' ? 'active' : ''}`}
+            onClick={() => handleTabSelect('Refine')}
+            disabled={travelInProgress}
+          >
+            Refine
+          </button>
+          <button
+            className={`tab work-orders-tab ${selectedTab === 'WorkOrders' ? 'active' : ''}`}
+            onClick={() => handleTabSelect('WorkOrders')}
+            disabled={travelInProgress}
+          >
+            Work Orders
+          </button>
+          <button
+            className={`tab inventory-tab ${selectedTab === 'Inventory' ? 'active' : ''}`}
+            onClick={() => handleTabSelect('Inventory')}
+            disabled={travelInProgress}
+          >
+            Cargo
+          </button>
+          <button className="close-button" onClick={handleCloseTab} disabled={travelInProgress}>
+            X
+          </button>
+        </div>
+      </div>
+      {selectedTab && (
+        <div className="tab-content">
+          {selectedTab === 'Mine' && <MineOptions />}
+          {selectedTab === 'Shop' && <Shop />}
+          {selectedTab === 'Refine' && <Refinery setWorkOrders={setWorkOrders} />}
+          {selectedTab === 'ASOP' && <ASOP />}
+          {selectedTab === 'Inventory' && <Inventory />}
+          {selectedTab === 'WorkOrders' && (
+            <WorkOrders workOrders={workOrders} setWorkOrders={setWorkOrders} />
+          )}
+        </div>
+      )}
+      {!selectedTab && (
+        <div className="image-home">
+          <div className="image-container">
+            <img src="/madebythecommunity.png" alt="Community Image" className="imageh" />
+          </div>
+          <p>
+            “This is an unofficial Star Citizen fansite, not affiliated with the Cloud Imperium group of companies. All content on this site not authored by its host or users are property of their respective owners.”
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MineOptions = () => {
+  const { currentLocation } = useMiningContext(); // Get current location from context
+  const [selectedMiningOption, setSelectedMiningOption] = useState('');
+  const [notification, setNotification] = useState('');
+
+  const navigateToMiningOption = (option) => {
+    if (
+      (option === 'Hand Mining' || option === 'Roc Mining') &&
+      currentLocation !== 'Lyria' && currentLocation !== 'Wala'
+    ) {
+      setNotification('Hand & Roc Mining are only available at Lyria or Wala.');
+      return;
+    }
+    if (
+      (option === 'Prospector Mining' || option === 'Mole Mining') &&
+      currentLocation !== 'Halo'
+    ) {
+      setNotification('Prospector & Mole Mining are only available in the Halo.');
+      return;
+    }
+    setSelectedMiningOption(option);
+    setNotification('');
+  };
+
+  const closeNotification = () => {
+    setNotification('');
+  };
+
+  return (
+    <div className="mine-options">
+      {notification && (
+        <div className="notification">
+          {notification}
+          <button onClick={closeNotification} style={{ marginLeft: '10px' }}>Close</button>
+        </div>
+      )}
+      <div className="tabs">
+        <button
+          className={`tab Hand Mining-tab ${selectedMiningOption === 'Hand Mining' ? 'active' : ''}`}
+          onClick={() => navigateToMiningOption('Hand Mining')}
+        >
+          Hand Mining
+        </button>
+        <button
+          className={`tab Roc Mining-tab ${selectedMiningOption === 'Roc Mining' ? 'active' : ''}`}
+          onClick={() => navigateToMiningOption('Roc Mining')}
+        >
+          Roc Mining
+        </button>
+        <button
+          className={`tab Prospector Mining-tab ${selectedMiningOption === 'Prospector Mining' ? 'active' : ''}`}
+          onClick={() => navigateToMiningOption('Prospector Mining')}
+        >
+          Prospector Mining
+        </button>
+        <button
+          className={`tab Mole Mining-tab ${selectedMiningOption === 'Mole Mining' ? 'active' : ''}`}
+          onClick={() => navigateToMiningOption('Mole Mining')}
+        >
+          Mole Mining
+        </button>
+      </div>
+      {selectedMiningOption === 'Hand Mining' && <HandMining />}
+      {selectedMiningOption === 'Roc Mining' && <RocMining />}
+      {selectedMiningOption === 'Prospector Mining' && <ProspectorMining />}
+      {selectedMiningOption === 'Mole Mining' && <MoleMining />}
+      {!selectedMiningOption && (
+        <div className="image-mine">
+          <div className="image-container">
+            <img src="/madebythecommunity.png" alt="Community Image" className="imageh" />
+          </div>
+          <p>
+            “This is an unofficial Star Citizen fansite, not affiliated with the Cloud Imperium group of companies. All content on this site not authored by its host or users are property of their respective owners.”
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Home;

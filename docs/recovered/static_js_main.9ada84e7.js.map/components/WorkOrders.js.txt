@@ -1,0 +1,201 @@
+import React, { useEffect, useState } from 'react';
+import { useMiningContext } from './MiningContext.js';
+import './styles.css';
+import CryptoJS from 'crypto-js';
+
+const transfersync = '[REMOVED client-side obfuscation key]';
+
+// Helper to decrypt data
+const decryptData = (ciphertext) => {
+  const bytes = CryptoJS.AES.decrypt(ciphertext, transfersync);
+  return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+};
+
+const WorkOrders = () => {
+  const {
+    setCargoInventories,
+    workOrders,
+    setWorkOrders,
+    currentShip,
+    setCurrentShip,
+    ships,
+  } = useMiningContext();
+
+  const [transferClicked, setTransferClicked] = useState(false);
+  const [selectedShip, setSelectedShip] = useState('Nomad');
+
+  // Default capacity of ships
+  const capacities = {
+    Nomad: 24,
+    'Cutlass Black': 46,
+    'Hull A': 64,
+    'Freelancer': 66,
+    RAFT: 96,
+    'Constellation Andromeda': 96,
+    'Mercury Starrunner': 114,
+    'Freelancer MAX': 120,
+    'Constellation Taurus': 174,
+    Caterpillar: 576,
+    'C2 Hercules Starlifter': 696,
+  };
+
+  // Define mining ships
+  const miningTypes = ['Hand', 'Roc', 'Prospector', 'Mole'];
+
+  // Retrieve work orders from localStorage on mount
+  useEffect(() => {
+    const storedWorkOrders = localStorage.getItem('workOrders');
+    if (storedWorkOrders) {
+      try {
+        const decryptedWorkOrders = decryptData(storedWorkOrders);
+        setWorkOrders(decryptedWorkOrders);
+      } catch (error) {
+        console.error('Failed to decrypt work orders:', error);
+      }
+    }
+  }, [setWorkOrders]);
+
+  // Handle transfer of refined ore to the selected ship's inventory
+  const handleTransfer = (order) => {
+    setCargoInventories((prevInventories) => {
+      const updatedInventories = { ...prevInventories };
+
+      if (!updatedInventories[selectedShip]) {
+        updatedInventories[selectedShip] = { Ores: {}, Refined: {} };
+      }
+
+      let availableCapacity = capacities[selectedShip];
+      const usedCapacity = Object.values(updatedInventories[selectedShip].Refined || {}).reduce(
+        (sum, value) => sum + value,
+        0
+      );
+      availableCapacity -= usedCapacity;
+
+      const remainingRefinedOre = {};
+      Object.entries(order.refinedOre).forEach(([refinedOre, refinedAmount]) => {
+        const transferableAmount = Math.min(refinedAmount, availableCapacity);
+        if (transferableAmount > 0) {
+          updatedInventories[selectedShip].Refined[refinedOre] =
+            (updatedInventories[selectedShip].Refined[refinedOre] || 0) + transferableAmount;
+          availableCapacity -= transferableAmount;
+        }
+        const remainingAmount = refinedAmount - transferableAmount;
+        if (remainingAmount > 0) {
+          remainingRefinedOre[refinedOre] = remainingAmount;
+        }
+      });
+
+      // Persist updated inventory in localStorage
+      localStorage.setItem('cargoInventories', JSON.stringify(updatedInventories));
+
+      // If there's remaining ore, update the work order; otherwise, remove the order
+      if (Object.keys(remainingRefinedOre).length > 0) {
+        setWorkOrders((prevWorkOrders) => {
+          const updatedOrders = prevWorkOrders.map((o) => (o.id === order.id ? { ...o, refinedOre: remainingRefinedOre } : o));
+          localStorage.setItem('workOrders', JSON.stringify(updatedOrders));
+          return updatedOrders;
+        });
+      } else {
+        setWorkOrders((prevWorkOrders) => {
+          const updatedOrders = prevWorkOrders.filter((o) => o.id !== order.id);
+          localStorage.setItem('workOrders', JSON.stringify(updatedOrders));
+          return updatedOrders;
+        });
+      }
+
+      return updatedInventories;
+    });
+
+    setTransferClicked(false);
+  };
+
+  // Save work orders to localStorage whenever they are updated
+  useEffect(() => {
+    const encryptedWorkOrders = CryptoJS.AES.encrypt(JSON.stringify(workOrders), transfersync).toString();
+    localStorage.setItem('workOrders', encryptedWorkOrders);
+  }, [workOrders]);
+
+  // Timer logic based on real-time tracking
+  const getRemainingTime = (endTime) => {
+    const currentTime = new Date().getTime();
+    const remainingTime = endTime - currentTime;
+    return remainingTime > 0 ? remainingTime : 0;
+  };
+
+  const updateRemainingTime = () => {
+    setWorkOrders((prevWorkOrders) => {
+      const updatedOrders = prevWorkOrders.map((order) => {
+        const remainingTime = getRemainingTime(order.endTime);
+        return { ...order, time: Math.floor(remainingTime / 1000) }; // Convert to seconds
+      });
+      return updatedOrders;
+    });
+  };
+
+  // Update the remaining time at an interval and when the component mounts
+  useEffect(() => {
+    const timer = setInterval(() => {
+      updateRemainingTime();
+    }, 1000); // Update every second
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="container">
+      <p className="info">Work Orders:</p>
+
+      <div>
+        <label htmlFor="ship-select">Select Ship (Default is Nomad):</label>
+        <select
+          id="ship-select"
+          value={selectedShip}
+          onChange={(e) => setSelectedShip(e.target.value)}
+          className="dropdown"
+        >
+          {Object.keys(ships)
+            .filter((ship) => ships[ship] > 0 && !miningTypes.includes(ship)) // Exclude mining ships from selection
+            .map((ship) => (
+              <option key={ship} value={ship}>
+                {ship}
+              </option>
+            ))}
+        </select>
+      </div>
+
+      {workOrders.length === 0 ? (
+        <p>No work orders available</p>
+      ) : (
+        workOrders.map((order) => (
+          <div key={order.id} className="work-order">
+            {/* Filter out refinedOre properties with amounts less than or equal to 0 */}
+            {Object.entries(order.refinedOre)
+              .filter(([_, refinedAmount]) => refinedAmount > 0)
+              .map(([refinedOre, refinedAmount]) => (
+                <div key={refinedOre}>
+                  {refinedOre} {refinedAmount}
+                </div>
+              ))}
+            {order.time > 0 && (
+              <p>
+                {Math.floor(order.time / 60)}m {order.time % 60}s remaining
+              </p>
+            )}
+            {order.time <= 0 && !transferClicked && (
+              <button className="button" onClick={() => setTransferClicked(true)}>
+                Ready to Transfer
+              </button>
+            )}
+            {order.time <= 0 && transferClicked && (
+              <button className="button" onClick={() => handleTransfer(order)}>
+                Transfer to {selectedShip || 'Nomad'}
+              </button>
+            )}
+          </div>
+        ))
+      )}
+    </div>
+  );
+};
+
+export default WorkOrders;

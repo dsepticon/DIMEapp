@@ -1,0 +1,354 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import CryptoJS from 'crypto-js';
+
+const transfersync = '[REMOVED client-side obfuscation key]';
+const MiningContext = createContext();
+
+const encryptData = (data) => {
+  return CryptoJS.AES.encrypt(JSON.stringify(data), transfersync).toString();
+};
+
+const decryptData = (ciphertext) => {
+  const bytes = CryptoJS.AES.decrypt(ciphertext, transfersync);
+  return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+};
+
+const generateHash = (data) => {
+  return CryptoJS.HmacSHA256(JSON.stringify(data), transfersync).toString();
+};
+
+// Get initial ship data from localStorage or set default values
+const getInitialShips = () => {
+  const storedShips = localStorage.getItem('ships');
+  if (storedShips) {
+    try {
+      return decryptData(storedShips);
+    } catch (error) {
+      console.error("Error decrypting ships data", error);
+    }
+  }
+  return {
+    'Nomad': 1, 'Roc': 0, 'Prospector': 0, 'Mole': 0, 'Cutlass Black': 0, 'Hull A': 0, 'Freelancer': 0,
+    'RAFT': 0, 'Constellation Andromeda': 0, 'Mercury Starrunner': 0, 'Freelancer MAX': 0,
+    'Constellation Taurus': 0, 'Caterpillar': 0, 'C2 Hercules Starlifter': 0
+  };
+};
+
+// Get initial mining heads data from localStorage or set default values
+const getinitialMiningHeads = () => {
+  const storedMiningHeads = localStorage.getItem('miningHeads');
+  if (storedMiningHeads) {
+    try {
+      return decryptData(storedMiningHeads);
+    } catch (error) {
+      console.error("Error decrypting mining heads data", error);
+    }
+  }
+  return {
+    'Hofstede S1': 0, 'Impact I': 0, 'Helix I': 0, 'Hofstede S2': 0, 'Impact II': 0, 'Helix II': 0
+  };
+};
+
+// Get initial crew data from localStorage or set default values
+const getinitialCrew = () => {
+  const storedCrew = localStorage.getItem('crew');
+  if (storedCrew) {
+    try {
+      return decryptData(storedCrew);
+    } catch (error) {
+      console.error("Error decrypting crew data", error);
+    }
+  }
+  return {
+    'Terraphon': 0, 'Andirr': 0, 'Dora': 0
+  };
+};
+
+const getInitialMiningInventories = () => {
+  const storedMiningInventories = localStorage.getItem('miningInventories');
+  const storedMiningHash = localStorage.getItem('miningInventoriesHash');
+  if (storedMiningInventories && storedMiningHash && storedMiningHash === generateHash(storedMiningInventories)) {
+    try {
+      return decryptData(storedMiningInventories);
+    } catch (error) {
+      console.error('Failed to decrypt mining inventories:', error);
+    }
+  }
+  return {
+    Hand: { Dolivine: 0, Aphorite: 0, Hadanite: 0, Janalite: 0 },
+    Roc: { Dolivine: 0, Aphorite: 0, Hadanite: 0 },
+    Prospector: {
+      Agricium: 0, Aluminium: 0, Beryl: 0, Bexalite: 0, Borase: 0, Copper: 0,
+      Corundum: 0, Gold: 0, Hephaestanite: 0, Iron: 0, Laranite: 0, Quantanium: 0, Quartz: 0,
+      Taranite: 0, Titanium: 0, Tungsten: 0
+    },
+    Mole: {
+      Agricium: 0, Aluminium: 0, Beryl: 0, Bexalite: 0, Borase: 0, Copper: 0,
+      Corundum: 0, Gold: 0, Hephaestanite: 0, Iron: 0, Laranite: 0, Quantanium: 0,
+      Quartz: 0, Taranite: 0, Titanium: 0, Tungsten: 0
+    },
+  };
+};
+
+const getInitialCargoInventories = () => {
+  const storedCargoInventories = localStorage.getItem('cargoInventories');
+  const storedCargoHash = localStorage.getItem('cargoInventoriesHash');
+  if (storedCargoInventories && storedCargoHash && storedCargoHash === generateHash(storedCargoInventories)) {
+    try {
+      return decryptData(storedCargoInventories);
+    } catch (error) {
+      console.error('Failed to decrypt cargo inventories:', error);
+    }
+  }
+
+  const initialOres = {
+    Dolivine: 0, Aphorite: 0, Hadanite: 0, Janalite: 0, Agricium: 0, Aluminium: 0, Beryl: 0, Bexalite: 0, Borase: 0, Copper: 0,
+    Corundum: 0, Gold: 0, Hephaestanite: 0, Iron: 0, Laranite: 0, Quantanium: 0,
+    Quartz: 0, Taranite: 0, Titanium: 0, Tungsten: 0
+  };
+
+  const initialRefinedOres = {
+    'Refined Agricium': 0, 'Refined Aluminium': 0, 'Refined Beryl': 0, 'Refined Bexalite': 0,
+    'Refined Borase': 0, 'Refined Copper': 0, 'Refined Corundum': 0, 'Refined Gold': 0,
+    'Refined Hephaestanite': 0, 'Refined Iron': 0, 'Refined Laranite': 0, 'Refined Quantanium': 0,
+    'Refined Quartz': 0, 'Refined Taranite': 0, 'Refined Titanium': 0, 'Refined Tungsten': 0
+  };
+
+  return {
+    Nomad: { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Cutlass Black': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Hull A': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Freelancer': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'RAFT': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Constellation Andromeda': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Mercury Starrunner': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Freelancer MAX': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Constellation Taurus': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'Caterpillar': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+    'C2 Hercules Starlifter': { Ores: { ...initialOres }, Refined: { ...initialRefinedOres } },
+  };
+};
+
+// Provider with separate mining and cargo inventories
+export const MiningProvider = ({ children }) => {
+  const [wallet, setWallet] = useState(() => {
+    const storedWallet = localStorage.getItem('wallet');
+    const storedHash = localStorage.getItem('walletHash');
+    if (storedWallet && storedHash && storedHash === generateHash(storedWallet)) {
+      try {
+        return decryptData(storedWallet);
+      } catch (error) {
+        console.error("Failed to decrypt wallet:", error);
+      }
+    }
+    return 0;
+  });
+
+  const [miningInventories, setMiningInventories] = useState(getInitialMiningInventories);
+  const [cargoInventories, setCargoInventories] = useState(getInitialCargoInventories);
+
+  const [workOrders, setWorkOrders] = useState(() => {
+    const storedWorkOrders = localStorage.getItem('workOrders');
+    const storedHash = localStorage.getItem('workOrdersHash');
+    if (storedWorkOrders && storedHash && storedHash === generateHash(storedWorkOrders)) {
+      try {
+        return decryptData(storedWorkOrders);
+      } catch (error) {
+        console.error("Failed to decrypt workOrders:", error);
+      }
+    }
+    return [];
+  });
+
+  const [ships, setShips] = useState(getInitialShips); 
+  const [Crew, setCrew] = useState(getinitialCrew);
+  const [MiningHeads, setMiningHeads] = useState(getinitialMiningHeads);
+  const [currentShip, setCurrentShip] = useState(localStorage.getItem('currentShip') || 'Nomad');
+  const [currentLocation, setCurrentLocation] = useState(localStorage.getItem('currentLocation') || 'ARC-L1');
+  const [travelInProgress, setTravelInProgress] = useState(false);
+
+  const orePrices = {
+    dolivine: 1300, aphorite: 1525, hadanite: 2750, janalite: 176400,
+    quartz: 160, bexalite: 3080, taranite: 3118, gold: 3211, quantanium: 10118,
+    aluminium: 133, beryl: 1149, copper: 153, borase: 1416, corundum: 158,
+    hephaestanite: 1122, iron: 161, laranite: 1173, titanium: 194, tungsten: 172,
+    agricium: 1085, 'refined aluminum': 349, 'refined beryl': 2817,
+    'refined copper': 408, 'refined borase': 3634, 'refined corundum': 389,
+    'refined hephaestanite': 2830, 'refined iron': 407, 'refined laranite': 3115,
+    'refined titanium': 517, 'refined tungsten': 431, 'refined agricium': 2833,
+    'refined quartz': 416, 'refined bexalite': 7983, 'refined taranite': 7840,
+    'refined gold': 8099, 'refined quantanium': 25153, 'roc': 172000,
+    'prospector': 2061000, 'mole': 5130500, 'impact i': 57750,
+    'helix i': 108000, 'hofstede s1': 12750, 'impact ii': 57750, 'helix ii': 108000,
+    'hofstede s2': 12750
+  };
+
+  // Sync inventories and ships with localStorage
+  useEffect(() => {
+    const encryptedMiningInventories = encryptData(miningInventories);
+    localStorage.setItem('miningInventories', encryptedMiningInventories);
+    localStorage.setItem('miningInventoriesHash', generateHash(encryptedMiningInventories));
+
+    const encryptedCargoInventories = encryptData(cargoInventories);
+    localStorage.setItem('cargoInventories', encryptedCargoInventories);
+    localStorage.setItem('cargoInventoriesHash', generateHash(encryptedCargoInventories));
+  }, [miningInventories, cargoInventories]);
+
+  useEffect(() => {
+    localStorage.setItem('currentShip', currentShip);
+    localStorage.setItem('currentLocation', currentLocation);
+  }, [currentShip, currentLocation]);
+
+  useEffect(() => {
+    const encryptedWallet = encryptData(wallet);
+    localStorage.setItem('wallet', encryptedWallet);
+    localStorage.setItem('walletHash', generateHash(encryptedWallet));
+  }, [wallet]);
+
+  useEffect(() => {
+    const encryptedWorkOrders = encryptData(workOrders);
+    localStorage.setItem('workOrders', encryptedWorkOrders);
+    localStorage.setItem('workOrdersHash', generateHash(encryptedWorkOrders));
+  }, [workOrders]);
+
+  // Save ships to localStorage when updated
+  useEffect(() => {
+    const encryptedShips = encryptData(ships);
+    localStorage.setItem('ships', encryptedShips);
+  }, [ships]);
+
+  // Save mining heads to localStorage when updated
+  useEffect(() => {
+    const encryptedMiningHeads = encryptData(MiningHeads);
+    localStorage.setItem('miningHeads', encryptedMiningHeads);
+  }, [MiningHeads]);
+
+  // Save crew to localStorage when updated
+  useEffect(() => {
+    const encryptedCrew = encryptData(Crew);
+    localStorage.setItem('crew', encryptedCrew);
+  }, [Crew]);
+
+  return (
+    <MiningContext.Provider
+      value={{
+        wallet,
+        setWallet,
+        miningInventories,
+        setMiningInventories,
+        cargoInventories,
+        setCargoInventories,
+        workOrders,
+        setWorkOrders,
+        orePrices,
+        currentShip,
+        setCurrentShip,
+        currentLocation,
+        setCurrentLocation,
+        travelInProgress,
+        setTravelInProgress,
+        ships,
+        setShips,
+        Crew,
+        setCrew,
+        MiningHeads,
+        setMiningHeads,
+      }}
+    >
+      {children}
+    </MiningContext.Provider>
+  );
+};
+
+export const asteroidTypes = {
+  'E-Type': [
+    { ore: 'Aluminium', probability: 0.4444 },
+    { ore: 'Beryl', probability: 0.2667 },
+    { ore: 'Bexalite', probability: 0.0976 },
+    { ore: 'Copper', probability: 0.4878 },
+    { ore: 'Corundum', probability: 0.4717 },
+    { ore: 'Gold', probability: 0.2222 },
+    { ore: 'Iron', probability: 0.4444 },
+    { ore: 'Quantanium', probability: 0.0566 },
+    { ore: 'Quartz', probability: 0.4255 },
+    { ore: 'Taranite', probability: 0.0943 },
+    { ore: 'Titanium', probability: 0.4717 },
+    { ore: 'Tungsten', probability: 0.4444 },
+  ],
+  'P-Type': [
+    { ore: 'Aluminium', probability: 0.3623 },
+    { ore: 'Bexalite', probability: 0.2033 },
+    { ore: 'Copper', probability: 0.3623 },
+    { ore: 'Corundum', probability: 0.3623 },
+    { ore: 'Gold', probability: 0.0431 },
+    { ore: 'Iron', probability: 0.4065 },
+    { ore: 'Laranite', probability: 0.3125 },
+    { ore: 'Quantanium', probability: 0.0517 },
+    { ore: 'Quartz', probability: 0.431 },
+    { ore: 'Taranite', probability: 0.1984 },
+    { ore: 'Titanium', probability: 0.3906},
+    { ore: 'Tungsten', probability: 0.3968 },
+  ],
+  'S-Type': [
+    { ore: 'Aluminium', probability: 0.289 },
+    { ore: 'Beryl', probability: 0.241 },
+    { ore: 'Bexalite', probability: 0.1689 },
+    { ore: 'Copper', probability: 0.3012 },
+    { ore: 'Corundum', probability: 0.3012 },
+    { ore: 'Gold', probability: 0.0685 },
+    { ore: 'Iron', probability: 0.3378 },
+    { ore: 'Laranite', probability: 0.2454 },
+    { ore: 'Quantanium', probability: 0.0411 },
+    { ore: 'Quartz', probability: 0.3425 },
+    { ore: 'Taranite', probability: 0.1634 },
+    { ore: 'Titanium', probability: 0.3268 },
+    { ore: 'Tungsten', probability: 0.3067 },
+  ],
+  'Q-Type': [
+    { ore: 'Aluminium', probability: 0.3676 },
+    { ore: 'Bexalite', probability: 0.1145 },
+    { ore: 'Borase', probability: 0.2206 },
+    { ore: 'Copper', probability: 0.3584 },
+    { ore: 'Corundum', probability: 0.3584 },
+    { ore: 'Gold', probability: 0.1145 },
+    { ore: 'Iron', probability: 0.3817 },
+    { ore: 'Laranite', probability: 0.1527 },
+    { ore: 'Quantanium', probability: 0.0458 },
+    { ore: 'Quartz', probability: 0.3584 },
+    { ore: 'Taranite', probability: 0.1075 },
+    { ore: 'Titanium', probability: 0.3817 },
+    { ore: 'Tungsten', probability: 0.3584 },
+  ],
+  'M-Type': [
+    { ore: 'Agricium', probability: 0.3404 },
+    { ore: 'Aluminium', probability: 0.3922 },
+    { ore: 'Bexalite', probability: 0.0426 },
+    { ore: 'Copper', probability: 0.5051 },
+    { ore: 'Corundum', probability: 0.3891 },
+    { ore: 'Gold', probability: 0.1961 },
+    { ore: 'Iron', probability: 0.3922 },
+    { ore: 'Quantanium', probability: 0.0385 },
+    { ore: 'Quartz', probability: 0.4255 },
+    { ore: 'Taranite', probability: 0.0755 },
+    { ore: 'Titanium', probability: 0.3774 },
+    { ore: 'Tungsten', probability: 0.3846 },
+  ],
+  'C-Type': [
+    { ore: 'Aluminium', probability: 0.3968 },
+    { ore: 'Bexalite', probability: 0.2024 },
+    { ore: 'Copper', probability: 0.3891 },
+    { ore: 'Corundum', probability: 0.361 },
+    { ore: 'Gold', probability: 0.0844 },
+    { ore: 'Hephaestanite', probability: 0.2888 },
+    { ore: 'Iron', probability: 0.3546 },
+    { ore: 'Quantanium', probability: 0.0476 },
+    { ore: 'Quartz', probability: 0.4219 },
+    { ore: 'Taranite', probability: 0.1984 },
+    { ore: 'Titanium', probability: 0.4049 },
+    { ore: 'Tungsten', probability: 0.361 },
+  ], 
+};
+
+export const useMiningContext = () => {
+  return useContext(MiningContext);
+};

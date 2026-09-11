@@ -1,0 +1,283 @@
+import React, { useState, useEffect } from 'react';
+import './Inventory.css';
+import { useMiningContext } from './MiningContext.js';
+
+const Inventory = () => {
+  const {
+    miningInventories,
+    setMiningInventories,
+    cargoInventories,
+    setCargoInventories,
+    wallet,
+    setWallet,
+    orePrices,
+    currentShip,
+    setCurrentShip,
+    currentLocation,
+    ships,
+  } = useMiningContext();
+
+  const [selectedInventory, setSelectedInventory] = useState('Hand'); // Default to Hand mining inventory
+  const [message, setMessage] = useState(null); // State to hold messages
+  const [chosenInventory, setChosenInventory] = useState({}); // Track current ship's inventory
+  const [selectedShip, setSelectedShip] = useState('Nomad'); // Automatically set to Nomad
+
+  const capacities = {
+    Hand: 12,
+    Roc: 80,
+    Prospector: 32,
+    Mole: 96,
+    Nomad: 24,
+    'Cutlass Black': 46,
+    'Hull A': 64,
+    'Freelancer': 66,
+    'RAFT': 96,
+    'Constellation Andromeda': 96,
+    'Mercury Starrunner': 114,
+    'Freelancer MAX': 120,
+    'Constellation Taurus': 174,
+    'Caterpillar': 576,
+    'C2 Hercules Starlifter': 696,
+  };
+
+  const oreList = {
+    Hand: ['Dolivine', 'Aphorite', 'Hadanite', 'Janalite'],
+    Roc: ['Dolivine', 'Aphorite', 'Hadanite'],
+    Prospector: ['Agricium', 'Aluminium', 'Beryl', 'Bexalite', 'Borase', 'Copper', 'Corundum', 'Gold', 'Hephaestanite', 'Iron', 'Laranite', 'Quantanium', 'Quartz', 'Taranite', 'Titanium', 'Tungsten'],
+    Mole: ['Agricium', 'Aluminium', 'Beryl', 'Bexalite', 'Borase', 'Copper', 'Corundum', 'Gold', 'Hephaestanite', 'Iron', 'Laranite', 'Quantanium', 'Quartz', 'Taranite', 'Titanium', 'Tungsten']
+  };
+
+  const miningTypes = ['Hand', 'Roc', 'Prospector', 'Mole']; // Mining-specific inventories
+  const isGem = ['Dolivine', 'Aphorite', 'Hadanite', 'Janalite']; // Gems that can be sold at Area-18
+
+  // Ensure that Ores and Refined categories are always present in cargo inventories
+  const ensureInventoryStructure = (inventory) => ({
+    Ores: inventory?.Ores || {},
+    Refined: inventory?.Refined || {},
+  });
+
+  useEffect(() => {
+    if (miningTypes.includes(selectedShip)) {
+      setChosenInventory(miningInventories[selectedShip] || {});
+    } else {
+      const shipInventory = cargoInventories[selectedShip] || {};
+      setChosenInventory(ensureInventoryStructure(shipInventory));
+    }
+  }, [selectedShip, miningInventories, cargoInventories]);
+
+  const handleTransfer = (ore, inventoryType) => {
+    const currentShipCapacity = capacities[selectedShip] || 0;
+    const currentCount = miningInventories[inventoryType]?.[ore] || 0;
+
+    const usedCapacity = Object.values(chosenInventory?.Refined || {}).reduce((sum, value) => sum + value, 0) +
+      Object.values(chosenInventory?.Ores || {}).reduce((sum, value) => sum + value, 0);
+
+    const remainingCapacity = currentShipCapacity - usedCapacity;
+
+    // Use cSCU for Hand and Roc, SCU for others
+    const currentCountInUnits = ['Hand', 'Roc'].includes(inventoryType) ? (currentCount / 100).toFixed(2) : currentCount;
+
+    const inventoryCategory = ['Hand', 'Roc'].includes(inventoryType) ? 'Ores' : 'Refined';
+
+    if (remainingCapacity >= currentCountInUnits && currentCount > 0) {
+      setMiningInventories((prevInventories) => {
+        const updatedInventories = { ...prevInventories };
+
+        updatedInventories[inventoryType] = {
+          ...updatedInventories[inventoryType],
+          [ore]: 0,  // Set to 0 in Hand or Roc
+        };
+
+        setCargoInventories((prevCargoInventories) => {
+          const updatedCargoInventories = { ...prevCargoInventories };
+
+          // Ensure both Ores and Refined are initialized for the selected ship
+          if (!updatedCargoInventories[selectedShip]) {
+            updatedCargoInventories[selectedShip] = { Ores: {}, Refined: {} };
+          }
+
+          updatedCargoInventories[selectedShip][inventoryCategory] = {
+            ...updatedCargoInventories[selectedShip][inventoryCategory],
+            [ore]: (updatedCargoInventories[selectedShip][inventoryCategory]?.[ore] || 0) + parseFloat(currentCountInUnits),
+          };
+
+          return updatedCargoInventories;
+        });
+
+        return updatedInventories;
+      });
+      setMessage(`Successfully transferred ${currentCount} units of ${ore} to ${selectedShip}.`);
+    } else if (currentCount === 0) {
+      setMessage('No ores available for transfer.');
+    } else {
+      setMessage('Not enough space in the ship.');
+    }
+  };
+
+  const handleSell = (ore, inventoryCategory = 'Ores') => {
+    const oreAmount = chosenInventory[inventoryCategory]?.[ore] || 0;
+
+    if (oreAmount > 0) {
+      let canSell = false;
+
+      if (inventoryCategory === 'Ores' && currentLocation === 'ARC-L1' && !isGem.includes(ore)) {
+        canSell = true; // Ores should be sold at ARC-L1 (non-gems)
+      } else if (inventoryCategory === 'Ores' && currentLocation === 'Area-18' && isGem.includes(ore)) {
+        canSell = true; // Gems should be sold at Area-18
+      } else if (inventoryCategory === 'Refined' && currentLocation === 'Area-18') {
+        canSell = true; // Refined ores should be sold at Area-18
+      }
+
+      if (!canSell) {
+        setMessage(`You cannot sell ${ore} here.`);
+        return;
+      }
+
+      const oreValue = orePrices[ore.toLowerCase()] || 0;
+      const totalValue = oreValue * oreAmount * (inventoryCategory === 'Ores' && isGem.includes(ore) ? 100 : 1);
+
+      const roundedTotalValue = Math.round(totalValue);
+
+      setWallet((prevWallet) => prevWallet + roundedTotalValue);
+
+      // Clear the ores from the cargo inventory after selling
+      setCargoInventories((prevInventories) => {
+        const updatedInventories = { ...prevInventories };
+        updatedInventories[selectedShip][inventoryCategory][ore] = 0;  // Set to 0 after selling
+        return updatedInventories;
+      });
+
+      setMessage(`Successfully sold ${oreAmount} SCU of ${ore} for ${roundedTotalValue} aUEC.`);
+    } else {
+      setMessage(`No ${inventoryCategory === 'Ores' ? 'raw ores' : 'refined ores'} available for sale.`);
+    }
+  };
+
+  return (
+    <div className="container">
+      {message && <p className="message">{message}</p>}
+
+      <p>Capacity: {capacities[selectedShip] || 'N/A'} scu</p>
+
+      {currentLocation === 'ARC-L1' && (
+        <div>
+          <p>Select Your Ship</p>
+          <select
+            value={selectedShip}
+            onChange={(e) => {
+              setSelectedShip(e.target.value);
+              setCurrentShip(e.target.value);
+            }}
+          >
+            {Object.keys(ships)
+              .filter((ship) => ships[ship] > 0 && !['Roc', 'Hand'].includes(ship)) // Exclude Roc and Hand, include Prospector & Mole
+              .map((ship) => (
+                <option key={ship} value={ship}>
+                  {ship}
+                </option>
+              ))}
+          </select>
+        </div>
+      )}
+
+      <div className="inventory-tabs">
+        {miningTypes.map((inventoryType) => (
+          <button
+            key={inventoryType}
+            className={`inventory-tab ${selectedInventory === inventoryType ? 'active' : ''}`}
+            onClick={() => setSelectedInventory(inventoryType)}
+          >
+            {inventoryType} Mining
+          </button>
+        ))}
+        {!miningTypes.includes(selectedShip) && (
+          <button
+            className={`inventory-tab ${selectedInventory === 'Cargo' ? 'active' : ''}`}
+            onClick={() => setSelectedInventory('Cargo')}
+          >
+            {selectedShip} Cargo
+          </button>
+        )}
+      </div>
+
+      <p>{wallet?.toLocaleString()} aUEC</p>
+
+      {selectedInventory === 'Cargo' && (
+        <div className="inventory-details">
+          <ul>
+            {Object.keys(chosenInventory?.Ores || {}).map((ore) => {
+              const oreCount = chosenInventory?.Ores?.[ore] || 0;
+              return oreCount > 0 ? (
+                <li key={ore}>
+                  {ore}: {oreCount} scu
+                  <button
+                    className="button"
+                    onClick={() => handleSell(ore, 'Ores')}
+
+                  >
+                    Sell
+                  </button>
+                </li>
+              ) : null;
+            })}
+          </ul>
+
+          <ul>
+            {Object.keys(chosenInventory?.Refined || {}).map((ore) => {
+              const oreCount = chosenInventory?.Refined?.[ore] || 0;
+              return oreCount > 0 ? (
+                <li key={ore}>
+                  {ore}: {oreCount} scu
+                  <button
+                    className="button"
+                    onClick={() => handleSell(ore, 'Refined')}
+
+                  >
+                    Sell
+                  </button>
+                </li>
+              ) : null;
+            })}
+          </ul>
+
+          <p>Total Capacity: {capacities[selectedShip]} scu</p>
+        </div>
+      )}
+
+      {selectedInventory !== 'Cargo' && (
+        <div className="inventory-details">
+          <ul>
+            {oreList[selectedInventory]?.map((ore) => {
+              const oreCount = miningInventories?.[selectedInventory]?.[ore] || 0;
+              const displayCount = ['Hand', 'Roc'].includes(selectedInventory) ? oreCount + ' cscu' : oreCount + ' scu';
+              return oreCount > 0 ? (
+                <li key={ore}>
+                  {ore}: {displayCount}
+                  {['Hand', 'Roc'].includes(selectedInventory) ? (
+                    <button
+                      className="button"
+                      onClick={() => handleTransfer(ore, selectedInventory)}
+                    >
+                      Transfer to Cargo
+                    </button>
+                  ) : (
+                    <button
+                      className="button"
+                      onClick={() => handleSell(ore, 'Ores')}
+
+                    >
+                      Sell
+                    </button>
+                  )}
+                </li>
+              ) : null;
+            })}
+          </ul>
+          <p>Total Capacity: {capacities[selectedInventory]} {['Hand', 'Roc'].includes(selectedInventory) ? 'cscu' : 'scu'}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Inventory;

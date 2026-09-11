@@ -1,0 +1,218 @@
+import React, { useState, useEffect } from 'react';
+import { useMiningContext } from './MiningContext';
+
+// Travel times (in seconds) for each ship and destination
+const travelTimes = {
+  'Cutlass Black': { 'Area-18': 35, 'Lyria': 30, 'Wala': 30, 'Return to ARC-L1': { 'Area-18': 35, 'Lyria': 30, 'Wala': 30 } },
+  'Mercury Starrunner': { 'Area-18': 35, 'Lyria': 30, 'Wala': 30, 'Return to ARC-L1': { 'Area-18': 35, 'Lyria': 30, 'Wala': 30 } },
+  'Freelancer': { 'Area-18': 40, 'Lyria': 35, 'Wala': 35, 'Return to ARC-L1': { 'Area-18': 40, 'Lyria': 35, 'Wala': 35 } },
+  'Nomad': { 'Area-18': 40, 'Lyria': 35, 'Wala': 35, 'Return to ARC-L1': { 'Area-18': 40, 'Lyria': 35, 'Wala': 35 } },
+  'Freelancer MAX': { 'Area-18': 45, 'Lyria': 40, 'Wala': 40, 'Return to ARC-L1': { 'Area-18': 45, 'Lyria': 40, 'Wala': 40 } },
+  'Prospector': { 'Halo': 55, 'Return to ARC-L1': { 'Halo': 55 } },
+  'Constellation Andromeda': { 'Area-18': 47, 'Lyria': 42, 'Wala': 42, 'Return to ARC-L1': { 'Area-18': 47, 'Lyria': 42, 'Wala': 42 } },
+  'Constellation Taurus': { 'Area-18': 50, 'Lyria': 45, 'Wala': 45, 'Return to ARC-L1': { 'Area-18': 50, 'Lyria': 45, 'Wala': 45 } },
+  'Mole': { 'Halo': 55, 'Return to ARC-L1': { 'Halo': 55 } },
+  'Hull A': { 'Area-18': 55, 'Lyria': 50, 'Wala': 50, 'Return to ARC-L1': { 'Area-18': 55, 'Lyria': 50, 'Wala': 50 } },
+  'C2 Hercules Starlifter': { 'Area-18': 57, 'Lyria': 52, 'Wala': 52, 'Return to ARC-L1': { 'Area-18': 57, 'Lyria': 52, 'Wala': 52 } },
+  'RAFT': { 'Area-18': 57, 'Lyria': 52, 'Wala': 52, 'Return to ARC-L1': { 'Area-18': 57, 'Lyria': 52, 'Wala': 52 } },
+  'Caterpillar': { 'Area-18': 60, 'Lyria': 55, 'Wala': 55, 'Return to ARC-L1': { 'Area-18': 60, 'Lyria': 55, 'Wala': 55 } },
+};
+
+// Function to get valid flight paths
+const getFlightPaths = (currentLocation, selectedShip) => {
+  const paths = ['Area-18', 'Lyria', 'Wala', 'Halo'].filter(path => path !== currentLocation);
+  if (currentLocation !== 'ARC-L1') paths.push('Return to ARC-L1');
+
+  return paths.filter(path => {
+    if (path === 'Return to ARC-L1') return travelTimes[selectedShip]?.['Return to ARC-L1']?.[currentLocation];
+    return travelTimes[selectedShip]?.[path];
+  });
+};
+
+const ASOP = () => {
+  const { miningInventories, setMiningInventories, currentLocation, setCurrentLocation, ships, setCurrentShip } = useMiningContext();
+  const [selectedShip, setSelectedShip] = useState(localStorage.getItem('currentShip') || 'Nomad'); // Initialize to last used ship or default to Nomad
+  const [selectedPath, setSelectedPath] = useState('');
+  const [travelTimeRemaining, setTravelTimeRemaining] = useState(null);
+  const [loadRoc, setLoadRoc] = useState(false);
+  const [showRocPrompt, setShowRocPrompt] = useState(false);
+
+  // Filter out Roc from ship selection
+  const ownedShips = ships ? Object.keys(ships).filter(ship => ships[ship] > 0 && ship !== 'Roc') : [];
+
+  useEffect(() => {
+    const storedShipLocations = JSON.parse(localStorage.getItem('shipLocations')) || {};
+    const storedCharacterLocation = localStorage.getItem('characterLocation') || 'ARC-L1';
+
+    setMiningInventories(prevInventories => ({
+      ...prevInventories,
+      Ships: {
+        ...prevInventories.Ships,
+        ...storedShipLocations, // Load ship locations from localStorage
+      },
+    }));
+    setCurrentLocation(storedCharacterLocation); // Set character location from localStorage
+    setCurrentShip(localStorage.getItem('currentShip') || 'Nomad'); // Initialize current ship from localStorage
+  }, [setMiningInventories, setCurrentLocation, setCurrentShip]);
+
+  useEffect(() => {
+    localStorage.setItem('currentShip', selectedShip); // Save current ship to localStorage
+    localStorage.setItem('characterLocation', currentLocation); // Save character location
+  }, [selectedShip, currentLocation]);
+
+  const handleShipSelection = (event) => {
+    const ship = event.target.value;
+    if (!ships || !ships[ship] || ships[ship] === 0) {
+      alert(`${ship} is not available.`);
+      return;
+    }
+    setSelectedShip(ship);
+    setCurrentShip(ship); // Set current ship globally
+
+    // Check if the player owns a Roc and prompt to load it
+    if (ship === 'Nomad' && ships['Roc'] > 0) {
+      setShowRocPrompt(true); // Show ROC load prompt
+    } else {
+      setShowRocPrompt(false);
+      setLoadRoc(false);
+    }
+  };
+
+  const handleRocConfirmation = (confirmLoad) => {
+    setLoadRoc(confirmLoad);
+    setShowRocPrompt(false); // Hide the prompt after user decision
+
+    // Start travel immediately after decision
+    const travelTime = selectedPath === 'Return to ARC-L1'
+      ? travelTimes[selectedShip]?.['Return to ARC-L1']?.[currentLocation]
+      : travelTimes[selectedShip]?.[selectedPath];
+
+    if (travelTime) {
+      startTravel(travelTime);
+    }
+  };
+
+  const handlePathSelection = (event) => {
+    setSelectedPath(event.target.value);
+  };
+
+  const startTravel = (time) => {
+    setTravelTimeRemaining(time);
+    const interval = setInterval(() => {
+      setTravelTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+
+          // Update only the selected ship and character's location
+          const newLocation = selectedPath === 'Return to ARC-L1' ? 'ARC-L1' : selectedPath;
+          setCurrentLocation(newLocation);
+          setCurrentShip(selectedShip);
+
+          setMiningInventories(prevInventories => {
+            const updatedShips = {
+              ...prevInventories.Ships,
+              [selectedShip]: newLocation, // Update only the selected ship
+              ...(loadRoc && { Roc: newLocation }), // Update Roc location if loaded
+            };
+
+            // Persist the updated ship location and character location in localStorage
+            localStorage.setItem('shipLocations', JSON.stringify(updatedShips)); // Only update selected ship
+            localStorage.setItem('characterLocation', newLocation); // Persist character's new location
+
+            return { ...prevInventories, Ships: updatedShips };
+          });
+
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const confirmSelection = () => {
+    if (selectedShip && selectedPath) {
+      const travelTime = selectedPath === 'Return to ARC-L1'
+        ? travelTimes[selectedShip]?.['Return to ARC-L1']?.[currentLocation]
+        : travelTimes[selectedShip]?.[selectedPath];
+
+      if (!travelTime) {
+        alert('Invalid travel destination.');
+        return;
+      }
+
+      if (showRocPrompt) {
+        return;
+      }
+
+      startTravel(travelTime);
+    } else {
+      alert('Please select both a ship and a flight path.');
+    }
+  };
+
+  return (
+    <div>
+      <p>{selectedShip} : {currentLocation}</p>
+
+      {travelTimeRemaining !== null ? (
+        <div className="notification">
+          Traveling to {selectedPath}. Time remaining: {travelTimeRemaining} seconds.
+        </div>
+      ) : (
+        <>
+          {currentLocation === 'ARC-L1' && (
+            <>
+              <p>Select Your Ship</p>
+              <div>
+                <select value={selectedShip} onChange={handleShipSelection}>
+                  <option value="" disabled>Select a ship</option>
+                  {ownedShips.length > 0 ? (
+                    ownedShips.map((ship) => (
+                      <option key={ship} value={ship}>
+                        {ship}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>No owned ships available</option>
+                  )}
+                </select>
+              </div>
+            </>
+          )}
+
+          {showRocPrompt && (
+            <div className="notification">
+              <p>Would you like to load your Roc into the Nomad?</p>
+              <button onClick={() => handleRocConfirmation(true)}>Yes</button>
+              <button onClick={() => handleRocConfirmation(false)}>No</button>
+            </div>
+          )}
+
+          <p>Select Flight Path</p>
+          <div>
+            <select value={selectedPath} onChange={handlePathSelection}>
+              <option value="" disabled>Select a flight path</option>
+              {getFlightPaths(currentLocation, selectedShip).map((path) => {
+                const displayTime = path === 'Return to ARC-L1'
+                  ? travelTimes[selectedShip]?.['Return to ARC-L1']?.[currentLocation]
+                  : travelTimes[selectedShip]?.[path];
+
+                return (
+                  <option key={path} value={path}>
+                    {path} ({displayTime ? displayTime : 'N/A'} seconds)
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <button className="button" onClick={confirmSelection} style={{ marginTop: '20px', padding: '10px' }}>
+            Confirm Selection
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default ASOP;

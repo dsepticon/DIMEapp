@@ -1,0 +1,73 @@
+import React, { useEffect, useState } from 'react';
+
+const TwitchIntegration = () => {
+  const [twitchUser, setTwitchUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const checkTwitchEnvironment = setInterval(() => {
+      if (window.Twitch && window.Twitch.ext) {
+        clearInterval(checkTwitchEnvironment);
+        fetchTwitchUser();
+      }
+    }, 100);
+
+    return () => clearInterval(checkTwitchEnvironment);
+  }, []);
+
+  const fetchTwitchUser = async () => {
+    try {
+      setLoading(true);
+      const token = await getTwitchToken();
+      if (!token) {
+        throw new Error("Failed to obtain Twitch token");
+      }
+
+      const user = await getUserData(token);
+      setTwitchUser(user);
+    } catch (error) {
+      console.error('Error fetching Twitch user data:', error);
+      setError(error.message || 'Failed to fetch Twitch user data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTwitchToken = async () => {
+    if (!window.Twitch || !window.Twitch.ext || !window.Twitch.ext.auth) {
+      throw new Error('Twitch extension helper or auth not available');
+    }
+    return window.Twitch.ext.auth.token;
+  };
+
+  const getUserData = async (token) => {
+    const response = await fetch('https://api.twitch.tv/helix/users', {
+      headers: {
+        'Client-ID': 'znaovl2j45idub9k81om1dkatwxnu2',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.data[0];
+  };
+
+  return (
+    <div>
+      {loading && <p>Loading...</p>}
+
+      {twitchUser && (
+        <div>
+          <img src={twitchUser.profile_image_url} alt="Twitch Profile" />
+          <p>{twitchUser.display_name}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default TwitchIntegration;

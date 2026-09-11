@@ -1,0 +1,483 @@
+import React, { useState, useEffect } from 'react';
+import { useMiningContext } from './MiningContext.js';
+import { asteroidTypes } from './MiningContext.js';
+import './styles.css';
+
+const MoleMining = () => {
+  const { inventories, setInventories, MiningHeads, Crew, ships } = useMiningContext();
+  const [minedQuantity, setMinedQuantity] = useState(0);
+  const [minedOre, setMinedOre] = useState('');
+  const [foundOre, setFoundOre] = useState('');
+  const [timer, setTimer] = useState(10);
+  const [scanning, setScanning] = useState(false);
+  const [scanningComplete, setScanningComplete] = useState(false);
+  const [mining, setMining] = useState(false);
+  const [scanningPulse, setScanningPulse] = useState(false);
+  const [miningPulse, setMiningPulse] = useState(false);
+  const [selectedMiningHead1, setSelectedMiningHead1] = useState(() => {
+    return localStorage.getItem('selectedMiningHead1') || 'Arbor MH2';
+  });
+  const [selectedCrew1, setSelectedCrew1] = useState(() => {
+    return localStorage.getItem('selectedCrew1') || 'None';
+  });
+  const [selectedMiningHead2, setSelectedMiningHead2] = useState(() => {
+    return localStorage.getItem('selectedMiningHead2') || 'Arbor MH2';
+  });
+  const [selectedCrew2, setSelectedCrew2] = useState(() => {
+    return localStorage.getItem('selectedCrew2') || 'None';
+  });
+  const [selectedMiningHead3, setSelectedMiningHead3] = useState(() => {
+    return localStorage.getItem('selectedMiningHead3') || 'Arbor MH2';
+  });
+  const [selectedCrew3, setSelectedCrew3] = useState(() => {
+    return localStorage.getItem('selectedCrew3') || 'None';
+  });
+  const [notification, setNotification] = useState(null);
+  const [foundAsteroidType, setFoundAsteroidType] = useState('');
+
+  const [equipTabOpen, setEquipTabOpen] = useState(false);
+
+
+    const scanningImage = '/Microtech.png'; // Image for scanning
+    const miningImage = foundAsteroidType ? `${foundAsteroidType}.png` : '/Microtech.png'; // Image for mining
+
+    const inventorySize = 96;
+    const moleInventory = inventories?.Mole || {};
+    const availableCrew = {
+      'None': 0,
+      'Terraphon': 5,
+      'Andirr': 5,
+      'Dora': 15,
+    };
+    const availableMiningHeads = {
+      'Arbor MH2': 0,
+      'Hofstede S2': 15,
+      'Impact II': 20,
+      'Helix II': 25,
+    };
+
+    const showNotification = (message, type = 'info') => {
+      setNotification({ message, type });
+    };
+    
+  
+    const checkInventoryFull = () => {
+      const totalCount = Object.values(moleInventory).reduce((acc, count) => acc + count, 0);
+      return totalCount >= inventorySize;
+    };
+  
+    const startScan = () => {
+      if (checkInventoryFull()) {
+        showNotification('Inventory is full.', 'error');
+        return;
+      }
+      const MoleOwnedAmount = ships['Mole'];
+
+
+
+      if (!MoleOwnedAmount || MoleOwnedAmount <= 0) {
+        setNotification('You do not own a Mole');
+        return;
+      }
+
+      if (!Crew[selectedCrew1] || Crew[selectedCrew1]?.quantity <= 0) {
+        setNotification(`Hire a crew member first`);
+        return;
+      }
+    setNotification(null);
+    setScanningComplete(false);
+    setMinedOre('');
+    setScanning(true); // Disable mining during scan
+    setScanningPulse(true);
+    setTimer(10);
+
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+
+    setTimeout(() => {
+      clearInterval(interval);
+
+      // Randomly select an asteroid type
+      const asteroidTypesArray = Object.entries(asteroidTypes);
+      const randomAsteroidIndex = Math.floor(Math.random() * asteroidTypesArray.length);
+      const [foundAsteroidType, asteroidSpecs] = asteroidTypesArray[randomAsteroidIndex];
+
+      const selectedOres = [];
+      const availableOres = [...new Set(asteroidSpecs.map(spec => spec.ore))]; // Extract unique available ores
+
+      setFoundAsteroidType(foundAsteroidType);
+
+      const numSelectedOres = Math.floor(Math.random() * 2) + 2; // Randomly choose between 2 and 3 ores
+
+      for (let i = 0; i < numSelectedOres; i++) {
+        if (availableOres.length === 0) {
+          break; // Break if no more available ores
+        }
+
+        const oreProbabilities = asteroidSpecs.map(spec => spec.probability);
+        const totalProbability = oreProbabilities.reduce((sum, prob) => sum + prob, 0);
+        const randomProbability = Math.random() * totalProbability;
+
+        let cumulativeProbability = 0;
+        let selectedOre;
+
+        for (let j = 0; j < asteroidSpecs.length; j++) {
+          cumulativeProbability += oreProbabilities[j];
+          if (randomProbability <= cumulativeProbability) {
+            selectedOre = asteroidSpecs[j].ore;
+            break;
+          }
+
+      }
+
+        const randomOreIndex = availableOres.indexOf(selectedOre);
+        availableOres.splice(randomOreIndex, 1); // Remove selected ore from available ores
+        selectedOres.push(selectedOre);
+      }
+
+      setFoundOre(selectedOres);
+    
+      setTimeout(() => {
+        setTimer(10);
+        setScanningPulse(false);
+        setScanning(false); // Enable mining after scan
+        setScanningComplete(true); // Mark scanning as complete
+      }, 10000);
+    });
+  };  
+
+  useEffect(() => {
+    let interval;
+    if (scanning) {
+      interval = setInterval(() => {
+        if (timer > 0) {
+          setTimer((prevTimer) => prevTimer - 1);
+        } else {
+          setScanning(false);
+          setTimer(10);
+        }
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [timer, scanning]);
+
+
+  const startMining = () => {
+    if (!mining && foundOre.length > 0) {
+
+      if (
+        !MiningHeads[selectedMiningHead1] ||
+        MiningHeads[selectedMiningHead1]?.quantity <= 0
+      ) {
+        setNotification(`Selected mining head "${selectedMiningHead1}" is not in Inventory.`);
+        return;
+      }
+
+      if (selectedCrew1 === 'None') {
+        setNotification("You must have at least 1 crew member to mine.");
+        return;
+      }
+      
+      if (!Crew[selectedCrew1] || Crew[selectedCrew1]?.quantity <= 0) {
+        setNotification(`Selected Crew Member "${selectedCrew1}" is not in Inventory.`);
+        return;
+      }
+
+      if (
+        !MiningHeads[selectedMiningHead2] ||
+        MiningHeads[selectedMiningHead2]?.quantity <= 0
+      ) {
+        setNotification(`Selected mining head "${selectedMiningHead2}" is not in Inventory.`);
+        return;
+      }
+
+      if (selectedCrew2 !== 'None' && (!Crew[selectedCrew2] || Crew[selectedCrew2]?.quantity <= 0)) {
+        setNotification(`Selected Crew Member "${selectedCrew2}" is not in Inventory.`);
+        setMinedQuantity(minedQuantity - (availableMiningHeads[selectedMiningHead2].max -
+          availableMiningHeads[selectedMiningHead2].min +
+          1) +
+        availableMiningHeads[selectedMiningHead2].min);
+        return;
+      }
+
+      if (
+        !MiningHeads[selectedMiningHead3] ||
+        MiningHeads[selectedMiningHead3]?.quantity <= 0
+      ) {
+        setNotification(`Selected mining head "${selectedMiningHead3}" is not in Inventory.`);
+        return;
+      }
+
+      if (selectedCrew3 !== 'None' && (!Crew[selectedCrew3] || Crew[selectedCrew3]?.quantity <= 0)) {
+        setNotification(`Selected Crew Member "${selectedCrew3}" is not in Inventory.`);
+      }
+
+      setMining(true);
+      setMiningPulse(true);
+      setTimer((3 * 60) - (availableMiningHeads[selectedMiningHead1] || 0) - (availableCrew[selectedCrew1] || 0) - (availableMiningHeads[selectedMiningHead2] || 0) - (availableCrew[selectedCrew2] || 0) - (availableMiningHeads[selectedMiningHead3] || 0) - (availableCrew[selectedCrew3] || 0));
+      
+
+    } else {
+      setNotification('Must scan for ore first', 'error');
+    }
+  };
+
+useEffect(() => {
+  let interval;
+  if (mining) {
+    interval = setInterval(() => {
+      if (timer > 0) {
+        setTimer((prevTimer) => prevTimer - 1);
+      } else {
+        const minedQuantity = Math.floor(Math.random() * (96 - 8 + 1)) + 8;
+        if (minedQuantity > 0) {
+          const totalMinedOre = {};
+
+          const currentInventoryCount = Object.values(moleInventory).reduce((acc, count) => acc + count, 0);
+          let remainingCapacity = 96 - currentInventoryCount;
+
+          let remainingMinedQuantity = minedQuantity;
+
+          foundOre.forEach((selectedOre) => {
+            if (remainingCapacity > 0 && remainingMinedQuantity > 0) {
+              const randomQuantityToAdd = Math.min(remainingCapacity, Math.floor(Math.random() * (remainingMinedQuantity - 1)) + 1);
+              totalMinedOre[selectedOre] = randomQuantityToAdd;
+              remainingMinedQuantity -= randomQuantityToAdd;
+              remainingCapacity -= randomQuantityToAdd;
+            }
+          });
+
+          // Check if there's any ore mined
+          if (Object.keys(totalMinedOre).length > 0) {
+            setInventories((prevInventories) => ({
+              ...prevInventories,
+              Mole: {
+                ...prevInventories.Mole,
+                ...Object.entries(totalMinedOre).reduce((acc, [ore, quantity]) => {
+                  const currentCount = prevInventories.Mole[ore] || 0;
+                  const newCount = currentCount + quantity;
+                  acc[ore] = newCount;
+                  return acc;
+                }, {}),
+              },
+            }));
+
+            const minedOreArray = Object.entries(totalMinedOre).map(([ore, quantity]) => `${ore}: ${quantity}scu`);
+          setMinedOre(minedOreArray);
+
+          const leftBehindOres = foundOre.filter(ore => !(ore in totalMinedOre));
+          if (leftBehindOres.length > 0) {
+            showNotification(`Mining complete. Left behind: ${leftBehindOres.join(', ')}`);
+          }
+
+            setMining(false);
+            setMiningPulse(false);
+            setTimer(10);
+            setFoundOre([]);
+            setScanningComplete(false);
+          } else {
+            showNotification("No ore found.");
+          }
+        }
+      }
+    }, 1000);
+  }
+
+  return () => clearInterval(interval);
+}, [timer, mining, foundOre, moleInventory, setInventories, showNotification]);
+
+
+ // Save the selected mining head to local storage whenever it changes
+ useEffect(() => {localStorage.setItem('selectedMiningHead1', selectedMiningHead1);
+}, [selectedMiningHead1]);
+
+  useEffect(() => {localStorage.setItem('selectedMiningHead2', selectedMiningHead2);
+}, [selectedMiningHead2]);
+
+  useEffect(() => {localStorage.setItem('selectedMiningHead3', selectedMiningHead3);
+}, [selectedMiningHead3]);
+
+  useEffect(() => {localStorage.setItem('selectedCrew1', selectedCrew1);
+}, [selectedCrew1]);
+
+  useEffect(() => {localStorage.setItem('selectedCrew2', selectedCrew2);
+}, [selectedCrew2]);
+
+  useEffect(() => {localStorage.setItem('selectedCrew3', selectedCrew3);
+}, [selectedCrew3]);
+  
+
+  const openEquipTab = () => {
+    setEquipTabOpen(true);
+  };
+
+  const closeEquipTab = () => {
+    setEquipTabOpen(false);
+  };
+
+  return (
+    <div className="container">
+      <div className="image-container">
+        {mining && <img src={miningImage} alt="Mining Image" className={`centered ${miningPulse ? 'pulse' : ''} mining-image`} />}
+        {!mining && <img src={scanningPulse ? scanningImage : miningImage} alt="Scanning Image" className={`centered ${scanningPulse ? 'pulse' : ''}`} />}
+      </div>
+      
+      <div className="button-container">
+      <button
+        onClick={startScan}
+        className={`button ${mining ? 'disabled' : ''}`}
+        disabled={mining || scanning}
+        style={{ width: '48%', marginRight: '4%' }} // Set width and margin for spacing
+      >
+        Scan
+      </button>
+
+      <button
+        onClick={startMining}
+        className={`button ${mining || !(MiningHeads[selectedMiningHead1]?.quantity > 0) ? 'disabled' : ''}`}
+        disabled={mining || scanning}
+        style={{ width: '48%' }} // Set width
+      >
+        Mine
+      </button>
+      
+      </div>     
+
+      <button onClick={openEquipTab} className="equip-button" style={{ width: '34%' }}>
+        Equip
+      </button>
+      
+      {notification && (
+        <div className="notification">
+          {notification}
+          <button className="close-button" onClick={() => setNotification(null)}>
+            X
+          </button>
+        </div>
+      )}   
+      
+        {equipTabOpen && (
+          <div className="bottom-container">
+            <div className="selection-container">
+            <button onClick={closeEquipTab} className="close-button" >
+                X
+              </button>
+              <label className="info">Mining Head 1:</label>
+              <select
+                value={selectedMiningHead1}
+                onChange={(e) => setSelectedMiningHead1(e.target.value)}
+                disabled={mining || scanning}
+              >
+                {Object.keys(availableMiningHeads).map((head) => (
+                  <option key={head} value={head}>
+                    {head}
+                  </option>
+                ))}
+              </select>
+              <label className="info">Crew Member 1:</label>
+              <select
+                value={selectedCrew1}
+                onChange={(e) => setSelectedCrew1(e.target.value)}
+                disabled={mining || scanning}
+              >
+                {Object.keys(availableCrew).map((head) => (
+                  <option key={head} value={head}>
+                    {head}
+                  </option>
+                ))}
+              </select>
+              <label className="info">Mining Head 2:</label>
+              <select
+                value={selectedMiningHead2}
+                onChange={(e) => setSelectedMiningHead2(e.target.value)}
+                disabled={mining || scanning}
+              >
+                {Object.keys(availableMiningHeads).map((head) => (
+                  <option key={head} value={head}>
+                    {head}
+                  </option>
+                ))}
+              </select>
+              <label className="info">Crew Member 2:</label>
+              <select
+                value={selectedCrew2}
+                onChange={(e) => setSelectedCrew2(e.target.value)}
+                disabled={mining || scanning}
+              >
+                {Object.keys(availableCrew).map((head) => (
+                  <option key={head} value={head}>
+                    {head}
+                  </option>
+                ))}
+              </select>
+              <label className="info">Mining Head 3:</label>
+              <select
+                value={selectedMiningHead3}
+                onChange={(e) => setSelectedMiningHead3(e.target.value)}
+                disabled={mining || scanning}
+              >
+                {Object.keys(availableMiningHeads).map((head) => (
+                  <option key={head} value={head}>
+                    {head}
+                  </option>
+                ))}
+              </select>
+              <label className="info">Crew Member 3:</label>
+              <select
+                value={selectedCrew3}
+                onChange={(e) => setSelectedCrew3(e.target.value)}
+                disabled={mining || scanning}
+              >
+                {Object.keys(availableCrew).map((head) => (
+                  <option key={head} value={head}>
+                    {head}
+                  </option>
+                ))}
+              </select>
+
+              
+            </div>
+          </div>
+        )}
+
+      {scanningComplete && (
+              <>
+                <p className="info">Asteroid: {foundAsteroidType}</p>
+                <p className="info">Ore: {[...new Set(foundOre)].join(', ')}</p>
+              </>
+            )}
+
+            {minedOre && (
+              <div>
+                <p className="info">Mined Ore:</p>
+                <ul>
+                  {[...new Set(minedOre)].map((ore) => {
+                    return (
+                      <li key={ore} className="info" style={{ marginRight: '38px' }}>
+                        {ore}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
+
+            {(mining || scanning) && <p className="info">Time: {Math.floor(timer / 60)}m {timer % 60}s</p>}
+        <ul className="inventory-list">
+          <h2 className="info">Cargo: {Object.values(moleInventory).reduce((sum, quantity) => sum + quantity, 0)}/96scu</h2>
+          {Object.entries(moleInventory)
+            .filter(([ore, count]) => count > 0) // Filter entries with count > 0
+            .map(([ore, count]) => (
+              <li key={ore} className="info">
+                {ore}: {count}scu
+              </li>
+            ))}
+        </ul>
+      </div>
+      
+  );
+};
+
+export default MoleMining;

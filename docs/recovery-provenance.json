@@ -1,0 +1,192 @@
+[
+  {
+    "source": "components/MiningContext.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/MiningContext.js.txt",
+    "redacted": true,
+    "originalSourceSha256": "a48bea65977537c14b2f28470d94f28ac43285373bfde7395303c9323dd578d8",
+    "archivedSha256": "a301d476e27d40992c84d64b3cab5118756b3cde249af11568b4804fe8786047",
+    "textualExact": false,
+    "exactBytes": false
+  },
+  {
+    "source": "components/Shop.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/Shop.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "b98a761814aeb21a697561a1be76d3095656ff4a1e353271d64de623d6793018",
+    "archivedSha256": "c9e81fc6b6585d74a10fa19f44d1963d15ad032bd5114f4392695446cba29e83",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/WorkOrders.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/WorkOrders.js.txt",
+    "redacted": true,
+    "originalSourceSha256": "fda105b72729edf95bc6b559935da7534bd4fb21c0acdda6a5922fd5a4264d5f",
+    "archivedSha256": "d7be39566efedfbb83229dc32ecdef576d6b10ab3067e8f18b708491473632bf",
+    "textualExact": false,
+    "exactBytes": false
+  },
+  {
+    "source": "components/Refinery.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/Refinery.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "efe3fe92bdc7176394ba4eb223da6bbed0e754c225ea3c41d6cb9366aa174dd7",
+    "archivedSha256": "bc486ad1e79327004e62edd3cb1775d2e4b707f0f01a093b33c284d3eafc24db",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/Inventory.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/Inventory.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "743970889c46e938b1a5a8cae2329e52e7927df882caaf1beb79e7a90e1753d6",
+    "archivedSha256": "7cb38840bdaaf91d4db23772ec99a2024aee6c8b3e5876b6c83b0ed957d64e34",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/HandMining.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/HandMining.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "2cb91bc38e9bb8c4418d3f1b6988647cad9d6053ee0cb792d616b789df288e78",
+    "archivedSha256": "25a00e81902c5c92abc94f28f3d4074e59bf59c2946947f98775905ff5cf1673",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/RocMining.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/RocMining.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "b209559564310a64b9edf4af7bb43a5e5690e765d1cc8daf896fd963ddeb1f81",
+    "archivedSha256": "06805cb1e0790d745425333c302332633e40dc353a91aa490dbbcffc837bb72d",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/ProspectorMining.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/ProspectorMining.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "dd36e9da1815e5b59dcecb075c1fa92818a1389a65ef543d5139bfa7a2bfaaf8",
+    "archivedSha256": "a6ab7e6ae98d7283c0dd7bd3d3d8da574fa153d8a69f81d770f781bd378225e5",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/MoleMining.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/MoleMining.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "4f8031eb4c3a258ac073412d1894d992fdcb69e8434cda854545e6802b03b30e",
+    "archivedSha256": "295ba1092b9d8ef53ae58038b598633917b60d8fd73d4edcffe9b78a919cff7b",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/ASOP.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/ASOP.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "c35205cf4006eed1472c0b914fdd8c254dc3d957f501556e96dc867447f11120",
+    "archivedSha256": "b1d677be579f40fdf4c25a91d71181367ba749e776d2c4cc6d17e4b97c8a42b3",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/Home.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/Home.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "761d057f81e1359428e4435f216902916ce7f4c0de027c97a04324a39a23c93a",
+    "archivedSha256": "487afcff20499e48e59232dc883cd5c1ae7c4e38a8686749fd77327d60860827",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/TwitchIntegration.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/components/TwitchIntegration.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "45441b0e31dab370dfaeeb7b75d8a7cb03f25bd609ecf96c93273d5868cc4c3c",
+    "archivedSha256": "2084bbc25dba80f5ed38c410b6ae095377b02647d6207a4bcf2ad0e5e9fc43ff",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "App.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/App.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "587183949a0d75c7c9c1b2ba49f9d171ecf43e3ceac72123aa56a95f3e1bbd8a",
+    "archivedSha256": "587183949a0d75c7c9c1b2ba49f9d171ecf43e3ceac72123aa56a95f3e1bbd8a",
+    "textualExact": true,
+    "exactBytes": true
+  },
+  {
+    "source": "reportWebVitals.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/reportWebVitals.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "714851669856152806c289f9aac6240b414bbac50c60ee4f7e6247f31eac0c1c",
+    "archivedSha256": "714851669856152806c289f9aac6240b414bbac50c60ee4f7e6247f31eac0c1c",
+    "textualExact": true,
+    "exactBytes": true
+  },
+  {
+    "source": "index.js",
+    "artifact": "static/js/main.9ada84e7.js.map",
+    "file": "docs/recovered/static_js_main.9ada84e7.js.map/index.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "d97aed654592764b35918ba76789355c8badb49b90495ba85ab1188f9f59d4da",
+    "archivedSha256": "d97aed654592764b35918ba76789355c8badb49b90495ba85ab1188f9f59d4da",
+    "textualExact": true,
+    "exactBytes": true
+  },
+  {
+    "source": "components/styles.css",
+    "artifact": "static/css/main.8f7f5540.css.map",
+    "file": "docs/recovered/static_css_main.8f7f5540.css.map/components/styles.css.txt",
+    "redacted": false,
+    "originalSourceSha256": "6d8f8d0a36680403b1aee57238c286b4fe6d1ae652c273285f9a4519ba7399e6",
+    "archivedSha256": "65e790a556bc45e0721d7a8fa9169a3a9bb7969a2e42bfb284175c7684f6b9ae",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "components/Inventory.css",
+    "artifact": "static/css/main.8f7f5540.css.map",
+    "file": "docs/recovered/static_css_main.8f7f5540.css.map/components/Inventory.css.txt",
+    "redacted": false,
+    "originalSourceSha256": "2453f1e42c9aa218dfa9fcec17aace408267cbe263a6af4fde4271ed4256dd46",
+    "archivedSha256": "5c62384a2b250c51fb29f628e9866dd9564e73353e6e348f8046e1e627ed389c",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "twitch.js",
+    "artifact": "StoreTwitchUserData",
+    "file": "docs/recovered/StoreTwitchUserData/twitch.js.txt",
+    "redacted": false,
+    "originalSourceSha256": "06433a44fba424077a7cdff5c34fee4119186a0be23e73217c9608d0fa8bc80b",
+    "archivedSha256": "0884e063348f45b590221c71b14e18f7d93148397715baf02813f3acba92c4b7",
+    "textualExact": true,
+    "exactBytes": false
+  },
+  {
+    "source": "index.mjs",
+    "artifact": "DimeLambda",
+    "file": "docs/recovered/DimeLambda/index.mjs.txt",
+    "redacted": false,
+    "originalSourceSha256": "3dd45049a518da6dfaaf9227e49e5a9261ad0453bb0388a374b48474e26608be",
+    "archivedSha256": "3dd45049a518da6dfaaf9227e49e5a9261ad0453bb0388a374b48474e26608be",
+    "textualExact": true,
+    "exactBytes": true
+  }
+]

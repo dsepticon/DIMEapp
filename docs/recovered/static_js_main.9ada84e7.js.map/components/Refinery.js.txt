@@ -1,0 +1,299 @@
+import React, { useState, useEffect } from 'react';
+import { useMiningContext } from './MiningContext.js';
+import WorkOrders from './WorkOrders.js'; // Import WorkOrders component
+import './styles.css';
+
+const Refinery = () => {
+  const { miningInventories, setMiningInventories, wallet, setWallet, setWorkOrders, workOrders } = useMiningContext();
+  const [chosenInventory, setChosenInventory] = useState('');
+  const [chosenMethod, setChosenMethod] = useState({});
+  const [confirmMethod, setConfirmMethod] = useState(false);
+  const [notification, setNotification] = useState('');
+  const [refinedOre, setRefinedOre] = useState(); 
+  const [refineryMethods, setRefineryMethods] = useState({});
+
+  const initialRefineryMethods = {
+    'Cormack Method': { yield: 'Low Yield', cost: 'Medium Cost', time: 'Short Time' },
+    'Dinyx Solventation': { yield: 'High Yield', cost: 'Low Cost', time: 'Long Time' },
+    'Electrostarolysis': { yield: 'Medium Yield', cost: 'Medium Cost', time: 'Short Time' },
+    'Ferron Exchange': { yield: 'High Yield', cost: 'Medium Cost', time: 'Long Time' },
+    'Gaskin Process': { yield: 'Medium Yield', cost: 'High Cost', time: 'Short Time' },
+    'Kazen Winnowing': { yield: 'Low Yield', cost: 'Low Cost', time: 'Short Time' },
+    'Pyrometric Cromalysis': { yield: 'High Yield', cost: 'High Cost', time: 'Short Time' },
+    'Thermonatic Deposition': { yield: 'Medium Yield', cost: 'Low Cost', time: 'Medium Time' },
+    'XCR Reaction': { yield: 'Low Yield', cost: 'High Cost', time: 'Long Time' },
+  };
+
+  const inventoriesList = ['Prospector', 'Mole'];
+
+  useEffect(() => {
+    const updatedMethods = Object.entries(initialRefineryMethods).reduce((acc, [name, details]) => {
+      const yieldRange = {
+        'High Yield': [70, 90],
+        'Medium Yield': [50, 70],
+        'Low Yield': [30, 50],
+      }[details.yield] || [0, 0];
+
+      const yieldPercentage = Math.random() * (yieldRange[1] - yieldRange[0]) + yieldRange[0];
+      const timeAdjustment = Math.random() * 0.5 + 0.75;
+      const costAdjustment = Math.random() * 0.5 + 0.75;
+
+      acc[name] = { ...details, yieldPercentage, timeAdjustment, costAdjustment };
+      return acc;
+    }, {});
+    setRefineryMethods(updatedMethods);
+  }, []);
+
+  const calculatePreviewCost = (oreAmount, methodDetails) => {
+    if (!methodDetails) return 0; // Ensure methodDetails is defined
+  
+    // Use the method's cost adjustment factor with defaults
+    const costBase = {
+      'High Cost': 120 + oreAmount * 200,
+      'Medium Cost': 60 + oreAmount * 120,
+      'Low Cost': 20 + oreAmount * 60,
+    }[methodDetails.cost] || 0; // Default to 0 if not matched
+  
+    // Ensure the final cost is a whole number
+    return Math.round(Math.max(costBase * methodDetails.costAdjustment, 0));
+  };
+
+  const calculatePreviewTimer = (oreAmount, methodDetails) => {
+    if (!methodDetails) return { minutes: 0, seconds: 0 }; // Ensure methodDetails is defined
+  
+    // Use the method's time adjustment factor with defaults
+    const timeBase = {
+      'Short Time': 2 + oreAmount * 5,
+      'Medium Time': 4 + oreAmount * 8,
+      'Long Time': 8 + oreAmount * 16,
+    }[methodDetails.time] || 0; // Default to 0 if not matched
+  
+    const totalSeconds = Math.round(Math.max(timeBase * methodDetails.timeAdjustment, 0));
+  
+    return {
+      minutes: Math.floor(totalSeconds / 60),
+      seconds: totalSeconds % 60,
+    };
+  };
+
+  const refineOre = (ore) => {
+    let refinedOre;
+    switch (ore) {
+      case 'Agricium':
+        refinedOre = 'Refined Agricium';
+        break;
+      case 'Aluminium':
+        refinedOre = 'Refined Aluminium';
+        break;
+      case 'Beryl':
+        refinedOre = 'Refined Beryl';
+        break;
+      case 'Bexalite':
+        refinedOre = 'Refined Bexalite';
+        break;
+      case 'Borase':
+        refinedOre = 'Refined Borase';
+        break;
+      case 'Copper':
+        refinedOre = 'Refined Copper';
+        break;
+      case 'Corundum':
+        refinedOre = 'Refined Corundum';
+        break;
+      case 'Gold':
+        refinedOre = 'Refined Gold';
+        break;
+      case 'Hephaestanite':
+        refinedOre = 'Refined Hephaestanite';
+        break;
+      case 'Iron':
+        refinedOre = 'Refined Iron';
+        break;
+      case 'Laranite':
+        refinedOre = 'Refined Laranite';
+        break;
+      case 'Quantanium':
+        refinedOre = 'Refined Quantanium';
+        break;
+      case 'Quartz':
+        refinedOre = 'Refined Quartz';
+        break;
+      case 'Taranite':
+        refinedOre = 'Refined Taranite';
+        break;
+      case 'Titanium':
+        refinedOre = 'Refined Titanium';
+        break;
+      case 'Tungsten':
+        refinedOre = 'Refined Tungsten';
+        break;
+      default:
+        refinedOre = 'Unknown Refined Ore';
+    }
+    return { refinedOre }; // Return the refined ore
+  };
+
+  const startRefining = (inventory) => {
+    setChosenInventory(inventory);
+    setChosenMethod('');
+    setConfirmMethod(false);
+    setRefinedOre(); 
+  };
+
+  // Function to calculate preview amounts
+  const calculatePreviewAmounts = () => {
+    if (!chosenInventory || !chosenMethod.name) {
+      return null;
+    }
+
+    const methodDetails = refineryMethods[chosenMethod.name];
+    const oreList = Object.keys(miningInventories[chosenInventory]);
+    const oreAmount = oreList.reduce((total, ore) => total + miningInventories[chosenInventory][ore], 0);
+    const refinedAmount = Math.floor(oreAmount * (methodDetails.yieldPercentage / 100));
+    const previewCost = calculatePreviewCost(oreAmount, methodDetails);
+    const previewTimerSeconds = calculatePreviewTimer(oreAmount, methodDetails);
+
+    return {
+      refinedAmount,
+      previewCost,
+      previewTimer: {
+        ...previewTimerSeconds,
+      },
+    };
+  };
+
+  const chooseMethod = (method) => {
+    setChosenMethod((prevMethod) => {
+      // Toggle visibility of the method name
+      const newName = prevMethod.name === method.name ? '' : method.name;
+      return { ...method, name: newName };
+    });
+    setConfirmMethod(true);
+  };
+
+  const confirmRefining = () => {
+    const oreList = Object.keys(miningInventories[chosenInventory]);
+    const oreAmount = oreList.reduce((total, ore) => total + miningInventories[chosenInventory][ore], 0);
+    if (oreAmount <= 0) {
+      setNotification(`No ore available in ${chosenInventory} to refine.`);
+      return;
+    }
+
+    const { refinedAmount, previewCost, previewTimer } = calculatePreviewAmounts();
+
+    // Check if wallet has enough balance
+    if (wallet < previewCost) {
+      setNotification("Insufficient funds.");
+      return;
+    }
+
+    setNotification(`Confirming refining in ${chosenInventory} using ${chosenMethod.name}.`);
+    setConfirmMethod(false);
+
+    // Create an object to store the refined amounts of each ore
+    const refinedOreAmounts = {};
+    let totalRefined = 0; // Track total refined amount to adjust for yield
+
+    // Refine each ore into its Refined Ore counterpart
+    oreList.forEach((ore) => {
+      const refinedAmountPerOre = Math.floor(miningInventories[chosenInventory][ore] * (chosenMethod.yieldPercentage / 100));
+      totalRefined += refinedAmountPerOre;
+      refinedOreAmounts[refineOre(ore).refinedOre] = refinedAmountPerOre;
+    });
+
+    // Adjust refined amounts to match yield
+    const yieldRatio = refinedAmount / totalRefined;
+    if (refinedAmount > 1)
+    Object.keys(refinedOreAmounts).forEach((refinedOre) => {
+      refinedOreAmounts[refinedOre] = Math.floor(refinedOreAmounts[refinedOre] * yieldRatio);
+    });
+
+    setWorkOrders((prevWorkOrders) => [
+      ...prevWorkOrders,
+      {
+        id: Date.now(),
+        inventory: chosenInventory,
+        method: chosenMethod,
+        refinedOre: refinedOreAmounts,
+        refinedAmount: refinedAmount,
+        time: previewTimer.minutes * 60 + previewTimer.seconds,
+        cost: chosenMethod.cost,
+        userCleared: false,
+      },
+    ]);
+
+    setMiningInventories((prevInventories) => ({
+      ...prevInventories,
+      [chosenInventory]: Object.fromEntries(
+        oreList.map((ore) => [ore, prevInventories[chosenInventory][ore] - Math.floor(miningInventories[chosenInventory][ore])])
+      ),
+      Refined: {
+        ...prevInventories.Refined,
+        ...refinedOreAmounts,
+      },
+    }));
+
+    setWallet(Math.max(wallet - previewCost, 0)); // Ensure wallet doesn't go below 0
+    setRefinedOre(refinedOre);
+
+    setConfirmMethod(false);
+
+    setChosenInventory('');
+    setChosenMethod({});
+    setRefinedOre();
+  };
+
+  return (
+    <div className="container">
+      <p className="info">Refined Ore: {refinedOre ? refinedOre.refinedOre : ''}</p>
+      <div className="inventory-dropdown">
+        <label>Select Inventory to Refine:</label>
+        <select value={chosenInventory} onChange={(e) => startRefining(e.target.value)}>
+          <option value="">Select Inventory</option>
+          {inventoriesList.map((inventory) => (
+            <option key={inventory} value={inventory}>
+              {inventory}
+            </option>
+          ))}
+        </select>
+      </div>
+      {chosenInventory && (
+        <>
+          <p className="info">Choose Refining Method:</p>
+          <div className="method-buttons">
+            {Object.entries(refineryMethods).map(([methodName, method]) => (
+              <button
+                key={methodName}
+                onClick={() => chooseMethod({ name: methodName, ...method })}
+                className={`button method-button ${chosenMethod && chosenMethod.name === methodName ? 'active-method' : ''}`}
+              >
+                {chosenMethod && chosenMethod.name === methodName ? '' : methodName}
+                <br />
+                {chosenMethod && chosenMethod.name === methodName && (
+                  <div className="preview-amounts">
+                    <p>Yield: {calculatePreviewAmounts()?.refinedAmount}</p>
+                    <p>Time: {calculatePreviewAmounts()?.previewTimer.minutes}m {calculatePreviewAmounts()?.previewTimer.seconds}s</p>
+                    <p>Cost: {calculatePreviewAmounts()?.previewCost}</p>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+          <p>{wallet?.toLocaleString()} aUEC</p>
+        </>
+      )}
+      {confirmMethod && (
+        <div className="confirmation">
+          <p>
+            Are you sure you want to choose {chosenMethod.name} for refining from {chosenInventory}?
+          </p>
+          <button className="button" onClick={confirmRefining}>
+            Confirm
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Refinery;

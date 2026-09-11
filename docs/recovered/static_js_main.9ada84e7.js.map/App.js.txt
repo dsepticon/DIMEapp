@@ -1,0 +1,83 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './components/Home.js';
+import HandMining from './components/HandMining.js';
+import RocMining from './components/RocMining.js';
+import ProspectorMining from './components/ProspectorMining.js';
+import Inventory from './components/Inventory.js';
+import Shop from './components/Shop.js';
+import Refinery from './components/Refinery.js';
+import ASOP from './components/ASOP.js'; // Import ASOP component
+import { MiningProvider, useMiningContext } from './components/MiningContext.js';
+import WorkOrders from './components/WorkOrders.js';
+import TwitchIntegration from './components/TwitchIntegration.js';
+
+// Notification Component
+const Notification = ({ message, onClose }) => {
+  return (
+    message ? (
+      <div className="notification">
+        {message}
+        <button onClick={onClose} style={{ marginLeft: '10px' }}>Close</button>
+      </div>
+    ) : null
+  );
+};
+
+// Wrapper to show notification if not at ARC-L1 for Refinery
+const RefineryWrapper = ({ showNotification }) => {
+  const { currentLocation } = useMiningContext();
+  if (currentLocation !== 'ARC-L1') {
+    showNotification("You must be at ARC-L1 to access the Refinery.");
+    return null;
+  }
+  return <Refinery />;
+};
+
+// Wrapper to show notification if not at Area-18 for Shop
+const ShopWrapper = ({ showNotification }) => {
+  const { currentLocation } = useMiningContext();
+  if (currentLocation !== 'Area-18') {
+    showNotification("You must be at Area-18 to access the Shop.");
+    return null;
+  }
+  return <Shop />;
+};
+
+const App = () => {
+  const [notification, setNotification] = useState('');
+
+  const showNotification = (message) => {
+    setNotification(message);
+  };
+
+  const closeNotification = () => {
+    setNotification('');
+  };
+
+  return (
+    <MiningProvider>
+      <TwitchIntegration />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/index.html" element={<Home />} />
+          <Route path="/mobile.html" element={<Home />} />
+          <Route path="/panel.html" element={<Home />} />
+          <Route path="/hand" element={<HandMining />} />
+          <Route path="/roc" element={<RocMining />} />
+          <Route path="/prospector" element={<ProspectorMining />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/shop" element={<ShopWrapper showNotification={showNotification} />} /> {/* Show notification for Shop */}
+          <Route path="/refinery" element={<RefineryWrapper showNotification={showNotification} />} /> {/* Show notification for Refinery */}
+          <Route path="/asop" element={<ASOP />} /> {/* Add ASOP Tab */}
+          <Route path="/bag" element={<Inventory />} />
+          <Route path="/workorders" element={<WorkOrders />} />
+        </Routes>
+      </Router>
+      <Notification message={notification} onClose={closeNotification} />
+    </MiningProvider>
+  );
+};
+
+export default App;

@@ -1,0 +1,27 @@
+const AWS = require('aws-sdk');
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+exports.handler = async (event) => {
+    const { userId, userName } = JSON.parse(event.body);
+
+    const params = {
+        TableName: 'TwitchUsers',
+        Item: {
+            userId: userId,
+            userName: userName
+        }
+    };
+
+    try {
+        await dynamoDb.put(params).promise();
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: 'Data stored successfully!' }),
+        };
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: 'Failed to store data', error: error.message }),
+        };
+    }
+};

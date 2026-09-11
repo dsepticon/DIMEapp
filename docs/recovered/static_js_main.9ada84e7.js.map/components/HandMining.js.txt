@@ -1,0 +1,252 @@
+import React, { useState, useEffect } from 'react';
+import { useMiningContext } from './MiningContext.js';
+import './styles.css'; // Import the styles
+import { Link } from 'react-router-dom';
+
+const HandMining = () => {
+  const { miningInventories, setMiningInventories } = useMiningContext();
+  const [minedQuantity, setMinedQuantity] = useState(0);
+  const [minedOre, setMinedOre] = useState('');
+  const [foundOre, setFoundOre] = useState('');
+  const [timer, setTimer] = useState(5);
+  const [scanning, setScanning] = useState(false);
+  const [scanningComplete, setScanningComplete] = useState(false);
+  const [mining, setMining] = useState(false);
+  const [scanningPulse, setScanningPulse] = useState(false);
+  const [miningPulse, setMiningPulse] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [showMinedQuantity, setShowMinedQuantity] = useState(false);
+
+  const ores = ['Dolivine', 'Aphorite', 'Hadanite', 'Janalite'];
+  const probabilities = [0.5, 0.3, 0.19, 0.01];
+
+  const scanningImage = '/Crusader.png'; // Image for scanning
+  const miningImage = foundOre ? `${foundOre}.png` : '/Crusader.png'; // Image for mining
+
+  const startScan = () => {
+    setScanningComplete(false);
+    setMinedOre('');
+    setShowMinedQuantity(false);
+    setScanning(true); // Disable mining during scan
+    setScanningPulse(true);
+    setTimer(5);
+
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      // Perform scanning logic based on ore probabilities after the timer completes
+      const random = Math.random();
+      let cumulativeProbability = 0;
+
+      for (let i = 0; i < ores.length; i++) {
+        cumulativeProbability += probabilities[i];
+        if (random <= cumulativeProbability) {
+          setFoundOre(ores[i]);
+          break;
+        }
+      }
+
+      setTimeout(() => {
+        setTimer(5);
+        setScanningPulse(false);
+        setMinedQuantity(0); // Reset mined quantity
+        setScanning(false); // Enable mining after scan
+        setScanningComplete(true); // Mark scanning as complete
+      }, 5000);
+    });
+  };
+
+  useEffect(() => {
+    let interval;
+    if (scanning) {
+      interval = setInterval(() => {
+        if (timer > 0) {
+          setTimer((prevTimer) => prevTimer - 1);
+        } else {
+          const ore = foundOre || ores[Math.floor(Math.random() * ores.length)];
+          const minedQuantity = Math.floor(Math.random() * 4) + 1; // Mined quantity between 1 and 5
+
+          setMinedQuantity(minedQuantity);
+
+          if (miningInventories) {
+            const currentCount = miningInventories?.Hand?.[ore] || 0;
+            const totalCount = Object.values(miningInventories?.Hand || {}).reduce((acc, count) => acc + count, 0);
+            const inventorySize = 12;
+            const remainingCapacity = inventorySize - totalCount;
+
+            if (remainingCapacity > 0) {
+              const quantityToAdd = Math.min(minedQuantity, remainingCapacity);
+
+              if (minedQuantity >= remainingCapacity) {
+                setMiningInventories((prevInventories) => ({
+                  ...prevInventories,
+                  Hand: { ...prevInventories.Hand, [ore]: currentCount + quantityToAdd },
+                }));
+                const remainingOre = minedQuantity - quantityToAdd;
+                setNotification(`Added ${quantityToAdd} ${ore}. ${remainingOre} ${ore} left behind`);
+              } else {
+                if (minedQuantity <= inventorySize - totalCount) {
+                  setMiningInventories((prevInventories) => ({
+                    ...prevInventories,
+                    Hand: { ...prevInventories.Hand, [ore]: currentCount + minedQuantity },
+                  }));
+                } else {
+                  setNotification('Inventory is full. Cannot add more gems.');
+                }
+              }
+
+              setScanning(false);
+              setScanningPulse(false);
+              setTimer(10);
+              setShowMinedQuantity(true);
+              setMinedOre(foundOre);
+              setFoundOre('');
+              return;
+            }
+          }
+          setScanning(false);
+          setTimer(10);
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer, scanning, foundOre, minedQuantity, miningInventories, setMiningInventories]);
+
+  const startMining = () => {
+    if (!mining && foundOre) {
+      const totalCount = Object.values(miningInventories?.Hand || {}).reduce((acc, count) => acc + count, 0);
+      const inventorySize = 12;
+
+      if (totalCount >= inventorySize) {
+        setNotification('Inventory is full. Cannot start mining.');
+        return;
+      }
+
+      setMining(true);
+      setMiningPulse(true);
+      setTimer(10);
+      setShowMinedQuantity(false);
+    } else {
+      setNotification('Must scan for ore first');
+    }
+  };
+
+  useEffect(() => {
+    let interval;
+    if (mining) {
+      interval = setInterval(() => {
+        if (timer > 0) {
+          setTimer((prevTimer) => prevTimer - 1);
+        } else {
+          const ore = foundOre || ores[Math.floor(Math.random() * ores.length)];
+          const minedQuantity = Math.floor(Math.random() * 5) + 1;
+
+          setMinedQuantity(minedQuantity);
+
+          if (miningInventories) {
+            const currentCount = miningInventories?.Hand?.[ore] || 0;
+            const totalCount = Object.values(miningInventories?.Hand || {}).reduce((acc, count) => acc + count, 0);
+            const inventorySize = 12;
+            const remainingCapacity = inventorySize - totalCount;
+
+            if (remainingCapacity > 0) {
+              const quantityToAdd = Math.min(minedQuantity, remainingCapacity);
+
+              if (minedQuantity >= remainingCapacity) {
+                setMiningInventories((prevInventories) => ({
+                  ...prevInventories,
+                  Hand: { ...prevInventories.Hand, [ore]: currentCount + quantityToAdd },
+                }));
+                const remainingOre = minedQuantity - quantityToAdd;
+                setNotification(`Added ${quantityToAdd} ${ore}. ${remainingOre} ${ore} left behind`);
+              } else {
+                if (minedQuantity <= inventorySize - totalCount) {
+                  setMiningInventories((prevInventories) => ({
+                    ...prevInventories,
+                    Hand: { ...prevInventories.Hand, [ore]: currentCount + minedQuantity },
+                  }));
+                } else {
+                  setNotification('Inventory is full. Cannot add more gems.');
+                }
+              }
+
+              setMining(false);
+              setMiningPulse(false);
+              setTimer(10);
+              setShowMinedQuantity(true);
+              setMinedOre(foundOre);
+              setFoundOre('');
+              return;
+            }
+          }
+          setMining(false);
+          setTimer(10);
+        }
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [timer, mining, foundOre, minedQuantity, miningInventories, setMiningInventories]);
+
+  const handInventory = miningInventories?.Hand || {};
+
+  return (
+    <div className="container">
+      <div className="image-container">
+        {mining && <img src={miningImage} alt="Mining Image" className={`centered ${miningPulse ? 'pulse' : ''} mining-image`} />}
+        {!mining && <img src={scanningPulse ? scanningImage : miningImage} alt="Scanning Image" className={`centered ${scanningPulse ? 'pulse' : ''}`} />}
+      </div>
+      
+      <div className="button-container">
+      
+      <button
+        onClick={startScan}
+        className={`button ${mining ? 'disabled' : ''}`}
+        disabled={mining || scanning}
+        style={{ width: '48%', marginRight: '4%' }} // Set width and margin for spacing
+      >
+        Scan
+      </button>
+
+      <button
+        onClick={startMining}
+        className={`button ${mining ? 'disabled' : ''}`}
+        disabled={mining || scanning}
+        style={{ width: '48%' }} // Set width
+      >
+        Mine
+      </button>
+      </div>
+
+      {notification && (
+        <div className="notification">
+          {notification}
+          <button className="close-button" onClick={() => setNotification(null)}>
+            X
+          </button>
+          
+        </div>
+      )}
+      {scanningComplete && foundOre && <p className="info">Found Gem: {foundOre}</p>}
+      {minedOre && <p className="info">Mined Gem: {minedOre}</p>}
+      {showMinedQuantity && <p className="info">Mined Quantity: {minedQuantity}cscu</p>}
+      { (mining || scanning) && <p className="info">Time: {timer} seconds</p>}
+
+      <ul className="inventory-list">
+        <h2 className="info">Cargo: {Object.values(handInventory).reduce((sum, quantity) => sum + quantity, 0)}/12cscu</h2>
+          {Object.entries(handInventory)
+            .filter(([ore, count]) => count > 0) // Filter entries with count > 0
+            .map(([ore, count]) => (
+              <li key={ore} className="info">
+            {ore}: {count}cscu
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default HandMining;
