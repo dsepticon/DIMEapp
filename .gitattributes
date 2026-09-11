@@ -1,0 +1,2 @@
+# Preserve recovered reference text and its hashes; do not normalize archival whitespace.
+docs/recovered/** -text -whitespace

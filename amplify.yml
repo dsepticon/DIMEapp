@@ -1,23 +1,12 @@
+# Deployment is intentionally blocked until the user approves a staging plan.
 version: 1
-backend:
-  phases:
-    build:
-      commands:
-        - nvm use 18
-        - npm ci
-        - npx amplify pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
     preBuild:
       commands:
-        - npm ci
-    build:
-      commands:
-        - npm run build
+        - echo "DIME deployment requires explicit approval; see docs/deployment.md"
+        - exit 1
   artifacts:
-    baseDirectory: .next
+    baseDirectory: dist/frontend
     files:
-      - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
+      - "**/*"

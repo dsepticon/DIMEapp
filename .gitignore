@@ -1,11 +1,19 @@
-# amplify generated files
-.amplify
+node_modules/
+dist/
+.next/
+.amplify/
+.env*
+!.env.example
+*.tsbuildinfo
+coverage/
+playwright-report/
+test-results/
+.local/
+recovery/
+production-exports/
+*.zip
+.aws/
 amplifyconfiguration*
-
-# node modules
-node_modules
-
-# next generated files
-.next
-
-# amplify
+amplify_outputs*.json
+aws-exports.*
+.npmrc
