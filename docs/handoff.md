@@ -1,3 +1,7 @@
+Validation on September 12: lint, Prettier check, strict TypeScript check, 68 Vitest tests in 8 files, frontend build and Lambda bundle passed under Node 24.21.0 (package engine requests Node 22). Browser E2E could not launch because Chromium system libraries libnspr4/libnss3/libasound are absent; installing them requires sudo authentication unavailable in this environment. Real Twitch hosted staging verification was not performed.
+
+September 12 global-save decision: the owner approved one save per persistent signed Twitch player across channels. The review implementation derives `PLAYER#v1#<server HMAC>` without channel in the key; Twitch documentation supports cross-channel U opaque IDs. Real hosted two-channel staging verification and legacy identity/field reconciliation remain release gates. No migration writes were enabled.
+
 # DIME React/Twitch rebuild handoff
 
 September 12 follow-up: the owner approved narrowing Amplify automatic creation patterns to the literal branches `main` and `codex/react-extension-rebuild`. The change was applied and verified with existing builds still enabled. Local branch `codex/react-extension-rebuild-review` now contains the review work and does not match either pattern. See [review push safety](review-push-safety.md) for the current decision; the earlier blocked-push findings below are historical.
@@ -39,7 +43,7 @@ Clean npm ci: passed, 0 known vulnerabilities. Lint and strict typecheck: passed
 
 Use static Twitch-hosted React assets, an HTTPS HTTP API, separate Lambda EBS and a new transactional DynamoDB v2 table. Keep existing resource ownership intact. A SAM/CloudFormation staging plan is in [infra/README.md](../infra/README.md); no infrastructure import/deploy was run.
 
-Before release, approve isolated staging, exact Twitch origins/secret references, channel-scoped identity semantics, and any legacy-save migration policy. Existing tables/APIs are incompatible with v2; never deploy the new frontend against them. Untrusted browser saves must not become authoritative balances through an automatic importer. Real Twitch hosted testing and actual AWS integration tests remain release gates.
+Before release, approve isolated staging, exact Twitch origins/secret references, global identity semantics, and any legacy-save migration policy. Existing tables/APIs are incompatible with v2; never deploy the new frontend against them. Untrusted browser saves must not become authoritative balances through an automatic importer. Real Twitch hosted testing and actual AWS integration tests remain release gates.
 
 ## Git status and publication blockers
 

@@ -165,7 +165,10 @@ export default function Home() {
       {!state && !config.error && (
         <section className={styles.content}>
           <h1>Connecting to your profile</h1>
-          <p>Open this extension in Twitch and sign in. Authorization may take a moment.</p>
+          <p>
+            Open this extension in Twitch and sign in for your permanent save across channels. Authorization
+            may take a moment.
+          </p>
           <button onClick={() => void refresh()} disabled={busy || !identity}>
             Retry connection
           </button>

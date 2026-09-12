@@ -41,3 +41,37 @@ it('does not misclassify throttling, permissions or infrastructure failures as c
     ).rejects.toBe(error);
   }
 });
+it('reserves a legacy source globally with state and a permanent migration receipt atomically', async () => {
+  const send = vi.fn().mockResolvedValue({});
+  const player = 'PLAYER#v1#' + 'a'.repeat(64);
+  const digest = 'b'.repeat(64);
+  expect(await new DynamoStore(client(send), 'test').commitMigration(player, digest, 1, initialState())).toBe(
+    true,
+  );
+  const writes = send.mock.calls[0][0].input.TransactItems;
+  expect(writes).toHaveLength(3);
+  expect(writes.map((write: { Put: { Item: { pk: string; sk: string } } }) => write.Put.Item)).toMatchObject([
+    { pk: player, sk: 'STATE' },
+    { pk: player, sk: 'MIGRATION#v1#' + digest },
+    { pk: 'LEGACY#v1#' + digest, sk: 'MIGRATION#v1' },
+  ]);
+  expect(
+    writes.every(
+      (write: { Put: { ConditionExpression: string } }) =>
+        write.Put.ConditionExpression === 'attribute_not_exists(pk)',
+    ),
+  ).toBe(true);
+  expect(writes[1].Put.Item.expiresAt).toBeUndefined();
+});
+it('treats duplicate migration transactions as conflicts without retrying any credit', async () => {
+  const error = Object.assign(new Error('conflict'), {
+    name: 'TransactionCanceledException',
+    CancellationReasons: [{ Code: 'ConditionalCheckFailed' }],
+  });
+  const send = vi.fn().mockRejectedValue(error);
+  const store = new DynamoStore(client(send), 'test');
+  expect(await store.commitMigration('PLAYER#v1#' + 'a'.repeat(64), 'b'.repeat(64), 1, initialState())).toBe(
+    false,
+  );
+  expect(send).toHaveBeenCalledTimes(1);
+});

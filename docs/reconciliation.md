@@ -41,7 +41,7 @@ The old Amplify sources are archived under docs/legacy-amplify as text and are n
 
 The legacy APIs do not implement the v2 /state and /actions contract. This frontend must never be uploaded against them. The new table schema is intentionally distinct; no production-record schema was inferred from player records.
 
-The implementation scopes a profile to a persistent Twitch opaque ID and channel. If a global cross-channel economy is desired, approve that product/data migration before launch. Anonymous viewers cannot transact.
+The owner subsequently approved one global profile per verified persistent Twitch opaque ID across channels. The review branch now derives a versioned server-HMAC player key without channel. Legacy identity linking and migration remain unresolved release gates. Anonymous viewers cannot transact.
 
 The recovered app stores ships as counts by type. This structure is preserved, including one location and cargo hold per type; individually named multiple-ship instances would be a separate migration.
 

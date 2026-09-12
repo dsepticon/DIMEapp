@@ -8,14 +8,14 @@ Do not create, modify, deploy or invoke resources to fill these gaps. If staging
 
 | Requirement | Current status / exact information needed |
 |---|---|
-| GitHub | Authenticated dsepticon CLI; push blocked by Amplify catch-all patterns, not authentication. |
+| GitHub | Authenticated dsepticon CLI; September 12 recheck found only literal `main` and `codex/react-extension-rebuild` Amplify auto-create patterns. Review branch is not connected. |
 | AWS read access | Confirmed account 861738068626. Resource metadata inspection works. |
 | Existing staging identity | Account ID, region, stack ARN, table ARN, Lambda ARN/version, HTTPS API URL/stage and resource owner needed; none established. |
 | Staging runtime access | Dedicated existing execution role scoped to that table's GetItem/transaction constituent PutItem operations and its log group; metadata review must verify actual role/policies. No new role requested or created. |
 | Twitch console | Owner/collaborator access to DIME extension settings is unavailable here. Confirm extension client ID, owner, version, test state, supported panel/video/mobile views, and persistent identity behavior. |
 | Twitch testers | Approved test broadcaster/channel IDs, viewer accounts, authorized tester list, mobile devices and console access to existing test version. No tester invitations sent. |
 | Twitch signing secret | Existing active key and rotation metadata must be provided to staging runtime securely, never in chat, frontend, Git or logs. No key retrieved or created. |
-| Identity/migration | Approve channel-scoped saves and legacy link/mapping before existing-player tests or production writes. |
+| Identity/migration | Global saves approved. Verify two-channel U opaque-ID stability in real Twitch hosted staging; establish legacy identity links and field mapping before existing-player tests or production writes. |
 
 Proposed configuration values are deliberately unresolved, not runnable production defaults:
 
@@ -28,6 +28,7 @@ Proposed configuration values are deliberately unresolved, not runnable producti
 | DIME_STATE_TABLE | Existing compatible `dime-v2-staging-*` table, keys `pk` and `sk` strings |
 | DIME_ALLOWED_ORIGINS | Exact approved HTTPS Twitch asset origin(s), usually `https://<client-id>.ext-twitch.tv`; confirm actual version configuration |
 | TWITCH_EXTENSION_SECRET_B64 | Existing active key supplied backend-only via approved secure mechanism |
+| DIME_PLAYER_ID_KEY_B64 | Separate stable backend-only 32+ byte key; preserve across Twitch secret rotations |
 | TWITCH_PREVIOUS_SECRET_B64 | Optional existing previous key during its valid rotation window |
 | Twitch view paths | `index.html`, `panel.html`, `mobile.html` as applicable to verified supported views |
 | Twitch fetch allowlist | Exact staging EBS domain; inspect existing settings, do not add it yet |
@@ -45,3 +46,5 @@ Required AWS components: compatible separate state table, bundled EBS Lambda, va
 - [ ] Inspect staging errors/throttles and verify rollback to the prior approved code artifact without rewinding balances or replaying migration. Do not perform failure injection or configuration changes without authorization.
 
 Local tests verify domain behavior, mocked DynamoDB operations and synthetic JWTs. They cannot prove actual IAM, Twitch settings, deployed integration, CSP or production compatibility. [Twitch's building guide](https://dev.twitch.tv/docs/extensions/building/) describes helper loading, EBS token validation/refresh and real mobile testing.
+
+[Current Twitch documentation](https://dev.twitch.tv/docs/extensions/reference/#jwt-schema) says signed persistent `U` opaque IDs persist across channels; identity sharing is needed only for the numeric Twitch ID. No compatible staging EBS or two-channel hosted test was available, so this assertion has not yet been verified in a real DIME staging session. Test the same signed player in two broadcaster channels and verify one state/revision/receipt set, then test two players in one channel and anonymous rejection. If Twitch behavior differs from documentation, stop release and require an explicitly shared, signed numeric identity before linking saves.

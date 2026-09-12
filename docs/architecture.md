@@ -19,8 +19,8 @@ The proposed server is separate from the recovered broken Lambda functions. It i
 
 Each player has a single versioned state item. Wallet is integer aUEC; cargo is integer cSCU (100 cSCU = 1 SCU); all deadlines are Unix epoch milliseconds UTC. TTL alone uses epoch seconds, as required by DynamoDB.
 
-Partition key: CHANNEL#<signed-channel-id>#VIEWER#<signed-persistent-opaque-id>.
-Sort keys: STATE and REQUEST#<UUID>. The only TTL field is expiresAt on receipts, not player state.
+Partition key: `PLAYER#v1#<HMAC-SHA256(stable server identity key, verified persistent Twitch opaque ID)>`. `channel_id` remains a signed authorization/audit context but never selects a save. The HMAC key is separate from rotatable Twitch JWT signing secrets and must be preserved across deployments. [Twitch documentation](https://dev.twitch.tv/docs/extensions/required-technical-background/#opaque-ids) says persistent `U` opaque IDs are stable across sessions and channels; numeric identity sharing is not required for this extension-global save. Real two-channel hosted staging verification remains pending.
+Sort keys: `STATE`, `REQUEST#<UUID>`, and reserved `MIGRATION#v1#<source identity/version/content digest>` plus a global `LEGACY#v1#<source digest>` receipt for the prepared but disabled migration writer. Migration receipts have no TTL. The only TTL field is expiresAt on receipts, not player state.
 
 Every mutation has a requestId, expectedRevision and validated action. A transaction writes the next state conditioned on its old revision and a receipt conditioned on its absence. This prevents concurrent double spends and lost updates. Duplicate requests return current authoritative state. A reused ID with different content returns 409. Expired receipts do not permit stale requests to execute because expectedRevision still fails.
 

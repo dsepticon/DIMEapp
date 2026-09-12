@@ -1,4 +1,5 @@
 import { jwtVerify } from 'jose';
+import { createHmac } from 'node:crypto';
 import { GameError } from '../shared/schema';
 export function decodeSecret(value: string): Uint8Array {
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(value)) throw new Error('Invalid Twitch secret configuration.');
@@ -9,6 +10,7 @@ export function decodeSecret(value: string): Uint8Array {
 export async function authenticate(
   header: string | undefined,
   secrets: Uint8Array[],
+  identityKey: Uint8Array,
   now = Date.now(),
 ): Promise<string> {
   try {
@@ -34,11 +36,16 @@ export async function authenticate(
       typeof payload.channel_id !== 'string' ||
       !/^\d+$/.test(payload.channel_id) ||
       typeof payload.opaque_user_id !== 'string' ||
-      !/^U[A-Za-z0-9]+$/.test(payload.opaque_user_id)
+      !/^U[-A-Za-z0-9]+$/.test(payload.opaque_user_id)
     )
       throw new Error();
-    // Persistent opaque Twitch IDs avoid identity changes when account sharing is toggled.
-    return 'CHANNEL#' + payload.channel_id + '#VIEWER#' + payload.opaque_user_id;
+    // Domain-separated, versioned HMAC; never persist the raw Twitch identifier.
+    return (
+      'PLAYER#v1#' +
+      createHmac('sha256', identityKey)
+        .update('twitch-extension-opaque-player:v1\0' + payload.opaque_user_id)
+        .digest('hex')
+    );
   } catch {
     throw new GameError(
       'UNAUTHORIZED',

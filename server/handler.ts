@@ -27,10 +27,11 @@ function configure() {
   )
     throw new Error('Invalid origin configuration.');
   const keys = [decodeSecret(required('TWITCH_EXTENSION_SECRET_B64'))];
+  const identityKey = decodeSecret(required('DIME_PLAYER_ID_KEY_B64'));
   if (process.env.TWITCH_PREVIOUS_SECRET_B64) keys.push(decodeSecret(process.env.TWITCH_PREVIOUS_SECRET_B64));
   return createApi(
     new GameService(createDynamoStore(required('AWS_REGION'), table)),
-    (header) => authenticate(header, keys),
+    (header) => authenticate(header, keys, identityKey),
     origins,
   );
 }
