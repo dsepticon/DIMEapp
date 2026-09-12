@@ -10,8 +10,8 @@ Do not create, modify, deploy or invoke resources to fill these gaps. If staging
 |---|---|
 | GitHub | Authenticated dsepticon CLI; September 12 recheck found only literal `main` and `codex/react-extension-rebuild` Amplify auto-create patterns. Review branch is not connected. |
 | AWS read access | Confirmed account 861738068626. Resource metadata inspection works. |
-| Existing staging identity | Account ID, region, stack ARN, table ARN, Lambda ARN/version, HTTPS API URL/stage and resource owner needed; none established. |
-| Staging runtime access | Dedicated existing execution role scoped to that table's GetItem/transaction constituent PutItem operations and its log group; metadata review must verify actual role/policies. No new role requested or created. |
+| Staging target | Approve account, Region, unique prefix/stack name and a new staging-only packaging bucket. The template is authored, but no stack or endpoint exists. |
+| Staging runtime access | The template defines a new dedicated role scoped to its own table and log streams. Review the processed change set before creating it. |
 | Twitch console | Owner/collaborator access to DIME extension settings is unavailable here. Confirm extension client ID, owner, version, test state, supported panel/video/mobile views, and persistent identity behavior. |
 | Twitch testers | Approved test broadcaster/channel IDs, viewer accounts, authorized tester list, mobile devices and console access to existing test version. No tester invitations sent. |
 | Twitch signing secret | Existing active key and rotation metadata must be provided to staging runtime securely, never in chat, frontend, Git or logs. No key retrieved or created. |
@@ -33,7 +33,7 @@ Proposed configuration values are deliberately unresolved, not runnable producti
 | Twitch view paths | `index.html`, `panel.html`, `mobile.html` as applicable to verified supported views |
 | Twitch fetch allowlist | Exact staging EBS domain; inspect existing settings, do not add it yet |
 
-Required AWS components: compatible separate state table, bundled EBS Lambda, valid execution role, HTTPS API with GET /state, POST /actions and OPTIONS, exact-origin CORS, log group and staging telemetry. None can be substituted with legacy production tables. Resource creation/deployment remains a separate approval gate; the existing [infrastructure proposal](../infra/README.md) is not authorization to provision it.
+The [staging SAM template](../infra/staging/template.yaml) now defines the separate state table, bundled EBS Lambda, dedicated execution role, HTTPS API with GET /state, POST /actions and automatic OPTIONS/CORS, log groups and alarms. It has not been deployed. No legacy production table can substitute for it. The [staging review guide](../infra/staging/README.md) lists prerequisites and post-deployment checks; resource creation and deployment remain separate approval gates.
 
 ## Checklist for an existing, approved staging environment
 

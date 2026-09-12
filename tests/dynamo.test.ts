@@ -1,6 +1,7 @@
 import { expect, it, vi } from 'vitest';
 import { DynamoStore, DocumentSender } from '../server/dynamo';
 import { initialState } from '../shared/game';
+import { commitMigration } from '../server/migration-dynamo';
 function client(send: ReturnType<typeof vi.fn>) {
   return { send } as unknown as DocumentSender;
 }
@@ -45,9 +46,7 @@ it('reserves a legacy source globally with state and a permanent migration recei
   const send = vi.fn().mockResolvedValue({});
   const player = 'PLAYER#v1#' + 'a'.repeat(64);
   const digest = 'b'.repeat(64);
-  expect(await new DynamoStore(client(send), 'test').commitMigration(player, digest, 1, initialState())).toBe(
-    true,
-  );
+  expect(await commitMigration(client(send), 'test', player, digest, 1, initialState())).toBe(true);
   const writes = send.mock.calls[0][0].input.TransactItems;
   expect(writes).toHaveLength(3);
   expect(writes.map((write: { Put: { Item: { pk: string; sk: string } } }) => write.Put.Item)).toMatchObject([
@@ -69,9 +68,15 @@ it('treats duplicate migration transactions as conflicts without retrying any cr
     CancellationReasons: [{ Code: 'ConditionalCheckFailed' }],
   });
   const send = vi.fn().mockRejectedValue(error);
-  const store = new DynamoStore(client(send), 'test');
-  expect(await store.commitMigration('PLAYER#v1#' + 'a'.repeat(64), 'b'.repeat(64), 1, initialState())).toBe(
-    false,
-  );
+  expect(
+    await commitMigration(
+      client(send),
+      'test',
+      'PLAYER#v1#' + 'a'.repeat(64),
+      'b'.repeat(64),
+      1,
+      initialState(),
+    ),
+  ).toBe(false);
   expect(send).toHaveBeenCalledTimes(1);
 });

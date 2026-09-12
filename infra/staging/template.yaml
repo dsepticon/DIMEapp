@@ -1,0 +1,270 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Isolated DIME v2 synthetic-player staging API. No migration route or legacy resource access.
+
+Parameters:
+  StagingResourcePrefix:
+    Type: String
+    Description: Unique lowercase staging identifier; never use a production or legacy name.
+    MinLength: 3
+    MaxLength: 20
+    AllowedPattern: '^[a-z][a-z0-9-]*[a-z0-9]$'
+  StagingRegion:
+    Type: String
+    Description: Must equal the CloudFormation deployment Region.
+    AllowedPattern: '^[a-z]{2}(-gov)?-[a-z]+-[0-9]+$'
+  TwitchAllowedOrigins:
+    Type: CommaDelimitedList
+    Description: Exact HTTPS Twitch extension asset origins; no wildcard or trailing slash.
+    AllowedPattern: '^https://[a-z0-9-]+\.ext-twitch\.tv$'
+  TwitchSecretArn:
+    Type: String
+    Description: ARN of an existing approved same-Region Secrets Manager SecretString containing the base64 Twitch extension signing key.
+    AllowedPattern: '^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$'
+  PlayerIdentityKeySecretArn:
+    Type: String
+    Description: ARN of a different existing stable same-Region SecretString containing the base64 global player HMAC key.
+    AllowedPattern: '^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$'
+  LogRetentionDays:
+    Type: Number
+    Description: Retention for the staging Lambda and API access log groups.
+    Default: 14
+    AllowedValues: [7, 14, 30, 60, 90]
+  ApiThrottleRate:
+    Type: Number
+    Description: HTTP API steady-state requests per second.
+    Default: 10
+    MinValue: 1
+    MaxValue: 100
+  ApiThrottleBurst:
+    Type: Number
+    Description: HTTP API burst request count.
+    Default: 20
+    MinValue: 1
+    MaxValue: 200
+
+Rules:
+  RegionMatchesDeployment:
+    Assertions:
+      - Assert: !Equals [!Ref StagingRegion, !Ref 'AWS::Region']
+        AssertDescription: StagingRegion must match the Region used for the stack.
+  DistinctSecrets:
+    Assertions:
+      - Assert: !Not [!Equals [!Ref TwitchSecretArn, !Ref PlayerIdentityKeySecretArn]]
+        AssertDescription: Twitch signing and player identity keys must be different secrets.
+
+Resources:
+  PlayerStateTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub 'dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-player-state'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      DeletionProtectionEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: DIME-v2
+        - Key: Environment
+          Value: staging
+
+  EbsLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs'
+      RetentionInDays: !Ref LogRetentionDays
+
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      LogGroupName: !Sub '/aws/apigateway/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}'
+      RetentionInDays: !Ref LogRetentionDays
+
+  EbsExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref 'AWS::AccountId'
+              ArnEquals:
+                aws:SourceArn: !Sub 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs'
+      Policies:
+        - PolicyName: StagingPlayerStateAndOwnLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ReadAndConditionallyPutStagingPlayerItems
+                Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                Resource: !GetAtt PlayerStateTable.Arn
+              - Sid: WriteOnlyOwnLogStreams
+                Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs:log-stream:*'
+
+  EbsFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: EbsLogGroup
+    Properties:
+      FunctionName: !Sub 'dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs'
+      Description: Synthetic-player-only DIME v2 staging EBS; no migration execution.
+      CodeUri: ../../dist/server/
+      Handler: index.handler
+      Runtime: nodejs22.x
+      Architectures: [x86_64]
+      MemorySize: 256
+      Timeout: 10
+      ReservedConcurrentExecutions: 5
+      Role: !GetAtt EbsExecutionRole.Arn
+      LoggingConfig:
+        LogFormat: JSON
+        ApplicationLogLevel: INFO
+        SystemLogLevel: WARN
+        LogGroup: !Ref EbsLogGroup
+      Environment:
+        Variables:
+          DIME_ENV: staging
+          DIME_STATE_TABLE: !Ref PlayerStateTable
+          DIME_ALLOWED_ORIGINS: !Join [',', !Ref TwitchAllowedOrigins]
+          TWITCH_EXTENSION_SECRET_B64: !Sub '{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}'
+          DIME_PLAYER_ID_KEY_B64: !Sub '{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}'
+      Events:
+        GetState:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /state
+            Method: GET
+        PostActions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /actions
+            Method: POST
+
+  StagingHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub 'dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-api'
+      StageName: staging
+      DefinitionBody:
+        openapi: '3.0.1'
+        info:
+          title: DIME v2 staging EBS
+          version: '1.0'
+        paths: {}
+      CorsConfiguration:
+        AllowOrigins: !Ref TwitchAllowedOrigins
+        AllowHeaders: [Authorization, Content-Type]
+        AllowMethods: [GET, POST, OPTIONS]
+        AllowCredentials: false
+        MaxAge: 300
+      DefaultRouteSettings:
+        ThrottlingRateLimit: !Ref ApiThrottleRate
+        ThrottlingBurstLimit: !Ref ApiThrottleBurst
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiAccessLogGroup.Arn
+        Format: '{"requestId":"$context.requestId","routeKey":"$context.routeKey","status":"$context.status","responseLatency":"$context.responseLatency"}'
+      Tags:
+        Application: DIME-v2
+        Environment: staging
+
+  EbsErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Staging EBS Lambda errors; inspect sanitized logs before retrying.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref EbsFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+  EbsThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Staging EBS reserved-concurrency throttling.
+      Namespace: AWS/Lambda
+      MetricName: Throttles
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref EbsFunction
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+  ApiServerErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Staging HTTP API 5xx responses.
+      Namespace: AWS/ApiGateway
+      MetricName: 5xx
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref StagingHttpApi
+        - Name: Stage
+          Value: staging
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+
+Outputs:
+  StagingApiUrl:
+    Description: HTTPS base URL for the isolated staging API; use only with a Twitch hosted-test build.
+    Value: !Sub 'https://${StagingHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/staging'
+  StagingTableName:
+    Description: New synthetic-player-only staging table name.
+    Value: !Ref PlayerStateTable
+  StagingFunctionArn:
+    Description: Isolated staging Lambda ARN.
+    Value: !GetAtt EbsFunction.Arn
+  LambdaLogGroupName:
+    Description: Staging Lambda structured log group name.
+    Value: !Ref EbsLogGroup
+  ApiLogGroupName:
+    Description: Staging API access log group name.
+    Value: !Ref ApiAccessLogGroup

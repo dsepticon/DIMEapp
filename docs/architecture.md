@@ -13,7 +13,7 @@ flowchart LR
 
 app/ owns presentation and the current-token client. shared/ owns schemas, catalog values and pure rules. server/ owns authorization, persistence and HTTP adaptation. The frontend never imports the DynamoDB adapter or backend secrets. The local server imports only the in-memory/file adapter and runs on loopback.
 
-The proposed server is separate from the recovered broken Lambda functions. It is not deployed by this code change.
+The proposed server is separate from the recovered broken Lambda functions. The [isolated SAM staging template](../infra/staging/template.yaml) defines a new table, EBS Lambda and HTTP API; it is source only and has not been deployed. `server/migration-dynamo.ts` is a separate, unimported module and cannot be reached through the staging Lambda bundle.
 
 ## State and consistency
 

@@ -2,17 +2,15 @@
 
 No resource changes or deployment are authorized by the source rebuild. This document is the proposed sequence for explicit review.
 
-## Before any push
+## Review-branch publication safety
 
-The observed Amplify app d90ik3712sg8e has automatic builds for main and codex/react-extension-rebuild, automatic branch creation, and an inline build specification. A Git push can therefore trigger AWS actions.
-
-The repository amplify.yml now fails before any build/deployment step as defense in depth. Do not rely on it to override live inline settings. Obtain approval to disable automatic builds for this specific branch (or arrange another approved non-deploying publication route), verify that setting, then push only the working branch. Do not merge main or change the live main pipeline.
+Amplify app d90ik3712sg8e has automatic creation patterns limited to literal `main` and `codex/react-extension-rebuild`; `codex/react-extension-rebuild-review` is not connected. Recheck live settings immediately before any review-branch push. The build workflow on the review branch is read-only. Do not push to the existing Amplify-connected branches or merge.
 
 ## Staging proposal
 
 1. Review the inventory, compatibility differences, selected Twitch identity scope, and any legacy-save migration policy.
-2. Approve an isolated staging stack with a new v2 table, EBS Lambda and HTTP API. Do not import legacy resources or reuse DIMEtable/TwitchUsers.
-3. Provision secret references and exact allowed origins through a secure operator workflow. Existing AWS roles are missing; do not recreate them opportunistically.
+2. Review the authored [isolated staging SAM template](../infra/staging/template.yaml) and [operator guide](../infra/staging/README.md), then separately approve any staging stack creation. Do not import legacy resources or reuse DIMEtable/TwitchUsers.
+3. Supply existing approved secret ARNs and exact Twitch origins through a secure operator workflow. The template creates a new dedicated Lambda role; do not use missing legacy roles.
 4. Build from a clean lockfile install at a reviewed commit. Set VITE_DIME_MODE=twitch and the approved staging URL. Record SHA-256 hashes of frontend/server artifacts and source commit.
 5. Deploy the EBS package with handler index.handler, Node 22 runtime, its own execution role and the approved new table. Package the contents of dist/server, not production-recovered ZIPs.
 6. Upload only to a newly approved staging destination or Twitch hosted-test version, never the live website bucket.

@@ -1,5 +1,11 @@
 # Validation record
 
+## Staging infrastructure source validation — September 12, 2026
+
+With Node v22.23.2, `npm run check` passed (lint, strict typecheck, **68/68 Vitest tests in 8 files**, frontend build and Lambda bundle), `npm run test:e2e` passed **5/5 Playwright Chromium tests**, and `npm run format:check` and `git diff --check` passed. The rebuilt Lambda package contains only `index.mjs`; the build-time migration exclusion guard and a direct bundle scan found no `MIGRATION#v1#`, `LEGACY#v1#`, `commitMigration`, `previewLegacySave` or `assessLegacySources` marker. `server/migration-dynamo.ts` is not imported by the Lambda.
+
+`aws cloudformation validate-template` accepted `infra/staging/template.yaml` and reported the eight expected parameters and `CAPABILITY_AUTO_EXPAND`; this is a read-only syntax check, not a stack/change-set operation or proof of successful SAM expansion. A local PyYAML structural audit found 9 source resources, four exact IAM actions with no wildcard action/resource, no bucket/secret/CloudFront resource, and no migration module in the Lambda bundle. `sam`, `cfn-lint` and `cfn-guard` are not installed here, so SAM build/processed-template lint and compliance validation could not run. The Python environment also lacks `uvx`, `pip` and `venv` support for IAM policy autopilot. Review the processed template and generated route permissions before any separately approved change set execution. No AWS/Twitch resource was created, deployed, modified or invoked by these validations.
+
 ## Node 22 review-branch validation — September 12, 2026, 14:56 MDT
 
 Verified in the `codex/react-extension-rebuild-review` worktree with Node **v22.23.2** and the committed lockfile:

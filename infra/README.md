@@ -1,8 +1,10 @@
 # Infrastructure-as-code plan (not deployed)
 
+The isolated [SAM staging definition](staging/template.yaml) and its [deployment review guide](staging/README.md) are now authored. They have not been packaged, deployed, or connected to any existing DIME resource. The remaining notes below are the architecture rationale.
+
 Preserve the observed S3/CloudFront/DNS topology and existing Amplify/CDK stack ownership during recovery. Keep legacy Amplify source under docs/legacy-amplify as reference only. Do not synthesize/deploy it against the account.
 
-For new isolated staging, prefer a small SAM/CloudFormation stack compatible with the account's existing CloudFormation usage. Author the concrete template/change set only after the resource names, region, Twitch origins and secret-reference strategy are approved. Do not bootstrap or import resources as part of local testing.
+For new isolated staging, prefer a small SAM/CloudFormation stack compatible with the account's existing CloudFormation usage. The source template is reviewable now; actual parameter values, packaging, a change set and execution require separate approval. Do not bootstrap or import resources as part of local testing.
 
 Proposed resources:
 - One new DynamoDB table: dime-v2-staging-player-state (production later gets a separate approved name), pk S and sk S with `PLAYER#v1#<server-HMAC>` partition keys and `STATE`, `REQUEST#<UUID>`, reserved permanent `MIGRATION#v1#<source digest>` and global `LEGACY#v1#<source digest>` migration receipts, on-demand billing, encryption, PITR, deletion protection, Retain policies, TTL expiresAt for receipts only.
