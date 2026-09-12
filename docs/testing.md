@@ -1,5 +1,19 @@
 # Validation record
 
+## Node 22 review-branch validation — September 12, 2026, 14:56 MDT
+
+Verified in the `codex/react-extension-rebuild-review` worktree with Node **v22.23.2** and the committed lockfile:
+
+| Command | Result |
+|---|---|
+| `npm ci` | Passed; 245 packages installed, 246 audited, 0 vulnerabilities |
+| `npm run test:e2e` | Passed; **5/5 Playwright Chromium tests** (6.1 seconds): mine/refine/collect/sell with refresh; lost-response retry; 320px panel layout; first wallet credit; corrupt retry storage |
+| `npm run check` | Passed: ESLint, strict TypeScript check, **68/68 Vitest tests across 8 files**, Vite frontend build and Lambda ESM bundle |
+| `npm run format:check` | Passed; all matched files use Prettier style |
+| `git diff --check` | Passed; no whitespace errors |
+
+The E2E web server ran only on `127.0.0.1:5173`; its API calls to `127.0.0.1:8787` were intercepted by an in-memory `GameService` fixture. The test aborts the Twitch helper request. Integration tests use synthetic JWTs, mocked DynamoDB senders and a loopback local server with temporary file state. These validation commands did not access production AWS or Twitch resources, invoke deployed Lambdas, or read/write production player records. `npm ci` contacted the npm registry for locked packages. Browser and build outputs are ignored and are not part of the documentation commit. Real hosted Twitch and AWS staging verification remains a separate release gate.
+
 ## Follow-up validation — September 11, 2026
 
 After adding the offline legacy preview: `npm run check` passed lint, strict typecheck, **58 tests across 7 files**, frontend build and Lambda bundling. `npm run test:e2e` passed **5/5 Chromium tests**. `npm run format:check` and `git diff --check` passed. The same Node/browser paths documented below were used. Initial sandbox runs could not start local test servers; authorized runs outside the sandbox passed without application changes. No AWS/Twitch endpoints or production records were used.
@@ -77,4 +91,4 @@ The initial staged recovery diff reported trailing whitespace in authored archiv
 
 Global-save synthetic tests verify signed JWT derivation is channel-independent, different players remain isolated, forged body identities fail, anonymous identities are blocked, and browser retry keys do not contain raw Twitch IDs. The read-only migration-gate tests verify existing v2 priority, unverified links, duplicate-source reconciliation and deterministic no-write retry. A mocked DynamoDB test checks the prepared three-item conditional migration transaction and permanent source/player receipts. It is unreachable from the Lambda; verified legacy linking, complete field mapping and live transactional migration tests remain unavailable. Real Twitch two-channel staging verification is still required.
 
-September 12 local validation: lint pass; format:check pass; typecheck pass; `npm test` 68/68 in 8 files; `npm run build` pass (Vite frontend and Lambda bundle). `npm run test:e2e` attempted twice: first missing Playwright Chromium, then browser download succeeded but launch failed on missing libnspr4/libnss3/libasound. `npx playwright install-deps chromium` could not complete because sudo needs a terminal for authentication. Node v24.21.0 was available; package engine requests Node 22.
+Earlier September 12 Node 24 validation: lint pass; format:check pass; typecheck pass; `npm test` 68/68 in 8 files; `npm run build` pass (Vite frontend and Lambda bundle). `npm run test:e2e` attempted twice: first missing Playwright Chromium, then browser download succeeded but launch failed on missing libnspr4/libnss3/libasound. `npx playwright install-deps chromium` could not complete because sudo needs a terminal for authentication. Node v24.21.0 was available; package engine requests Node 22.
