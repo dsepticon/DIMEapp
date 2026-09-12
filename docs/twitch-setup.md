@@ -4,15 +4,15 @@ Follow the [Twitch building guide](https://dev.twitch.tv/docs/extensions/buildin
 
 ## Required configuration before hosted testing
 
-In the Twitch Developer Console, confirm the DIME extension client ID, version, owner, supported views and persistent user identity behavior. The recovered frontend contains a public client ID, but account ownership/version settings were not verified through console access.
+The owner confirmed these non-secret Developer Console settings for client ID `znaovl2j45idub9k81om1dkatwxnu2`, version `0.4.0`: Panel and Mobile are the supported views; Panel Viewer Path is `panel.html` with height `500`; Mobile Path is `mobile.html`; Config Path and Live Config Path are blank. The exact hosted asset origin is `https://znaovl2j45idub9k81om1dkatwxnu2.ext-twitch.tv`. The current Local Test base URI is `https://destroyaindustriesminingextension.com/`; it is not the hosted asset origin or an approved staging EBS endpoint. An older `assets.zip` uploaded September 27, 2024 remains attached to version `0.4.0`. Do not overwrite it or change Twitch settings during staging preflight. Extension ownership, hosted-test publication state, fetch allowlist and real cross-channel identity behavior still need separate verification.
 
-Use index.html, panel.html and mobile.html from the static frontend bundle for the corresponding approved views. The same responsive UI supports all three. Files use relative asset paths so Twitch's versioned asset base works. All HTML entry points load Twitch's hosted helper.
+For the currently supported views, use `panel.html` and `mobile.html` from a future approved static frontend bundle. `index.html` is built but is not a configured Twitch view path in version `0.4.0`. Files use relative asset paths so Twitch's versioned asset base works. Both configured HTML entry points load Twitch's hosted helper.
 
 Set the approved EBS HTTPS origin as an allowed fetch domain in the Twitch extension configuration. Configure image/script/style domains only as required by the bundle. Helper origin: https://extension-files.twitch.tv. The frontend uses no inline application scripts or inline styles, eval, third-party fonts, remote profile images, or embedded authentication secrets.
 
 Twitch controls the iframe CSP for hosted assets. For a separately hosted preview, use restrictive script/style/image/connect policies matching the helper and staging EBS, and allow framing only by the required Twitch origins. Do not set frame-ancestors 'none' or X-Frame-Options DENY on an iframe extension. Review exact domains against the actual extension ID/version before publishing. No live CSP configuration was changed.
 
-The EBS must allow the exact production extension asset origin (typically https://<client-id>.ext-twitch.tv), not a wildcard or arbitrary twitch.tv suffix. Staging and production have separate exact allowlists. Local origins belong only to the loopback server. CORS is not authentication; the backend still validates every JWT.
+The staging EBS must allow the exact hosted origin `https://znaovl2j45idub9k81om1dkatwxnu2.ext-twitch.tv`, not a wildcard, arbitrary twitch.tv suffix, or the Local Test base URI. Staging and production have separate exact allowlists. Local origins belong only to the loopback server. CORS is not authentication; the backend still validates every JWT.
 
 ## Variables
 

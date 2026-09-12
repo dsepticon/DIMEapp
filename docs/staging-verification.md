@@ -10,11 +10,11 @@ Do not create, modify, deploy or invoke resources to fill these gaps. If staging
 |---|---|
 | GitHub | Authenticated dsepticon CLI; September 12 recheck found only literal `main` and `codex/react-extension-rebuild` Amplify auto-create patterns. Review branch is not connected. |
 | AWS read access | Confirmed account 861738068626. Resource metadata inspection works. |
-| Staging target | Approve account, Region, unique prefix/stack name and a new staging-only packaging bucket. The template is authored, but no stack or endpoint exists. |
+| Staging target | Account `861738068626`; recommend `us-east-2`, prefix `review01`, stack `dime-v2-review-20260912`. No name collision was found at the [read-only parameter preflight](staging-parameter-preflight.md). A dedicated staging-only artifact bucket and stack still require approval; no endpoint exists. |
 | Staging runtime access | The template defines a new dedicated role scoped to its own table and log streams. Review the processed change set before creating it. |
-| Twitch console | Owner/collaborator access to DIME extension settings is unavailable here. Confirm extension client ID, owner, version, test state, supported panel/video/mobile views, and persistent identity behavior. |
+| Twitch console | Owner confirmed client ID `znaovl2j45idub9k81om1dkatwxnu2`, version `0.4.0`, Panel/Mobile views and paths, and exact hosted origin. Owner, test state, fetch allowlist and persistent identity behavior still need verification. Existing September 27, 2024 `assets.zip` must remain untouched. |
 | Twitch testers | Approved test broadcaster/channel IDs, viewer accounts, authorized tester list, mobile devices and console access to existing test version. No tester invitations sent. |
-| Twitch signing secret | Existing active key and rotation metadata must be provided to staging runtime securely, never in chat, frontend, Git or logs. No key retrieved or created. |
+| Twitch signing secret | No Secrets Manager secret name/ARN was listed in the proposed `us-east-2` Region. A separately approved existing ARN or approved secret creation is needed; never provide the key value in chat, frontend, Git, logs, parameters or shell history. A different stable global player identity-key secret is also missing. |
 | Identity/migration | Global saves approved. Verify two-channel U opaque-ID stability in real Twitch hosted staging; establish legacy identity links and field mapping before existing-player tests or production writes. |
 
 Proposed configuration values are deliberately unresolved, not runnable production defaults:
@@ -26,11 +26,11 @@ Proposed configuration values are deliberately unresolved, not runnable producti
 | DIME_ENV | `staging` |
 | AWS_REGION | Region of verified staging table and Lambda |
 | DIME_STATE_TABLE | Existing compatible `dime-v2-staging-*` table, keys `pk` and `sk` strings |
-| DIME_ALLOWED_ORIGINS | Exact approved HTTPS Twitch asset origin(s), usually `https://<client-id>.ext-twitch.tv`; confirm actual version configuration |
+| DIME_ALLOWED_ORIGINS | `https://znaovl2j45idub9k81om1dkatwxnu2.ext-twitch.tv` (owner-confirmed hosted origin) |
 | TWITCH_EXTENSION_SECRET_B64 | Existing active key supplied backend-only via approved secure mechanism |
 | DIME_PLAYER_ID_KEY_B64 | Separate stable backend-only 32+ byte key; preserve across Twitch secret rotations |
 | TWITCH_PREVIOUS_SECRET_B64 | Optional existing previous key during its valid rotation window |
-| Twitch view paths | `index.html`, `panel.html`, `mobile.html` as applicable to verified supported views |
+| Twitch view paths | Panel Viewer Path `panel.html`, height `500`; Mobile Path `mobile.html`; Config and Live Config blank. `index.html` is not a configured view path. |
 | Twitch fetch allowlist | Exact staging EBS domain; inspect existing settings, do not add it yet |
 
 The [staging SAM template](../infra/staging/template.yaml) now defines the separate state table, bundled EBS Lambda, dedicated execution role, HTTPS API with GET /state, POST /actions and automatic OPTIONS/CORS, log groups and alarms. It has not been deployed. No legacy production table can substitute for it. The [staging review guide](../infra/staging/README.md) lists prerequisites and post-deployment checks; resource creation and deployment remain separate approval gates.
