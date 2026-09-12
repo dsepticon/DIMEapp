@@ -112,11 +112,6 @@ Resources:
             Principal:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
-            Condition:
-              StringEquals:
-                aws:SourceAccount: !Ref 'AWS::AccountId'
-              ArnEquals:
-                aws:SourceArn: !Sub 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs'
       Policies:
         - PolicyName: StagingPlayerStateAndOwnLogs
           PolicyDocument:
