@@ -1,5 +1,7 @@
 # Isolated DIME v2 staging stack — review only
 
+September 12, 2026 status: the owner-approved CREATE change set was executed once and stack `dime-v2-review-20260912` reached `CREATE_COMPLETE`. The five outputs include API URL `https://t2la0784p6.execute-api.us-east-2.amazonaws.com/staging`. Resource configuration and exact-origin OPTIONS preflight matched review, but an unauthenticated GET returned HTTP 503 with generic Lambda `configuration_error`. Runtime verification is blocked; no frontend ZIP was built or uploaded. See [staging verification](../../docs/staging-verification.md). The prerequisite and deployment instructions below describe the pre-creation review and are historical for this stack.
+
 `template.yaml` is a SAM/CloudFormation definition for a new synthetic-player staging environment. Nothing in this directory deploys on branch push. The template creates no legacy access, migration trigger, frontend bucket, CloudFront distribution, Amplify branch, custom domain or production stage. The Lambda entry point is the existing `dist/server/index.mjs` bundle (`index.handler`, Node.js 22). `server/migration-gate.ts`, `server/migration-dynamo.ts` and the offline preview are not imported by the Lambda handler or included in its bundle.
 
 ## Parameters and prerequisites
