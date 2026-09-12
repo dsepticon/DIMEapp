@@ -132,7 +132,6 @@ Resources:
 
   EbsFunction:
     Type: AWS::Serverless::Function
-    DependsOn: EbsLogGroup
     Properties:
       FunctionName: !Sub 'dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs'
       Description: Synthetic-player-only DIME v2 staging EBS; no migration execution.
@@ -173,20 +172,19 @@ Resources:
   StagingHttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Name: !Sub 'dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-api'
       StageName: staging
       DefinitionBody:
         openapi: '3.0.1'
         info:
-          title: DIME v2 staging EBS
+          title: !Sub 'dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-api'
           version: '1.0'
         paths: {}
-      CorsConfiguration:
-        AllowOrigins: !Ref TwitchAllowedOrigins
-        AllowHeaders: [Authorization, Content-Type]
-        AllowMethods: [GET, POST, OPTIONS]
-        AllowCredentials: false
-        MaxAge: 300
+        x-amazon-apigateway-cors:
+          allowOrigins: !Ref TwitchAllowedOrigins
+          allowHeaders: [Authorization, Content-Type]
+          allowMethods: [GET, POST, OPTIONS]
+          allowCredentials: false
+          maxAge: 300
       DefaultRouteSettings:
         ThrottlingRateLimit: !Ref ApiThrottleRate
         ThrottlingBurstLimit: !Ref ApiThrottleBurst

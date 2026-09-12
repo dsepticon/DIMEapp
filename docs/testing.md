@@ -1,10 +1,33 @@
 # Validation record
 
+## Staging toolchain validation — September 12, 2026, 16:22 MDT
+
+With Node **v22.23.2**, SAM CLI **1.166.2**, cfn-lint **1.56.3**, CloudFormation Guard **3.2.1**, and offline `aws-sam-translator` **1.113.0**:
+
+| Check | Exact result |
+|---|---|
+| `sam validate --lint --template-file infra/staging/template.yaml` | Passed; valid SAM template |
+| `cfn-lint infra/staging/template.yaml` | Passed; no findings |
+| `sam build --template-file infra/staging/template.yaml` | Passed; local `.aws-sam/build` contains only `template.yaml` and `EbsFunction/index.mjs` |
+| `cfn-guard validate` with `staging.guard` | Passed **6/6** rules against SAM build template |
+| Offline SAM transform and `processed.guard` | **12** expected translated resources; passed **3/3** processed rules |
+| Guard negative probes | Rejected wildcard CORS, broad DynamoDB IAM, unexpected bucket, other-API invocation, other-function invocation, and processed wildcard CORS |
+| `npm ci` | Passed; 245 packages installed, 246 audited, 0 vulnerabilities |
+| `npm run check` | Passed lint, strict typecheck, **68/68 Vitest tests in 8 files**, frontend build and Lambda ESM bundle |
+| `npm run test:e2e` | Passed **5/5 Playwright Chromium tests** |
+| `npm run format:check`; `git diff --check` | Both passed |
+
+The first SAM validation found an invalid HTTP API `Name` alongside inline OpenAPI title; cfn-lint found redundant `DependsOn`. Both were removed. Offline translation then showed SAM's CORS property lost methods and headers with a parameterized origin list; CORS now lives in the inline OpenAPI definition and all fields survive translation. The offline transform used an inert S3 CodeUri **in memory only** to reveal generated resources; no packaging, upload, bucket, change set or stack was created. It is not a CloudFormation-processed change set.
+
+The translated inventory is one table, one Lambda, one role, two log groups, one HTTP API, one `staging` stage, two route-specific Lambda invoke permissions and three alarms. Permission SourceArns reference only the staging API ID and the exact GET `/state` or POST `/actions` route; SAM wildcards the stage **within that API**. The transformed OpenAPI retains exact parameterized Twitch origins, GET/POST/OPTIONS, authorization/content-type headers and `allowCredentials: false`. The execution role retains only `GetItem`, `PutItem`, `CreateLogStream` and `PutLogEvents` on the new table or its own log streams. No production/legacy resource, bucket, domain, frontend asset or production stage appears in the inventory. The SAM-copied Lambda has the same SHA-256 as `dist/server/index.mjs` (`71eb9a6ad57c7b46e1e33a64f31110033f477fb895266a7e84335fe387b08283`) and no migration markers. Secret fields remain dynamic references in the template; no secret values were provided or embedded. The SAM CLI printed a non-fatal warning because its global metadata file under the sandboxed home directory was read-only; each SAM command exited 0.
+
+These checks used local files, loopback fixtures and synthetic identities. No production AWS or Twitch resource was accessed by the test suite. The later live Amplify branch-pattern recheck is read-only and separate from these validators.
+
 ## Staging infrastructure source validation — September 12, 2026
 
 With Node v22.23.2, `npm run check` passed (lint, strict typecheck, **68/68 Vitest tests in 8 files**, frontend build and Lambda bundle), `npm run test:e2e` passed **5/5 Playwright Chromium tests**, and `npm run format:check` and `git diff --check` passed. The rebuilt Lambda package contains only `index.mjs`; the build-time migration exclusion guard and a direct bundle scan found no `MIGRATION#v1#`, `LEGACY#v1#`, `commitMigration`, `previewLegacySave` or `assessLegacySources` marker. `server/migration-dynamo.ts` is not imported by the Lambda.
 
-`aws cloudformation validate-template` accepted `infra/staging/template.yaml` and reported the eight expected parameters and `CAPABILITY_AUTO_EXPAND`; this is a read-only syntax check, not a stack/change-set operation or proof of successful SAM expansion. A local PyYAML structural audit found 9 source resources, four exact IAM actions with no wildcard action/resource, no bucket/secret/CloudFront resource, and no migration module in the Lambda bundle. `sam`, `cfn-lint` and `cfn-guard` are not installed here, so SAM build/processed-template lint and compliance validation could not run. The Python environment also lacks `uvx`, `pip` and `venv` support for IAM policy autopilot. Review the processed template and generated route permissions before any separately approved change set execution. No AWS/Twitch resource was created, deployed, modified or invoked by these validations.
+`aws cloudformation validate-template` accepted `infra/staging/template.yaml` and reported the eight expected parameters and `CAPABILITY_AUTO_EXPAND`; this is a read-only syntax check, not a stack/change-set operation or proof of successful SAM expansion. A local PyYAML structural audit found 9 source resources, four exact IAM actions with no account-wide wildcard resource, no bucket/secret/CloudFront resource, and no migration module in the Lambda bundle. At that earlier point `sam`, `cfn-lint` and `cfn-guard` were unavailable, so SAM build/processed-template lint and compliance validation could not run. Review the actual CloudFormation-processed template and generated route permissions before any separately approved change set execution. No AWS/Twitch resource was created, deployed, modified or invoked by these validations.
 
 ## Node 22 review-branch validation — September 12, 2026, 14:56 MDT
 

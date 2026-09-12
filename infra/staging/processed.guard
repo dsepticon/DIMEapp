@@ -1,0 +1,49 @@
+# Apply to an offline SAM-translated template or a future reviewed processed
+# CloudFormation template. The offline transform uses an inert CodeUri placeholder
+# only to reveal generated resources; it does not package or upload code.
+
+let resource_count = count(Resources.*)
+
+rule only_expected_processed_resources {
+  %resource_count == 12
+  Resources.*.Type IN [
+    'AWS::DynamoDB::Table',
+    'AWS::Logs::LogGroup',
+    'AWS::IAM::Role',
+    'AWS::Lambda::Function',
+    'AWS::Lambda::Permission',
+    'AWS::ApiGatewayV2::Api',
+    'AWS::ApiGatewayV2::Stage',
+    'AWS::CloudWatch::Alarm'
+  ]
+}
+
+rule api_integration_and_stage {
+  Resources.StagingHttpApi.Type == 'AWS::ApiGatewayV2::Api'
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowOrigins.Ref == 'TwitchAllowedOrigins'
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowHeaders == ['Authorization', 'Content-Type']
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowMethods == ['GET', 'POST', 'OPTIONS']
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowCredentials == false
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/state'.get.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/actions'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApistagingStage.Type == 'AWS::ApiGatewayV2::Stage'
+  Resources.StagingHttpApistagingStage.Properties.StageName == 'staging'
+  Resources.StagingHttpApistagingStage.Properties.AccessLogSettings.DestinationArn.'Fn::GetAtt' == ['ApiAccessLogGroup', 'Arn']
+}
+
+rule generated_invoke_permissions_are_api_route_scoped {
+  Resources.EbsFunctionGetStatePermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostActionsPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionGetStatePermission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionPostActionsPermission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionGetStatePermission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionPostActionsPermission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionGetStatePermission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionPostActionsPermission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/state'
+  Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/actions'
+  Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+}
