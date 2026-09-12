@@ -25,6 +25,12 @@ Parameters:
     Type: String
     Description: ARN of a different existing stable same-Region SecretString containing the base64 global player HMAC key.
     AllowedPattern: '^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$'
+  ConfigurationRevision:
+    Type: String
+    Description: Non-secret reviewed revision that forces a Lambda configuration update to refresh dynamic secret references.
+    MinLength: 1
+    MaxLength: 64
+    AllowedPattern: '^[a-z0-9][a-z0-9-]*$'
   LogRetentionDays:
     Type: Number
     Description: Retention for the staging Lambda and API access log groups.
@@ -153,6 +159,7 @@ Resources:
           DIME_ENV: staging
           DIME_STATE_TABLE: !Ref PlayerStateTable
           DIME_ALLOWED_ORIGINS: !Join [',', !Ref TwitchAllowedOrigins]
+          DIME_CONFIG_REVISION: !Ref ConfigurationRevision
           TWITCH_EXTENSION_SECRET_B64: !Sub '{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}'
           DIME_PLAYER_ID_KEY_B64: !Sub '{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}'
       Events:

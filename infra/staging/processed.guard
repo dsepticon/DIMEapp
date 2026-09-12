@@ -47,3 +47,10 @@ rule generated_invoke_permissions_are_api_route_scoped {
   Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
   Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
 }
+
+rule configuration_revision_is_lambda_only {
+  Parameters.ConfigurationRevision.Type == 'String'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONFIG_REVISION.Ref == 'ConfigurationRevision'
+  Resources.EbsFunction.Properties.Environment.Variables.TWITCH_EXTENSION_SECRET_B64.'Fn::Sub' == '{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_PLAYER_ID_KEY_B64.'Fn::Sub' == '{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}'
+}

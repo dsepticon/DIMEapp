@@ -1,3 +1,5 @@
+September 12 configuration-refresh pass under Node v22.23.2: `npm ci` passed (245 packages, 0 vulnerabilities); `npm run check` passed lint, strict typecheck, 74/74 Vitest tests in 9 files, frontend build and Lambda bundle. Playwright Chromium passed 5/5; `npm run format:check`, `git diff --check`, `sam validate --lint`, cfn-lint 1.56.3, source Guard 6/6 and offline-translated Guard 4/4 passed. SAM CLI 1.166.2 recognized the Node 22 bundle but `sam build` stalled after “package.json file not found. Continuing the build without dependencies.” in multiple temporary directories, with the process waiting in WSL `p9_client_rpc`; the attempts were interrupted, but WSL left an uninterruptible filesystem wait, so SAM build cannot be claimed as passing. The reviewed Lambda package can be made directly from the already checked single-file bundle, with ZIP contents and hash verified separately. No API test was performed after the owner corrected the secret, and no secret value was read.
+
 # Validation record
 
 ## Staging toolchain validation — September 12, 2026, 16:22 MDT
