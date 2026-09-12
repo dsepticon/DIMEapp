@@ -1,5 +1,11 @@
 # Validation record
 
+## Follow-up validation — September 11, 2026
+
+After adding the offline legacy preview: `npm run check` passed lint, strict typecheck, **58 tests across 7 files**, frontend build and Lambda bundling. `npm run test:e2e` passed **5/5 Chromium tests**. `npm run format:check` and `git diff --check` passed. The same Node/browser paths documented below were used. Initial sandbox runs could not start local test servers; authorized runs outside the sandbox passed without application changes. No AWS/Twitch endpoints or production records were used.
+
+`tests/legacy-preview.test.ts` adds 10 synthetic tests for complete source preservation, deterministic retry, exact mixed-unit mapping, retained orders/claims/unknown fields, fractional/out-of-range values, ambiguous refined cargo, ciphertext/corrupt inputs, conflicting locations/equipment and explicit-version handling. These verify the offline preview, not a deployed migration or DynamoDB transaction. Production conversion remains disabled and unimplemented pending [mapping approval](legacy-save-mapping.md).
+
 Verified September 11, 2026 using Node 22.23.2, the committed lockfile and Chromium. All test users, signing keys and database contents are synthetic. No production endpoint, Lambda invocation or player-table operation was used for validation.
 
 ## Before repairs

@@ -1,5 +1,7 @@
 # DIME React/Twitch rebuild handoff
 
+September 12 follow-up: the owner approved narrowing Amplify automatic creation patterns to the literal branches `main` and `codex/react-extension-rebuild`. The change was applied and verified with existing builds still enabled. Local branch `codex/react-extension-rebuild-review` now contains the review work and does not match either pattern. See [review push safety](review-push-safety.md) for the current decision; the earlier blocked-push findings below are historical.
+
 Review date: September 11, 2026. Scope: Dsepticon/DIMEapp only. Working branch: codex/react-extension-rebuild, isolated checkout /tmp/dime-react-extension-rebuild. The original /mnt/c/projects/DIMEapp main checkout and its 24 pre-existing changes are preserved.
 
 The safe local investigation, recovery, implementation and validation work is complete. AWS production remains unchanged. This is a reviewed-source candidate for isolated staging, not a deployed replacement or a claim that live production is now repaired.
@@ -49,7 +51,9 @@ Local commits were created using the author identity supplied by the owner:
 
 The working branch is codex/react-extension-rebuild; main and the original dirty worktree were not changed. [changed-files.md](changed-files.md) lists exact paths.
 
-No push occurred. Amplify app d90ik3712sg8e has automatic builds enabled for this branch, automatic branch creation and an inline build specification. Publishing the branch could trigger AWS changes despite the repository's defensive failing amplify.yml. Obtain explicit approval to disable automatic builds for this branch, verify that setting, then check GitHub write authentication and push only this branch. Do not merge main. The gh CLI is unavailable. GIT_TERMINAL_PROMPT=0 git push --dry-run origin codex/react-extension-rebuild returned exit 128: no GitHub username/credential was available. The dry run changed no remote refs. Configure GitHub authentication outside this conversation without sharing tokens, then recheck access before any approved push.
+No push occurred. Follow-up read-only inspection confirmed working GitHub CLI authentication and Amplify creation patterns `["*", "*/**"]` with automatic builds enabled for new branches. Both existing branches also have builds enabled. The requested `codex/react-extension-rebuild-review` branch is therefore unsafe to push. **Do not disable builds or deploy.** [Review push safety](review-push-safety.md) records exact settings, production identification and the proposed one-field pattern restriction requiring owner approval. No review branch was created or pushed.
+
+The provisional save policy is recorded in [legacy save mapping](legacy-save-mapping.md), with an offline loss-preserving preview and 10 synthetic migration-preview tests. Existing saves are not yet supported by the new API's load path; decoder, identity binding and an approved migration writer remain release gates. [Staging verification](staging-verification.md) lists the required access/resources/configuration and checklist. Use existing verified staging only; no resource creation, modification or deployment is authorized.
 
 ## Rollback
 
