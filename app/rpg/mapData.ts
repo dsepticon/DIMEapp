@@ -12,7 +12,9 @@ export const OBJECTS: readonly WorldObject[] = [
   { id: 'refinery', label: 'Refinery terminal', kind: 'refinery', x: 5, y: 5, color: P.cyan },
   { id: 'market', label: 'Market terminal', kind: 'market', x: 10, y: 5, color: P.amber },
   { id: 'travel', label: 'Ship / travel terminal', kind: 'travel', x: 4, y: 13, color: P.blue },
-  { id: 'worker', label: 'Station worker', kind: 'npc', x: 12, y: 9, color: P.violet },
+  { id: 'foreman', label: 'Shift Foreman Mara Voss', kind: 'npc', x: 11, y: 10, color: P.amber },
+  { id: 'technician', label: 'Refinery Technician Ivo Sen', kind: 'npc', x: 5, y: 9, color: P.cyan },
+  { id: 'officer', label: 'Supply Officer Neri Vale', kind: 'npc', x: 10, y: 12, color: P.blue },
 ];
 
 export const SCENERY = [

@@ -9,6 +9,7 @@ import {
   TRAVEL,
 } from './catalog';
 import { Action, GameError, Inventory, MiningType, Ore, PlayerState, Ship, stateSchema } from './schema';
+import { applyFirstShift, HAND_TOOL } from './firstShift';
 export const total = (inventory: Inventory) =>
   Object.values(inventory).reduce((sum, value) => sum + (value ?? 0), 0);
 export const scu = (value: number) => (value / 100).toLocaleString('en-US', { maximumFractionDigits: 2 });
@@ -38,7 +39,7 @@ export function initialState(random: () => number = Math.random): PlayerState {
     currentShip: 'Nomad',
     ships: { Nomad: 1 },
     positions: { Nomad: 'ARC-L1' },
-    equipment: {},
+    equipment: { [HAND_TOOL]: 1 },
     mining: { Hand: {}, Roc: {}, Prospector: {}, Mole: {} },
     cargo: { Nomad: { raw: {}, refined: {} } },
     orders: [],
@@ -143,6 +144,13 @@ export function applyAction(
   } else {
     assert(!state.pending, 'Finish the active operation first.', 'BUSY');
     switch (action.type) {
+      case 'firstShift':
+        assert(
+          action.step === 'mineDolivine' ? action.depositId === 'dolivine' : action.depositId === undefined,
+          'Invalid assigned deposit.',
+        );
+        applyFirstShift(state, action.step, now, id);
+        break;
       case 'travel': {
         const { ship, destination, loadRoc } = action;
         assert(ship !== 'Roc', 'The ROC needs a carrier.');

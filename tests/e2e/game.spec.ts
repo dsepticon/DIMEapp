@@ -9,8 +9,8 @@ const navigate = async (page: Page, name: string) => {
     await page.getByRole('button', { name: 'Close menu' }).click();
     return;
   }
-  const dialog = page.getByRole('dialog');
-  if (await dialog.isVisible()) await page.getByRole('button', { name: 'Close menu' }).click();
+  const closeMenu = page.getByRole('button', { name: 'Close menu' });
+  if (await closeMenu.isVisible()) await closeMenu.click();
   await page.getByRole('button', { name: 'Open game menu' }).click();
   await page
     .getByRole('navigation', { name: 'Game menu' })
@@ -108,10 +108,10 @@ async function reachDolivine(page: Page, store: MemoryStore) {
   await page.getByRole('button', { name: 'Refresh authoritative state' }).click();
   await navigate(page, 'game');
   await page.keyboard.down('ArrowRight');
-  await page.waitForTimeout(4500);
+  await page.waitForTimeout(4750);
   await page.keyboard.up('ArrowRight');
   await page.keyboard.down('ArrowUp');
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1600);
   await page.keyboard.up('ArrowUp');
   await expect(page.getByText('E · Dolivine seam')).toBeVisible();
 }
@@ -273,10 +273,10 @@ test('Milestone 1.2 scene and game-window visual inventory at Panel, Mobile, and
     await page.keyboard.down('ArrowUp');
     await page.waitForTimeout(360);
     await page.keyboard.up('ArrowUp');
-    await expect(page.getByText('E · Station worker')).toBeVisible();
+    await expect(page.getByText('E · Shift Foreman Mara Voss')).toBeVisible();
     await page.keyboard.press('e');
-    await expect(page.getByRole('dialog', { name: 'Station worker' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Mara Voss · Shift Foreman' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Accept assignment' })).toBeVisible();
     await capture('npc-dialogue', size);
     await page.keyboard.press('Escape');
     for (const name of ['cargo', 'market', 'refinery', 'travel', 'profile', 'menu'] as const) {
@@ -359,10 +359,12 @@ test('reduced-motion NPC dialogue reveals immediately and advances by keyboard',
   await page.keyboard.down('ArrowUp');
   await page.waitForTimeout(360);
   await page.keyboard.up('ArrowUp');
-  await expect(page.getByText('E · Station worker')).toBeVisible();
+  await expect(page.getByText('E · Shift Foreman Mara Voss')).toBeVisible();
   await page.keyboard.press('e');
-  await expect(page.getByRole('dialog', { name: 'Station worker' })).toContainText('Keep your lamp charged');
-  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Mara Voss · Shift Foreman' })).toContainText(
+    'Your ship is registered away from Lyria',
+  );
+  await expect(page.getByRole('button', { name: 'Open Travel' })).toBeVisible();
   await page.keyboard.press('Space');
   await expect(page.getByRole('dialog')).toHaveCount(0);
   expect(actionRequests()).toBe(0);
@@ -464,6 +466,10 @@ test('one nearby mineral interaction starts one server action and never awards o
   const before = structuredClone(store.states.get('test')!.mining.Hand);
   await page.keyboard.press('e');
   await page.keyboard.press('e');
+  await expect(page.getByRole('dialog', { name: 'Dolivine mining sequence' })).toBeVisible();
+  await page.keyboard.down('e');
+  await page.waitForTimeout(2400);
+  await page.keyboard.up('e');
   await expect.poll(actionRequests).toBe(1);
   await expect.poll(() => store.states.get('test')!.pending?.kind).toBe('mine');
   expect(store.states.get('test')!.mining.Hand).toEqual(before);
@@ -481,6 +487,10 @@ test('rejected mineral action leaves authoritative inventory unchanged and shows
   const revision = store.states.get('test')!.revision;
   failNextAction();
   await page.getByRole('button', { name: 'Interact' }).click();
+  await expect(page.getByRole('dialog', { name: 'Dolivine mining sequence' })).toBeVisible();
+  await page.keyboard.down('e');
+  await page.waitForTimeout(2400);
+  await page.keyboard.up('e');
   await expect.poll(actionRequests).toBe(1);
   await expect(page.getByRole('status')).toContainText('Mining request was not confirmed.');
   await expect(page.getByText('Mining request was not confirmed.', { exact: false })).toBeVisible();

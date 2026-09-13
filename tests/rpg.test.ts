@@ -5,12 +5,21 @@ import { directionForKey } from '../app/rpg/canvasEngine';
 import { FADE_MS, transitionOpacity } from '../app/rpg/canvasEngine';
 import { areaForX, areaName } from '../app/rpg/mapData';
 import { drawMiner, toolFrame, walkFrame } from '../app/rpg/sprites';
+import { questMarkerFor } from '../app/rpg/renderWorld';
 import { drawSurveyIcon } from '../app/rpg/ui/SurveyIcon';
 import { advance, canStand, initialWorld, nearestObject, OBJECTS, tileAt } from '../app/rpg/world';
 
 const none = { up: false, down: false, left: false, right: false };
 
 describe('Lyria local scene', () => {
+  it('distinguishes available, active and completion-ready quest markers', () => {
+    expect(questMarkerFor('foreman')).toBe('available');
+    expect(questMarkerFor('foreman', 'RETURN_TO_FOREMAN')).toBe('ready');
+    expect(questMarkerFor('officer', 'CHECK_EQUIPMENT')).toBe('active');
+    expect(questMarkerFor('technician', 'START_REFINERY_ORDER')).toBe('active');
+    expect(questMarkerFor('foreman', 'COMPLETE')).toBeNull();
+    expect(questMarkerFor('dolivine', 'MINE_ASSIGNED_ORE')).toBeNull();
+  });
   it('contains three catalog mineral seams and all three service terminals', () => {
     expect(OBJECTS.filter((item) => item.kind === 'deposit').map((item) => item.id)).toEqual([
       'dolivine',
@@ -21,7 +30,7 @@ describe('Lyria local scene', () => {
       OBJECTS.filter((item) => item.kind !== 'deposit')
         .map((item) => item.kind)
         .sort(),
-    ).toEqual(['market', 'npc', 'refinery', 'travel']);
+    ).toEqual(['market', 'npc', 'npc', 'npc', 'refinery', 'travel']);
   });
   it('moves in four directions without writing to any API', () => {
     let world = initialWorld();

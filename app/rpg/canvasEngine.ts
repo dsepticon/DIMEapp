@@ -1,5 +1,6 @@
 import { areaForX, areaName } from './mapData';
 import { drawWorld } from './renderWorld';
+import type { PlayerState } from '../../shared/schema';
 import {
   advance,
   Direction,
@@ -51,6 +52,8 @@ export class CanvasEngine {
   private toolUntil = 0;
   private transitionStart: number | null = null;
   private area = areaForX(this.world.x);
+  private npcFacing?: { id: string; direction: Direction };
+  private objective?: NonNullable<PlayerState['firstShift']>['objective'];
   constructor(
     private canvas: HTMLCanvasElement,
     private callbacks: Callbacks,
@@ -90,6 +93,9 @@ export class CanvasEngine {
     this.overlay = open;
     this.clearInput();
   }
+  setObjective(objective: NonNullable<PlayerState['firstShift']>['objective']) {
+    this.objective = objective;
+  }
   setDirection(direction: Direction, pressed: boolean) {
     if (!this.overlay && this.transitionStart === null) this.input[direction] = pressed;
     else if (!pressed) this.input[direction] = false;
@@ -99,6 +105,14 @@ export class CanvasEngine {
     const object = nearestObject(this.world);
     if (object) {
       this.toolUntil = this.world.clock + 0.36;
+      if (object.kind === 'npc') {
+        const dx = this.world.x - object.x - 0.5;
+        const dy = this.world.y - object.y - 0.5;
+        this.npcFacing = {
+          id: object.id,
+          direction: Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up',
+        };
+      }
       this.callbacks.interact(object);
     }
   }
@@ -176,6 +190,8 @@ export class CanvasEngine {
         this.reducedMotion,
         this.toolUntil,
         this.transitionStart === null ? 0 : transitionOpacity(time - this.transitionStart),
+        this.npcFacing,
+        this.objective,
       );
     this.frame = requestAnimationFrame(this.tick);
   };

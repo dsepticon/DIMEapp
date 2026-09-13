@@ -136,11 +136,15 @@ export function Dialogue({
   text,
   critical = false,
   onAdvance,
+  choices,
+  portrait,
 }: {
   speaker: string;
   text: string;
   critical?: boolean;
   onAdvance: () => void;
+  choices?: { label: string; action: () => void }[];
+  portrait?: 'foreman' | 'technician' | 'officer';
 }) {
   const reduced = useRef(
     typeof window !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -172,13 +176,34 @@ export function Dialogue({
     <div className={styles.dialogueShade}>
       <section className={styles.dialogue} role="dialog" aria-label={speaker}>
         <div className={styles.speaker}>
-          <span aria-hidden="true">✦</span>
+          {portrait ? (
+            <span aria-hidden="true" className={`${styles.npcPortrait} ${styles[portrait]}`}>
+              <i />
+              <b />
+            </span>
+          ) : (
+            <span aria-hidden="true">✦</span>
+          )}
           <strong>{speaker}</strong>
         </div>
         <p aria-live={visible === text.length ? 'polite' : 'off'}>{text.slice(0, visible)}</p>
-        <button type="button" onClick={advance}>
-          {visible < text.length ? 'Show all' : 'Continue'} <span aria-hidden="true">▸</span>
-        </button>
+        {visible < text.length ? (
+          <button type="button" onClick={advance}>
+            Show all ▸
+          </button>
+        ) : choices ? (
+          <div>
+            {choices.map((choice) => (
+              <button type="button" key={choice.label} onClick={choice.action}>
+                {choice.label}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <button type="button" onClick={advance}>
+            Continue ▸
+          </button>
+        )}
       </section>
     </div>
   );

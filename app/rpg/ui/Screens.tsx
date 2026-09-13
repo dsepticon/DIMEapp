@@ -7,6 +7,7 @@ import { MiningPanel } from '../../MiningPanel';
 import { CapacityBar, ChoiceRail, OreIcon, PixelPortrait, Stepper } from './UiBits';
 import { MarketScreen, RefineryScreen, TravelScreen } from './Operations';
 import styles from './GameUI.module.css';
+import { QuestLog } from './FirstShiftUI';
 
 export type GameView =
   | 'game'
@@ -18,7 +19,8 @@ export type GameView =
   | 'travel'
   | 'mining'
   | 'controls'
-  | 'connection';
+  | 'connection'
+  | 'quest';
 export type ScreensProps = {
   view: GameView;
   state: PlayerState;
@@ -213,6 +215,7 @@ function MenuScreen({ navigate }: Pick<ScreensProps, 'navigate'>) {
   const choices: { label: string; view: GameView }[] = [
     { label: 'Resume', view: 'game' },
     { label: 'Cargo', view: 'cargo' },
+    { label: 'Quest Log', view: 'quest' },
     { label: 'Profile', view: 'profile' },
     { label: 'Refinery', view: 'refinery' },
     { label: 'Market', view: 'market' },
@@ -247,6 +250,7 @@ export function RpgScreens(props: ScreensProps) {
     props;
   const [miningSource, setMiningSource] = useState<MiningType>('Hand');
   if (view === 'menu') return <MenuScreen navigate={navigate} />;
+  if (view === 'quest') return <QuestLog state={state} />;
   if (view === 'cargo') return <CargoScreen state={state} canAct={canAct} mutate={mutate} notice={notice} />;
   if (view === 'profile') return <ProfileScreen state={state} busy={busy} refresh={refresh} local={local} />;
   if (view === 'market')

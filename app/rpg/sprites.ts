@@ -70,17 +70,31 @@ export function drawMiner(
   if (tool) block(ctx, facing === 'left' ? handX - 7 : handX + 6, handY - 6, 3, 3, P.cyanLight);
 }
 
-export function drawWorker(ctx: CanvasRenderingContext2D, footX: number, footY: number, clock: number) {
+export function drawWorker(
+  ctx: CanvasRenderingContext2D,
+  footX: number,
+  footY: number,
+  clock: number,
+  coat: string = P.violet,
+  facing: Direction = 'down',
+) {
   const x = Math.round(footX - 7),
     y = Math.round(footY - 21);
   block(ctx, x + 2, y + 19, 12, 2, P.shadow);
-  block(ctx, x + 4, y + 11, 8, 8, P.violet);
+  block(ctx, x + 4, y + 11, 8, 8, coat);
   block(ctx, x + 3, y + 11, 2, 7, P.suitDark);
   block(ctx, x + 11, y + 11, 2, 7, P.suitDark);
   block(ctx, x + 5, y + 18, 3, 3, P.steelDark);
   block(ctx, x + 9, y + 18, 3, 3, P.steelDark);
   block(ctx, x + 4, y + 3, 8, 8, P.face);
   block(ctx, x + 3, y + 1, 10, 4, P.steel);
-  block(ctx, x + 5, y + 6, 6, 2, Math.floor(clock * 1.3) % 5 === 0 ? P.visor : P.cyan);
+  block(
+    ctx,
+    facing === 'left' ? x + 3 : facing === 'right' ? x + 7 : x + 5,
+    y + 6,
+    facing === 'up' ? 4 : 6,
+    2,
+    Math.floor(clock * 1.3) % 5 === 0 ? P.visor : P.cyan,
+  );
   block(ctx, x + 6, y + 12, 4, 2, P.amber);
 }

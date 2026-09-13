@@ -56,3 +56,6 @@ Network/503/429 errors retain the original request for retry. A 401 invalidates 
 Failed database writes do not publish speculative state. Conditional transaction failures are reconciled; permissions/throttling/infrastructure exceptions become generic 503 responses. Logs contain status and an AWS request ID only, never request bodies or raw exception text.
 
 The file adapter persists one whole state/receipt snapshot via rename and restores memory on persistence failure. It is a single-process development adapter, not a production database.
+# Milestone 2 local chapter
+
+The First Shift adds an optional, backward-compatible quest field and a server-derived `firstShift` action sequence to the v2 global save. Its transition table, tutorial economy, mining interaction, and release limits are documented in [dime-2d-rpg-m2.md](dime-2d-rpg-m2.md). This branch is not deployed; the new frontend requires a matching Lambda bundle in a future reviewed release.

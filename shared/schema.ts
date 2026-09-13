@@ -7,6 +7,31 @@ export const shipSchema = z.enum(SHIP_NAMES);
 export const miningSchema = z.enum(MINING_TYPES);
 export const locationSchema = z.enum(LOCATIONS);
 export const methodSchema = z.enum(METHOD_NAMES);
+export const firstShiftObjectiveSchema = z.enum([
+  'SPEAK_TO_FOREMAN',
+  'CHECK_EQUIPMENT',
+  'ENTER_MINE',
+  'MINE_ASSIGNED_ORE',
+  'RETURN_TO_OUTPOST',
+  'START_REFINERY_ORDER',
+  'COLLECT_REFINED_MATERIAL',
+  'SELL_REFINED_MATERIAL',
+  'RETURN_TO_FOREMAN',
+  'COMPLETE',
+]);
+export const firstShiftSchema = z.object({
+  id: z.literal('first-shift'),
+  status: z.enum(['NOT_STARTED', 'ACTIVE', 'COMPLETE']),
+  objective: firstShiftObjectiveSchema,
+  counters: z.object({ mined: units, refined: units, sold: units }),
+  acceptedAt: z.number().int().nullable(),
+  completedAt: z.number().int().nullable(),
+  rewardClaimed: z.boolean(),
+  toolRecovered: z.boolean(),
+  dialogueFlags: z.array(z.enum(['foremanIntro', 'technicianIntro', 'officerIntro'])).max(3),
+  unlockedQuests: z.array(z.literal('lyria-next-shift')).max(1),
+  tutorialOrderId: z.string().nullable(),
+});
 export const inventorySchema = z.partialRecord(oreSchema, units);
 export type Inventory = z.infer<typeof inventorySchema>;
 export type Ore = z.infer<typeof oreSchema>;
@@ -57,6 +82,8 @@ export const stateSchema = z.object({
     .max(100),
   refineryRates: z.record(methodSchema, z.object({ yield: z.number(), cost: z.number(), time: z.number() })),
   pending: pendingSchema.nullable(),
+  // Optional for all existing v2 saves; absence is interpreted as NOT_STARTED.
+  firstShift: firstShiftSchema.optional(),
 });
 export type PlayerState = z.infer<typeof stateSchema>;
 export const actionSchema = z.discriminatedUnion('type', [
@@ -81,6 +108,24 @@ export const actionSchema = z.discriminatedUnion('type', [
     })
     .strict(),
   z.object({ type: z.literal('finish') }).strict(),
+  z
+    .object({
+      type: z.literal('firstShift'),
+      step: z.enum([
+        'accept',
+        'checkTool',
+        'recoverTool',
+        'enterMine',
+        'mineDolivine',
+        'returnOutpost',
+        'startRefinery',
+        'collect',
+        'sell',
+        'complete',
+      ]),
+      depositId: z.literal('dolivine').optional(),
+    })
+    .strict(),
   z
     .object({
       type: z.literal('transfer'),

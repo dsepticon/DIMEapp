@@ -366,6 +366,49 @@
 .speaker span {
   color: var(--cyan);
 }
+.npcPortrait {
+  position: relative;
+  flex: 0 0 28px;
+  height: 28px;
+  border: 2px solid #718994;
+  background: #243d4a;
+  image-rendering: pixelated;
+}
+.npcPortrait::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  width: 11px;
+  height: 10px;
+  background: #d9aa83;
+  box-shadow: 0 -4px #b77d4e;
+}
+.npcPortrait i {
+  position: absolute;
+  left: 5px;
+  bottom: 0;
+  width: 15px;
+  height: 8px;
+  background: #d6a448;
+}
+.npcPortrait b {
+  position: absolute;
+  left: 8px;
+  top: 9px;
+  width: 9px;
+  height: 3px;
+  background: #61cbd4;
+}
+.technician i {
+  background: #44b9c8;
+}
+.officer i {
+  background: #5a8fc7;
+}
+.officer::before {
+  box-shadow: 0 -4px #476491;
+}
 .dialogue p {
   min-height: 50px;
   margin: 6px 0;

@@ -1,7 +1,20 @@
 import { areaForX, HEIGHT, OBJECTS, SCENERY, TILE, tileAt, WIDTH } from './mapData';
 import { P } from './palette';
 import { drawMiner, drawWorker, toolFrame, walkFrame } from './sprites';
-import type { WorldState } from './world';
+import type { Direction, WorldState } from './world';
+import type { PlayerState } from '../../shared/schema';
+
+type Objective = NonNullable<PlayerState['firstShift']>['objective'];
+export function questMarkerFor(id: string, objective?: Objective): 'available' | 'active' | 'ready' | null {
+  if (id === 'foreman') {
+    if (!objective || objective === 'SPEAK_TO_FOREMAN') return 'available';
+    return objective === 'RETURN_TO_FOREMAN' ? 'ready' : null;
+  }
+  if (id === 'officer' && objective === 'CHECK_EQUIPMENT') return 'active';
+  if (id === 'technician' && ['START_REFINERY_ORDER', 'COLLECT_REFINED_MATERIAL'].includes(objective ?? ''))
+    return 'active';
+  return null;
+}
 
 const rect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string) => {
   ctx.fillStyle = color;
@@ -135,10 +148,31 @@ function drawObject(
   px: number,
   py: number,
   clock: number,
+  npcFacing?: { id: string; direction: Direction },
+  objective?: Objective,
 ) {
   rect(ctx, px + 1, py + 13, 14, 3, P.shadow);
   if (item.kind === 'npc') {
-    drawWorker(ctx, px + 8, py + 15, clock);
+    drawWorker(
+      ctx,
+      px + 8,
+      py + 15,
+      clock,
+      item.color,
+      npcFacing?.id === item.id ? npcFacing.direction : 'down',
+    );
+    const marker = questMarkerFor(item.id, objective);
+    if (marker) {
+      rect(ctx, px + 5, py - 8, 6, 6, P.amberDark);
+      rect(
+        ctx,
+        px + 7,
+        py - 7,
+        2,
+        4,
+        marker === 'ready' ? P.green : marker === 'active' ? P.cyan : P.amberLight,
+      );
+    }
     return;
   }
   if (item.kind === 'deposit') {
@@ -179,6 +213,8 @@ export function drawWorld(
   reducedMotion: boolean,
   toolUntil: number,
   fade: number,
+  npcFacing?: { id: string; direction: Direction },
+  objective?: Objective,
 ) {
   ctx.imageSmoothingEnabled = false;
   const camera = cameraFor(world, viewWidth, viewHeight);
@@ -195,7 +231,7 @@ export function drawWorld(
     const px = item.x * TILE - camera.x,
       py = item.y * TILE - camera.y;
     if (px > -TILE && py > -TILE && px < viewWidth && py < viewHeight)
-      drawObject(ctx, item, px, py, reducedMotion ? 0 : world.clock);
+      drawObject(ctx, item, px, py, reducedMotion ? 0 : world.clock, npcFacing, objective);
   }
   drawMiner(
     ctx,

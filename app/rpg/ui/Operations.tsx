@@ -15,6 +15,7 @@ import { refineryQuote, scu, total } from '../../../shared/game';
 import { format, remaining } from '../../ui';
 import { CapacityBar, ChoiceRail, OreIcon, Stepper } from './UiBits';
 import styles from './GameUI.module.css';
+import { TutorialOperations } from './FirstShiftUI';
 
 type Props = {
   state: PlayerState;
@@ -59,6 +60,23 @@ export function MarketScreen({ state, canAct, mutate, notice }: Props) {
         : units > stock
           ? 'Select an available quantity.'
           : '';
+  if (state.location === 'Lyria')
+    return (
+      <section className={styles.screen} aria-label="Market shop">
+        <h1>Neri Vale · Supply Counter</h1>
+        <p className={styles.subtle}>First Shift exchange · {format(state.wallet)} aUEC</p>
+        <TutorialOperations
+          kind="market"
+          state={state}
+          canAct={canAct}
+          busy={!canAct}
+          now={Date.now()}
+          mutate={mutate}
+        />
+        <p className={styles.subtle}>The full equipment market remains available at Area-18.</p>
+        {notice && <p role="status">{notice}</p>}
+      </section>
+    );
   return (
     <section className={styles.screen} aria-label="Market shop">
       <div className={styles.portraitLine}>
@@ -225,6 +243,33 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
                 : quote.cost > state.wallet
                   ? 'Insufficient aUEC for this work order.'
                   : '';
+  if (state.location === 'Lyria')
+    return (
+      <section className={styles.screen} aria-label="Refinery workshop">
+        <h1>Ivo Sen · Refinery</h1>
+        <p className={styles.subtle}>Lyria shift processing bay</p>
+        <TutorialOperations
+          kind="refinery"
+          state={state}
+          canAct={canAct}
+          busy={!canAct}
+          now={now}
+          mutate={mutate}
+        />
+        <h2>Work-order queue</h2>
+        {state.orders.length ? (
+          state.orders.map((order) => (
+            <p key={order.id}>
+              {order.ore} · {order.refinedUnits} cSCU · {order.readyAt <= now ? 'Ready' : 'Processing'}
+            </p>
+          ))
+        ) : (
+          <p>No active work orders.</p>
+        )}
+        <p className={styles.subtle}>Full refinery methods remain available at ARC-L1.</p>
+        {notice && <p role="status">{notice}</p>}
+      </section>
+    );
   return (
     <section className={styles.screen} aria-label="Refinery workshop">
       <div className={styles.portraitLine}>
