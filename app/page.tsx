@@ -48,7 +48,19 @@ export default function Home() {
     [config, connection],
   );
   const identity = config.local ? 'local' : connection?.identity();
-  const { state, notice, storageError, busy, pending, now, refresh, mutate } = useGame(client, identity);
+  const {
+    state,
+    notice,
+    storageError,
+    busy,
+    pending,
+    recoveryStatus,
+    now,
+    refresh,
+    mutate,
+    discardObsolete,
+    cancelPending,
+  } = useGame(client, identity);
   const [view, setView] = useState<GameView>('game');
   useEffect(() => {
     if (storageError) setView('connection');
@@ -80,6 +92,11 @@ export default function Home() {
             <button onClick={() => void refresh()} disabled={busy || !identity}>
               Retry connection
             </button>
+            {pending && recoveryStatus !== 'obsolete' && (
+              <button onClick={() => void mutate()} disabled={busy || !identity}>
+                Retry pending action
+              </button>
+            )}
           </div>
         </section>
       )}
@@ -112,13 +129,32 @@ export default function Home() {
                 </div>
                 {pending && (
                   <section className={styles.status}>
-                    <p>An action is pending confirmation. Retry safely before starting another.</p>
-                    <button
-                      disabled={busy || (!config.local && session.status !== 'authorized')}
-                      onClick={() => void mutate()}
-                    >
-                      Retry pending action
-                    </button>
+                    <p>
+                      {recoveryStatus === 'obsolete'
+                        ? 'This action belongs to a replaced save. Your current save is ready after you discard it.'
+                        : recoveryStatus === 'recovering'
+                          ? 'Checking the pending action with the server…'
+                          : 'An action is pending confirmation. Retry safely before starting another.'}
+                    </p>
+                    {recoveryStatus === 'obsolete' ? (
+                      <button disabled={busy} onClick={() => void discardObsolete()}>
+                        Discard obsolete pending action
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          disabled={busy || (!config.local && session.status !== 'authorized')}
+                          onClick={() => void mutate()}
+                        >
+                          Retry pending action
+                        </button>
+                        {recoveryStatus !== 'recovering' && (
+                          <button disabled={busy} onClick={cancelPending}>
+                            Cancel pending action
+                          </button>
+                        )}
+                      </>
+                    )}
                   </section>
                 )}
                 {storageError && (

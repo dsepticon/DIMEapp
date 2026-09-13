@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { applyAction, initialState } from '../shared/game';
 import { GameError, Mutation, mutationSchema, Snapshot } from '../shared/schema';
 import { Store } from './store';
@@ -12,6 +12,7 @@ export class GameService {
     let state = await this.store.read(player);
     if (!state) {
       const initial = initialState(this.random);
+      initial.saveGeneration = randomUUID();
       if (await this.store.commit(player, null, initial)) state = initial;
       else state = await this.store.read(player);
     }

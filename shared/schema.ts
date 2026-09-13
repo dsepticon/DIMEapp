@@ -62,6 +62,8 @@ const pendingSchema = z.discriminatedUnion('kind', [
 ]);
 export const stateSchema = z.object({
   schemaVersion: z.literal(2),
+  // New saves carry an opaque generation so pending actions cannot cross a table reset.
+  saveGeneration: z.uuid().optional(),
   revision: z.number().int().nonnegative(),
   wallet: z.number().int().min(0).max(1_000_000_000_000),
   location: locationSchema,

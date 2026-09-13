@@ -538,8 +538,8 @@ test('lost mutation response survives reload and retry without duplication', asy
   await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeEnabled();
   expect(store.states.get('test')!.revision).toBe(1);
   await page.reload();
-  await page.getByRole('button', { name: 'Retry pending action' }).click();
   await expect(page.getByRole('status')).toHaveText('Previous action confirmed. State synchronized.');
+  await expect(page.getByRole('button', { name: 'Retry pending action' })).toHaveCount(0);
   expect(store.states.get('test')!.revision).toBe(1);
 });
 test('320px panel navigation stays accessible and contains no horizontal page overflow', async ({ page }) => {
