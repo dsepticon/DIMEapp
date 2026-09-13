@@ -264,10 +264,10 @@
   background: #0c1c28;
   box-shadow: 0 0 0 1px #54e8ff22;
 }
-.locationCard img {
+.locationCard canvas {
   width: 70px;
   height: 70px;
-  object-fit: contain;
+  image-rendering: pixelated;
 }
 .locationCard span {
   display: flex;
@@ -424,7 +424,7 @@
   .locationCard {
     grid-template-columns: 58px 1fr auto;
   }
-  .locationCard img {
+  .locationCard canvas {
     width: 58px;
     height: 58px;
   }
@@ -456,7 +456,7 @@
   .locationCard {
     grid-template-columns: 48px 1fr;
   }
-  .locationCard img {
+  .locationCard canvas {
     width: 48px;
     height: 48px;
   }

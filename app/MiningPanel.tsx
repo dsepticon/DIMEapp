@@ -3,7 +3,7 @@ import styles from './page.module.css';
 import { CAPACITIES, MINING_TYPES } from '../shared/catalog';
 import { Action, MiningType, PlayerState } from '../shared/schema';
 import { scu, total } from '../shared/game';
-import { asset } from './ui';
+import { SurveyIcon } from './rpg/ui/SurveyIcon';
 export function MiningPanel({
   state,
   source,
@@ -32,7 +32,7 @@ export function MiningPanel({
         Hand and ROC: Lyria or Wala. Prospector and Mole: Halo. Travel from ARC-L1 in an owned ship.
       </p>
       <div className={styles.locationGrid}>
-        {MINING_TYPES.map((name, index) => (
+        {MINING_TYPES.map((name) => (
           <button
             className={styles.locationCard + ' ' + (name === source ? styles.selected : '')}
             key={name}
@@ -42,12 +42,7 @@ export function MiningPanel({
             }}
             aria-pressed={source === name}
           >
-            <img
-              src={asset(['Crusader.png', 'ArcCorp.png', 'Hurston.png', 'Microtech.png'][index])}
-              alt=""
-              width="70"
-              height="70"
-            />
+            <SurveyIcon source={name} />
             <span>
               <strong>{name}</strong>
               <small>

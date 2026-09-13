@@ -5,6 +5,7 @@ import { directionForKey } from '../app/rpg/canvasEngine';
 import { FADE_MS, transitionOpacity } from '../app/rpg/canvasEngine';
 import { areaForX, areaName } from '../app/rpg/mapData';
 import { drawMiner, toolFrame, walkFrame } from '../app/rpg/sprites';
+import { drawSurveyIcon } from '../app/rpg/ui/SurveyIcon';
 import { advance, canStand, initialWorld, nearestObject, OBJECTS, tileAt } from '../app/rpg/world';
 
 const none = { up: false, down: false, left: false, right: false };
@@ -58,6 +59,28 @@ describe('Lyria local scene', () => {
 });
 
 describe('Milestone 1.2 authored art and scene rules', () => {
+  it('draws four distinct original 16-pixel survey icons without external assets', () => {
+    const icons = new Set<string>();
+    for (const source of ['Hand', 'Roc', 'Prospector', 'Mole'] as const) {
+      const marks: string[] = [];
+      const context = {
+        fillStyle: '',
+        clearRect(x: number, y: number, width: number, height: number) {
+          expect([x, y, width, height]).toEqual([0, 0, 16, 16]);
+        },
+        fillRect(x: number, y: number, width: number, height: number) {
+          expect(x).toBeGreaterThanOrEqual(0);
+          expect(y).toBeGreaterThanOrEqual(0);
+          expect(x + width).toBeLessThanOrEqual(16);
+          expect(y + height).toBeLessThanOrEqual(16);
+          marks.push(`${x},${y},${width},${height},${this.fillStyle}`);
+        },
+      } as CanvasRenderingContext2D;
+      drawSurveyIcon(context, source);
+      icons.add(marks.join('|'));
+    }
+    expect(icons.size).toBe(4);
+  });
   it('uses three walking frames and settles to idle for every facing direction', () => {
     const poses = new Set<string>();
     for (const facing of ['up', 'down', 'left', 'right']) {

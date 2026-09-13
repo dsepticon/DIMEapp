@@ -335,6 +335,20 @@ test('game-native windows expose selection, steppers, disabled routes and keyboa
   await expect(page.getByText(/Confirm travel to/)).toHaveCount(0);
 });
 
+test('preserved mining operations use original survey icons and retain source selection', async ({
+  page,
+}) => {
+  await fixture(page);
+  await navigate(page, 'mining');
+  const screen = page.getByRole('dialog', { name: 'mining menu' });
+  await expect(screen.locator('canvas')).toHaveCount(4);
+  await expect(screen.locator('img')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Prospector', exact: false }).click();
+  await expect(page.getByRole('button', { name: 'Scan and mine Prospector' })).toBeVisible();
+  await page.getByRole('button', { name: 'Mole', exact: false }).click();
+  await expect(page.getByRole('button', { name: 'Scan and mine Mole' })).toBeVisible();
+});
+
 test('reduced-motion NPC dialogue reveals immediately and advances by keyboard', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const { actionRequests } = await fixture(page);

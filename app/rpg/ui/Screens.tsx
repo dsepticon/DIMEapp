@@ -196,7 +196,11 @@ function ProfileScreen({
         <p>
           Raw material held {scu(Object.values(state.mining).reduce((sum, hold) => sum + total(hold), 0))} SCU
         </p>
-        <p>{local ? 'Local session only' : 'Permanent save · Twitch identity verified by the server'}</p>
+        <p>
+          {import.meta.env.DEV && local
+            ? 'Local session only'
+            : 'Permanent save · Twitch identity verified by the server'}
+        </p>
       </div>
       <button disabled={busy} onClick={() => void refresh()}>
         Refresh authoritative state
@@ -272,12 +276,12 @@ export function RpgScreens(props: ScreensProps) {
           <p>
             {authenticated
               ? 'Twitch connection ready'
-              : local
+              : import.meta.env.DEV && local
                 ? 'Local session active'
                 : 'Twitch connection needs attention'}
           </p>
           <p>
-            {local
+            {import.meta.env.DEV && local
               ? 'Local save for development.'
               : 'One permanent save follows your verified Twitch identity across channels.'}
           </p>
