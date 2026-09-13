@@ -127,7 +127,7 @@ export default function Home() {
     <main className={styles.shell}>
       <header className={styles.header}>
         <div className={styles.brand}>
-          <img src={asset('DIME icon.png')} alt="D.I.M.E." width="52" height="52" />
+          <img src={asset('dime-icon.png')} alt="D.I.M.E." width="52" height="52" />
           <div>
             <strong>D.I.M.E.</strong>
             <span>Destroya Industries Mining Extension</span>
