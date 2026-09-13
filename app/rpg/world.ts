@@ -1,8 +1,8 @@
 export const TILE = 16;
 export const WIDTH = 34;
 export const HEIGHT = 22;
-export const VIEW_WIDTH = 320;
-export const VIEW_HEIGHT = 208;
+export const VIEW_WIDTH = 160;
+export const VIEW_HEIGHT = 250;
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 export type InputState = Record<Direction, boolean>;
@@ -25,8 +25,14 @@ export const OBJECTS: readonly WorldObject[] = [
   { id: 'market', label: 'Market terminal', kind: 'market', x: 10, y: 5, color: '#69dfe2' },
   { id: 'travel', label: 'Ship / travel terminal', kind: 'travel', x: 5, y: 16, color: '#89baff' },
 ];
+export const SCENERY = [
+  { x: 12, y: 14, kind: 'crate' },
+  { x: 13, y: 14, kind: 'crate' },
+  { x: 4, y: 11, kind: 'machine' },
+  { x: 12, y: 9, kind: 'attendant' },
+] as const;
 
-const objectTiles = new Set(OBJECTS.map((item) => `${item.x},${item.y}`));
+const objectTiles = new Set([...OBJECTS, ...SCENERY].map((item) => `${item.x},${item.y}`));
 export function tileAt(x: number, y: number): 'wall' | 'ground' | 'mine' | 'entrance' {
   if (x < 0 || y < 0 || x >= WIDTH || y >= HEIGHT) return 'wall';
   if (x === 0 || y === 0 || x === WIDTH - 1 || y === HEIGHT - 1) return 'wall';

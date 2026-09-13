@@ -6,6 +6,129 @@
   display: flex;
   flex-direction: column;
 }
+.gameShell {
+  position: relative;
+  width: min(100%, calc(100dvh * 0.64));
+  height: 100dvh;
+  min-height: 0;
+  margin: auto;
+  overflow: hidden;
+  background: #10232e;
+}
+.connectionScene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 22px;
+  padding: 14px;
+  background: radial-gradient(circle, #244650, #071722 70%);
+  color: #eedfa9;
+  font-family: monospace;
+}
+.connectionScene > strong {
+  font-size: 30px;
+  letter-spacing: 0.14em;
+}
+.connectionModal {
+  border: 3px solid #9ccbbb;
+  background: #102b38;
+  padding: 16px;
+  max-width: 100%;
+  color: #e8eee0;
+}
+.connectionModal h1 {
+  font-size: 19px;
+  line-height: 1.2;
+}
+.connectionModal p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.connectionModal button {
+  width: 100%;
+  margin-top: 12px;
+}
+.overlayBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  background: #03111cc7;
+}
+.gameOverlay {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100dvh - 20px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 3px solid #b2cfac;
+  box-shadow:
+    0 0 0 3px #183b45,
+    0 8px 30px #000b;
+  background: #102631;
+  color: #e8eed8;
+}
+.overlayHeading {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: #204652;
+  border-bottom: 2px solid #81ad9b;
+  font: bold 12px monospace;
+}
+.overlayHeading button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #b7dbbe;
+  background: #12303d;
+  color: white;
+  font-size: 18px;
+}
+.pauseMenu {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+.pauseMenu button {
+  min-height: 45px;
+  border: 2px solid #779e90;
+  background: #173947;
+  color: #f0f2d4;
+  text-align: left;
+  padding: 9px 12px;
+  text-transform: capitalize;
+  font: 13px monospace;
+}
+.gameOverlay .content {
+  flex: none;
+  padding: 12px;
+}
+.gameOverlay .content h1 {
+  font-size: 21px;
+}
+.gameOverlay .content h2 {
+  font-size: 16px;
+}
+.gameOverlay .empty {
+  min-height: 90px;
+}
+.gameOverlay .travel {
+  padding: 10px;
+}
+@media (max-width: 390px) {
+  .gameShell {
+    width: 100%;
+  }
+}
 .header {
   display: flex;
   justify-content: space-between;
