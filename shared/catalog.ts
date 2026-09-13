@@ -115,6 +115,11 @@ export const ORES: Record<string, { raw: number; refined: number; gem: boolean }
   Titanium: { raw: 194, refined: 517, gem: false },
   Tungsten: { raw: 172, refined: 431, gem: false },
 };
+// These are the existing hand/ROC roll intervals from miningReward, now named so rarity is inspectable.
+export const GEM_SPAWN_WEIGHTS = {
+  Hand: { Dolivine: 0.5, Aphorite: 0.3, Hadanite: 0.19, Janalite: 0.01 },
+  Roc: { Dolivine: 0.5, Aphorite: 0.3, Hadanite: 0.2, Janalite: 0 },
+} as const;
 export const ASTEROIDS = {
   'E-Type': [
     { ore: 'Aluminium', weight: 0.4444 },
@@ -203,6 +208,92 @@ export const ASTEROIDS = {
     { ore: 'Tungsten', weight: 0.361 },
   ],
 };
+export type MineralCategory = 'GEM' | 'ORE' | 'REFINED_MATERIAL';
+export type ExtractionClass = 'HAND' | 'ROC' | 'SHIP';
+export type CargoContainer = 'HAND_HOLD' | 'ROC_HOLD' | 'SHIP_MINING_HOLD' | 'CARGO_SHIP';
+export type MineralStatus = 'VERIFIED' | 'CODE_DERIVED' | 'NEEDS_OWNER_REVIEW';
+export interface MineralRecord {
+  id: string;
+  displayName: string;
+  category: MineralCategory;
+  extractionClasses: readonly ExtractionClass[];
+  validCargoContainers: readonly CargoContainer[];
+  spawnWeights: Readonly<Record<string, number>>;
+  pricePerScu: number;
+  refineryEligible: boolean;
+  rawSaleEligible: boolean;
+  refinedOutput: string | null;
+  knownDimeLocations: readonly (typeof LOCATIONS)[number][];
+  status: MineralStatus;
+}
+const asteroidWeights = (name: string): Record<string, number> =>
+  Object.fromEntries(
+    Object.entries(ASTEROIDS).flatMap(([pool, entries]) => {
+      const entry = entries.find((item) => item.ore === name);
+      return entry ? [[pool, entry.weight]] : [];
+    }),
+  );
+export const MINERAL_CATALOG: readonly MineralRecord[] = ORE_NAMES.flatMap((name): MineralRecord[] => {
+  const value = ORES[name];
+  const id = name.toLowerCase();
+  if (value.gem) {
+    return [
+      {
+        id,
+        displayName: name,
+        category: 'GEM',
+        extractionClasses:
+          GEM_SPAWN_WEIGHTS.Roc[name as keyof typeof GEM_SPAWN_WEIGHTS.Roc] > 0 ? ['HAND', 'ROC'] : ['HAND'],
+        validCargoContainers: ['HAND_HOLD', 'ROC_HOLD', 'CARGO_SHIP'],
+        spawnWeights: {
+          Hand: GEM_SPAWN_WEIGHTS.Hand[name as keyof typeof GEM_SPAWN_WEIGHTS.Hand],
+          Roc: GEM_SPAWN_WEIGHTS.Roc[name as keyof typeof GEM_SPAWN_WEIGHTS.Roc],
+        },
+        pricePerScu: value.raw,
+        refineryEligible: false,
+        rawSaleEligible: true,
+        refinedOutput: null,
+        knownDimeLocations: ['Lyria', 'Wala', 'Area-18'],
+        status: 'VERIFIED',
+      },
+    ];
+  }
+  const raw: MineralRecord = {
+    id: `${id}-raw`,
+    displayName: name,
+    category: 'ORE',
+    extractionClasses: ['SHIP'],
+    validCargoContainers: ['SHIP_MINING_HOLD', 'CARGO_SHIP'],
+    spawnWeights: asteroidWeights(name),
+    pricePerScu: value.raw,
+    refineryEligible: true,
+    rawSaleEligible: true,
+    refinedOutput: `${id}-refined`,
+    knownDimeLocations: ['Halo', 'ARC-L1'],
+    status: 'NEEDS_OWNER_REVIEW',
+  };
+  const refined: MineralRecord = {
+    id: `${id}-refined`,
+    displayName: `Refined ${name}`,
+    category: 'REFINED_MATERIAL',
+    extractionClasses: [],
+    validCargoContainers: ['CARGO_SHIP'],
+    spawnWeights: {},
+    pricePerScu: value.refined,
+    refineryEligible: false,
+    rawSaleEligible: false,
+    refinedOutput: null,
+    knownDimeLocations: ['ARC-L1', 'Area-18'],
+    status: 'NEEDS_OWNER_REVIEW',
+  };
+  return [raw, refined];
+});
+export const mineralById = (id: string): MineralRecord | undefined =>
+  MINERAL_CATALOG.find((material) => material.id === id);
+export const rawMineral = (name: (typeof ORE_NAMES)[number]): MineralRecord =>
+  mineralById(ORES[name].gem ? name.toLowerCase() : `${name.toLowerCase()}-raw`)!;
+export const refinedMineral = (name: (typeof ORE_NAMES)[number]): MineralRecord | undefined =>
+  mineralById(`${name.toLowerCase()}-refined`);
 export const METHODS = {
   'Cormack Method': { yield: 'Low', cost: 'Medium', time: 'Short' },
   'Dinyx Solventation': { yield: 'High', cost: 'Low', time: 'Long' },

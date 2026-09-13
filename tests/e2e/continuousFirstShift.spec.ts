@@ -5,14 +5,7 @@ import { MemoryStore } from '../../server/store';
 import { GameService } from '../../server/service';
 import { createApi } from '../../server/http';
 import { initialState } from '../../shared/game';
-import {
-  FIRST_SHIFT_REWARD,
-  TUTORIAL_DURATION_MS,
-  TUTORIAL_RAW_UNITS,
-  TUTORIAL_REFINERY_COST,
-  TUTORIAL_REFINED_UNITS,
-  TUTORIAL_SALE_AUEC,
-} from '../../shared/firstShift';
+import { FIRST_SHIFT_REWARD, TUTORIAL_RAW_UNITS, TUTORIAL_SALE_AUEC } from '../../shared/firstShift';
 import type { FirstShiftStep } from '../../shared/firstShift';
 
 for (const [layout, width, height] of [
@@ -24,7 +17,7 @@ for (const [layout, width, height] of [
     await page.setViewportSize({ width, height });
     const player = 'synthetic-persistent-twitch-identity';
     const otherPlayer = 'another-synthetic-twitch-identity';
-    let now = 1_800_000_000_000;
+    const now = 1_800_000_000_000;
     const store = new MemoryStore();
     const oldSave = initialState(() => 0.5);
     oldSave.location = 'Lyria';
@@ -107,26 +100,13 @@ for (const [layout, width, height] of [
     await page.getByRole('button', { name: 'Quest Log' }).click();
     await capture('mining-success', 'mineDolivine');
     await act('returnOutpost');
-    await act('startRefinery');
-    const refineryCost = current().orders[0].cost;
-    expect(current().mining.Hand.Dolivine).toBe(0);
-    expect(current().orders).toHaveLength(1);
-    expect(current().orders[0]).toMatchObject({
-      rawUnits: TUTORIAL_RAW_UNITS,
-      refinedUnits: TUTORIAL_REFINED_UNITS,
-      cost: TUTORIAL_REFINERY_COST,
-    });
-    now += TUTORIAL_DURATION_MS;
-    await act('collect');
+    expect(current().firstShift?.objective).toBe('SELL_MINED_GEM');
+    expect(current().mining.Hand.Dolivine).toBe(TUTORIAL_RAW_UNITS);
     expect(current().orders).toHaveLength(0);
-    expect(current().cargo.Nomad?.refined.Dolivine).toBe(TUTORIAL_REFINED_UNITS);
-    expect(current().firstShift?.counters.refined).toBe(TUTORIAL_REFINED_UNITS);
-    await openMenu('Refinery');
-    await capture('refinery-collection', 'collect');
     await act('sell');
-    expect(current().cargo.Nomad?.refined.Dolivine).toBe(0);
+    expect(current().mining.Hand.Dolivine).toBe(0);
     expect(current().wallet).toBe(startingWallet + TUTORIAL_SALE_AUEC);
-    expect(current().firstShift?.counters.sold).toBe(TUTORIAL_REFINED_UNITS);
+    expect(current().firstShift?.counters.sold).toBe(TUTORIAL_RAW_UNITS);
     await openMenu('Market');
     await capture('market-sale-confirmation', 'sell');
     await page.getByRole('button', { name: 'Close menu' }).click();
@@ -134,11 +114,11 @@ for (const [layout, width, height] of [
     await expect(page.getByLabel('Area introduction')).toHaveCount(0, { timeout: 5000 });
     await expect(page.getByRole('status')).toHaveCount(0, { timeout: 5000 });
     await capture('quest-completion', 'complete');
-    expect(current().wallet).toBe(startingWallet + TUTORIAL_SALE_AUEC - refineryCost + FIRST_SHIFT_REWARD);
+    expect(current().wallet).toBe(startingWallet + TUTORIAL_SALE_AUEC + FIRST_SHIFT_REWARD);
     expect(current().firstShift?.counters).toEqual({
       mined: TUTORIAL_RAW_UNITS,
-      refined: TUTORIAL_REFINED_UNITS,
-      sold: TUTORIAL_REFINED_UNITS,
+      refined: 0,
+      sold: TUTORIAL_RAW_UNITS,
     });
     await page.getByRole('button', { name: 'Quest Log' }).click();
     await expect(page.getByLabel('Final reward summary')).toContainText(
@@ -152,7 +132,7 @@ for (const [layout, width, height] of [
     await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
     await page.getByRole('button', { name: 'Quest Log' }).click();
     await expect(page.getByLabel('Quest Log')).toContainText(
-      `Dolivine mined: ${TUTORIAL_RAW_UNITS} cSCU · refined: ${TUTORIAL_REFINED_UNITS} cSCU · sold: ${TUTORIAL_REFINED_UNITS} cSCU`,
+      `Dolivine mined: ${TUTORIAL_RAW_UNITS} cSCU · refined: 0 cSCU · sold raw: ${TUTORIAL_RAW_UNITS} cSCU`,
     );
     await capture('final-quest-log-after-refresh', 'refresh');
     const finalState = structuredClone(current());
@@ -171,14 +151,14 @@ for (const [layout, width, height] of [
           startingWallet,
           rawMined: TUTORIAL_RAW_UNITS,
           rawConsumed: TUTORIAL_RAW_UNITS,
-          refinedProduced: TUTORIAL_REFINED_UNITS,
-          refinedCollected: TUTORIAL_REFINED_UNITS,
-          refinedSold: TUTORIAL_REFINED_UNITS,
+          refinedProduced: 0,
+          refinedCollected: 0,
+          rawSold: TUTORIAL_RAW_UNITS,
           saleRevenue: TUTORIAL_SALE_AUEC,
-          refineryCost,
+          refineryCost: 0,
           questReward: FIRST_SHIFT_REWARD,
           finalWallet: finalState.wallet,
-          walletEquation: `${startingWallet} + ${TUTORIAL_SALE_AUEC} - ${refineryCost} + ${FIRST_SHIFT_REWARD} = ${finalState.wallet}`,
+          walletEquation: `${startingWallet} + ${TUTORIAL_SALE_AUEC} + ${FIRST_SHIFT_REWARD} = ${finalState.wallet}`,
           screenshots: manifest,
         },
         null,

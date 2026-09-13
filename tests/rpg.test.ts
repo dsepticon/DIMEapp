@@ -16,7 +16,8 @@ describe('Lyria local scene', () => {
     expect(questMarkerFor('foreman')).toBe('available');
     expect(questMarkerFor('foreman', 'RETURN_TO_FOREMAN')).toBe('ready');
     expect(questMarkerFor('officer', 'CHECK_EQUIPMENT')).toBe('active');
-    expect(questMarkerFor('technician', 'START_REFINERY_ORDER')).toBe('active');
+    expect(questMarkerFor('officer', 'SELL_MINED_GEM')).toBe('active');
+    expect(questMarkerFor('technician', 'START_REFINERY_ORDER')).toBeNull();
     expect(questMarkerFor('foreman', 'COMPLETE')).toBeNull();
     expect(questMarkerFor('dolivine', 'MINE_ASSIGNED_ORE')).toBeNull();
   });

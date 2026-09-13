@@ -56,6 +56,15 @@ export default function Home() {
   const blocked =
     storageError || busy || !!pending || !state || (!config.local && session.status !== 'authorized');
   const canAct = !blocked && !state?.pending;
+  useEffect(() => {
+    if (
+      canAct &&
+      state?.firstShift &&
+      (state.firstShift.version === undefined || state.firstShift.version === 1) &&
+      !state.firstShift.reconciliation
+    )
+      void mutate({ type: 'firstShift', step: 'reconcile' });
+  }, [canAct, state, mutate]);
   const overlay = view !== 'game' || (!!pending && !busy);
   const status = config.error || session.message || notice;
   return (

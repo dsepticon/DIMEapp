@@ -16,11 +16,17 @@ export const firstShiftObjectiveSchema = z.enum([
   'START_REFINERY_ORDER',
   'COLLECT_REFINED_MATERIAL',
   'SELL_REFINED_MATERIAL',
+  'SELL_MINED_GEM',
   'RETURN_TO_FOREMAN',
   'COMPLETE',
 ]);
 export const firstShiftSchema = z.object({
   id: z.literal('first-shift'),
+  // Missing version identifies the Milestone 2.1 refinery tutorial for server reconciliation.
+  version: z.number().int().positive().optional(),
+  reconciliation: z
+    .enum(['NONE', 'CORRECTED', 'LEGACY_SOLD', 'LEGACY_COMPLETE', 'SUPPORT_REQUIRED'])
+    .optional(),
   status: z.enum(['NOT_STARTED', 'ACTIVE', 'COMPLETE']),
   objective: firstShiftObjectiveSchema,
   counters: z.object({ mined: units, refined: units, sold: units }),
@@ -122,6 +128,7 @@ export const actionSchema = z.discriminatedUnion('type', [
         'collect',
         'sell',
         'complete',
+        'reconcile',
       ]),
       depositId: z.literal('dolivine').optional(),
     })

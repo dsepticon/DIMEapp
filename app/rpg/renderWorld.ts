@@ -10,9 +10,7 @@ export function questMarkerFor(id: string, objective?: Objective): 'available' |
     if (!objective || objective === 'SPEAK_TO_FOREMAN') return 'available';
     return objective === 'RETURN_TO_FOREMAN' ? 'ready' : null;
   }
-  if (id === 'officer' && objective === 'CHECK_EQUIPMENT') return 'active';
-  if (id === 'technician' && ['START_REFINERY_ORDER', 'COLLECT_REFINED_MATERIAL'].includes(objective ?? ''))
-    return 'active';
+  if (id === 'officer' && ['CHECK_EQUIPMENT', 'SELL_MINED_GEM'].includes(objective ?? '')) return 'active';
   return null;
 }
 

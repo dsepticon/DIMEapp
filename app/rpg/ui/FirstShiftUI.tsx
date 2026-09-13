@@ -2,11 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import {
   firstShiftOf,
   FIRST_SHIFT_REWARD,
-  TUTORIAL_DURATION_MS,
+  LEGACY_TUTORIAL_SALE_AUEC,
   TUTORIAL_SALE_AUEC,
   TUTORIAL_RAW_UNITS,
-  TUTORIAL_REFINERY_COST,
-  TUTORIAL_REFINED_UNITS,
 } from '../../../shared/firstShift';
 import type { Action, PlayerState } from '../../../shared/schema';
 import styles from './GameUI.module.css';
@@ -20,13 +18,28 @@ const LABELS: Record<ReturnType<typeof firstShiftOf>['objective'], string> = {
   START_REFINERY_ORDER: 'Speak to Ivo Sen and start refining',
   COLLECT_REFINED_MATERIAL: 'Collect the refinery order',
   SELL_REFINED_MATERIAL: 'Sell refined Dolivine to Neri Vale',
+  SELL_MINED_GEM: 'Sell the raw Dolivine to Neri Vale',
   RETURN_TO_FOREMAN: 'Report back to Mara Voss',
   COMPLETE: 'First Shift complete · next assignment unlocked',
 };
 export function objectiveText(state: PlayerState): string {
+  if (state.firstShift?.reconciliation === 'SUPPORT_REQUIRED') return 'Contact support about this assignment';
+  if (state.firstShift && state.firstShift.version !== 2 && state.firstShift.status === 'ACTIVE')
+    return state.firstShift.version === undefined || state.firstShift.version === 1
+      ? 'Updating your earlier First Shift assignment'
+      : 'Contact support about this assignment';
   if (state.location !== 'Lyria' && firstShiftOf(state).status !== 'COMPLETE')
     return 'Travel to Lyria via the ship console';
   return LABELS[firstShiftOf(state).objective];
+}
+
+function legacySale(quest: ReturnType<typeof firstShiftOf>): boolean {
+  return (
+    quest.version !== 2 ||
+    quest.reconciliation === 'LEGACY_SOLD' ||
+    quest.reconciliation === 'LEGACY_COMPLETE' ||
+    quest.reconciliation === 'SUPPORT_REQUIRED'
+  );
 }
 export function miningTick(energy: number, stability: number, held: boolean) {
   return held
@@ -36,8 +49,13 @@ export function miningTick(energy: number, stability: number, held: boolean) {
 
 export function QuestLog({ state }: { state: PlayerState }) {
   const quest = firstShiftOf(state);
-  const refineryCost = TUTORIAL_REFINERY_COST;
-  const walletChange = TUTORIAL_SALE_AUEC - refineryCost + FIRST_SHIFT_REWARD;
+  const legacy =
+    !!state.firstShift &&
+    (state.firstShift.version !== 2 ||
+      state.firstShift.reconciliation === 'LEGACY_SOLD' ||
+      state.firstShift.reconciliation === 'LEGACY_COMPLETE' ||
+      state.firstShift.reconciliation === 'SUPPORT_REQUIRED');
+  const walletChange = TUTORIAL_SALE_AUEC + FIRST_SHIFT_REWARD;
   return (
     <section className={styles.screen} aria-label="Quest Log">
       <h1>Quest Log</h1>
@@ -53,19 +71,29 @@ export function QuestLog({ state }: { state: PlayerState }) {
               : 'Available'}
         </p>
         <p>
-          Dolivine mined: {quest.counters.mined} cSCU · refined: {quest.counters.refined} cSCU · sold:{' '}
-          {quest.counters.sold} cSCU
+          Dolivine mined: {quest.counters.mined} cSCU · refined: {quest.counters.refined} cSCU ·{' '}
+          {legacy ? 'sold' : 'sold raw'}: {quest.counters.sold} cSCU
         </p>
-        {quest.status === 'COMPLETE' && (
+        {(quest.reconciliation === 'SUPPORT_REQUIRED' ||
+          (quest.version !== undefined && quest.version !== 1 && quest.version !== 2)) && (
+          <p>Contact support about this assignment. Other game features remain available.</p>
+        )}
+        {legacy && quest.status === 'COMPLETE' && <p>Completed under an earlier First Shift route.</p>}
+        {quest.reconciliation === 'LEGACY_SOLD' && (
+          <p>
+            Earlier refinery sale credited: {LEGACY_TUTORIAL_SALE_AUEC} aUEC. No raw-gem sale will be added.
+          </p>
+        )}
+        {quest.status === 'COMPLETE' && !legacy && (
           <div aria-label="Final reward summary">
             <p>Sale revenue: +{TUTORIAL_SALE_AUEC} aUEC</p>
-            <p>Refinery cost: -{refineryCost} aUEC</p>
+            <p>Refinery cost: 0 aUEC · gems are sold raw</p>
             <p>Reward claimed: +{FIRST_SHIFT_REWARD} aUEC</p>
             <p>Total wallet change: +{walletChange} aUEC</p>
             <p>Final wallet: {state.wallet} aUEC</p>
             <p>
               Assigned Dolivine: {quest.counters.mined} cSCU mined · {quest.counters.refined} cSCU refined ·{' '}
-              {quest.counters.sold} cSCU sold
+              {quest.counters.sold} cSCU sold raw
             </p>
             <p>Next assignment unlocked</p>
           </div>
@@ -79,7 +107,6 @@ export function TutorialOperations({
   state,
   canAct,
   busy,
-  now,
   mutate,
   kind,
 }: {
@@ -92,24 +119,26 @@ export function TutorialOperations({
 }) {
   const quest = firstShiftOf(state);
   const action =
-    kind === 'refinery'
-      ? quest.objective === 'START_REFINERY_ORDER'
-        ? 'startRefinery'
-        : quest.objective === 'COLLECT_REFINED_MATERIAL'
-          ? 'collect'
-          : null
-      : quest.objective === 'SELL_REFINED_MATERIAL'
-        ? 'sell'
-        : null;
-  const order = state.orders.find((item) => item.id === quest.tutorialOrderId);
-  const disabled = !canAct || busy || (action === 'collect' && !!order && order.readyAt > now);
+    kind === 'market' &&
+    quest.objective === 'SELL_MINED_GEM' &&
+    quest.version === 2 &&
+    quest.reconciliation !== 'SUPPORT_REQUIRED'
+      ? 'sell'
+      : null;
+  const disabled = !canAct || busy;
   return (
     <section className={styles.panel} aria-label={`${kind} tutorial`}>
       <strong>{kind === 'refinery' ? 'Ivo Sen · shift refinery' : 'Neri Vale · supply exchange'}</strong>
       <p>
-        {kind === 'refinery'
-          ? `Process ${TUTORIAL_RAW_UNITS} cSCU of assigned Dolivine into ${TUTORIAL_REFINED_UNITS} cSCU in ${TUTORIAL_DURATION_MS / 1000} seconds. Refinery cost: ${TUTORIAL_REFINERY_COST} aUEC.`
-          : `Sell the assigned refined Dolivine for ${TUTORIAL_SALE_AUEC} aUEC.`}
+        {quest.reconciliation === 'SUPPORT_REQUIRED'
+          ? 'Contact support about this assignment.'
+          : quest.version !== 2
+            ? 'Updating your earlier First Shift assignment.'
+            : quest.reconciliation === 'LEGACY_SOLD' || quest.reconciliation === 'LEGACY_COMPLETE'
+              ? 'Your earlier refinery sale remains credited. No new raw-gem sale is due.'
+              : kind === 'refinery'
+                ? 'Dolivine and other gems cannot enter a refinery work order. Sell them raw at the supply exchange.'
+                : `Sell the assigned ${TUTORIAL_RAW_UNITS} cSCU of raw Dolivine for ${TUTORIAL_SALE_AUEC} aUEC.`}
       </p>
       {action && (
         <button
@@ -117,20 +146,14 @@ export function TutorialOperations({
           disabled={disabled}
           onClick={() => void mutate({ type: 'firstShift', step: action })}
         >
-          {action === 'startRefinery'
-            ? 'Start tutorial order'
-            : action === 'collect'
-              ? 'Collect tutorial material'
-              : 'Sell tutorial material'}
+          Sell raw Dolivine
         </button>
       )}
-      {action === 'collect' && order && order.readyAt > now && <p>Processing · ready shortly</p>}
-      {kind === 'refinery' && !order && quest.counters.refined > 0 && (
-        <p>Collected: {quest.counters.refined} cSCU refined Dolivine in Nomad cargo.</p>
-      )}
-      {kind === 'market' && quest.counters.sold > 0 && (
+      {kind === 'market' && quest.counters.sold > 0 && quest.reconciliation !== 'SUPPORT_REQUIRED' && (
         <p>
-          Sale confirmed: {quest.counters.sold} cSCU refined Dolivine for {TUTORIAL_SALE_AUEC} aUEC.
+          {legacySale(quest)
+            ? `Earlier sale confirmed: ${quest.counters.sold} cSCU refined Dolivine for ${LEGACY_TUTORIAL_SALE_AUEC} aUEC.`
+            : `Sale confirmed: ${quest.counters.sold} cSCU raw Dolivine for ${TUTORIAL_SALE_AUEC} aUEC.`}
         </p>
       )}
     </section>

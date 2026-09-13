@@ -2,9 +2,11 @@ import {
   ASTEROIDS,
   CAPACITIES,
   EQUIPMENT,
+  GEM_SPAWN_WEIGHTS,
   METHODS,
   METHOD_NAMES,
-  ORES,
+  rawMineral,
+  refinedMineral,
   SHIP_PRICES,
   TRAVEL,
 } from './catalog';
@@ -87,14 +89,10 @@ export function refineryQuote(state: PlayerState, method: keyof typeof METHODS, 
 function miningReward(source: MiningType, random: () => number): Inventory {
   if (source === 'Hand' || source === 'Roc') {
     const roll = random();
-    const ore: Ore =
-      roll < 0.5
-        ? 'Dolivine'
-        : roll < 0.8
-          ? 'Aphorite'
-          : roll < 0.99 || source === 'Roc'
-            ? 'Hadanite'
-            : 'Janalite';
+    let cumulative = 0;
+    const ore = (Object.entries(GEM_SPAWN_WEIGHTS[source]).find(
+      ([, weight]) => roll < (cumulative += weight),
+    )?.[0] ?? 'Hadanite') as Ore;
     return { [ore]: source === 'Hand' ? 1 + Math.floor(random() * 5) : 8 + Math.floor(random() * 56) };
   }
   const pools = Object.values(ASTEROIDS);
@@ -149,7 +147,7 @@ export function applyAction(
           action.step === 'mineDolivine' ? action.depositId === 'dolivine' : action.depositId === undefined,
           'Invalid assigned deposit.',
         );
-        applyFirstShift(state, action.step, now, id);
+        applyFirstShift(state, action.step, now);
         break;
       case 'travel': {
         const { ship, destination, loadRoc } = action;
@@ -249,7 +247,7 @@ export function applyAction(
       case 'refine': {
         assert(state.location === 'ARC-L1', 'Refining is available at ARC-L1.');
         assert(
-          ['Prospector', 'Mole'].includes(action.source) && !ORES[action.ore].gem,
+          ['Prospector', 'Mole'].includes(action.source) && rawMineral(action.ore).refineryEligible,
           'Only raw ship-mined ore can be refined.',
         );
         sourceHere(state, action.source);
@@ -276,6 +274,11 @@ export function applyAction(
         assert(state.location === 'ARC-L1', 'Collect orders at ARC-L1.');
         const order = state.orders.find((o) => o.id === action.orderId);
         assert(order, 'Order not found.', 'NOT_FOUND');
+        assert(
+          rawMineral(order.ore).refineryEligible,
+          'Gems cannot be collected from a refinery order.',
+          'GEM_NOT_REFINABLE',
+        );
         assert(now >= order.readyAt, 'Order is still processing.', 'NOT_READY');
         const hold = cargo(state, action.ship);
         const quantity = Math.min(
@@ -290,12 +293,17 @@ export function applyAction(
       }
       case 'sell': {
         const hold = cargo(state, action.ship);
-        const ore = ORES[action.ore];
+        const raw = rawMineral(action.ore);
+        const material = action.category === 'raw' ? raw : refinedMineral(action.ore);
         assert(
-          state.location === (action.category === 'refined' || ore.gem ? 'Area-18' : 'ARC-L1'),
+          material && (action.category !== 'raw' || material.rawSaleEligible),
+          'This material has no sale price.',
+        );
+        assert(
+          state.location === (action.category === 'refined' || raw.category === 'GEM' ? 'Area-18' : 'ARC-L1'),
           'This material cannot be sold here.',
         );
-        const price = action.category === 'raw' ? ore.raw : ore.refined;
+        const price = material.pricePerScu;
         assert(price > 0, 'This material has no sale price.');
         const proceeds = Math.round((action.units * price) / 100);
         assert(proceeds > 0, 'Quantity is too small to sell.');

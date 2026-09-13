@@ -116,7 +116,15 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
         if (current !== generation.current) return;
         accept(snapshot);
         savePending(null);
-        setNotice(snapshot.replayed ? 'Previous action confirmed. State synchronized.' : 'Operation saved.');
+        setNotice(
+          request.action.type === 'firstShift' &&
+            request.action.step === 'reconcile' &&
+            ['CORRECTED', 'LEGACY_SOLD'].includes(snapshot.state.firstShift?.reconciliation ?? '')
+            ? 'First Shift updated. Continue your assignment.'
+            : snapshot.replayed
+              ? 'Previous action confirmed. State synchronized.'
+              : 'Operation saved.',
+        );
       } catch (error) {
         if (current !== generation.current) return;
         setNotice(error instanceof Error ? error.message : 'Unable to complete action.');

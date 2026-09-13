@@ -134,3 +134,56 @@ test('objective notification stays clear of the collapsible tracker', async ({ p
   await expect(tracker).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('button', { name: 'Quest Log' })).toHaveCount(0);
 });
+
+test('legacy assignment reconciles once on load and shows one correction notice', async ({ page }) => {
+  const { store, posts } = await fixture(page);
+  const old = store.states.get('synthetic-player')!;
+  old.firstShift = {
+    ...firstShiftOf(old),
+    version: undefined,
+    reconciliation: undefined,
+    status: 'ACTIVE',
+    objective: 'START_REFINERY_ORDER',
+    acceptedAt: 1_799_999_999_000,
+    counters: { mined: 4, refined: 0, sold: 0 },
+  };
+  old.mining.Hand.Dolivine = 4;
+  await page.reload();
+  await expect.poll(() => store.states.get('synthetic-player')?.firstShift?.objective).toBe('SELL_MINED_GEM');
+  expect(store.states.get('synthetic-player')?.firstShift?.reconciliation).toBe('CORRECTED');
+  expect(store.states.get('synthetic-player')?.mining.Hand.Dolivine).toBe(4);
+  expect(posts()).toBe(1);
+  await expect(page.getByRole('status')).toContainText('First Shift updated. Continue your assignment.');
+  await page.reload();
+  await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
+  expect(posts()).toBe(1);
+});
+
+test('ambiguous legacy output shows Contact support while other navigation remains usable', async ({
+  page,
+}) => {
+  const { store, posts } = await fixture(page);
+  const old = store.states.get('synthetic-player')!;
+  old.firstShift = {
+    ...firstShiftOf(old),
+    version: undefined,
+    reconciliation: undefined,
+    status: 'ACTIVE',
+    objective: 'SELL_REFINED_MATERIAL',
+    acceptedAt: 1_799_999_999_000,
+    counters: { mined: 4, refined: 3, sold: 0 },
+    tutorialOrderId: 'synthetic-order',
+  };
+  old.cargo.Nomad!.refined.Dolivine = 5;
+  await page.reload();
+  await expect
+    .poll(() => store.states.get('synthetic-player')?.firstShift?.reconciliation)
+    .toBe('SUPPORT_REQUIRED');
+  expect(store.states.get('synthetic-player')?.cargo.Nomad?.refined.Dolivine).toBe(5);
+  expect(posts()).toBe(1);
+  await page.getByRole('button', { name: 'Quest Log' }).click();
+  await expect(page.getByLabel('Quest Log')).toContainText('Contact support');
+  await page.reload();
+  await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
+  expect(posts()).toBe(1);
+});

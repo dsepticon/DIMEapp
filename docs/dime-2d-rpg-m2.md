@@ -1,5 +1,24 @@
 # DIME 2D RPG Milestone 2 — The First Shift
 
+## Milestone 2.2 source correction (not deployed)
+
+The current branch now has a source-only 2.2 correction; the 2.1 refinery tutorial described below is the deployed historical behavior, not the new source behavior. Dolivine is a gem in the recovered DIME catalog (`gem: true`, refined price zero), so a new First Shift mines 4 cSCU and sells those same 4 cSCU raw at the Lyria supply exchange. No gem refinery order, refined output or refinery charge is created. The sale amount comes from the existing DIME raw price: `round(4 × 130000 / 100) = 5200` aUEC. With the existing 500 aUEC quest reward and a starting wallet of zero, the new source final wallet is `0 + 5200 + 500 = 5700` aUEC; counters are mined 4, refined 0, sold raw 4. The old 300 aUEC tutorial sale conflicts with the source price and is removed for new version-2 quests.
+
+New accepted quests carry `version: 2` and `reconciliation: NONE`. Older quests have no version. The client sends one generic `firstShift/reconcile` request on loading an older quest; it cannot choose a branch or submit quantities. The server verifies the existing quest stage, counters, named tutorial order, inventory and reward flag, then atomically writes version 2 with `CORRECTED`, `LEGACY_SOLD`, `LEGACY_COMPLETE` or `SUPPORT_REQUIRED`. Ambiguous records receive the last status without touching inventory, orders or wallet; unrelated game actions remain available. Existing saves without any quest field still start normally. The [mineral/world reference](star-citizen-world-reference.md) contains the full source-derived rarity and price review, official workflow study and future map design direction. No 2.2 source or frontend has been deployed or uploaded.
+
+| Legacy stage | Required verified evidence | One-time result |
+|---|---|---|
+| Completed | `status=COMPLETE` | Keep objective, counters, wallet and reward; mark `LEGACY_COMPLETE`, never pay again. |
+| Accepted, tool check or mine not yet confirmed | Zero quest counters and no tutorial order ID | Keep objective and all inventory; mark `CORRECTED`. |
+| Mined, not returned | Mined 4, refined/sold 0, at least 4 raw Dolivine in Hand hold, no tutorial order ID | Keep `RETURN_TO_OUTPOST`; mark `CORRECTED`. |
+| Ready to start old refinery | Same raw/counter evidence as above | Move to `SELL_MINED_GEM`; mark `CORRECTED`. |
+| Pending or ready old tutorial order | Exact stored order ID, Hand/Dolivine/Cormack order, raw 4 → refined 3, cost 0, 3-second duration, and room to restore 4 raw | Remove only that order, restore 4 raw, move to `SELL_MINED_GEM`; mark `CORRECTED`. |
+| Collected old tutorial output | Mined 4/refined 3/sold 0, stored tutorial ID, order absent, exactly 3 refined Dolivine in Nomad and nowhere else, and room for 4 raw | Remove exactly 3 refined Dolivine, restore 4 raw, reset invalid refined counter, move to `SELL_MINED_GEM`; mark `CORRECTED`. |
+| Old refined tutorial output sold | Mined 4/refined 3/sold 3, tutorial order absent, reward unclaimed | Preserve historical 300 aUEC sale and counters; move to `RETURN_TO_FOREMAN`, mark `LEGACY_SOLD`; normal 500 aUEC reward remains claimable once. |
+| Missing, mixed or inconsistent evidence | Any required check fails | Mark `SUPPORT_REQUIRED`, leave all accounting untouched, show “Contact support” for the quest while other game actions work. |
+
+The order ID is the original tutorial start request ID, not a client-selected identifier. After collection, the work order is gone; the strict quest-stage/counter/exact-inventory checks are the available attribution evidence. Mixed Dolivine output is rejected instead of guessed. Reconciliation and its request receipt share the existing revision-controlled transactional save; replaying that request returns the already reconciled state. No read, write or import of real player data is part of this work. This quest-schema correction does not activate the disconnected identity-migration module.
+
 This branch is a local release candidate only. It does not change the deployed Twitch extension, Lambda, DynamoDB table, or AWS stack. The frontend and server bundle must be deployed together in a future reviewed release because the chapter introduces a new action type.
 
 ## Save and compatibility

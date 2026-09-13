@@ -474,7 +474,7 @@ test('one nearby mineral interaction starts one server action and never awards o
   await expect.poll(actionRequests).toBe(1);
   await expect.poll(() => store.states.get('test')!.pending?.kind).toBe('mine');
   expect(store.states.get('test')!.mining.Hand).toEqual(before);
-  await expect(page.getByRole('status')).toContainText('Mining operation saved.');
+  await expect(page.getByRole('status')).toContainText(/Operation saved\.|Mining operation saved\./);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });

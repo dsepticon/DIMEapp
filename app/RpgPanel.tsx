@@ -83,9 +83,11 @@ export function RpgPanel({
     }
     if (objective !== lastObjective.current) {
       next =
-        objective === 'COMPLETE'
-          ? 'First Shift complete · 500 aUEC reward'
-          : `Objective complete · ${objectiveText(state)}`;
+        notice === 'First Shift updated. Continue your assignment.'
+          ? notice
+          : objective === 'COMPLETE'
+            ? 'First Shift complete · 500 aUEC reward'
+            : `Objective complete · ${objectiveText(state)}`;
       lastObjective.current = objective;
       setNotifications((queued) => [...queued, next]);
     } else {
@@ -140,7 +142,7 @@ export function RpgPanel({
                 current.location !== 'Lyria'
                   ? 'Your ship is registered away from Lyria. Use the blue navigation console to arrive before taking this shift.'
                   : start
-                    ? 'First shift? Take the Hand cutter, mine the marked Dolivine, refine it here, then sell it to Neri.'
+                    ? 'First shift? Take the Hand cutter, mine the marked Dolivine, then sell the raw gems to Neri.'
                     : ready
                       ? 'Good work. Your shift is complete. The next assignment is yours when you are ready.'
                       : quest.status === 'COMPLETE'
@@ -217,10 +219,7 @@ export function RpgPanel({
             setDialogue({
               speaker: 'Ivo Sen · Refinery Technician',
               portrait: 'technician',
-              text:
-                quest.objective === 'START_REFINERY_ORDER'
-                  ? 'I can refine your assigned Dolivine into a stable sample. The tutorial order takes three seconds.'
-                  : 'The refinery is ready. Collect your work order when processing finishes.',
+              text: 'Dolivine is a gem and cannot be refined. Bring ship-mined ore to my refinery for work orders.',
               choices: [
                 {
                   label: 'Open refinery',

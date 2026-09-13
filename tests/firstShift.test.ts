@@ -4,6 +4,7 @@ import { GameService } from '../server/service';
 import { MemoryStore } from '../server/store';
 import { applyAction, initialState } from '../shared/game';
 import { firstShiftOf, FIRST_SHIFT_REWARD, HAND_TOOL, TUTORIAL_SALE_AUEC } from '../shared/firstShift';
+import type { FirstShiftStep } from '../shared/firstShift';
 import { PlayerState, actionSchema, stateSchema } from '../shared/schema';
 import { miningTick, objectiveText } from '../app/rpg/ui/FirstShiftUI';
 
@@ -14,8 +15,6 @@ const steps = [
   'enterMine',
   'mineDolivine',
   'returnOutpost',
-  'startRefinery',
-  'collect',
   'sell',
   'complete',
 ] as const;
@@ -25,7 +24,7 @@ function onLyria(): PlayerState {
   state.positions.Nomad = 'Lyria';
   return state;
 }
-function run(state: PlayerState, step: (typeof steps)[number] | 'recoverTool', time = now): PlayerState {
+function run(state: PlayerState, step: FirstShiftStep, time = now): PlayerState {
   return applyAction(
     state,
     { type: 'firstShift', step, ...(step === 'mineDolivine' ? { depositId: 'dolivine' as const } : {}) },
@@ -59,23 +58,24 @@ describe('The First Shift authoritative progression', () => {
     let state = onLyria();
     for (const step of steps) {
       const previous = state;
-      state = run(state, step, step === 'collect' ? now + 3000 : now);
+      state = run(state, step);
       expect(state.revision).toBe(previous.revision + 1);
       expect(() => run(state, step, now + 3000)).toThrow();
     }
     expect(state.firstShift).toMatchObject({
+      version: 2,
       status: 'COMPLETE',
       objective: 'COMPLETE',
       rewardClaimed: true,
       unlockedQuests: ['lyria-next-shift'],
-      counters: { mined: 4, refined: 3, sold: 3 },
+      counters: { mined: 4, refined: 0, sold: 4 },
     });
     expect(state.mining.Hand.Dolivine).toBe(0);
-    expect(state.cargo.Nomad?.refined.Dolivine).toBe(0);
+    expect(state.cargo.Nomad?.refined.Dolivine ?? 0).toBe(0);
     expect(state.orders).toHaveLength(0);
     expect(state.wallet).toBe(FIRST_SHIFT_REWARD + TUTORIAL_SALE_AUEC);
   });
-  it('rejects skipped states, wrong location, missing tools, early collection and full cargo', () => {
+  it('rejects skipped states, wrong location, missing tools and full hand cargo', () => {
     const start = onLyria();
     expect(() => run(start, 'mineDolivine')).toThrow('foreman');
     const accepted = run(start, 'accept');
@@ -91,13 +91,10 @@ describe('The First Shift authoritative progression', () => {
     entered.mining.Hand.Hadanite = 0;
     const mined = run(entered, 'mineDolivine');
     const returned = run(mined, 'returnOutpost');
-    const refining = run(returned, 'startRefinery');
-    expect(() => run(refining, 'collect', now + 2999)).toThrow('processing');
-    refining.cargo.Nomad = { raw: { Iron: 2400 }, refined: {} };
-    expect(() => run(refining, 'collect', now + 3000)).toThrow('full');
-    refining.cargo.Nomad = { raw: {}, refined: {} };
-    refining.location = 'ARC-L1';
-    expect(() => run(refining, 'collect', now + 3000)).toThrow('Lyria');
+    expect(() => run(returned, 'startRefinery')).toThrow('cannot be refined');
+    expect(() => run(returned, 'collect')).toThrow('cannot be refined');
+    returned.location = 'ARC-L1';
+    expect(() => run(returned, 'sell')).toThrow('Lyria');
   });
   it('prevents direct quest state, reward or price submission', () => {
     expect(actionSchema.safeParse({ type: 'firstShift', step: 'complete', reward: 999 }).success).toBe(false);
