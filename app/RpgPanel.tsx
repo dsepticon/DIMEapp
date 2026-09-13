@@ -6,9 +6,10 @@ import { format } from './ui';
 import { CanvasEngine } from './rpg/canvasEngine';
 import { Direction, WorldObject } from './rpg/world';
 import { MiningActionAdapter } from './rpg/actionAdapter';
+import { areaName } from './rpg/mapData';
+import { Dialogue } from './rpg/ui/UiBits';
+import type { GameView } from './rpg/ui/Screens';
 import styles from './RpgPanel.module.css';
-
-type Overlay = 'game' | 'menu' | 'cargo' | 'refinery' | 'market' | 'profile' | 'travel' | 'mining';
 
 export function RpgPanel({
   state,
@@ -27,7 +28,7 @@ export function RpgPanel({
   status: string;
   busy: boolean;
   overlay: boolean;
-  navigate: (view: Overlay) => void;
+  navigate: (view: GameView) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<CanvasEngine | null>(null);
@@ -36,18 +37,25 @@ export function RpgPanel({
   const [nearby, setNearby] = useState<WorldObject | undefined>();
   const [message, setMessage] = useState('');
   const [area, setArea] = useState(true);
+  const [areaLabel, setAreaLabel] = useState(areaName('outpost'));
   const [title, setTitle] = useState(true);
+  const [dialogue, setDialogue] = useState<{ speaker: string; text: string; next?: () => void } | null>(null);
+  const dialogueRef = useRef(dialogue);
+  dialogueRef.current = dialogue;
   const latest = useRef({ state, canAct, mutate, navigate });
   latest.current = { state, canAct, mutate, navigate };
 
   useEffect(() => {
     const start = window.setTimeout(() => setTitle(false), 850);
-    const areaTimer = window.setTimeout(() => setArea(false), 3400);
     return () => {
       window.clearTimeout(start);
-      window.clearTimeout(areaTimer);
     };
   }, []);
+  useEffect(() => {
+    setArea(true);
+    const timer = window.setTimeout(() => setArea(false), areaLabel === 'Lyria Mining Outpost' ? 3400 : 2200);
+    return () => window.clearTimeout(timer);
+  }, [areaLabel]);
 
   useEffect(() => {
     if (busy || !notice) return;
@@ -67,16 +75,39 @@ export function RpgPanel({
     if (!canvasRef.current) return;
     const engine = new CanvasEngine(canvasRef.current, {
       prompt: setNearby,
-      escape: () => navigate('game'),
+      escape: () => {
+        if (dialogueRef.current) setDialogue(null);
+        else navigate('game');
+      },
       backpack: () => navigate('cargo'),
+      area: setAreaLabel,
       interact: (object) => {
         const { state: current, canAct: enabled, mutate: submit, navigate: open } = latest.current;
+        if (object.kind === 'npc') {
+          setDialogue({
+            speaker: 'Station worker',
+            text: 'Keep your lamp charged, miner. The chamber beyond the striped gate is safe, but the ore is stubborn.',
+          });
+          return;
+        }
         if (object.kind === 'refinery' || object.kind === 'market') {
-          open(object.kind);
+          const target = object.kind;
+          setDialogue({
+            speaker: object.kind === 'refinery' ? 'Refinery console' : 'Supply counter',
+            text:
+              object.kind === 'refinery'
+                ? 'Choose raw ore and a process. The station will queue a work order.'
+                : 'Welcome to the exchange. Review a price before confirming a trade.',
+            next: () => open(target),
+          });
           return;
         }
         if (object.kind === 'travel') {
-          open('travel');
+          setDialogue({
+            speaker: 'Navigation console',
+            text: 'Select a destination and ship. Every flight requires confirmation.',
+            next: () => open('travel'),
+          });
           return;
         }
         if (current.location !== 'Lyria') {
@@ -109,7 +140,7 @@ export function RpgPanel({
     };
   }, [navigate]);
 
-  useEffect(() => engineRef.current?.setOverlay(overlay || title), [overlay, title]);
+  useEffect(() => engineRef.current?.setOverlay(overlay || title || !!dialogue), [overlay, title, dialogue]);
 
   const touch = (direction: Direction) => ({
     onPointerDown: (event: React.PointerEvent<HTMLButtonElement>) => {
@@ -135,9 +166,9 @@ export function RpgPanel({
       />
       <div className={styles.hud}>
         <div className={styles.hudValues}>
-          <strong aria-label="Wallet">{format(state.wallet)} aUEC</strong>
+          <strong aria-label="Wallet">◈ {format(state.wallet)} aUEC</strong>
           <span aria-label="Cargo capacity">
-            Hand Cargo {cargo / 100}/{CAPACITIES.Hand / 100} SCU
+            ▣ Hand Cargo {cargo / 100}/{CAPACITIES.Hand / 100} SCU
           </span>
         </div>
         <button className={styles.menuButton} aria-label="Open game menu" onClick={() => navigate('menu')}>
@@ -153,7 +184,7 @@ export function RpgPanel({
       )}
       {!title && area && (
         <div className={styles.area} aria-label="Area introduction">
-          Lyria Mining Outpost
+          {areaLabel}
         </div>
       )}
       {message && !title && (
@@ -190,6 +221,16 @@ export function RpgPanel({
             Interact
           </button>
         </div>
+      )}
+      {dialogue && !overlay && (
+        <Dialogue
+          speaker={dialogue.speaker}
+          text={dialogue.text}
+          onAdvance={() => {
+            setDialogue(null);
+            dialogue.next?.();
+          }}
+        />
       )}
     </section>
   );

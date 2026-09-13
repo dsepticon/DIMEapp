@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { initialState } from '../shared/game';
 import { MiningActionAdapter } from '../app/rpg/actionAdapter';
 import { directionForKey } from '../app/rpg/canvasEngine';
+import { FADE_MS, transitionOpacity } from '../app/rpg/canvasEngine';
+import { areaForX, areaName } from '../app/rpg/mapData';
+import { drawMiner, toolFrame, walkFrame } from '../app/rpg/sprites';
 import { advance, canStand, initialWorld, nearestObject, OBJECTS, tileAt } from '../app/rpg/world';
 
 const none = { up: false, down: false, left: false, right: false };
@@ -17,7 +20,7 @@ describe('Lyria local scene', () => {
       OBJECTS.filter((item) => item.kind !== 'deposit')
         .map((item) => item.kind)
         .sort(),
-    ).toEqual(['market', 'refinery', 'travel']);
+    ).toEqual(['market', 'npc', 'refinery', 'travel']);
   });
   it('moves in four directions without writing to any API', () => {
     let world = initialWorld();
@@ -51,6 +54,43 @@ describe('Lyria local scene', () => {
     expect(directionForKey('KeyA')).toBe('left');
     expect(directionForKey('ArrowRight')).toBe('right');
     expect(directionForKey('KeyE')).toBeUndefined();
+  });
+});
+
+describe('Milestone 1.2 authored art and scene rules', () => {
+  it('uses three walking frames and settles to idle for every facing direction', () => {
+    const poses = new Set<string>();
+    for (const facing of ['up', 'down', 'left', 'right']) {
+      const pixels: string[] = [];
+      const ctx = {
+        fillStyle: '',
+        fillRect(x: number, y: number, w: number, h: number) {
+          pixels.push(`${x},${y},${w},${h},${this.fillStyle}`);
+        },
+      } as CanvasRenderingContext2D;
+      drawMiner(ctx, 8, 22, facing as 'up' | 'down' | 'left' | 'right', 0, 0, false);
+      poses.add(pixels.join('|'));
+      expect([walkFrame(true, 0), walkFrame(true, 0.12), walkFrame(true, 0.23)]).toEqual([0, 1, 2]);
+      expect(walkFrame(false, 0.23)).toBe(0);
+    }
+    expect(poses.size).toBe(4);
+  });
+  it('finishes the short tool motion and fades a transition with locked midpoint', () => {
+    expect(toolFrame(0, 320)).toBe(2);
+    expect(toolFrame(200, 320)).toBe(1);
+    expect(toolFrame(320, 320)).toBe(0);
+    expect(transitionOpacity(0)).toBe(0);
+    expect(transitionOpacity(FADE_MS / 2)).toBe(1);
+    expect(transitionOpacity(FADE_MS)).toBe(0);
+  });
+  it('distinguishes outpost and mine, including entry and blocked side passage', () => {
+    expect(areaForX(15.9)).toBe('outpost');
+    expect(areaForX(16.5)).toBe('mine');
+    expect(areaName('mine')).toBe('Lyria Mine Chamber');
+    expect(tileAt(16, 10)).toBe('entrance');
+    expect(tileAt(31, 7)).toBe('blocked');
+    expect(canStand(31.5, 7.5)).toBe(false);
+    expect(canStand(21.5, 10.5)).toBe(true);
   });
 });
 

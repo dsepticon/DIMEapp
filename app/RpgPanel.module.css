@@ -2,7 +2,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #152934;
+  background: var(--steel-dark);
   touch-action: none;
   user-select: none;
 }
@@ -27,23 +27,23 @@
   display: grid;
   gap: 2px;
   padding: 5px 7px;
-  background: #091823d9;
-  border: 1px solid #719990;
-  color: #e9efce;
+  background: #091823dc;
+  border: 2px solid var(--steel-light);
+  color: var(--cream);
   font: 11px/1.3 monospace;
   text-shadow: 1px 1px #000;
 }
 .hudValues span {
-  color: #a9e4d5;
+  color: var(--cyan);
   font-size: 10px;
 }
 .menuButton {
   pointer-events: auto;
   width: 37px;
   height: 37px;
-  border: 2px solid #a2daca;
+  border: 2px solid var(--cyan);
   background: #173743e6;
-  color: #f5f2d3;
+  color: var(--cream);
   font-size: 18px;
 }
 .connection,
@@ -55,9 +55,9 @@
   transform: translateX(-50%);
   max-width: calc(100% - 20px);
   text-align: center;
-  color: #fff4d5;
+  color: var(--cream);
   background: #112934e8;
-  border: 1px solid #85bdaa;
+  border: 2px solid var(--steel-light);
   padding: 5px 8px;
   font: 11px/1.3 monospace;
 }
@@ -75,7 +75,7 @@
   animation: card 3.4s ease-out forwards;
 }
 .prompt {
-  bottom: 115px;
+  bottom: 140px;
   white-space: nowrap;
 }
 .title {
@@ -108,9 +108,22 @@
 .dpad {
   display: grid;
   grid-template-columns: repeat(3, 38px);
-  grid-template-rows: repeat(2, 38px);
-  gap: 2px;
+  grid-template-rows: repeat(3, 38px);
+  gap: 0;
+  padding: 2px;
+  border: 2px solid var(--steel-light);
+  border-radius: 10px;
+  background: #0d2836c9;
   touch-action: none;
+}
+.dpad::before {
+  content: '◆';
+  grid-column: 2;
+  grid-row: 2;
+  display: grid;
+  place-items: center;
+  color: var(--amber);
+  font-size: 13px;
 }
 .dpad button,
 .interact {
@@ -118,16 +131,16 @@
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
-  border: 2px solid #b2d2bc;
-  background: #1a3e4dbb;
-  color: #f8f4dc;
+  border: 1px solid var(--steel-light);
+  background: #1a3e4d99;
+  color: var(--cream);
   font: bold 15px monospace;
   border-radius: 5px;
-  opacity: 0.82;
+  opacity: 0.72;
 }
 .dpad button:active,
 .interact:active {
-  background: #55a58d;
+  background: var(--cyan);
   opacity: 1;
 }
 .up {
@@ -140,7 +153,7 @@
 }
 .down {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 3;
 }
 .right {
   grid-column: 3;
@@ -152,7 +165,7 @@
   font-size: 12px;
 }
 .interact:disabled {
-  opacity: 0.48;
+  opacity: 0.45;
 }
 @keyframes card {
   0% {
@@ -175,7 +188,7 @@
   }
   .dpad {
     grid-template-columns: repeat(3, 44px);
-    grid-template-rows: repeat(2, 44px);
+    grid-template-rows: repeat(3, 44px);
   }
   .interact {
     width: 100px;

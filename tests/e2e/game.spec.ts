@@ -15,20 +15,23 @@ const navigate = async (page: Page, name: string) => {
   await page
     .getByRole('navigation', { name: 'Game menu' })
     .getByRole('button', {
-      name:
-        name === 'cargo'
-          ? /Backpack/
-          : name === 'profile'
-            ? /Character/
-            : name === 'travel'
-              ? /Ship/
-              : name === 'mining'
-                ? /Mining controls/
-                : name,
-      exact: name === 'refinery' || name === 'market',
+      name: name === 'mining' ? 'Mining operations' : name[0].toUpperCase() + name.slice(1),
+      exact: true,
     })
     .click();
 };
+const choice = (page: Page, label: string, value: string) =>
+  page.getByRole('group', { name: label }).getByRole('button', { name: value, exact: true });
+async function startTravel(page: Page, destination?: string, ship?: string) {
+  if (ship) await choice(page, 'Travel ship', ship).click();
+  if (destination)
+    await page
+      .getByRole('group', { name: 'Location map' })
+      .getByRole('button', { name: new RegExp('^' + destination + '(?: |$)') })
+      .click();
+  await page.getByRole('button', { name: 'Start travel' }).click();
+  await page.getByRole('button', { name: 'Confirm travel' }).click();
+}
 async function fixture(page: Page, funded = true) {
   let now = 1_800_000_000_000;
   let actionRequests = 0;
@@ -105,7 +108,7 @@ async function reachDolivine(page: Page, store: MemoryStore) {
   await page.getByRole('button', { name: 'Refresh authoritative state' }).click();
   await navigate(page, 'game');
   await page.keyboard.down('ArrowRight');
-  await page.waitForTimeout(3800);
+  await page.waitForTimeout(4500);
   await page.keyboard.up('ArrowRight');
   await page.keyboard.down('ArrowUp');
   await page.waitForTimeout(1500);
@@ -115,13 +118,10 @@ async function reachDolivine(page: Page, store: MemoryStore) {
 test('mine → refine → collect → sell persists across refresh with accurate quantities', async ({ page }) => {
   const { store, advance } = await fixture(page);
   await navigate(page, 'travel');
-  await page.getByText('Travel / select a claim', { exact: true }).click();
-  await page.getByRole('combobox', { name: 'Travel ship', exact: true }).selectOption('Prospector');
-  await page.getByRole('combobox', { name: 'Destination', exact: true }).selectOption('Halo');
-  await page.getByRole('button', { name: 'Start travel' }).click();
+  await startTravel(page, 'Halo', 'Prospector');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
-  await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  await expect(page.getByRole('status').first()).toHaveText('Operation saved.');
   await navigate(page, 'mining');
   await page.getByRole('button', { name: 'Prospector', exact: false }).click();
   await page.getByRole('button', { name: 'Scan and mine Prospector' }).click();
@@ -132,17 +132,17 @@ test('mine → refine → collect → sell persists across refresh with accurate
   const ore = Object.keys(inventory)[0] as Ore;
   expect(inventory[ore]).toBeGreaterThan(0);
   await navigate(page, 'travel');
-  await page.getByText('Travel / select a claim', { exact: true }).click();
-  await page.getByRole('combobox', { name: 'Destination', exact: true }).selectOption('ARC-L1');
-  await page.getByRole('button', { name: 'Start travel' }).click();
+  await startTravel(page, 'ARC-L1', 'Prospector');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
   await expect(page.getByRole('status')).toHaveText('Operation saved.');
   await navigate(page, 'refinery');
-  await page.getByRole('combobox', { name: 'Mining hold', exact: true }).selectOption('Prospector');
-  await page.getByRole('combobox', { name: 'Ore', exact: true }).selectOption(ore);
-  await page.getByLabel('Amount (SCU)', { exact: true }).fill('1');
-  await page.getByRole('button', { name: 'Create work order' }).click();
+  await page.getByRole('button', { name: `Select ${ore} recipe` }).click();
+  await page
+    .getByRole('group', { name: 'Refine amount' })
+    .getByRole('button', { name: '1 SCU', exact: true })
+    .click();
+  await page.getByRole('button', { name: 'Start Refining' }).click();
   await expect.poll(() => store.states.get('test')!.orders.length).toBe(1);
   await expect(page.getByRole('status')).toHaveText('Operation saved.');
   await page.reload();
@@ -150,29 +150,26 @@ test('mine → refine → collect → sell persists across refresh with accurate
   await expect(page.getByText('Dinyx Solventation', { exact: true }).last()).toBeVisible();
   await advance();
   await navigate(page, 'refinery');
-  await page.getByRole('combobox', { name: 'Cargo ship', exact: true }).selectOption('Nomad');
   await page.getByRole('button', { name: 'Collect into Nomad' }).click();
   await expect.poll(() => store.states.get('test')!.orders.length).toBe(0);
-  const units = store.states.get('test')!.cargo.Nomad!.refined[ore]!;
+  expect(store.states.get('test')!.cargo.Nomad!.refined[ore]).toBeGreaterThan(0);
   const balance = store.states.get('test')!.wallet;
   await navigate(page, 'travel');
-  await page.getByText('Travel / select a claim', { exact: true }).click();
-  await page.getByRole('combobox', { name: 'Travel ship', exact: true }).selectOption('Nomad');
-  await page.getByRole('combobox', { name: 'Destination', exact: true }).selectOption('Area-18');
-  await page.getByRole('button', { name: 'Start travel' }).click();
+  await startTravel(page, 'Area-18', 'Nomad');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
   await expect(page.getByRole('status')).toHaveText('Operation saved.');
   await navigate(page, 'market');
-  await page.getByRole('combobox', { name: 'Ore', exact: true }).selectOption(ore);
-  await page.getByRole('combobox', { name: 'Material', exact: true }).selectOption('refined');
-  await page.getByLabel('Amount (SCU)', { exact: true }).fill(String(units / 100));
+  await choice(page, 'Trade mode', 'Sell').click();
+  await choice(page, 'Material state', 'refined').click();
+  await page.getByRole('button', { name: `Select ${ore} material` }).click();
+  await page.getByRole('group', { name: 'Sell amount' }).getByRole('button', { name: 'Max' }).click();
   await page.getByRole('button', { name: 'Sell material' }).click();
   await expect.poll(() => store.states.get('test')!.wallet).toBeGreaterThan(balance);
   expect(store.states.get('test')!.cargo.Nomad!.refined[ore]).toBe(0);
   const soldBalance = store.states.get('test')!.wallet;
   await page.reload();
-  await expect(page.getByText(soldBalance.toLocaleString('en-US') + ' aUEC', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Wallet')).toContainText(soldBalance.toLocaleString('en-US'));
 });
 
 test('RPG movement is local, controls survive Strict Mode remount, and focus pauses movement', async ({
@@ -245,6 +242,118 @@ test('RPG touch controls and responsive panel/mobile/preview layouts remain usab
   }
 });
 
+test('Milestone 1.2 scene and game-window visual inventory at Panel, Mobile, and preview sizes', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  const { store, actionRequests } = await fixture(page);
+  const capture = async (label: string, size: 'panel' | 'mobile') => {
+    await page.screenshot({ path: `test-results/m1-2-${size}-${label}.png` });
+    expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+  };
+  for (const [size, width, height] of [
+    ['panel', 318, 500],
+    ['mobile', 360, 640],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await page.reload();
+    await expect(page.getByLabel('DIME title scene')).toBeVisible();
+    await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
+    await expect(page.getByLabel('Area introduction')).toHaveCount(0, { timeout: 5000 });
+    await capture('outpost', size);
+    await reachDolivine(page, store);
+    await capture('mine', size);
+    await capture('interaction-prompt', size);
+    await page.reload();
+    await expect(page.getByLabel('DIME title scene')).toBeVisible();
+    await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
+    await page.keyboard.down('ArrowRight');
+    await page.waitForTimeout(1050);
+    await page.keyboard.up('ArrowRight');
+    await page.keyboard.down('ArrowUp');
+    await page.waitForTimeout(360);
+    await page.keyboard.up('ArrowUp');
+    await expect(page.getByText('E · Station worker')).toBeVisible();
+    await page.keyboard.press('e');
+    await expect(page.getByRole('dialog', { name: 'Station worker' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+    await capture('npc-dialogue', size);
+    await page.keyboard.press('Escape');
+    for (const name of ['cargo', 'market', 'refinery', 'travel', 'profile', 'menu'] as const) {
+      if (name === 'menu') await page.getByRole('button', { name: 'Open game menu' }).click();
+      else await navigate(page, name);
+      await capture(name, size);
+      await page.keyboard.press('Escape');
+    }
+  }
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.reload();
+  await expect(page.getByLabel('DIME title scene')).toBeVisible();
+  await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
+  await expect(page.getByLabel('Area introduction')).toHaveCount(0, { timeout: 5000 });
+  await page.screenshot({ path: 'test-results/m1-2-preview-1024x768.png' });
+  expect(actionRequests()).toBe(0);
+});
+
+test('game-native windows expose selection, steppers, disabled routes and keyboard closing', async ({
+  page,
+}) => {
+  await fixture(page);
+  await navigate(page, 'cargo');
+  await expect(page.getByRole('dialog', { name: 'cargo menu' }).locator('select,input')).toHaveCount(0);
+  await choice(page, 'Cargo view', 'Ship').click();
+  await expect(choice(page, 'Cargo view', 'Ship')).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Select Aphorite material' }).click();
+  await expect(page.getByRole('button', { name: 'Select Aphorite material' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page
+    .getByRole('group', { name: 'Transfer amount' })
+    .getByRole('button', { name: 'Increase Transfer amount' })
+    .click();
+  await expect(page.getByRole('group', { name: 'Transfer amount' })).toContainText('0.01 SCU');
+  await expect(page.getByText('No selected raw ore in this mining hold.')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await navigate(page, 'market');
+  await expect(page.getByRole('dialog', { name: 'market menu' }).locator('select,input')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Select Prospector item' }).click();
+  await page.getByRole('button', { name: 'Increase item quantity' }).click();
+  await expect(page.getByRole('group', { name: 'Item quantity' })).toContainText('2');
+  await navigate(page, 'refinery');
+  await page.getByRole('button', { name: 'Select Aluminium recipe' }).click();
+  await expect(page.getByRole('button', { name: 'Select Aluminium recipe' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await navigate(page, 'travel');
+  await expect(page.getByRole('button', { name: 'Frontier sector · future route' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Start travel' }).click();
+  await expect(page.getByText(/Confirm travel to/)).toBeVisible();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByText(/Confirm travel to/)).toHaveCount(0);
+});
+
+test('reduced-motion NPC dialogue reveals immediately and advances by keyboard', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const { actionRequests } = await fixture(page);
+  await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
+  await page.keyboard.down('ArrowRight');
+  await page.waitForTimeout(1050);
+  await page.keyboard.up('ArrowRight');
+  await page.keyboard.down('ArrowUp');
+  await page.waitForTimeout(360);
+  await page.keyboard.up('ArrowUp');
+  await expect(page.getByText('E · Station worker')).toBeVisible();
+  await page.keyboard.press('e');
+  await expect(page.getByRole('dialog', { name: 'Station worker' })).toContainText('Keep your lamp charged');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  await page.keyboard.press('Space');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  expect(actionRequests()).toBe(0);
+});
+
 test('HUD and game menus replace permanent navigation, pause movement, and close with Escape', async ({
   page,
 }) => {
@@ -264,10 +373,10 @@ test('HUD and game menus replace permanent navigation, pause movement, and close
   await page.keyboard.up('ArrowRight');
   expect(await snapshot()).toBe(before);
   await navigate(page, 'cargo');
-  await expect(page.getByRole('heading', { name: 'Cargo inventory' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Backpack · Cargo' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move right' })).toHaveCount(0);
   await page.mouse.click(35, 470);
-  await expect(page.getByRole('heading', { name: 'Cargo inventory' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Backpack · Cargo' })).toBeVisible();
   await page.screenshot({ path: 'test-results/m1-1-inventory-overlay.png' });
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
@@ -277,7 +386,7 @@ test('HUD and game menus replace permanent navigation, pause movement, and close
   await page.keyboard.up('ArrowRight');
   expect(await snapshot()).not.toBe(resumed);
   await page.keyboard.press('i');
-  await expect(page.getByRole('heading', { name: 'Cargo inventory' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Backpack · Cargo' })).toBeVisible();
   await navigate(page, 'profile');
   await page.getByRole('button', { name: 'Refresh authoritative state' }).click();
   await expect(page.getByRole('status')).toHaveText('State synchronized.');
@@ -306,20 +415,29 @@ test('refinery, market, and travel terminals open distinct paused overlays', asy
   await hold('ArrowLeft', 550);
   await expect(page.getByText('E · Refinery terminal')).toBeVisible();
   await page.keyboard.press('e');
-  await expect(page.getByRole('heading', { name: 'Refinery & work orders' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Refinery console' })).toBeVisible();
+  await page.keyboard.press('Space');
+  await page.keyboard.press('Space');
+  await expect(page.getByRole('heading', { name: 'Refinery' })).toBeVisible();
   await page.screenshot({ path: 'test-results/m1-1-refinery-overlay.png' });
   await page.keyboard.press('Escape');
   await hold('ArrowRight', 1300);
   await expect(page.getByText('E · Market terminal')).toBeVisible();
   await page.keyboard.press('e');
-  await expect(page.getByRole('heading', { name: 'Market & supply shop' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Supply counter' })).toBeVisible();
+  await page.keyboard.press('Space');
+  await page.keyboard.press('Space');
+  await expect(page.getByRole('heading', { name: 'Supply counter' })).toBeVisible();
   await page.screenshot({ path: 'test-results/m1-1-market-overlay.png' });
   await page.keyboard.press('Escape');
   await hold('ArrowLeft', 550);
-  await hold('ArrowDown', 3200);
-  await hold('ArrowLeft', 850);
+  await hold('ArrowDown', 2300);
+  await hold('ArrowLeft', 1050);
   await expect(page.getByText('E · Ship / travel terminal')).toBeVisible();
   await page.keyboard.press('e');
+  await expect(page.getByRole('dialog', { name: 'Navigation console' })).toBeVisible();
+  await page.keyboard.press('Space');
+  await page.keyboard.press('Space');
   await expect(page.getByRole('dialog', { name: 'travel menu' })).toBeVisible();
   await page.screenshot({ path: 'test-results/m1-1-travel-overlay.png' });
 });
@@ -390,9 +508,8 @@ test('mobile touch D-pad moves without scrolling or API writes', async ({ browse
 test('lost mutation response survives reload and retry without duplication', async ({ page }) => {
   const { store, drop } = await fixture(page);
   await navigate(page, 'travel');
-  await page.getByText('Travel / select a claim', { exact: true }).click();
   drop();
-  await page.getByRole('button', { name: 'Start travel' }).click();
+  await startTravel(page);
   await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeEnabled();
   expect(store.states.get('test')!.revision).toBe(1);
   await page.reload();
@@ -414,9 +531,7 @@ test('320px panel navigation stays accessible and contains no horizontal page ov
 test('new zero-balance profile can earn its first wallet credit through hand mining', async ({ page }) => {
   const { store, advance } = await fixture(page, false);
   await navigate(page, 'travel');
-  await navigate(page, 'travel');
-  await page.getByText('Travel / select a claim', { exact: true }).click();
-  await page.getByRole('button', { name: 'Start travel' }).click();
+  await startTravel(page);
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
   await expect(page.getByRole('status')).toHaveText('Operation saved.');
@@ -427,15 +542,14 @@ test('new zero-balance profile can earn its first wallet credit through hand min
   await expect(page.getByRole('status')).toHaveText('Operation saved.');
   await navigate(page, 'cargo');
   await page.getByRole('button', { name: 'Transfer raw cargo' }).click();
-  await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  await expect(page.getByRole('status').first()).toHaveText('Operation saved.');
   await navigate(page, 'travel');
-  await page.getByText('Travel / select a claim', { exact: true }).click();
-  await page.getByRole('combobox', { name: 'Destination', exact: true }).selectOption('Area-18');
-  await page.getByRole('button', { name: 'Start travel' }).click();
+  await startTravel(page, 'Area-18');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
   await expect(page.getByRole('status')).toHaveText('Operation saved.');
   await navigate(page, 'market');
+  await choice(page, 'Trade mode', 'Sell').click();
   await page.getByRole('button', { name: 'Sell material' }).click();
   await expect.poll(() => store.states.get('test')!.wallet).toBeGreaterThan(0);
   expect(store.states.get('test')!.cargo.Nomad!.raw.Dolivine).toBe(0);

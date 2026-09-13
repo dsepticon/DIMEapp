@@ -1,13 +1,12 @@
-export const TILE = 16;
-export const WIDTH = 34;
-export const HEIGHT = 22;
+import { OBJECTS, SCENERY, tileAt } from './mapData';
+export { HEIGHT, OBJECTS, SCENERY, TILE, tileAt, WIDTH } from './mapData';
 export const VIEW_WIDTH = 160;
 export const VIEW_HEIGHT = 250;
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 export type InputState = Record<Direction, boolean>;
 export type WorldState = { x: number; y: number; facing: Direction; moving: boolean; clock: number };
-export type ObjectKind = 'deposit' | 'refinery' | 'market' | 'travel';
+export type ObjectKind = 'deposit' | 'refinery' | 'market' | 'travel' | 'npc';
 export type WorldObject = {
   id: string;
   label: string;
@@ -17,37 +16,7 @@ export type WorldObject = {
   color: string;
 };
 
-export const OBJECTS: readonly WorldObject[] = [
-  { id: 'dolivine', label: 'Dolivine seam', kind: 'deposit', x: 22, y: 5, color: '#54d4a3' },
-  { id: 'aphorite', label: 'Aphorite seam', kind: 'deposit', x: 28, y: 10, color: '#d869c7' },
-  { id: 'hadanite', label: 'Hadanite seam', kind: 'deposit', x: 23, y: 16, color: '#ba7aff' },
-  { id: 'refinery', label: 'Refinery terminal', kind: 'refinery', x: 5, y: 5, color: '#ffa964' },
-  { id: 'market', label: 'Market terminal', kind: 'market', x: 10, y: 5, color: '#69dfe2' },
-  { id: 'travel', label: 'Ship / travel terminal', kind: 'travel', x: 5, y: 16, color: '#89baff' },
-];
-export const SCENERY = [
-  { x: 12, y: 14, kind: 'crate' },
-  { x: 13, y: 14, kind: 'crate' },
-  { x: 4, y: 11, kind: 'machine' },
-  { x: 12, y: 9, kind: 'attendant' },
-] as const;
-
 const objectTiles = new Set([...OBJECTS, ...SCENERY].map((item) => `${item.x},${item.y}`));
-export function tileAt(x: number, y: number): 'wall' | 'ground' | 'mine' | 'entrance' {
-  if (x < 0 || y < 0 || x >= WIDTH || y >= HEIGHT) return 'wall';
-  if (x === 0 || y === 0 || x === WIDTH - 1 || y === HEIGHT - 1) return 'wall';
-  if (x === 16 && y !== 10 && y !== 11) return 'wall';
-  if (x > 16 && ((y === 3 && x > 19 && x < 31) || (y === 19 && x > 19 && x < 31))) return 'wall';
-  if (
-    x < 16 &&
-    ((x >= 3 && x <= 11 && (y === 3 || y === 7)) || ((x === 3 || x === 11) && y >= 3 && y <= 7))
-  ) {
-    if ((x === 7 || x === 8) && y === 7) return 'ground';
-    return 'wall';
-  }
-  if (x === 16 && (y === 10 || y === 11)) return 'entrance';
-  return x > 16 ? 'mine' : 'ground';
-}
 
 export function canStand(x: number, y: number): boolean {
   const radius = 0.27;
@@ -55,7 +24,7 @@ export function canStand(x: number, y: number): boolean {
     for (const dy of [-radius, radius]) {
       const tx = Math.floor(x + dx);
       const ty = Math.floor(y + dy);
-      if (tileAt(tx, ty) === 'wall' || objectTiles.has(`${tx},${ty}`)) return false;
+      if (['wall', 'blocked'].includes(tileAt(tx, ty)) || objectTiles.has(`${tx},${ty}`)) return false;
     }
   return true;
 }

@@ -1,4 +1,9 @@
 :root {
+  --cream: #efeacb;
+  --cyan: #61d9e1;
+  --amber: #efb661;
+  --steel-light: #668795;
+  --steel-dark: #213744;
   color-scheme: dark;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   background: #03070c;

@@ -1,0 +1,30 @@
+/** Shared original DIME pixel palette. CSS equivalents live in globals.css. */
+export const P = {
+  void: '#07121d',
+  shadow: '#10212b',
+  steelDark: '#213744',
+  steel: '#355362',
+  steelLight: '#668795',
+  floor: '#304b56',
+  floorEdge: '#476775',
+  rockDark: '#252936',
+  rock: '#3e3d4d',
+  rockLight: '#696078',
+  cyanDark: '#1c8297',
+  cyan: '#61d9e1',
+  cyanLight: '#b4f5e9',
+  amberDark: '#a56837',
+  amber: '#efb661',
+  amberLight: '#ffe0a0',
+  blue: '#8daef0',
+  cream: '#efeacb',
+  suit: '#e0cc9f',
+  suitDark: '#aa957a',
+  face: '#e9bb8c',
+  visor: '#153d52',
+  green: '#67d4a0',
+  rose: '#df83bd',
+  violet: '#b891e8',
+} as const;
+
+export const ART_GRID = { tile: 16, spriteWidth: 16, spriteHeight: 22, icon: 16, spacing: 4 } as const;
