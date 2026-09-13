@@ -1,4 +1,12 @@
 export function clientConfig(input: { dev: boolean; mode?: string; api?: string; hostname: string }) {
+  if (import.meta.env.PROD) {
+    if (input.mode !== 'twitch') throw new Error('Twitch mode is required for this build.');
+    if (!input.api) throw new Error('Backend URL is not configured.');
+    const url = new URL(input.api);
+    if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash)
+      throw new Error('Invalid backend URL.');
+    return { local: false, api: input.api.replace(/\/$/, '') };
+  }
   const local = input.mode === 'local';
   if (local && (!input.dev || !['localhost', '127.0.0.1'].includes(input.hostname)))
     throw new Error('Local mode is restricted to development on loopback.');
