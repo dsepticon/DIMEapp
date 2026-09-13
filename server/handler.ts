@@ -61,11 +61,17 @@ function configure() {
 }
 // Lazy initialization allows packaging/tests without production credentials; one client per warm container.
 let api: ReturnType<typeof configure> | undefined;
+export function routePath(rawPath: string, stage: string | undefined) {
+  if (!stage || stage === '$default') return rawPath;
+  const prefix = '/' + stage;
+  if (rawPath === prefix) return '/';
+  return rawPath.startsWith(prefix + '/') ? rawPath.slice(prefix.length) : rawPath;
+}
 export async function handler(event: {
   rawPath?: string;
   path?: string;
   httpMethod?: string;
-  requestContext?: { http?: { method?: string }; requestId?: string };
+  requestContext?: { http?: { method?: string }; requestId?: string; stage?: string };
   headers?: Record<string, string>;
   body?: string;
   isBase64Encoded?: boolean;
@@ -77,7 +83,7 @@ export async function handler(event: {
     );
     const response = await api({
       method: event.requestContext?.http?.method ?? event.httpMethod ?? '',
-      path: event.rawPath ?? event.path ?? '',
+      path: routePath(event.rawPath ?? event.path ?? '', event.requestContext?.stage),
       headers,
       body: event.isBase64Encoded ? Buffer.from(event.body ?? '', 'base64').toString('utf8') : event.body,
     });
