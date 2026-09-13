@@ -145,6 +145,7 @@ test('mine → refine → collect → sell persists across refresh with accurate
   await page.getByRole('button', { name: 'Start Refining' }).click();
   await expect.poll(() => store.states.get('test')!.orders.length).toBe(1);
   await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  await expect.poll(() => page.evaluate(() => sessionStorage.getItem('dime-pending-v2:local'))).toBeNull();
   await page.reload();
   await navigate(page, 'refinery');
   await expect(page.getByText('Dinyx Solventation', { exact: true }).last()).toBeVisible();

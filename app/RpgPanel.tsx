@@ -39,6 +39,7 @@ export function RpgPanel({
   const lastObjective = useRef(firstShiftOf(state).objective);
   const [nearby, setNearby] = useState<WorldObject | undefined>();
   const [message, setMessage] = useState('');
+  const [notifications, setNotifications] = useState<string[]>([]);
   const [area, setArea] = useState(true);
   const [areaLabel, setAreaLabel] = useState(areaName('outpost'));
   const [title, setTitle] = useState(true);
@@ -72,25 +73,30 @@ export function RpgPanel({
   useEffect(() => {
     if (busy || !notice) return;
     const objective = firstShiftOf(state).objective;
+    let next = notice;
     if (awaitingResult.current) {
       awaitingResult.current = false;
-      setMessage(
+      next =
         notice === 'Operation saved.' || notice === 'Previous action confirmed. State synchronized.'
           ? 'Mining operation saved. Extraction remains server-managed.'
-          : 'Mining request was not confirmed. Inventory is unchanged.',
-      );
-    } else setMessage(notice);
+          : 'Mining request was not confirmed. Inventory is unchanged.';
+    }
     if (objective !== lastObjective.current) {
-      setMessage(
+      next =
         objective === 'COMPLETE'
           ? 'First Shift complete · 500 aUEC reward'
-          : `Objective complete · ${objectiveText(state)}`,
-      );
+          : `Objective complete · ${objectiveText(state)}`;
       lastObjective.current = objective;
+      setNotifications((queued) => [...queued, next]);
+    } else {
+      setNotifications([next]);
     }
-    const timer = window.setTimeout(() => setMessage(''), 3600);
-    return () => window.clearTimeout(timer);
   }, [notice, busy, state]);
+  useEffect(() => {
+    if (!notifications.length) return;
+    const timer = window.setTimeout(() => setNotifications((queued) => queued.slice(1)), 3600);
+    return () => window.clearTimeout(timer);
+  }, [notifications]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -368,9 +374,9 @@ export function RpgPanel({
           {areaLabel}
         </div>
       )}
-      {message && !title && (
+      {(notifications[0] || message) && !title && !dialogue && !miningTarget && (
         <div className={styles.toast} role="status">
-          {message}
+          {notifications[0] || message}
         </div>
       )}
       {nearby && !overlay && !title && !miningTarget && (

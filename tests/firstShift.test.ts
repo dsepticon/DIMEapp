@@ -107,6 +107,22 @@ describe('The First Shift authoritative progression', () => {
       applyAction(onLyria(), { type: 'firstShift', step: 'mineDolivine' }, now, randomUUID()),
     ).toThrow('deposit');
   });
+  it('rejects an unrelated seam without changing the quest or inventory', () => {
+    const entered = run(run(run(onLyria(), 'accept'), 'checkTool'), 'enterMine');
+    const before = structuredClone(entered);
+    expect(() =>
+      applyAction(
+        entered,
+        { type: 'firstShift', step: 'mineDolivine', depositId: 'hadanite' } as never,
+        now,
+        randomUUID(),
+      ),
+    ).toThrow();
+    expect(entered).toEqual(before);
+    entered.mining.Hand.Hadanite = 1;
+    const mined = run(entered, 'mineDolivine');
+    expect(mined.firstShift?.counters).toEqual({ mined: 4, refined: 0, sold: 0 });
+  });
   it('replays a concurrent accept once and isolates players across channels', async () => {
     const store = new MemoryStore();
     store.states.set('player-one', onLyria());

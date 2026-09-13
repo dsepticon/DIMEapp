@@ -6,6 +6,7 @@ export const TUTORIAL_RAW_UNITS = 4;
 export const TUTORIAL_REFINED_UNITS = 3;
 export const TUTORIAL_DURATION_MS = 3000;
 export const TUTORIAL_SALE_AUEC = 300;
+export const TUTORIAL_REFINERY_COST = 0;
 export const HAND_TOOL = 'Hand mining tool';
 export type FirstShiftStep =
   | 'accept'
@@ -108,7 +109,7 @@ export function applyFirstShift(state: PlayerState, step: FirstShiftStep, now: n
         method: 'Cormack Method',
         rawUnits: TUTORIAL_RAW_UNITS,
         refinedUnits: TUTORIAL_REFINED_UNITS,
-        cost: 0,
+        cost: TUTORIAL_REFINERY_COST,
         createdAt: now,
         readyAt: now + TUTORIAL_DURATION_MS,
       });

@@ -87,7 +87,9 @@
   padding: 4px;
 }
 .toast {
-  top: 80px;
+  top: 42%;
+  z-index: 3;
+  pointer-events: none;
 }
 .area {
   top: 24%;

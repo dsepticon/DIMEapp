@@ -4,6 +4,9 @@ import {
   FIRST_SHIFT_REWARD,
   TUTORIAL_DURATION_MS,
   TUTORIAL_SALE_AUEC,
+  TUTORIAL_RAW_UNITS,
+  TUTORIAL_REFINERY_COST,
+  TUTORIAL_REFINED_UNITS,
 } from '../../../shared/firstShift';
 import type { Action, PlayerState } from '../../../shared/schema';
 import styles from './GameUI.module.css';
@@ -33,19 +36,39 @@ export function miningTick(energy: number, stability: number, held: boolean) {
 
 export function QuestLog({ state }: { state: PlayerState }) {
   const quest = firstShiftOf(state);
+  const refineryCost = TUTORIAL_REFINERY_COST;
+  const walletChange = TUTORIAL_SALE_AUEC - refineryCost + FIRST_SHIFT_REWARD;
   return (
     <section className={styles.screen} aria-label="Quest Log">
       <h1>Quest Log</h1>
       <div className={styles.panel}>
         <strong>The First Shift</strong>
         <p>{objectiveText(state)}</p>
-        <p>Status: {quest.status.replaceAll('_', ' ')}</p>
+        <p>
+          Status:{' '}
+          {quest.status === 'COMPLETE'
+            ? 'Completed'
+            : quest.status === 'ACTIVE'
+              ? 'In progress'
+              : 'Available'}
+        </p>
         <p>
           Dolivine mined: {quest.counters.mined} cSCU · refined: {quest.counters.refined} cSCU · sold:{' '}
           {quest.counters.sold} cSCU
         </p>
         {quest.status === 'COMPLETE' && (
-          <p>Reward claimed: {FIRST_SHIFT_REWARD} aUEC · Next assignment unlocked</p>
+          <div aria-label="Final reward summary">
+            <p>Sale revenue: +{TUTORIAL_SALE_AUEC} aUEC</p>
+            <p>Refinery cost: -{refineryCost} aUEC</p>
+            <p>Reward claimed: +{FIRST_SHIFT_REWARD} aUEC</p>
+            <p>Total wallet change: +{walletChange} aUEC</p>
+            <p>Final wallet: {state.wallet} aUEC</p>
+            <p>
+              Assigned Dolivine: {quest.counters.mined} cSCU mined · {quest.counters.refined} cSCU refined ·{' '}
+              {quest.counters.sold} cSCU sold
+            </p>
+            <p>Next assignment unlocked</p>
+          </div>
         )}
       </div>
     </section>
@@ -85,7 +108,7 @@ export function TutorialOperations({
       <strong>{kind === 'refinery' ? 'Ivo Sen · shift refinery' : 'Neri Vale · supply exchange'}</strong>
       <p>
         {kind === 'refinery'
-          ? `Process 4 cSCU of assigned Dolivine into 3 cSCU in ${TUTORIAL_DURATION_MS / 1000} seconds at no charge.`
+          ? `Process ${TUTORIAL_RAW_UNITS} cSCU of assigned Dolivine into ${TUTORIAL_REFINED_UNITS} cSCU in ${TUTORIAL_DURATION_MS / 1000} seconds. Refinery cost: ${TUTORIAL_REFINERY_COST} aUEC.`
           : `Sell the assigned refined Dolivine for ${TUTORIAL_SALE_AUEC} aUEC.`}
       </p>
       {action && (
@@ -102,6 +125,14 @@ export function TutorialOperations({
         </button>
       )}
       {action === 'collect' && order && order.readyAt > now && <p>Processing · ready shortly</p>}
+      {kind === 'refinery' && !order && quest.counters.refined > 0 && (
+        <p>Collected: {quest.counters.refined} cSCU refined Dolivine in Nomad cargo.</p>
+      )}
+      {kind === 'market' && quest.counters.sold > 0 && (
+        <p>
+          Sale confirmed: {quest.counters.sold} cSCU refined Dolivine for {TUTORIAL_SALE_AUEC} aUEC.
+        </p>
+      )}
     </section>
   );
 }
