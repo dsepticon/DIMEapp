@@ -1,0 +1,185 @@
+.panel {
+  padding: 12px;
+  flex: 1;
+  min-width: 0;
+  background: radial-gradient(circle at 50% 0, #183947, #07121d 65%);
+}
+.heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.heading span {
+  color: #75eedc;
+  font: 700 10px monospace;
+  letter-spacing: 0.12em;
+}
+.heading h1 {
+  color: #f0edd5;
+  font-size: clamp(18px, 3vw, 29px);
+  line-height: 1.1;
+  margin: 3px 0;
+}
+.heading small {
+  color: #b7c9c8;
+  font-size: 11px;
+  text-align: right;
+}
+.stage {
+  width: min(100%, 720px);
+  margin: auto;
+  position: relative;
+}
+.gameFrame {
+  width: 100%;
+  border: 3px solid #86c7bc;
+  box-shadow:
+    0 0 0 3px #10252e,
+    0 12px 28px #0008;
+  overflow: hidden;
+  background: #0b1621;
+}
+.gameFrame canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 320 / 208;
+  image-rendering: pixelated;
+}
+.prompt {
+  width: min(100%, 720px);
+  min-height: 27px;
+  margin: 8px auto 3px;
+  padding: 5px 8px;
+  color: #ddf5dc;
+  background: #17303a;
+  border-left: 3px solid #76dfc5;
+  font-size: 12px;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 4px auto;
+}
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(2, 44px);
+  gap: 3px;
+  touch-action: none;
+  user-select: none;
+}
+.dpad button,
+.interact {
+  color: #f1f9e7;
+  background: #244957;
+  border: 1px solid #84c8c1;
+  border-radius: 6px;
+  font-weight: 700;
+  touch-action: none;
+  user-select: none;
+}
+.dpad button:active,
+.interact:active {
+  background: #3c847d;
+}
+.up {
+  grid-column: 2;
+  grid-row: 1;
+}
+.left {
+  grid-column: 1;
+  grid-row: 2;
+}
+.down {
+  grid-column: 2;
+  grid-row: 2;
+}
+.right {
+  grid-column: 3;
+  grid-row: 2;
+}
+.interact {
+  min-width: 108px;
+  min-height: 69px;
+  font-size: 15px;
+}
+.interact span {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  margin-top: 3px;
+}
+.interact:disabled {
+  opacity: 0.48;
+}
+.dialogue {
+  width: min(100%, 720px);
+  margin: 8px auto;
+  padding: 10px 12px;
+  color: #f7f4dc;
+  background: #172c38;
+  border: 1px solid #8ccfc1;
+  font-size: 12px;
+}
+.dialogue strong {
+  color: #8debd3;
+}
+.dialogue p {
+  margin: 5px 0;
+}
+.dialogue button {
+  background: #2d5662;
+  color: white;
+  border: 1px solid #8ccfc1;
+  padding: 7px 10px;
+}
+.feedback {
+  width: min(100%, 720px);
+  margin: 7px auto;
+  color: #b9d7cf;
+  font-size: 11px;
+}
+.classic {
+  width: min(100%, 720px);
+  margin: 12px auto;
+  color: #d7e9dd;
+  border-top: 1px solid #35555e;
+  padding-top: 8px;
+}
+.classic summary {
+  cursor: pointer;
+  font-size: 12px;
+}
+@media (max-width: 400px) {
+  .panel {
+    padding: 9px 7px;
+  }
+  .heading small {
+    display: none;
+  }
+  .interact {
+    min-height: 91px;
+  }
+  .controls {
+    position: absolute;
+    inset: auto 0 4px;
+    padding: 0 4px;
+    margin: 0;
+    pointer-events: none;
+  }
+  .controls button {
+    pointer-events: auto;
+    background: #244957ed;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dpad button,
+  .interact {
+    transition: none;
+  }
+}

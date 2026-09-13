@@ -13,7 +13,9 @@ flowchart LR
 
 app/ owns presentation and the current-token client. shared/ owns schemas, catalog values and pure rules. server/ owns authorization, persistence and HTTP adaptation. The frontend never imports the DynamoDB adapter or backend secrets. The local server imports only the in-memory/file adapter and runs on loopback.
 
-The proposed server is separate from the recovered broken Lambda functions. The [isolated SAM staging template](../infra/staging/template.yaml) defines a new table, EBS Lambda and HTTP API; it is source only and has not been deployed. `server/migration-dynamo.ts` is a separate, unimported module and cannot be reached through the staging Lambda bundle.
+Milestone 1 adds a dependency-free Canvas scene in `app/rpg/`. `world.ts` owns the local tile map, collision, movement and interaction radius; `canvasEngine.ts` owns drawing, camera, input and its lifecycle. React's `RpgPanel` owns prompts, dialogue, touch controls and navigation. `MiningActionAdapter` bridges a deposit interaction to the existing `useGame.mutate` authoritative action; the renderer cannot call the API. Walking does not write state. The existing MiningPanel remains available under “Classic mining controls,” and Cargo, Refinery, Market, Profile and Twitch session handling remain React-owned. See [Milestone 1](dime-2d-rpg-m1.md) for the engine decision, bundle measurement and deferred map-persistence proposal.
+
+The server is separate from the recovered broken Lambda functions. The [isolated SAM staging template](../infra/staging/template.yaml) defines the staging table, EBS Lambda and HTTP API; the approved staging stack was deployed and verified in September 2026. Milestone 1 changes only local frontend source and does not update that stack. `server/migration-dynamo.ts` is a separate, unimported module and cannot be reached through the staging Lambda bundle.
 
 ## State and consistency
 

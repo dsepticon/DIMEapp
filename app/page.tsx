@@ -19,7 +19,7 @@ import { useGame } from './useGame';
 type View = 'mining' | 'cargo' | 'refinery' | 'market' | 'profile';
 import { format, asset, remaining } from './ui';
 import { TravelPanel } from './TravelPanel';
-import { MiningPanel } from './MiningPanel';
+import { RpgPanel } from './RpgPanel';
 export default function Home() {
   const config = useMemo(() => {
     try {
@@ -80,6 +80,9 @@ export default function Home() {
   const hold = state?.cargo[ship];
   const preview = state && count > 0 ? refineryQuote(state, method, count) : null;
   const status = config.error || session.message || notice;
+  const travelPanel = state ? (
+    <TravelPanel state={state} blocked={blocked} canAct={canAct} now={now} mutate={mutate} key={identity} />
+  ) : null;
   const input = (
     <label>
       Amount (SCU)
@@ -159,7 +162,7 @@ export default function Home() {
       <div className={styles.status} role="status">
         {busy ? 'Synchronizing…' : status}
       </div>
-      {config.local && (
+      {config.local && (view !== 'mining' || !state) && (
         <p className={styles.hint}>Local profile only. Nothing here changes your production account.</p>
       )}
       {!state && !config.error && (
@@ -176,14 +179,7 @@ export default function Home() {
       )}
       {state && (
         <>
-          <TravelPanel
-            state={state}
-            blocked={blocked}
-            canAct={canAct}
-            now={now}
-            mutate={mutate}
-            key={identity}
-          />
+          {view !== 'mining' && travelPanel}
           {pending && (
             <section className={styles.status}>
               <p>An action is pending confirmation. Keep this tab open or reopen it to retry safely.</p>
@@ -196,13 +192,23 @@ export default function Home() {
             </section>
           )}
           {view === 'mining' && (
-            <MiningPanel
-              state={state}
-              source={source}
-              setSource={setSource}
-              canAct={canAct}
-              mutate={mutate}
-            />
+            <>
+              <RpgPanel
+                state={state}
+                source={source}
+                setSource={setSource}
+                canAct={canAct}
+                mutate={mutate}
+                notice={notice}
+                navigate={setView}
+              />
+              {travelPanel}
+              {config.local && (
+                <p className={styles.hint}>
+                  Local profile only. Nothing here changes your production account.
+                </p>
+              )}
+            </>
           )}
           {view === 'cargo' && (
             <section className={styles.content}>
