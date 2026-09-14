@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Action, MiningType, Ore, PlayerState, Ship } from '../../../shared/schema';
+import { useRef, useState } from 'react';
+import { Action, MiningType, Ore, PlayerState, RESET_CONFIRMATION, Ship } from '../../../shared/schema';
 import { CAPACITIES, MINING_TYPES, ORE_NAMES, SHIP_NAMES } from '../../../shared/catalog';
 import { scu, total } from '../../../shared/game';
 import { format } from '../../ui';
@@ -16,6 +16,7 @@ export type GameView =
   | 'refinery'
   | 'market'
   | 'profile'
+  | 'reset'
   | 'travel'
   | 'mining'
   | 'controls'
@@ -29,10 +30,12 @@ export type ScreensProps = {
   busy: boolean;
   now: number;
   notice: string;
+  resetError: string;
   local: boolean;
   authenticated: boolean;
   mutate: (action?: Action) => Promise<void>;
   refresh: () => Promise<void>;
+  resetProgress: (confirmation: string) => Promise<boolean>;
   navigate: (view: GameView) => void;
 };
 
@@ -145,7 +148,9 @@ function ProfileScreen({
   busy,
   refresh,
   local,
-}: Pick<ScreensProps, 'state' | 'busy' | 'refresh' | 'local'>) {
+  navigate,
+  authenticated,
+}: Pick<ScreensProps, 'state' | 'busy' | 'refresh' | 'local' | 'navigate' | 'authenticated'>) {
   const ships = SHIP_NAMES.filter((name) => (state.ships[name] ?? 0) > 0);
   const equipped = Object.entries(state.equipment).filter(([, count]) => count > 0);
   return (
@@ -207,6 +212,76 @@ function ProfileScreen({
       <button disabled={busy} onClick={() => void refresh()}>
         Refresh authoritative state
       </button>
+      <section className={styles.dangerSection} aria-label="Reset Game Progress">
+        <h2>Reset Game Progress</h2>
+        <p>This resets your DIME progress across every Twitch channel.</p>
+        <p>
+          Wallet, ships, equipment, inventory, refinery orders, location and quest progress will be reset.
+        </p>
+        <p>Your Twitch account itself is not affected.</p>
+        <p>The reset cannot be undone through the game.</p>
+        <button disabled={busy || (!authenticated && !local)} onClick={() => navigate('reset')}>
+          Reset Game Progress
+        </button>
+      </section>
+    </section>
+  );
+}
+
+function ResetConfirmationScreen({
+  busy,
+  resetError,
+  resetProgress,
+  navigate,
+}: Pick<ScreensProps, 'busy' | 'resetError' | 'resetProgress' | 'navigate'>) {
+  const [phrase, setPhrase] = useState('');
+  const submitting = useRef(false);
+  return (
+    <section className={styles.screen} aria-label="Reset confirmation">
+      <h1>Reset Game Progress</h1>
+      <div className={styles.dangerSection}>
+        <p>
+          This resets your global DIME save across every Twitch channel. It cannot be undone through the game.
+        </p>
+        <label htmlFor="reset-phrase">
+          Type exactly: <strong>{RESET_CONFIRMATION}</strong>
+        </label>
+        <input
+          id="reset-phrase"
+          autoComplete="off"
+          spellCheck={false}
+          value={phrase}
+          disabled={busy}
+          onChange={(event) => setPhrase(event.target.value)}
+        />
+        {resetError && (
+          <p className={styles.warning} role="alert">
+            {resetError}
+          </p>
+        )}
+        <button
+          type="button"
+          className={styles.dangerButton}
+          disabled={phrase !== RESET_CONFIRMATION || busy}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') event.preventDefault();
+          }}
+          onClick={async () => {
+            if (submitting.current || phrase !== RESET_CONFIRMATION) return;
+            submitting.current = true;
+            try {
+              await resetProgress(phrase);
+            } finally {
+              submitting.current = false;
+            }
+          }}
+        >
+          {busy ? 'Resetting…' : 'Reset All My Game Progress'}
+        </button>
+        <button type="button" disabled={busy} onClick={() => navigate('profile')}>
+          Cancel
+        </button>
+      </div>
     </section>
   );
 }
@@ -246,13 +321,46 @@ function MenuScreen({ navigate }: Pick<ScreensProps, 'navigate'>) {
 }
 
 export function RpgScreens(props: ScreensProps) {
-  const { view, state, canAct, blocked, busy, now, notice, local, authenticated, mutate, refresh, navigate } =
-    props;
+  const {
+    view,
+    state,
+    canAct,
+    blocked,
+    busy,
+    now,
+    notice,
+    resetError,
+    local,
+    authenticated,
+    mutate,
+    refresh,
+    resetProgress,
+    navigate,
+  } = props;
   const [miningSource, setMiningSource] = useState<MiningType>('Hand');
   if (view === 'menu') return <MenuScreen navigate={navigate} />;
   if (view === 'quest') return <QuestLog state={state} />;
   if (view === 'cargo') return <CargoScreen state={state} canAct={canAct} mutate={mutate} notice={notice} />;
-  if (view === 'profile') return <ProfileScreen state={state} busy={busy} refresh={refresh} local={local} />;
+  if (view === 'profile')
+    return (
+      <ProfileScreen
+        state={state}
+        busy={busy}
+        refresh={refresh}
+        local={local}
+        authenticated={authenticated}
+        navigate={navigate}
+      />
+    );
+  if (view === 'reset')
+    return (
+      <ResetConfirmationScreen
+        busy={busy}
+        resetError={resetError}
+        resetProgress={resetProgress}
+        navigate={navigate}
+      />
+    );
   if (view === 'market')
     return <MarketScreen state={state} canAct={canAct} mutate={mutate} notice={notice} />;
   if (view === 'refinery')

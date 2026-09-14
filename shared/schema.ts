@@ -187,6 +187,16 @@ export const mutationSchema = z
   })
   .strict();
 export type Mutation = z.infer<typeof mutationSchema>;
+export const RESET_CONFIRMATION = 'RESET MY DIME PROFILE' as const;
+export const resetRequestSchema = z
+  .object({
+    requestId: z.string().uuid(),
+    expectedRevision: z.number().int().nonnegative(),
+    expectedGeneration: z.uuid(),
+    confirmation: z.literal(RESET_CONFIRMATION),
+  })
+  .strict();
+export type ResetRequest = z.infer<typeof resetRequestSchema>;
 export const snapshotSchema = z.object({
   state: stateSchema,
   serverTime: z.number().int(),

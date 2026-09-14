@@ -22,6 +22,35 @@ it('puts the versioned state and unique receipt in one transaction', async () =>
   expect(input.TransactItems[0].Put.ConditionExpression).toBe('revision = :expected');
   expect(input.TransactItems[1].Put.ConditionExpression).toBe('attribute_not_exists(pk)');
 });
+it('guards reset replacement by both revision and the existing save generation', async () => {
+  const send = vi.fn().mockResolvedValue({});
+  const state = initialState();
+  state.saveGeneration = crypto.randomUUID();
+  state.revision = 9;
+  const oldGeneration = crypto.randomUUID();
+  await new DynamoStore(client(send), 'test').commit(
+    'synthetic-player',
+    8,
+    state,
+    { id: crypto.randomUUID(), receipt: { fingerprint: 'synthetic-hash', expiresAt: 1000 } },
+    oldGeneration,
+  );
+  const writes = send.mock.calls[0][0].input.TransactItems;
+  expect(writes).toHaveLength(2);
+  expect(writes[0].Put.ConditionExpression).toBe('revision = :expected AND #state.#generation = :generation');
+  expect(writes[0].Put.ExpressionAttributeValues).toEqual({ ':expected': 8, ':generation': oldGeneration });
+  expect(writes[0].Put.ExpressionAttributeNames).toEqual({
+    '#state': 'state',
+    '#generation': 'saveGeneration',
+  });
+  expect(writes[1].Put.ConditionExpression).toBe('attribute_not_exists(pk)');
+});
+it('backfills old save generation only while that field remains absent', async () => {
+  const send = vi.fn().mockResolvedValue({});
+  await new DynamoStore(client(send), 'test').commit('synthetic-player', 8, initialState(), undefined, null);
+  const put = send.mock.calls[0][0].input.TransactItems[0].Put;
+  expect(put.ConditionExpression).toBe('revision = :expected AND attribute_not_exists(#state.#generation)');
+});
 it('reports conditional transaction conflicts for retry reconciliation', async () => {
   const error = Object.assign(new Error('conflict'), {
     name: 'TransactionCanceledException',

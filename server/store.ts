@@ -11,6 +11,7 @@ export interface Store {
     expected: number | null,
     state: PlayerState,
     request?: { id: string; receipt: Receipt },
+    generationGuard?: string | null,
   ): Promise<boolean>;
 }
 export class MemoryStore implements Store {
@@ -28,10 +29,12 @@ export class MemoryStore implements Store {
     expected: number | null,
     state: PlayerState,
     request?: { id: string; receipt: Receipt },
+    generationGuard?: string | null,
   ) {
     const current = this.states.get(player);
     if (
       (expected === null ? current !== undefined : current?.revision !== expected) ||
+      (generationGuard !== undefined && (current?.saveGeneration ?? null) !== generationGuard) ||
       (request && this.receipts.has(player + ':' + request.id))
     )
       return false;

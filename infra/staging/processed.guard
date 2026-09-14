@@ -5,7 +5,7 @@
 let resource_count = count(Resources.*)
 
 rule only_expected_processed_resources {
-  %resource_count == 12
+  %resource_count == 13
   Resources.*.Type IN [
     'AWS::DynamoDB::Table',
     'AWS::Logs::LogGroup',
@@ -26,6 +26,7 @@ rule api_integration_and_stage {
   Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowCredentials == false
   Resources.StagingHttpApi.Properties.Body.'paths'.'/state'.get.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
   Resources.StagingHttpApi.Properties.Body.'paths'.'/actions'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/profile/reset'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
   Resources.StagingHttpApistagingStage.Type == 'AWS::ApiGatewayV2::Stage'
   Resources.StagingHttpApistagingStage.Properties.StageName == 'staging'
   Resources.StagingHttpApistagingStage.Properties.AccessLogSettings.DestinationArn.'Fn::GetAtt' == ['ApiAccessLogGroup', 'Arn']
@@ -34,18 +35,25 @@ rule api_integration_and_stage {
 rule generated_invoke_permissions_are_api_route_scoped {
   Resources.EbsFunctionGetStatePermission.Type == 'AWS::Lambda::Permission'
   Resources.EbsFunctionPostActionsPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostProfileResetPermission.Type == 'AWS::Lambda::Permission'
   Resources.EbsFunctionGetStatePermission.Properties.Action == 'lambda:InvokeFunction'
   Resources.EbsFunctionPostActionsPermission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.Action == 'lambda:InvokeFunction'
   Resources.EbsFunctionGetStatePermission.Properties.Principal == 'apigateway.amazonaws.com'
   Resources.EbsFunctionPostActionsPermission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.Principal == 'apigateway.amazonaws.com'
   Resources.EbsFunctionGetStatePermission.Properties.FunctionName.Ref == 'EbsFunction'
   Resources.EbsFunctionPostActionsPermission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.FunctionName.Ref == 'EbsFunction'
   Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/state'
   Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/actions'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/profile/reset'
   Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
   Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
   Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
   Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
 }
 
 rule configuration_revision_is_lambda_only {

@@ -1,4 +1,4 @@
-import { Mutation, Snapshot, snapshotSchema } from '../shared/schema';
+import { Mutation, ResetRequest, Snapshot, snapshotSchema } from '../shared/schema';
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -16,7 +16,7 @@ export class ApiClient {
     private local = false,
     private fetcher: typeof fetch = (...args) => fetch(...args),
   ) {}
-  private async request(path: string, mutation?: Mutation): Promise<Snapshot> {
+  private async request(path: string, mutation?: Mutation | ResetRequest): Promise<Snapshot> {
     const token = this.token();
     if (!this.local && !token) throw new ApiError(401, 'UNAUTHORIZED', 'Waiting for Twitch authorization.');
     let response: Response;
@@ -64,5 +64,8 @@ export class ApiClient {
   }
   mutate(request: Mutation) {
     return this.request('/actions', request);
+  }
+  reset(request: ResetRequest) {
+    return this.request('/profile/reset', request);
   }
 }

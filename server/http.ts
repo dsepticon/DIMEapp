@@ -38,7 +38,10 @@ export function createApi(
       const player = await authorize(request.headers.authorization);
       let result;
       if (request.path === '/state' && request.method === 'GET') result = await service.snapshot(player);
-      else if (request.path === '/actions' && request.method === 'POST') {
+      else if (
+        request.method === 'POST' &&
+        (request.path === '/actions' || request.path === '/profile/reset')
+      ) {
         if ((request.body?.length ?? 0) > 4096)
           throw new GameError('INVALID_REQUEST', 'Request is too large.', 413);
         let body: unknown;
@@ -47,7 +50,10 @@ export function createApi(
         } catch {
           throw new GameError('INVALID_REQUEST', 'Invalid JSON.');
         }
-        result = await service.mutate(player, body);
+        result =
+          request.path === '/profile/reset'
+            ? await service.reset(player, body)
+            : await service.mutate(player, body);
       } else throw new GameError('NOT_FOUND', 'Endpoint not found.', 404);
       return { statusCode: 200, headers, body: JSON.stringify(result) };
     } catch (error) {

@@ -28,7 +28,7 @@ Every mutation has a requestId, expectedRevision and validated action. A transac
 
 Receipts expire after 30 days; a retry older than that may return a revision conflict requiring review. UI disables new actions until an ambiguous request is reconciled. Pending intent is stored in sessionStorage, scoped by Twitch identity, with no token or balance. State is loaded afresh after reopening. Cross-tab writes are protected by the same server revision check.
 
-State items have bounded orders (100), catalog keys and ownership counts (100) to remain within a single-item design. There are no table scans or unbounded player queries. GET /state is a consistent read and initializes a new validated profile via a conditional write if absent. No record can be reset or replaced through the public API. The API therefore never trusts a browser snapshot.
+State items have bounded orders (100), catalog keys and ownership counts (100) to remain within a single-item design. There are no table scans or unbounded player queries. GET /state is a consistent read and initializes a new validated profile via a conditional write if absent. An older save missing a generation marker receives one through a conditional write without changing its gameplay or revision. Only the authenticated, phrase-confirmed `/profile/reset` route can replace the player's own gameplay state; it uses the server's new-player factory and never trusts a browser snapshot.
 
 ## Endpoints
 
@@ -37,7 +37,11 @@ All routes except OPTIONS require a valid Twitch extension JWT, HTTPS and an all
 - GET /state → { state, serverTime }
 - POST /actions → { state, serverTime, replayed? }
 - Body: { requestId: UUID, expectedRevision: integer, action: ... }
+- POST /profile/reset → { state, serverTime, replayed? }
+- Reset body: { requestId: UUID, expectedRevision: integer, expectedGeneration: UUID, confirmation: "RESET MY DIME PROFILE" }
 - Error: { code, message } with HTTP 400, 401, 403, 404, 409, 413 or 503.
+
+The reset route rejects extra fields, including client-supplied identity, keys, state and economy values. It atomically checks revision plus generation, writes canonical initial gameplay at the next revision with a fresh generation, and retains a request receipt for idempotent retry. The HMAC-derived global player association and unexpired technical receipts remain. This is not a privacy-deletion endpoint; see [Milestone 2.3](dime-2d-rpg-m23-reset.md).
 
 Actions:
 travel(ship,destination,loadRoc), mine(source,head,crew,extraStations?), finish,

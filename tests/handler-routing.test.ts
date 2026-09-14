@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { SignJWT } from 'jose';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryStore } from '../server/store';
+import { RESET_CONFIRMATION } from '../shared/schema';
 
 const testState = vi.hoisted(() => ({ store: null as MemoryStore | null }));
 vi.mock('../server/dynamo', () => ({ createDynamoStore: () => testState.store }));
@@ -51,6 +52,7 @@ describe('HTTP API v2 named-stage routing', () => {
   it.each([
     ['/staging/state', 'staging', '/state'],
     ['/staging/actions', 'staging', '/actions'],
+    ['/staging/profile/reset', 'staging', '/profile/reset'],
     ['/staging', 'staging', '/'],
     ['/staging-other/state', 'staging', '/staging-other/state'],
     ['/other/state', 'staging', '/other/state'],
@@ -91,6 +93,29 @@ describe('HTTP API v2 named-stage routing', () => {
     expect(JSON.parse(first.body).state.revision).toBe(1);
     expect(retry.statusCode).toBe(200);
     expect(JSON.parse(retry.body)).toMatchObject({ replayed: true, state: { revision: 1 } });
+    expect(testState.store?.receipts.size).toBe(1);
+  });
+
+  it('routes authenticated POST /profile/reset through the named stage', async () => {
+    const { handler } = await import('../server/handler');
+    const authorization = await token();
+    const initial = JSON.parse(
+      (await handler(request('GET', '/staging/state', authorization, 'staging'))).body,
+    ).state;
+    const body = {
+      requestId: randomUUID(),
+      expectedRevision: initial.revision,
+      expectedGeneration: initial.saveGeneration,
+      confirmation: RESET_CONFIRMATION,
+    };
+    const event = {
+      ...request('POST', '/staging/profile/reset', authorization, 'staging'),
+      body: JSON.stringify(body),
+    };
+    const response = await handler(event);
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body).state).toMatchObject({ revision: 1, wallet: 0, location: 'ARC-L1' });
+    expect((await handler(event)).statusCode).toBe(200);
     expect(testState.store?.receipts.size).toBe(1);
   });
 

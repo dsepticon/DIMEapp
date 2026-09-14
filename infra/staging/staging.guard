@@ -59,6 +59,8 @@ rule bounded_staging_lambda {
   Resources.EbsFunction.Properties.Events.GetState.Properties.Method == 'GET'
   Resources.EbsFunction.Properties.Events.PostActions.Properties.Path == '/actions'
   Resources.EbsFunction.Properties.Events.PostActions.Properties.Method == 'POST'
+  Resources.EbsFunction.Properties.Events.PostProfileReset.Properties.Path == '/profile/reset'
+  Resources.EbsFunction.Properties.Events.PostProfileReset.Properties.Method == 'POST'
 }
 
 rule exact_origin_staging_api {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Action, PlayerState, Snapshot } from '../shared/schema';
+import { Action, PlayerState, ResetRequest, RESET_CONFIRMATION, Snapshot } from '../shared/schema';
 import { ApiClient, ApiError } from './api';
 import { PendingRecord, readPendingRecord, recoveryEvidence, writePendingRecord } from './pendingRecovery';
 
@@ -8,6 +8,7 @@ export type RecoveryStatus = 'idle' | 'recovering' | 'retry' | 'stale' | 'obsole
 export function useGame(client: ApiClient | null, identity: string | undefined) {
   const [state, setState] = useState<PlayerState | null>(null);
   const [notice, setNotice] = useState('Connecting to your mining profile…');
+  const [resetError, setResetError] = useState('');
   const [storageError, setStorageError] = useState(false);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<PendingRecord | null>(null);
@@ -19,6 +20,8 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
   const offset = useRef(0);
   const activeIdentity = useRef(identity);
   const activeClient = useRef(client);
+  const resetRequest = useRef<ResetRequest | null>(null);
+  const resetFence = useRef<{ revision: number; generation: string } | null>(null);
   const startup = useRef<{ identity: string; client: ApiClient } | null>(null);
   activeIdentity.current = identity;
   activeClient.current = client;
@@ -26,6 +29,13 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
 
   const accept = useCallback((snapshot: Snapshot, force = false) => {
     const previous = stateRef.current;
+    const fence = resetFence.current;
+    if (
+      fence &&
+      (snapshot.state.revision < fence.revision ||
+        (snapshot.state.revision === fence.revision && snapshot.state.saveGeneration !== fence.generation))
+    )
+      return;
     if (
       force ||
       !previous ||
@@ -179,6 +189,8 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
     }
     if (startup.current?.identity !== identity || startup.current.client !== client) {
       startup.current = { identity, client };
+      resetRequest.current = null;
+      resetFence.current = null;
       stateRef.current = null;
       pendingRef.current = null;
       lock.current = false;
@@ -302,12 +314,67 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
     }
   }, [recoveryStatus, savePending]);
 
+  const resetProgress = useCallback(
+    async (confirmation: string): Promise<boolean> => {
+      if (!client || !identity || lock.current || confirmation !== RESET_CONFIRMATION) return false;
+      setResetError('');
+      const current = () => activeIdentity.current === identity && activeClient.current === client;
+      lock.current = true;
+      setBusy(true);
+      try {
+        let request = resetRequest.current;
+        if (!request) {
+          const canonical = await client.state();
+          if (!current() || !canonical.state.saveGeneration) return false;
+          accept(canonical);
+          request = {
+            requestId: crypto.randomUUID(),
+            expectedRevision: canonical.state.revision,
+            expectedGeneration: canonical.state.saveGeneration,
+            confirmation: RESET_CONFIRMATION,
+          };
+          resetRequest.current = request;
+        }
+        const result = await client.reset(request);
+        if (!current()) return false;
+        const generation = result.state.saveGeneration;
+        if (!generation) throw new Error('Missing save generation');
+        resetFence.current = { revision: result.state.revision, generation };
+        accept(result, true);
+        savePending(null);
+        resetRequest.current = null;
+        setRecoveryStatus('idle');
+        setNotice('Game progress reset.');
+        return true;
+      } catch (error) {
+        if (current()) {
+          if (error instanceof ApiError && ['REVISION_CONFLICT', 'GENERATION_CONFLICT'].includes(error.code))
+            resetRequest.current = null;
+          const safeMessage =
+            error instanceof ApiError && ['REVISION_CONFLICT', 'GENERATION_CONFLICT'].includes(error.code)
+              ? 'Your save changed. Refresh and review it before trying again.'
+              : 'Reset was not confirmed. Retry the same reset request.';
+          setResetError(safeMessage);
+          setNotice(safeMessage);
+        }
+        return false;
+      } finally {
+        if (current()) {
+          lock.current = false;
+          setBusy(false);
+        }
+      }
+    },
+    [client, identity, accept, savePending],
+  );
+
   return {
     state,
     notice: storageError
       ? 'Pending request storage is unavailable or invalid. Transactions are disabled until storage is restored and this view is reloaded.'
       : notice,
     storageError,
+    resetError,
     busy,
     pending: pending?.request ?? null,
     recoveryStatus,
@@ -316,5 +383,6 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
     mutate,
     discardObsolete,
     cancelPending,
+    resetProgress,
   };
 }

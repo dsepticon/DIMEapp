@@ -38,7 +38,7 @@ it('uses only verified generation or monotonic revision evidence', () => {
   expect(recoveryEvidence({ request: action, saveGeneration: oldGeneration }, current)).toBe('unverified');
 });
 
-it('assigns a generation only to new server saves and keeps existing saves readable', async () => {
+it('assigns a generation to new saves and backfills old saves without changing gameplay', async () => {
   const store = new MemoryStore();
   const service = new GameService(store);
   const first = (await service.snapshot('synthetic-new')).state;
@@ -46,5 +46,7 @@ it('assigns a generation only to new server saves and keeps existing saves reada
   expect((await service.snapshot('synthetic-new')).state.saveGeneration).toBe(first.saveGeneration);
   const old = initialState();
   store.states.set('synthetic-old', old);
-  expect((await service.snapshot('synthetic-old')).state.saveGeneration).toBeUndefined();
+  const upgraded = (await service.snapshot('synthetic-old')).state;
+  expect(upgraded.saveGeneration).toMatch(/^[0-9a-f-]{36}$/);
+  expect({ ...upgraded, saveGeneration: undefined }).toEqual({ ...old, saveGeneration: undefined });
 });

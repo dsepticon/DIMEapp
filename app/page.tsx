@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './page.module.css';
 import { twitchConnection, TwitchSession } from './twitch';
 import { clientConfig } from './config';
@@ -51,6 +51,7 @@ export default function Home() {
   const {
     state,
     notice,
+    resetError,
     storageError,
     busy,
     pending,
@@ -60,8 +61,23 @@ export default function Home() {
     mutate,
     discardObsolete,
     cancelPending,
+    resetProgress,
   } = useGame(client, identity);
   const [view, setView] = useState<GameView>('game');
+  const navigationGuard = useRef({ view, busy });
+  navigationGuard.current = { view, busy };
+  const navigate = useCallback((next: GameView) => {
+    if (navigationGuard.current.view === 'reset' && navigationGuard.current.busy) return;
+    setView(next);
+  }, []);
+  const completeReset = useCallback(
+    async (confirmation: string) => {
+      const success = await resetProgress(confirmation);
+      if (success) setView('game');
+      return success;
+    },
+    [resetProgress],
+  );
   useEffect(() => {
     if (storageError) setView('connection');
   }, [storageError]);
@@ -103,6 +119,7 @@ export default function Home() {
       {state && (
         <>
           <RpgPanel
+            key={state.saveGeneration ?? 'legacy-save'}
             state={state}
             canAct={canAct}
             mutate={mutate}
@@ -110,7 +127,7 @@ export default function Home() {
             status={config.error || session.message || ''}
             busy={busy}
             overlay={overlay}
-            navigate={setView}
+            navigate={navigate}
           />
           {overlay && (
             <div className={styles.overlayBackdrop}>
@@ -123,7 +140,11 @@ export default function Home() {
                         ? 'D.I.M.E. · PAUSE'
                         : view.toUpperCase()}
                   </strong>
-                  <button aria-label="Close menu" onClick={() => setView('game')}>
+                  <button
+                    aria-label="Close menu"
+                    disabled={view === 'reset' && busy}
+                    onClick={() => navigate('game')}
+                  >
                     ✕
                   </button>
                 </div>
@@ -169,11 +190,13 @@ export default function Home() {
                     busy={busy}
                     now={now}
                     notice={notice}
+                    resetError={resetError}
                     local={config.local}
                     authenticated={session.status === 'authorized'}
                     mutate={mutate}
                     refresh={refresh}
-                    navigate={setView}
+                    resetProgress={completeReset}
+                    navigate={navigate}
                   />
                 )}
               </section>

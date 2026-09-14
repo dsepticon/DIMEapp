@@ -175,6 +175,12 @@ Resources:
             ApiId: !Ref StagingHttpApi
             Path: /actions
             Method: POST
+        PostProfileReset:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /profile/reset
+            Method: POST
 
   StagingHttpApi:
     Type: AWS::Serverless::HttpApi

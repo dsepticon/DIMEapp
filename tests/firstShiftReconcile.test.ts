@@ -293,7 +293,8 @@ describe('one-time legacy First Shift reconciliation', () => {
       action: { type: 'firstShift' as const, step: 'reconcile' as const },
     };
     await service.mutate('player-one', request);
-    expect((await service.snapshot('player-two')).state).toEqual(old);
+    const other = (await service.snapshot('player-two')).state;
+    expect({ ...other, saveGeneration: undefined }).toEqual({ ...old, saveGeneration: undefined });
     const noQuest = initialState(() => 0.5);
     store.states.set('player-three', noQuest);
     await expect(service.mutate('player-three', request)).rejects.toMatchObject({ code: 'QUEST_ORDER' });

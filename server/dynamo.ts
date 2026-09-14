@@ -31,14 +31,32 @@ export class DynamoStore implements Store {
     expected: number | null,
     state: PlayerState,
     request?: { id: string; receipt: Receipt },
+    generationGuard?: string | null,
   ) {
+    const generationCondition =
+      generationGuard === undefined
+        ? ''
+        : generationGuard === null
+          ? ' AND attribute_not_exists(#state.#generation)'
+          : ' AND #state.#generation = :generation';
     const writes = [
       {
         Put: {
           TableName: this.table,
           Item: { pk: player, sk: 'STATE', revision: state.revision, state },
-          ConditionExpression: expected === null ? 'attribute_not_exists(pk)' : 'revision = :expected',
-          ...(expected !== null ? { ExpressionAttributeValues: { ':expected': expected } } : {}),
+          ConditionExpression:
+            (expected === null ? 'attribute_not_exists(pk)' : 'revision = :expected') + generationCondition,
+          ...(expected !== null || generationGuard !== undefined
+            ? {
+                ExpressionAttributeValues: {
+                  ...(expected !== null ? { ':expected': expected } : {}),
+                  ...(typeof generationGuard === 'string' ? { ':generation': generationGuard } : {}),
+                },
+              }
+            : {}),
+          ...(generationGuard !== undefined
+            ? { ExpressionAttributeNames: { '#state': 'state', '#generation': 'saveGeneration' } }
+            : {}),
         },
       },
     ];
