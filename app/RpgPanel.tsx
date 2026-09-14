@@ -405,7 +405,7 @@ function LegacyLyriaPanel({
       {title && (
         <div className={styles.title} aria-label="DIME title scene">
           <strong>D.I.M.E.</strong>
-          <span>LYRIA MINING OUTPOST</span>
+          <span>UNOFFICIAL FAN PROJECT</span>
         </div>
       )}
       {!title && area && (

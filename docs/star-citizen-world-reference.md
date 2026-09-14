@@ -1,5 +1,11 @@
 # DIME mineral and world reference — Milestone 2.2
 
+## Milestone 3 publication notice review (accessed 2026-09-14)
+
+The current official [RSI Star Citizen Fankit and Fandom FAQ](https://support.robertsspaceindustries.com/hc/en-us/articles/360006895793-Star-Citizen-Fankit-and-Fandom-FAQ), updated September 2, 2026, asks fan projects to identify themselves clearly, avoid implying RSI/Cloud Imperium endorsement or affiliation, and link to the official site when presented as a fan site. It distinguishes personal, non-commercial, and commercial uses; its fan-site guidance does not clearly settle the rights position of a playable Twitch game. This is a source and product-design observation, not a claim that a notice grants a license. An owner rights review is still required before public release.
+
+DIME's original implementation decision is to place a compact “Unofficial fan project” title label and a full, readable notice in Profile → About DIME: “DIME is an unofficial Star Citizen fan project. It is not endorsed by or affiliated with Cloud Imperium Games or Roberts Space Industries. DIME is operated by Dsepticon.” The About section links to the official site and DIME's privacy policy. It uses text and existing programmatic art only; no official logo, map, screenshot, icon, audio, dialogue or other asset is copied. The notice identifies the fan relationship without presenting DIME as Star Citizen, an official companion or an authorized product.
+
 ## Milestone 3 source register (accessed 2026-09-13)
 
 **Verified existing DIME rules:** `shared/catalog.ts`, `shared/game.ts`, `shared/firstShift.ts` and `shared/schema.ts` at `55bd58fd5c773bfd47a64acdb4b2d47e0764cbb1` define prices, rarity weights, capacity, starter Nomad and Hand mining tool, ship ownership, raw gem sale and refinery restrictions. These source rules outrank external gameplay descriptions for DIME balance. No moon-specific rarity is encoded; Wala must not receive invented mineral weights.

@@ -111,6 +111,23 @@
   background: #18313d;
   box-shadow: inset 0 0 0 2px #0e202a;
 }
+.aboutSection {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 2px solid var(--cyan);
+  background: #17303d;
+}
+.aboutLinks {
+  display: grid;
+  gap: 7px;
+}
+.aboutLinks a {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  text-decoration: none;
+}
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

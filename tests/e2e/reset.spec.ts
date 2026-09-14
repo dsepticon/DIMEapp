@@ -94,7 +94,42 @@ async function fixture(page: Page) {
 for (const [layout, width, height] of [
   ['panel', 318, 500],
   ['mobile', 360, 640],
+  ['preview', 1024, 768],
 ] as const) {
+  test(`${layout}: fan-project notice, disclosure links, and Profile scrolling`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    const { navigate } = await fixture(page);
+    await navigate('Profile');
+    const dialog = page.getByRole('dialog', { name: 'profile menu' });
+    const about = page.getByRole('region', { name: 'About DIME' });
+    await expect(about).toContainText(
+      'DIME is an unofficial Star Citizen fan project. It is not endorsed by or affiliated with Cloud Imperium Games or Roberts Space Industries. DIME is operated by Dsepticon.',
+    );
+    await expect(about.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
+      'href',
+      'https://destroyaindustriesminingextension.com/privacy',
+    );
+    await expect(about.getByRole('link', { name: 'Official Star Citizen site' })).toHaveAttribute(
+      'href',
+      'https://robertsspaceindustries.com/',
+    );
+    await about.scrollIntoViewIfNeeded();
+    await expect(about).toBeInViewport();
+    await page.screenshot({ path: `test-results/m3-publication/${layout}-profile-about.png` });
+    if (layout !== 'preview') {
+      expect(await dialog.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+    await page.getByRole('button', { name: 'Reset Game Progress', exact: true }).scrollIntoViewIfNeeded();
+    await expect(page.getByRole('region', { name: 'Reset Game Progress' })).toBeInViewport();
+    await page.getByRole('button', { name: 'Reset Game Progress', exact: true }).click();
+    await expect(page.getByRole('dialog', { name: 'reset menu' })).toBeVisible();
+    await page.getByLabel(/Type exactly:/).fill(RESET_CONFIRMATION);
+    await page.getByLabel(/Type exactly:/).press('Enter');
+    await expect(page.getByRole('button', { name: 'Reset All My Game Progress' })).toBeEnabled();
+    await page.screenshot({ path: `test-results/m3-publication/${layout}-reset-confirmation.png` });
+  });
+
   test(`${layout}: Profile reset confirmation, safety, and fresh state screenshots`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     const { store, state, ids, navigate, delay } = await fixture(page);
@@ -152,6 +187,29 @@ for (const [layout, width, height] of [
     await page.screenshot({ path: `${root}-initial-quest.png` });
   });
 }
+
+test('Mobile touch and keyboard can reach About and reset without submitting', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 360, height: 640 }, hasTouch: true });
+  const page = await context.newPage();
+  try {
+    await fixture(page);
+    await page.getByRole('button', { name: 'Open game menu' }).tap();
+    await page.getByRole('navigation', { name: 'Game menu' }).getByRole('button', { name: 'Profile' }).tap();
+    const about = page.getByRole('region', { name: 'About DIME' });
+    await about.scrollIntoViewIfNeeded();
+    await about.getByRole('link', { name: 'Privacy Policy' }).focus();
+    await expect(about.getByRole('link', { name: 'Privacy Policy' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(about.getByRole('link', { name: 'Official Star Citizen site' })).toBeFocused();
+    await page.getByRole('button', { name: 'Reset Game Progress', exact: true }).tap();
+    await page.getByLabel(/Type exactly:/).fill(RESET_CONFIRMATION);
+    await page.getByLabel(/Type exactly:/).press('Enter');
+    await expect(page.getByRole('dialog', { name: 'reset menu' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Reset All My Game Progress' })).toBeEnabled();
+  } finally {
+    await context.close();
+  }
+});
 
 test('failed reset keeps confirmation open and retries the identical request ID', async ({ page }) => {
   const { store, ids, navigate, fail } = await fixture(page);

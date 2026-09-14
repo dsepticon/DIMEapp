@@ -220,6 +220,25 @@ function ProfileScreen({
       <button disabled={busy} onClick={() => void refresh()}>
         Refresh authoritative state
       </button>
+      <section className={styles.aboutSection} aria-label="About DIME">
+        <h2>About DIME</h2>
+        <p>
+          DIME is an unofficial Star Citizen fan project. It is not endorsed by or affiliated with Cloud
+          Imperium Games or Roberts Space Industries. DIME is operated by Dsepticon.
+        </p>
+        <div className={styles.aboutLinks}>
+          <a
+            href="https://destroyaindustriesminingextension.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
+          </a>
+          <a href="https://robertsspaceindustries.com/" target="_blank" rel="noopener noreferrer">
+            Official Star Citizen site
+          </a>
+        </div>
+      </section>
       <section className={styles.dangerSection} aria-label="Reset Game Progress">
         <h2>Reset Game Progress</h2>
         <p>This resets your DIME progress across every Twitch channel.</p>
