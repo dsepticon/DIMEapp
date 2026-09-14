@@ -3,9 +3,9 @@ import { createApi } from '../../server/http';
 import { GameService } from '../../server/service';
 import { MemoryStore } from '../../server/store';
 import { ZONES, zoneArrival, type ZoneId } from '../../shared/world';
-import { walkZoneTo } from './zoneWalking';
+import { playerClearOfHud, waitForWorldPaint, walkZoneTo } from './zoneWalking';
 
-test.use({ video: 'on' });
+test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
 for (const [layout, width, height] of [
   ['panel', 318, 500],
   ['mobile', 360, 640],
@@ -65,6 +65,8 @@ for (const [layout, width, height] of [
       await expect(
         page.getByRole('img', { name: `Original pixel-art map of ${ZONES[to].label}` }),
       ).toBeVisible();
+      await waitForWorldPaint(page);
+      await expect.poll(() => playerClearOfHud(page, ZONES[to])).toBe(true);
     };
     await cross('ARC_L1_CONCOURSE');
     await page.screenshot({ path: `test-results/m3-world/${layout}-physical-arc-concourse.png` });
@@ -77,6 +79,8 @@ for (const [layout, width, height] of [
     await page.getByRole('button', { name: 'Request ship assignment' }).click();
     await page.getByRole('button', { name: 'Confirm assignment' }).click();
     await expect.poll(() => current().world?.departure?.destination).toBe('Lyria');
+    await expect(page.getByText('Saving...', { exact: true })).toHaveCount(0);
+    await expect(page.getByText(/An action is pending confirmation/)).toHaveCount(0);
     await page.screenshot({ path: `test-results/m3-world/${layout}-physical-assigned-hangar.png` });
     await page.getByRole('button', { name: 'Close menu' }).click();
     await cross('ARC_L1_HANGAR', [14, 10]);
@@ -86,6 +90,8 @@ for (const [layout, width, height] of [
     await page.getByRole('button', { name: 'Interact' }).click();
     await page.getByRole('button', { name: 'Depart in assigned ship' }).click();
     await expect.poll(() => current().pending?.kind).toBe('travel');
+    await expect(page.getByRole('button', { name: 'Complete arrival' })).toBeVisible();
+    await expect(page.getByText(/An action is pending confirmation/)).toHaveCount(0);
     await page.screenshot({ path: `test-results/m3-world/${layout}-physical-departure.png` });
     now += 1_000_000;
     await page.getByRole('button', { name: 'Complete arrival' }).click();

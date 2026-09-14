@@ -9,7 +9,7 @@ import type { Action } from '../../shared/schema';
 import { ZONES } from '../../shared/world';
 import { walkZoneTo } from './zoneWalking';
 
-test.use({ video: 'on' });
+test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
 
 async function fixture(page: Page) {
   let now = 1_800_000_000_000;

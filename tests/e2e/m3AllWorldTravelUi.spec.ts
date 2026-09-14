@@ -6,7 +6,7 @@ import type { Location } from '../../shared/schema';
 import { DEPARTURE_POINTS, ZONES, zoneWalkable, type ZoneId } from '../../shared/world';
 import { walkZoneTo } from './zoneWalking';
 
-test.use({ video: 'on' });
+test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
 
 test('one player physically travels ARC-L1 → Lyria → Wala → Area18 → ARC-L1', async ({ page }) => {
   test.setTimeout(360_000);

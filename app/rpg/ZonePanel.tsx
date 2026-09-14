@@ -125,7 +125,12 @@ function draw(
   ctx.fillStyle = p.wall;
   ctx.fillRect(0, 0, width, height);
   const cameraX = Math.max(0, Math.min(zone.width * TILE - width, Math.round(x * TILE - width / 2)));
-  const cameraY = Math.max(0, Math.min(zone.height * TILE - height, Math.round(y * TILE - height / 2)));
+  // Allow a little camera overscan at room edges. The wall-coloured margin sits
+  // behind fixed HUD controls while a player entering near an edge stays visible.
+  const cameraY = Math.max(
+    -100,
+    Math.min(zone.height * TILE - height + 60, Math.round(y * TILE - height / 2)),
+  );
   for (let ty = Math.floor(cameraY / TILE); ty <= Math.ceil((cameraY + height) / TILE); ty++) {
     for (let tx = Math.floor(cameraX / TILE); tx <= Math.ceil((cameraX + width) / TILE); tx++) {
       const px = tx * TILE - cameraX,

@@ -5,9 +5,9 @@ import { GameService } from '../../server/service';
 import { MemoryStore } from '../../server/store';
 import { ZONES, type ZoneId } from '../../shared/world';
 import { beginAssignedTravel } from '../travelFixture';
-import { walkZoneTo } from './zoneWalking';
+import { playerClearOfHud, waitForWorldPaint, walkZoneTo } from './zoneWalking';
 
-test.use({ video: 'on' });
+test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
 
 for (const [layout, width, height] of [
   ['panel', 318, 500],
@@ -71,6 +71,8 @@ for (const [layout, width, height] of [
       await expect(
         page.getByRole('img', { name: `Original pixel-art map of ${ZONES[to].label}` }),
       ).toBeVisible();
+      await waitForWorldPaint(page);
+      await expect.poll(() => playerClearOfHud(page, ZONES[to])).toBe(true);
       await page.screenshot({ path: `test-results/m3-world/${layout}-${phase}-${to.toLowerCase()}.png` });
     };
     for (const zone of route) await cross(zone);

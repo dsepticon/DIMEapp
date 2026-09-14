@@ -11,7 +11,7 @@ import { MemoryStore } from '../../server/store';
 import { beginAssignedTravel } from '../travelFixture';
 import { walkZoneTo } from './zoneWalking';
 
-test.use({ video: 'on' });
+test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
 
 for (const [layout, width, height] of [
   ['panel', 318, 500],

@@ -10,7 +10,7 @@ import { ZONES } from '../../shared/world';
 import { walkZoneTo } from './zoneWalking';
 import { beginAssignedTravel } from '../travelFixture';
 
-test.use({ video: 'on' });
+test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
 for (const [layout, width, height] of [
   ['panel', 318, 500],
   ['mobile', 360, 640],

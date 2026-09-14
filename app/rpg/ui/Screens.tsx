@@ -125,7 +125,8 @@ function CargoScreen({
               {formatCscuMinor(available)} cSCU raw · {source}
             </span>
             <span>
-              Ship raw {scu(hold?.raw[ore] ?? 0)} · refined {scu(hold?.refined[ore] ?? 0)}
+              Ship raw {formatCscuMinor(hold?.raw[ore] ?? 0)} cSCU · refined{' '}
+              {formatCscuMinor(hold?.refined[ore] ?? 0)} cSCU
             </span>
           </div>
         </div>

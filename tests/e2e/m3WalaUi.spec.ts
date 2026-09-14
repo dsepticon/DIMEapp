@@ -6,9 +6,9 @@ import { MemoryStore } from '../../server/store';
 import { generatedNodes } from '../../shared/miningWorld';
 import { ZONES, zoneArrival, type ZoneId } from '../../shared/world';
 import { beginAssignedTravel } from '../travelFixture';
-import { walkZoneTo } from './zoneWalking';
+import { playerClearOfHud, waitForWorldPaint, walkZoneTo } from './zoneWalking';
 
-test.use({ video: 'on' });
+test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
 for (const [layout, width, height] of [
   ['panel', 318, 500],
   ['mobile', 360, 640],
@@ -65,6 +65,8 @@ for (const [layout, width, height] of [
       await expect(
         page.getByRole('img', { name: `Original pixel-art map of ${ZONES[to].label}` }),
       ).toBeVisible();
+      await waitForWorldPaint(page);
+      await expect.poll(() => playerClearOfHud(page, ZONES[to])).toBe(true);
     };
     await cross('WALA_SURFACE_01');
     await cross('WALA_CAVE_01');
