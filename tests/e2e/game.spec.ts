@@ -665,15 +665,24 @@ test('new zero-balance profile can earn its first wallet credit through hand min
   await page.getByRole('button', { name: 'Scan and mine Hand' }).click();
   await advance();
   await page.getByRole('button', { name: 'Collect mined ore' }).click();
-  await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  await expect.poll(() => store.states.get('test')!.pending).toBeNull();
+  await expect.poll(() => store.states.get('test')!.mining.Hand.Dolivine).toBeGreaterThan(0);
+  const rawBeforeTransfer =
+    (store.states.get('test')!.mining.Hand.Dolivine ?? 0) +
+    (store.states.get('test')!.cargo.Nomad!.raw.Dolivine ?? 0);
   await navigate(page, 'cargo');
   await page.getByRole('button', { name: 'Transfer raw cargo' }).click();
-  await expect(page.getByRole('status').first()).toHaveText('Operation saved.');
+  await expect.poll(() => store.states.get('test')!.cargo.Nomad!.raw.Dolivine).toBeGreaterThan(0);
+  expect(
+    (store.states.get('test')!.mining.Hand.Dolivine ?? 0) +
+      (store.states.get('test')!.cargo.Nomad!.raw.Dolivine ?? 0),
+  ).toBe(rawBeforeTransfer);
   await navigate(page, 'travel');
   await startTravel(page, store, service, 'Area-18');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
-  await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  await expect.poll(() => store.states.get('test')!.location).toBe('Area-18');
+  await expect(page.getByText(/Current location: Area-18/)).toBeVisible();
   await navigate(page, 'market');
   await choice(page, 'Trade mode', 'Sell').click();
   await page.getByRole('button', { name: 'Sell material' }).click();
