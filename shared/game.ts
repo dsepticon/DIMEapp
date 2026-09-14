@@ -12,9 +12,14 @@ import {
 } from './catalog';
 import { Action, GameError, Inventory, MiningType, Ore, PlayerState, Ship, stateSchema } from './schema';
 import { applyFirstShift, HAND_TOOL } from './firstShift';
+import { formatScuMinor, MINOR_PER_SCU, settleSale, wholeCscuToMinor } from './mineralUnits';
+import { DEPARTURE_POINTS, LEGACY_ZONE, START_ZONE, ZONES, zoneForSave } from './world';
+import { fracturePieces, generatedNodes, laserRules, NODE_RESPAWN_MS } from './miningWorld';
+import { RATE_SCALE } from './quantityUpgrade';
 export const total = (inventory: Inventory) =>
   Object.values(inventory).reduce((sum, value) => sum + (value ?? 0), 0);
-export const scu = (value: number) => (value / 100).toLocaleString('en-US', { maximumFractionDigits: 2 });
+export const miningOccupiedMinor = (state: PlayerState, source: MiningType) => total(state.mining[source]);
+export const scu = formatScuMinor;
 const assert: (condition: unknown, message: string, code?: string) => asserts condition = (
   condition,
   message,
@@ -29,14 +34,20 @@ export function initialState(random: () => number = Math.random): PlayerState {
       const low = { Low: 30, Medium: 50, High: 70 }[m.yield];
       return [
         name,
-        { yield: (low + random() * 20) / 100, cost: 0.75 + random() * 0.5, time: 0.75 + random() * 0.5 },
+        {
+          yield: low * 10_000 + Math.floor(random() * 200_001),
+          cost: 750_000 + Math.floor(random() * 500_001),
+          time: 750_000 + Math.floor(random() * 500_001),
+        },
       ];
     }),
   ) as PlayerState['refineryRates'];
   return {
     schemaVersion: 2,
+    quantityVersion: 2,
     revision: 0,
     wallet: 0,
+    walletRemainder: 0,
     location: 'ARC-L1',
     currentShip: 'Nomad',
     ships: { Nomad: 1 },
@@ -47,6 +58,15 @@ export function initialState(random: () => number = Math.random): PlayerState {
     orders: [],
     pending: null,
     refineryRates,
+    world: {
+      zone: START_ZONE,
+      entry: 'arrival',
+      nodes: {},
+      scanner: { pings: 0, analyses: 0, analyzed: [], scannedZones: [] },
+      miningSession: null,
+      roc: null,
+      departure: null,
+    },
   };
 }
 function owned(state: PlayerState, ship: Ship) {
@@ -65,7 +85,7 @@ function cargo(state: PlayerState, ship: Ship) {
   return state.cargo[ship] ?? (state.cargo[ship] = { raw: {}, refined: {} });
 }
 function consume(inventory: Inventory, ore: Ore, count: number) {
-  assert(Number.isSafeInteger(count) && count > 0, 'Quantity must be a positive whole number of cSCU.');
+  assert(Number.isSafeInteger(count) && count > 0, 'Quantity must be positive.');
   assert((inventory[ore] ?? 0) >= count, 'Insufficient cargo.', 'INSUFFICIENT_CARGO');
   inventory[ore] = (inventory[ore] ?? 0) - count;
 }
@@ -73,17 +93,23 @@ function add(inventory: Inventory, ore: Ore, count: number) {
   inventory[ore] = (inventory[ore] ?? 0) + count;
 }
 export function refineryQuote(state: PlayerState, method: keyof typeof METHODS, count: number) {
+  assert(state.quantityVersion === 2, 'Save quantity version needs conversion.', 'QUANTITY_VERSION_REQUIRED');
   const m = METHODS[method],
-    rates = state.refineryRates[method],
-    quantity = count / 100;
-  const baseCost = { High: 120 + quantity * 200, Medium: 60 + quantity * 120, Low: 20 + quantity * 60 }[
-    m.cost
-  ];
-  const baseTime = { Short: 2 + quantity * 5, Medium: 4 + quantity * 8, Long: 8 + quantity * 16 }[m.time];
+    rates = state.refineryRates[method];
+  const [fixedCost, variableCost] = { High: [120, 200], Medium: [60, 120], Low: [20, 60] }[m.cost];
+  const [fixedTime, variableTime] = { Short: [2, 5], Medium: [4, 8], Long: [8, 16] }[m.time];
+  const scale = BigInt(MINOR_PER_SCU) * BigInt(RATE_SCALE);
+  const round = (numerator: bigint) => Number((numerator + scale / 2n) / scale);
   return {
-    cost: Math.round(baseCost * rates.cost),
-    duration: Math.max(1000, Math.round(baseTime * rates.time) * 1000),
-    refinedUnits: Math.floor(count * rates.yield),
+    cost: round(
+      (BigInt(fixedCost * MINOR_PER_SCU) + BigInt(variableCost) * BigInt(count)) * BigInt(rates.cost),
+    ),
+    duration: Math.max(
+      1000,
+      round((BigInt(fixedTime * MINOR_PER_SCU) + BigInt(variableTime) * BigInt(count)) * BigInt(rates.time)) *
+        1000,
+    ),
+    refinedUnits: Number((BigInt(count) * BigInt(rates.yield)) / BigInt(RATE_SCALE)),
   };
 }
 function miningReward(source: MiningType, random: () => number): Inventory {
@@ -93,12 +119,16 @@ function miningReward(source: MiningType, random: () => number): Inventory {
     const ore = (Object.entries(GEM_SPAWN_WEIGHTS[source]).find(
       ([, weight]) => roll < (cumulative += weight),
     )?.[0] ?? 'Hadanite') as Ore;
-    return { [ore]: source === 'Hand' ? 1 + Math.floor(random() * 5) : 8 + Math.floor(random() * 56) };
+    return {
+      [ore]: wholeCscuToMinor(
+        source === 'Hand' ? 1 + Math.floor(random() * 5) : 8 + Math.floor(random() * 56),
+      ),
+    };
   }
   const pools = Object.values(ASTEROIDS);
   const available = [...pools[Math.floor(random() * pools.length)]];
   const rewards: Inventory = {};
-  let remaining = (8 + Math.floor(random() * (source === 'Mole' ? 89 : 25))) * 100;
+  let remaining = (8 + Math.floor(random() * (source === 'Mole' ? 89 : 25))) * MINOR_PER_SCU;
   const count = 2 + Math.floor(random() * 2);
   for (let i = 0; i < count; i++) {
     let roll = random() * available.reduce((n, ore) => n + ore.weight, 0);
@@ -107,7 +137,10 @@ function miningReward(source: MiningType, random: () => number): Inventory {
     const quantity =
       i === count - 1
         ? remaining
-        : Math.min(remaining, (1 + Math.floor(random() * Math.max(1, remaining / 100 - 1))) * 100);
+        : Math.min(
+            remaining,
+            (1 + Math.floor(random() * Math.max(1, remaining / MINOR_PER_SCU - 1))) * MINOR_PER_SCU,
+          );
     add(rewards, selected.ore as Ore, quantity);
     remaining -= quantity;
   }
@@ -121,6 +154,7 @@ export function applyAction(
   random: () => number = Math.random,
 ): PlayerState {
   const state = structuredClone(previous);
+  assert(state.quantityVersion === 2, 'Save quantity version needs conversion.', 'QUANTITY_VERSION_REQUIRED');
   if (action.type === 'finish') {
     assert(state.pending, 'No active operation.');
     assert(state.pending.readyAt <= now, 'This operation is not complete.', 'NOT_READY');
@@ -129,9 +163,23 @@ export function applyAction(
       state.currentShip = state.pending.ship;
       state.positions[state.pending.ship] = state.location;
       if (state.pending.roc) state.positions.Roc = state.location;
+      const arrivalZone = LEGACY_ZONE[state.location];
+      if (arrivalZone) {
+        state.world = {
+          ...(state.world ?? {
+            nodes: {},
+            scanner: { pings: 0, analyses: 0, analyzed: [] },
+            miningSession: null,
+            roc: null,
+          }),
+          zone: arrivalZone,
+          entry: 'arrival',
+          departure: null,
+        };
+      }
     } else {
       const { source, rewards } = state.pending;
-      let room = CAPACITIES[source] - total(state.mining[source]);
+      let room = wholeCscuToMinor(CAPACITIES[source]) - miningOccupiedMinor(state, source);
       for (const [ore, quantity] of Object.entries(rewards)) {
         const take = Math.min(room, quantity);
         if (take > 0) add(state.mining[source], ore as Ore, take);
@@ -142,6 +190,194 @@ export function applyAction(
   } else {
     assert(!state.pending, 'Finish the active operation first.', 'BUSY');
     switch (action.type) {
+      case 'enterZone': {
+        const active = zoneForSave(state.location, state.world?.zone);
+        assert(active, 'Current world state needs recovery.', 'WORLD_RECOVERY_REQUIRED');
+        const destination = ZONES[action.zone];
+        assert(destination.location === state.location, 'Destination is in another location.');
+        assert(
+          active.exits.some((exit) => exit.to === action.zone),
+          'No route to that zone.',
+        );
+        if (state.world?.roc?.occupied) {
+          assert(!['lyriaCave', 'walaCave'].includes(destination.palette), 'The ROC cannot enter this cave.');
+          state.world.roc.zone = destination.id;
+        }
+        state.world = {
+          ...(state.world ?? {
+            nodes: {},
+            scanner: { pings: 0, analyses: 0, analyzed: [] },
+            miningSession: null,
+            roc: null,
+          }),
+          zone: destination.id,
+          entry: `from:${active.id}`,
+        };
+        if (state.firstShift?.version === 3 && state.firstShift.status === 'ACTIVE') {
+          if (
+            state.firstShift.objective === 'ENTER_MINE' &&
+            destination.regions.some((region) => region.source === 'Hand')
+          )
+            state.firstShift.objective = 'SCAN_ASSIGNED_NODE';
+          else if (
+            state.firstShift.objective === 'RETURN_TO_OUTPOST' &&
+            destination.id === 'LYRIA_OUTPOST_01'
+          )
+            state.firstShift.objective = 'SELL_MINED_GEM';
+        }
+        break;
+      }
+      case 'scanZone': {
+        const zone = zoneForSave(state.location, state.world?.zone);
+        assert(zone && zone.regions.length > 0, 'Scanning requires a mining zone.');
+        assert(state.world, 'World state needs recovery.', 'WORLD_RECOVERY_REQUIRED');
+        state.world.scanner.pings += 1;
+        if (!state.world.scanner.scannedZones?.includes(zone.id))
+          state.world.scanner.scannedZones = [...(state.world.scanner.scannedZones ?? []), zone.id];
+        if (
+          state.firstShift?.version === 3 &&
+          state.firstShift.status === 'ACTIVE' &&
+          state.firstShift.objective === 'SCAN_ASSIGNED_NODE' &&
+          zone.id === 'LYRIA_SURFACE_01'
+        )
+          state.firstShift.objective = 'ANALYZE_ASSIGNED_NODE';
+        break;
+      }
+      case 'analyzeNode': {
+        const zone = zoneForSave(state.location, state.world?.zone);
+        assert(
+          zone && state.world && state.world.scanner.scannedZones?.includes(zone.id),
+          'Scan this zone first.',
+        );
+        const node = generatedNodes(state.saveGeneration ?? 'legacy', zone, state.world.nodes, now).find(
+          (candidate) => candidate.id === action.nodeId,
+        );
+        assert(node && node.status === 'INTACT', 'Node is unavailable.', 'NODE_UNAVAILABLE');
+        if (!state.world.scanner.analyzed.includes(node.id)) {
+          state.world.scanner.analyzed.push(node.id);
+          state.world.scanner.analyses += 1;
+        }
+        if (
+          node.id === 'LYRIA_SURFACE_01-tutorial' &&
+          state.firstShift?.version === 3 &&
+          state.firstShift.objective === 'ANALYZE_ASSIGNED_NODE'
+        )
+          state.firstShift.objective = 'FRACTURE_ASSIGNED_NODE';
+        break;
+      }
+      case 'beginFracture': {
+        const zone = zoneForSave(state.location, state.world?.zone);
+        assert(zone && state.world, 'World state needs recovery.', 'WORLD_RECOVERY_REQUIRED');
+        const node = generatedNodes(state.saveGeneration ?? 'legacy', zone, state.world.nodes, now).find(
+          (candidate) => candidate.id === action.nodeId,
+        );
+        assert(
+          node && node.status === 'INTACT' && node.source === action.source,
+          'Node is unavailable.',
+          'NODE_UNAVAILABLE',
+        );
+        assert(state.world.scanner.analyzed.includes(node.id), 'Analyze the node first.');
+        assert(!state.world.miningSession, 'Finish the active fracture first.', 'BUSY');
+        if (action.source === 'Hand')
+          assert((state.equipment[HAND_TOOL] ?? 0) > 0, 'Basic Mining Tool is required.');
+        else
+          assert(
+            state.world.roc?.active && state.world.roc.occupied && state.world.roc.zone === zone.id,
+            'Retrieve and enter your owned ROC first.',
+          );
+        state.world.miningSession = { nodeId: node.id, startedAt: now, source: node.source };
+        break;
+      }
+      case 'completeFracture': {
+        const zone = zoneForSave(state.location, state.world?.zone);
+        assert(zone && state.world, 'World state needs recovery.', 'WORLD_RECOVERY_REQUIRED');
+        const session = state.world.miningSession;
+        assert(session?.nodeId === action.nodeId, 'No matching fracture session.');
+        const node = generatedNodes(state.saveGeneration ?? 'legacy', zone, state.world.nodes, now).find(
+          (candidate) => candidate.id === action.nodeId,
+        );
+        assert(node && node.status === 'INTACT', 'Node is unavailable.', 'NODE_UNAVAILABLE');
+        assert(
+          now - session.startedAt >= laserRules(node).requiredSeconds * 1000,
+          'Keep the laser stable for the required duration.',
+          'NOT_READY',
+        );
+        state.world.nodes[node.id] = { ...node, status: 'FRACTURED', fragments: fracturePieces(node, zone) };
+        state.world.miningSession = null;
+        if (
+          node.id === 'LYRIA_SURFACE_01-tutorial' &&
+          state.firstShift?.version === 3 &&
+          state.firstShift.objective === 'FRACTURE_ASSIGNED_NODE'
+        )
+          state.firstShift.objective = 'COLLECT_ASSIGNED_GEMS';
+        break;
+      }
+      case 'cancelFracture': {
+        assert(state.world?.miningSession?.nodeId === action.nodeId, 'No matching fracture session.');
+        state.world.miningSession = null;
+        break;
+      }
+      case 'collectPiece': {
+        const zone = zoneForSave(state.location, state.world?.zone);
+        assert(zone && state.world, 'World state needs recovery.', 'WORLD_RECOVERY_REQUIRED');
+        const node = state.world.nodes[action.nodeId];
+        assert(
+          node && node.status === 'FRACTURED' && node.id.startsWith(`${zone.id}-`),
+          'No fractured node here.',
+          'NODE_UNAVAILABLE',
+        );
+        const piece = node.fragments.find((part) => part.id === action.pieceId);
+        assert(piece && !piece.collected, 'This fragment was already collected.', 'PIECE_COLLECTED');
+        const occupiedMinor = miningOccupiedMinor(state, node.source);
+        assert(
+          occupiedMinor + piece.units <= wholeCscuToMinor(CAPACITIES[node.source]),
+          'Mining hold is full.',
+          'INSUFFICIENT_CAPACITY',
+        );
+        add(state.mining[node.source], node.ore, piece.units);
+        piece.collected = true;
+        if (
+          node.id === 'LYRIA_SURFACE_01-tutorial' &&
+          state.firstShift?.version === 3 &&
+          state.firstShift.objective === 'COLLECT_ASSIGNED_GEMS'
+        ) {
+          if (node.fragments.every((part) => part.collected)) {
+            state.firstShift.counters.mined = 4;
+            state.firstShift.objective = 'RETURN_TO_OUTPOST';
+          }
+        }
+        if (node.fragments.every((part) => part.collected)) {
+          node.status = 'DEPLETED';
+          node.respawnAt = now + NODE_RESPAWN_MS;
+        }
+        break;
+      }
+      case 'retrieveRoc': {
+        assert(
+          state.world && ['LYRIA_ASOP', 'WALA_ASOP'].includes(state.world.zone),
+          'Use a moon vehicle terminal.',
+        );
+        assert(
+          (state.ships.Roc ?? 0) > 0 && state.positions.Roc === state.location,
+          'You do not have an owned ROC here.',
+        );
+        assert(!state.world.roc?.active, 'Your ROC is already retrieved.');
+        state.world.roc = { zone: state.world.zone, active: true, occupied: false };
+        break;
+      }
+      case 'enterRoc': {
+        assert(
+          state.world?.roc?.active && state.world.roc.zone === state.world.zone,
+          'Retrieve your ROC in this zone first.',
+        );
+        state.world.roc.occupied = action.occupied;
+        break;
+      }
+      case 'stowRoc': {
+        assert(state.world?.roc?.active && !state.world.roc.occupied, 'Exit your ROC before storing it.');
+        state.world.roc = null;
+        break;
+      }
       case 'firstShift':
         assert(
           action.step === 'mineDolivine' ? action.depositId === 'dolivine' : action.depositId === undefined,
@@ -151,6 +387,17 @@ export function applyAction(
         break;
       case 'travel': {
         const { ship, destination, loadRoc } = action;
+        assert(
+          state.world?.zone === DEPARTURE_POINTS[state.location].point,
+          'Reach the assigned departure point first.',
+        );
+        assert(
+          state.world.departure?.ship === ship &&
+            state.world.departure.destination === destination &&
+            state.world.departure.loadRoc === loadRoc,
+          'Confirm this trip at the local ship service first.',
+        );
+        assert(!state.world.roc?.active, 'Store your active ROC before departure.');
         assert(ship !== 'Roc', 'The ROC needs a carrier.');
         localShip(state, ship);
         assert(state.location === 'ARC-L1' || ship === state.currentShip, 'Change ships at ARC-L1.');
@@ -168,8 +415,38 @@ export function applyAction(
         const destinationForTiming = destination === 'ARC-L1' ? state.location : destination;
         const duration = (TRAVEL[ship] - (['Lyria', 'Wala'].includes(destinationForTiming) ? 5 : 0)) * 1000;
         state.pending = { kind: 'travel', destination, ship, roc: loadRoc, readyAt: now + duration };
+        state.world.departure = null;
         break;
       }
+      case 'assignDeparture': {
+        const { ship, destination, loadRoc } = action;
+        assert(
+          state.world?.zone === DEPARTURE_POINTS[state.location].service,
+          'Reach the local ship service first.',
+        );
+        assert(!state.world.departure, 'Finish or cancel your assigned departure first.');
+        assert(!state.world.roc?.active, 'Store your active ROC before assigning a ship.');
+        assert(ship !== 'Roc', 'The ROC needs a carrier.');
+        localShip(state, ship);
+        assert(state.location === 'ARC-L1' || ship === state.currentShip, 'Change ships at ARC-L1.');
+        assert(destination !== state.location, 'Already at that location.');
+        const miningShip = ship === 'Prospector' || ship === 'Mole';
+        assert(
+          miningShip ? ['ARC-L1', 'Halo'].includes(destination) : destination !== 'Halo',
+          'This ship cannot use that flight path.',
+        );
+        assert(
+          !loadRoc ||
+            (ship === 'Nomad' && (state.ships.Roc ?? 0) > 0 && state.positions.Roc === state.location),
+          'The owned ROC must be here to load into the Nomad.',
+        );
+        state.world.departure = { ship, destination, loadRoc };
+        break;
+      }
+      case 'cancelDeparture':
+        assert(state.world?.departure, 'No departure assignment to cancel.');
+        state.world.departure = null;
+        break;
       case 'mine': {
         const { source, head, crew } = action;
         assert(
@@ -179,7 +456,10 @@ export function applyAction(
           'Select an eligible mining claim.',
         );
         sourceHere(state, source);
-        assert(total(state.mining[source]) < CAPACITIES[source], 'Mining hold is full.');
+        assert(
+          miningOccupiedMinor(state, source) <= wholeCscuToMinor(CAPACITIES[source] - 1),
+          'Mining hold is full.',
+        );
         let seconds = source === 'Hand' ? 15 : 40;
         if (source === 'Prospector') {
           const heads: Record<string, number> = {
@@ -233,18 +513,22 @@ export function applyAction(
         };
         break;
       }
-      case 'transfer': {
+      case 'transfer':
+      case 'transferMinor': {
+        const units = action.type === 'transfer' ? wholeCscuToMinor(action.units) : action.unitsMinor;
         sourceHere(state, action.source);
         const hold = cargo(state, action.ship);
         assert(
-          total(hold.raw) + total(hold.refined) + action.units <= CAPACITIES[action.ship],
+          total(hold.raw) + total(hold.refined) + units <= wholeCscuToMinor(CAPACITIES[action.ship]),
           'Cargo ship has insufficient capacity.',
         );
-        consume(state.mining[action.source], action.ore, action.units);
-        add(hold.raw, action.ore, action.units);
+        consume(state.mining[action.source], action.ore, units);
+        add(hold.raw, action.ore, units);
         break;
       }
-      case 'refine': {
+      case 'refine':
+      case 'refineMinor': {
+        const units = action.type === 'refine' ? wholeCscuToMinor(action.units) : action.unitsMinor;
         assert(state.location === 'ARC-L1', 'Refining is available at ARC-L1.');
         assert(
           ['Prospector', 'Mole'].includes(action.source) && rawMineral(action.ore).refineryEligible,
@@ -252,17 +536,17 @@ export function applyAction(
         );
         sourceHere(state, action.source);
         assert(state.orders.length < 100, 'Collect existing work orders first.');
-        const quote = refineryQuote(state, action.method, action.units);
+        const quote = refineryQuote(state, action.method, units);
         assert(quote.refinedUnits > 0, 'The quantity is too small to refine.');
         assert(state.wallet >= quote.cost, 'Insufficient wallet balance.', 'INSUFFICIENT_FUNDS');
-        consume(state.mining[action.source], action.ore, action.units);
+        consume(state.mining[action.source], action.ore, units);
         state.wallet -= quote.cost;
         state.orders.push({
           id,
           source: action.source,
           ore: action.ore,
           method: action.method,
-          rawUnits: action.units,
+          rawUnits: units,
           refinedUnits: quote.refinedUnits,
           cost: quote.cost,
           createdAt: now,
@@ -283,7 +567,7 @@ export function applyAction(
         const hold = cargo(state, action.ship);
         const quantity = Math.min(
           order.refinedUnits,
-          CAPACITIES[action.ship] - total(hold.raw) - total(hold.refined),
+          wholeCscuToMinor(CAPACITIES[action.ship]) - total(hold.raw) - total(hold.refined),
         );
         assert(quantity > 0, 'Cargo ship is full.');
         add(hold.refined, order.ore, quantity);
@@ -291,7 +575,9 @@ export function applyAction(
         if (order.refinedUnits === 0) state.orders = state.orders.filter((o) => o.id !== order.id);
         break;
       }
-      case 'sell': {
+      case 'sell':
+      case 'sellMinor': {
+        const units = action.type === 'sell' ? wholeCscuToMinor(action.units) : action.unitsMinor;
         const hold = cargo(state, action.ship);
         const raw = rawMineral(action.ore);
         const material = action.category === 'raw' ? raw : refinedMineral(action.ore);
@@ -305,10 +591,10 @@ export function applyAction(
         );
         const price = material.pricePerScu;
         assert(price > 0, 'This material has no sale price.');
-        const proceeds = Math.round((action.units * price) / 100);
-        assert(proceeds > 0, 'Quantity is too small to sell.');
-        consume(hold[action.category], action.ore, action.units);
-        state.wallet += proceeds;
+        const settlement = settleSale(units, price, state.walletRemainder ?? 0);
+        consume(hold[action.category], action.ore, units);
+        state.wallet += settlement.credit;
+        state.walletRemainder = settlement.remainder;
         break;
       }
       case 'sellItem': {

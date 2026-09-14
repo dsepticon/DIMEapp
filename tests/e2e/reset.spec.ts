@@ -14,6 +14,7 @@ async function fixture(page: Page) {
   state.revision = 3;
   state.wallet = 5_700;
   state.location = 'Lyria';
+  state.world!.zone = 'LYRIA_OUTPOST_01';
   state.positions.Nomad = 'Lyria';
   state.ships.Prospector = 1;
   state.equipment['Arbor MH1'] = 1;
@@ -24,6 +25,7 @@ async function fixture(page: Page) {
     objective: 'SELL_MINED_GEM',
     acceptedAt: 1,
     counters: { mined: 4, refined: 0, sold: 0 },
+    version: 2,
   };
   store.states.set('synthetic-reset-player', state);
   const api = createApi(

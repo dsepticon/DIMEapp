@@ -77,6 +77,7 @@ for (const [layout, width, height] of [
     state.saveGeneration = randomUUID();
     state.location = 'Lyria';
     state.positions.Nomad = 'Lyria';
+    state.world!.zone = 'LYRIA_OUTPOST_01';
     const request = acceptRequest(0);
     const { store, service, posts } = await setup(page, state, request, { alreadyApplied: true });
     await expect(page.getByRole('status')).toContainText('Previous action confirmed');
@@ -121,6 +122,7 @@ test('Mara acceptance that never reached the backend retries once with its origi
   state.saveGeneration = randomUUID();
   state.location = 'Lyria';
   state.positions.Nomad = 'Lyria';
+  state.world!.zone = 'LYRIA_OUTPOST_01';
   const request = acceptRequest(0);
   const { store, posts } = await setup(page, state, request);
   await expect.poll(() => page.evaluate((key) => sessionStorage.getItem(key), storageKey)).toBeNull();
@@ -138,6 +140,7 @@ test('an unconfirmed response retries after refresh in the same tab, while a new
   state.saveGeneration = randomUUID();
   state.location = 'Lyria';
   state.positions.Nomad = 'Lyria';
+  state.world!.zone = 'LYRIA_OUTPOST_01';
   const request = acceptRequest(0);
   const { store, posts } = await setup(page, state, request, { failFirstPost: true });
   await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeVisible();
@@ -170,6 +173,7 @@ test('stale revision and conflicting payload retain the original pending action'
   state.saveGeneration = randomUUID();
   state.location = 'Lyria';
   state.positions.Nomad = 'Lyria';
+  state.world!.zone = 'LYRIA_OUTPOST_01';
   state.revision = 1;
   const request = acceptRequest(0);
   const { store, posts } = await setup(page, state, request);
@@ -188,6 +192,7 @@ test('an existing receipt with the same ID and different payload is rejected wit
   state.saveGeneration = randomUUID();
   state.location = 'Lyria';
   state.positions.Nomad = 'Lyria';
+  state.world!.zone = 'LYRIA_OUTPOST_01';
   const original = acceptRequest(0);
   const changed: Mutation = { ...original, action: { type: 'firstShift', step: 'checkTool' } };
   const store = new MemoryStore();
@@ -222,6 +227,7 @@ test('a lost Mara completion response cannot grant its reward twice', async ({ p
   state.saveGeneration = randomUUID();
   state.location = 'Lyria';
   state.positions.Nomad = 'Lyria';
+  state.world!.zone = 'LYRIA_OUTPOST_01';
   state.revision = 5;
   state.wallet = 5200;
   state.firstShift = {

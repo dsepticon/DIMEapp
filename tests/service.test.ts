@@ -7,7 +7,7 @@ import { GameError, Mutation } from '../shared/schema';
 const request = (): Mutation => ({
   requestId: randomUUID(),
   expectedRevision: 0,
-  action: { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false },
+  action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' },
 });
 it('atomically replays identical concurrent requests once', async () => {
   const store = new MemoryStore(),
@@ -29,7 +29,7 @@ it('rejects a reused request ID with a different payload', async () => {
     command = request();
   await service.mutate('p', command);
   await expect(
-    service.mutate('p', { ...command, action: { ...command.action, destination: 'Wala' } }),
+    service.mutate('p', { ...command, action: { ...command.action, zone: 'ARC_L1_TRANSIT' } }),
   ).rejects.toMatchObject({ code: 'IDEMPOTENCY_CONFLICT' });
 });
 it('old receipts return current state, never regress a later revision', async () => {
@@ -38,7 +38,11 @@ it('old receipts return current state, never regress a later revision', async ()
   const command = request();
   await service.mutate('p', command);
   now += 100000;
-  await service.mutate('p', { requestId: randomUUID(), expectedRevision: 1, action: { type: 'finish' } });
+  await service.mutate('p', {
+    requestId: randomUUID(),
+    expectedRevision: 1,
+    action: { type: 'enterZone', zone: 'ARC_L1_TRANSIT' },
+  });
   expect((await service.mutate('p', command)).state.revision).toBe(2);
 });
 it('stale revisions prevent replay even after receipt TTL cleanup', async () => {

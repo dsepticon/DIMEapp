@@ -3,17 +3,22 @@ import {
   firstShiftOf,
   FIRST_SHIFT_REWARD,
   LEGACY_TUTORIAL_SALE_AUEC,
-  TUTORIAL_SALE_AUEC,
   TUTORIAL_RAW_UNITS,
 } from '../../../shared/firstShift';
+import { rawMineral } from '../../../shared/catalog';
+import { saleProceeds, wholeCscuToMinor } from '../../../shared/mineralUnits';
 import type { Action, PlayerState } from '../../../shared/schema';
 import styles from './GameUI.module.css';
 
 const LABELS: Record<ReturnType<typeof firstShiftOf>['objective'], string> = {
   SPEAK_TO_FOREMAN: 'Meet Mara Voss at the outpost',
-  CHECK_EQUIPMENT: 'Check your Hand tool with Neri Vale',
-  ENTER_MINE: 'Enter the mine chamber',
+  CHECK_EQUIPMENT: 'Confirm your Basic Mining Tool with Neri Vale',
+  ENTER_MINE: 'Reach a Lyria surface mining region',
   MINE_ASSIGNED_ORE: 'Mine the assigned Dolivine seam',
+  SCAN_ASSIGNED_NODE: 'Scan the Lyria surface for a mineral signature',
+  ANALYZE_ASSIGNED_NODE: 'Analyze the assigned Dolivine node',
+  FRACTURE_ASSIGNED_NODE: 'Hold the laser in the optimal range to fracture Dolivine',
+  COLLECT_ASSIGNED_GEMS: 'Collect all three raw Dolivine fragments',
   RETURN_TO_OUTPOST: 'Return to the outpost',
   START_REFINERY_ORDER: 'Speak to Ivo Sen and start refining',
   COLLECT_REFINED_MATERIAL: 'Collect the refinery order',
@@ -24,7 +29,11 @@ const LABELS: Record<ReturnType<typeof firstShiftOf>['objective'], string> = {
 };
 export function objectiveText(state: PlayerState): string {
   if (state.firstShift?.reconciliation === 'SUPPORT_REQUIRED') return 'Contact support about this assignment';
-  if (state.firstShift && state.firstShift.version !== 2 && state.firstShift.status === 'ACTIVE')
+  if (
+    state.firstShift &&
+    ![2, 3].includes(state.firstShift.version ?? 0) &&
+    state.firstShift.status === 'ACTIVE'
+  )
     return state.firstShift.version === undefined || state.firstShift.version === 1
       ? 'Updating your earlier First Shift assignment'
       : 'Contact support about this assignment';
@@ -35,7 +44,7 @@ export function objectiveText(state: PlayerState): string {
 
 function legacySale(quest: ReturnType<typeof firstShiftOf>): boolean {
   return (
-    quest.version !== 2 ||
+    (quest.version !== 2 && quest.version !== 3) ||
     quest.reconciliation === 'LEGACY_SOLD' ||
     quest.reconciliation === 'LEGACY_COMPLETE' ||
     quest.reconciliation === 'SUPPORT_REQUIRED'
@@ -51,11 +60,13 @@ export function QuestLog({ state }: { state: PlayerState }) {
   const quest = firstShiftOf(state);
   const legacy =
     !!state.firstShift &&
-    (state.firstShift.version !== 2 ||
+    (![2, 3].includes(state.firstShift.version ?? 0) ||
       state.firstShift.reconciliation === 'LEGACY_SOLD' ||
       state.firstShift.reconciliation === 'LEGACY_COMPLETE' ||
       state.firstShift.reconciliation === 'SUPPORT_REQUIRED');
-  const walletChange = TUTORIAL_SALE_AUEC + FIRST_SHIFT_REWARD;
+  const saleUnits = TUTORIAL_RAW_UNITS;
+  const saleRevenue = saleProceeds(wholeCscuToMinor(saleUnits), rawMineral('Dolivine').pricePerScu);
+  const walletChange = saleRevenue + FIRST_SHIFT_REWARD;
   return (
     <section className={styles.screen} aria-label="Quest Log">
       <h1>Quest Log</h1>
@@ -75,7 +86,7 @@ export function QuestLog({ state }: { state: PlayerState }) {
           {legacy ? 'sold' : 'sold raw'}: {quest.counters.sold} cSCU
         </p>
         {(quest.reconciliation === 'SUPPORT_REQUIRED' ||
-          (quest.version !== undefined && quest.version !== 1 && quest.version !== 2)) && (
+          (quest.version !== undefined && ![1, 2, 3].includes(quest.version))) && (
           <p>Contact support about this assignment. Other game features remain available.</p>
         )}
         {legacy && quest.status === 'COMPLETE' && <p>Completed under an earlier First Shift route.</p>}
@@ -86,7 +97,7 @@ export function QuestLog({ state }: { state: PlayerState }) {
         )}
         {quest.status === 'COMPLETE' && !legacy && (
           <div aria-label="Final reward summary">
-            <p>Sale revenue: +{TUTORIAL_SALE_AUEC} aUEC</p>
+            <p>Sale revenue: +{saleRevenue} aUEC</p>
             <p>Refinery cost: 0 aUEC · gems are sold raw</p>
             <p>Reward claimed: +{FIRST_SHIFT_REWARD} aUEC</p>
             <p>Total wallet change: +{walletChange} aUEC</p>
@@ -121,24 +132,26 @@ export function TutorialOperations({
   const action =
     kind === 'market' &&
     quest.objective === 'SELL_MINED_GEM' &&
-    quest.version === 2 &&
+    (quest.version === 2 || quest.version === 3) &&
     quest.reconciliation !== 'SUPPORT_REQUIRED'
       ? 'sell'
       : null;
   const disabled = !canAct || busy;
+  const saleUnits = TUTORIAL_RAW_UNITS;
+  const saleRevenue = saleProceeds(wholeCscuToMinor(saleUnits), rawMineral('Dolivine').pricePerScu);
   return (
     <section className={styles.panel} aria-label={`${kind} tutorial`}>
       <strong>{kind === 'refinery' ? 'Ivo Sen · shift refinery' : 'Neri Vale · supply exchange'}</strong>
       <p>
         {quest.reconciliation === 'SUPPORT_REQUIRED'
           ? 'Contact support about this assignment.'
-          : quest.version !== 2
+          : quest.version !== 2 && quest.version !== 3
             ? 'Updating your earlier First Shift assignment.'
             : quest.reconciliation === 'LEGACY_SOLD' || quest.reconciliation === 'LEGACY_COMPLETE'
               ? 'Your earlier refinery sale remains credited. No new raw-gem sale is due.'
               : kind === 'refinery'
                 ? 'Dolivine and other gems cannot enter a refinery work order. Sell them raw at the supply exchange.'
-                : `Sell the assigned ${TUTORIAL_RAW_UNITS} cSCU of raw Dolivine for ${TUTORIAL_SALE_AUEC} aUEC.`}
+                : `Sell the assigned ${saleUnits} cSCU of raw Dolivine for ${saleRevenue} aUEC.`}
       </p>
       {action && (
         <button
@@ -153,7 +166,7 @@ export function TutorialOperations({
         <p>
           {legacySale(quest)
             ? `Earlier sale confirmed: ${quest.counters.sold} cSCU refined Dolivine for ${LEGACY_TUTORIAL_SALE_AUEC} aUEC.`
-            : `Sale confirmed: ${quest.counters.sold} cSCU raw Dolivine for ${TUTORIAL_SALE_AUEC} aUEC.`}
+            : `Sale confirmed: ${quest.counters.sold} cSCU raw Dolivine for ${saleRevenue} aUEC.`}
         </p>
       )}
     </section>

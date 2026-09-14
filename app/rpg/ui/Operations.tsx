@@ -16,6 +16,8 @@ import { format, remaining } from '../../ui';
 import { CapacityBar, ChoiceRail, OreIcon, Stepper } from './UiBits';
 import styles from './GameUI.module.css';
 import { TutorialOperations } from './FirstShiftUI';
+import { settleSale, wholeCscuToMinor, formatCscuMinor } from '../../../shared/mineralUnits';
+import { DEPARTURE_POINTS, ZONES } from '../../../shared/world';
 
 type Props = {
   state: PlayerState;
@@ -39,6 +41,7 @@ export function MarketScreen({ state, canAct, mutate, notice }: Props) {
   const ships = cargoShips(state);
   const selectedShip = ships.includes(ship) ? ship : (ships[0] ?? 'Nomad');
   const stock = state.cargo[selectedShip]?.[category][ore] ?? 0;
+  const selectedUnits = Math.min(units, stock);
   const shop = { ...SHIP_PRICES, ...EQUIPMENT };
   const price = shop[item as keyof typeof shop] ?? 0;
   const owned = state.ships[item as Ship] ?? state.equipment[item] ?? 0;
@@ -57,7 +60,7 @@ export function MarketScreen({ state, canAct, mutate, notice }: Props) {
       ? 'No selected material in this cargo ship.'
       : state.location !== 'ARC-L1' && state.location !== 'Area-18'
         ? 'Travel to a trading station.'
-        : units > stock
+        : selectedUnits <= 0
           ? 'Select an available quantity.'
           : '';
   if (state.location === 'Lyria')
@@ -192,13 +195,24 @@ export function MarketScreen({ state, canAct, mutate, notice }: Props) {
                 </span>
               </div>
             </div>
-            <Stepper label="Sell amount" value={units} max={stock} onChange={setUnits} />
-            <p>Indicative value {format(Math.round((units * ORES[ore][category]) / 100))} aUEC</p>
+            <Stepper label="Sell amount" value={selectedUnits} max={stock} onChange={setUnits} />
+            <p>
+              Indicative value{' '}
+              {format(settleSale(selectedUnits, ORES[ore][category], state.walletRemainder ?? 0).credit)} aUEC
+            </p>
             {sellReason && <p className={styles.warning}>{sellReason}</p>}
             <button
               className={styles.accentButton}
               disabled={!!sellReason}
-              onClick={() => void mutate({ type: 'sell', ship: selectedShip, ore, category, units })}
+              onClick={() =>
+                void mutate({
+                  type: 'sellMinor',
+                  ship: selectedShip,
+                  ore,
+                  category,
+                  unitsMinor: selectedUnits,
+                })
+              }
             >
               Sell material
             </button>
@@ -221,7 +235,8 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
   );
   const selectedSource = sources.includes(source) ? source : (sources[0] ?? 'Prospector');
   const stock = state.mining[selectedSource][ore] ?? 0;
-  const quote = refineryQuote(state, method, units);
+  const selectedUnits = Math.min(units, stock);
+  const quote = refineryQuote(state, method, selectedUnits);
   const ships = cargoShips(state);
   const selectedShip = ships.includes(ship) ? ship : (ships[0] ?? 'Nomad');
   const recipes = ORE_NAMES.filter(
@@ -238,7 +253,7 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
             ? 'Gem minerals do not use a refinery recipe.'
             : !stock
               ? 'No selected raw ore is available.'
-              : units > stock
+              : selectedUnits <= 0
                 ? 'Select an available quantity.'
                 : quote.cost > state.wallet
                   ? 'Insufficient aUEC for this work order.'
@@ -260,7 +275,8 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
         {state.orders.length ? (
           state.orders.map((order) => (
             <p key={order.id}>
-              {order.ore} · {order.refinedUnits} cSCU · {order.readyAt <= now ? 'Ready' : 'Processing'}
+              {order.ore} · {formatCscuMinor(order.refinedUnits)} cSCU ·{' '}
+              {order.readyAt <= now ? 'Ready' : 'Processing'}
             </p>
           ))
         ) : (
@@ -290,7 +306,7 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
       <CapacityBar
         label={selectedSource + ' raw capacity'}
         used={total(state.mining[selectedSource])}
-        capacity={CAPACITIES[selectedSource]}
+        capacity={wholeCscuToMinor(CAPACITIES[selectedSource])}
       />
       <h2>Ore recipes</h2>
       <div className={styles.cardGrid} role="group" aria-label="Ore recipes">
@@ -316,7 +332,7 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
           {ore} · raw {scu(stock)} SCU
         </strong>
         <ChoiceRail label="Processing method" choices={METHOD_NAMES} value={method} onChange={setMethod} />
-        <Stepper label="Refine amount" value={units} max={stock} onChange={setUnits} />
+        <Stepper label="Refine amount" value={selectedUnits} max={stock} onChange={setUnits} />
         <p>
           Expected output {scu(quote.refinedUnits)} SCU · cost {format(quote.cost)} aUEC ·{' '}
           {Math.round(quote.duration / 1000)} sec
@@ -325,7 +341,15 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
         <button
           className={styles.accentButton}
           disabled={!!reason}
-          onClick={() => void mutate({ type: 'refine', source: selectedSource, ore, units, method })}
+          onClick={() =>
+            void mutate({
+              type: 'refineMinor',
+              source: selectedSource,
+              ore,
+              unitsMinor: selectedUnits,
+              method,
+            })
+          }
         >
           Start Refining
         </button>
@@ -367,13 +391,23 @@ export function RefineryScreen({ state, canAct, mutate, notice, now = Date.now()
   );
 }
 
-export function TravelScreen({ state, canAct, blocked = false, mutate, now = Date.now() }: Props) {
+export function TravelScreen({
+  state,
+  canAct,
+  blocked = false,
+  mutate,
+  now = Date.now(),
+  terminalAccess = false,
+}: Props & { terminalAccess?: boolean }) {
   const [ship, setShip] = useState<Ship>(state.currentShip);
   const [destination, setDestination] = useState<Location>('Lyria');
   const [loadRoc, setLoadRoc] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const ships = SHIP_NAMES.filter((name) => (state.ships[name] ?? 0) > 0 && name !== 'Roc');
   const selectedShip = ships.includes(ship) ? ship : (ships[0] ?? 'Nomad');
+  const departure = DEPARTURE_POINTS[state.location];
+  const here = state.world?.zone;
+  const assigned = state.world?.departure;
   const allowed = LOCATIONS.filter(
     (name) =>
       name !== state.location &&
@@ -400,6 +434,26 @@ export function TravelScreen({ state, canAct, blocked = false, mutate, now = Dat
             onClick={() => void mutate({ type: 'finish' })}
           >
             {state.pending.kind === 'mine' ? 'Collect mined ore' : 'Complete arrival'}
+          </button>
+        </div>
+      ) : assigned ? (
+        <div className={styles.panel}>
+          <strong>Assigned departure · {assigned.ship}</strong>
+          <p>Destination: {assigned.destination}</p>
+          <p>Departure point: {ZONES[departure.point].label}</p>
+          {here === departure.point ? (
+            <button
+              className={styles.accentButton}
+              disabled={!canAct || blocked || !terminalAccess}
+              onClick={() => void mutate({ type: 'travel', ...assigned })}
+            >
+              Depart in assigned ship
+            </button>
+          ) : (
+            <p>Close this window and reach the assigned departure point before boarding.</p>
+          )}
+          <button disabled={!canAct || blocked} onClick={() => void mutate({ type: 'cancelDeparture' })}>
+            Cancel assignment
           </button>
         </div>
       ) : (
@@ -431,6 +485,15 @@ export function TravelScreen({ state, canAct, blocked = false, mutate, now = Dat
             <button disabled>Frontier sector · future route</button>
           </div>
           <div className={styles.panel}>
+            {here !== departure.service && (
+              <p>
+                Visit {ZONES[departure.service].label} and interact with its ship service to assign a
+                departure.
+              </p>
+            )}
+            {here === departure.service && !terminalAccess && (
+              <p>Approach and interact with the local ship terminal to assign a departure.</p>
+            )}
             <strong>{selectedDestination ?? 'No route available'}</strong>
             <p>
               Ship: {selectedShip} ·{' '}
@@ -443,33 +506,33 @@ export function TravelScreen({ state, canAct, blocked = false, mutate, now = Dat
             )}
             {confirm ? (
               <div className={styles.confirm}>
-                <strong>Confirm travel to {selectedDestination}?</strong>
-                <p>This starts a server-managed trip.</p>
+                <strong>Assign departure to {selectedDestination}?</strong>
+                <p>The ship service will assign a local departure point. Travel begins after you reach it.</p>
                 <button
                   className={styles.accentButton}
-                  disabled={!canAct || !selectedDestination}
+                  disabled={!canAct || !selectedDestination || here !== departure.service || !terminalAccess}
                   onClick={() => {
                     setConfirm(false);
                     if (selectedDestination)
                       void mutate({
-                        type: 'travel',
+                        type: 'assignDeparture',
                         ship: selectedShip,
                         destination: selectedDestination,
                         loadRoc,
                       });
                   }}
                 >
-                  Confirm travel
+                  Confirm assignment
                 </button>
                 <button onClick={() => setConfirm(false)}>Cancel</button>
               </div>
             ) : (
               <button
                 className={styles.accentButton}
-                disabled={!canAct || !selectedDestination}
+                disabled={!canAct || !selectedDestination || here !== departure.service || !terminalAccess}
                 onClick={() => setConfirm(true)}
               >
-                Start travel
+                Request ship assignment
               </button>
             )}
           </div>

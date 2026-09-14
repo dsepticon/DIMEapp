@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { applyAction, initialState, refineryQuote, total } from '../shared/game';
 import { Action, GameError, PlayerState, actionSchema } from '../shared/schema';
+import { readyForTravel } from './travelFixture';
 const now = 1_800_000_000_000;
 function setup(): PlayerState {
   const state = initialState(() => 0.5);
   state.wallet = 100_000;
   state.ships.Prospector = 1;
   state.positions.Prospector = 'ARC-L1';
-  state.mining.Prospector = { Gold: 1000, Aluminium: 1000 };
+  state.mining.Prospector = { Gold: 100_000, Aluminium: 100_000 };
   return state;
 }
 const run = (state: PlayerState, action: Action, time = now, id = 'order-1') =>
@@ -26,7 +27,7 @@ describe('production-derived game rules', () => {
     expect(total(started.mining.Hand)).toBe(0);
     expect(() => run(started, { type: 'finish' })).toThrow('not complete');
     const result = run(started, { type: 'finish' }, now + 15000);
-    expect(total(result.mining.Hand)).toBe(3);
+    expect(total(result.mining.Hand)).toBe(300);
     expect(() => run(result, { type: 'finish' }, now + 16000)).toThrow('No active');
   });
   it('rejects mining outside a claim, unowned ships, and full holds', () => {
@@ -39,33 +40,39 @@ describe('production-derived game rules', () => {
       'own',
     );
     state.ships.Prospector = 1;
-    state.mining.Prospector = { Gold: 3200 };
+    state.mining.Prospector = { Gold: 320_000 };
     expect(() => run(state, { type: 'mine', source: 'Prospector', head: 'Arbor MH1', crew: '' })).toThrow(
       'full',
     );
   });
   it('persists travel and forbids teleporting a remotely parked ship', () => {
     const state = setup();
-    const start = run(state, { type: 'travel', ship: 'Prospector', destination: 'Halo', loadRoc: false });
+    const start = run(readyForTravel(state, 'Halo', 'Prospector'), {
+      type: 'travel',
+      ship: 'Prospector',
+      destination: 'Halo',
+      loadRoc: false,
+    });
     expect(start.location).toBe('ARC-L1');
     const arrived = run(start, { type: 'finish' }, now + 55000);
     expect(arrived.location).toBe('Halo');
     expect(arrived.positions.Prospector).toBe('Halo');
-    expect(() =>
-      run(arrived, { type: 'travel', ship: 'Nomad', destination: 'Area-18', loadRoc: false }),
-    ).toThrow('location');
+    expect(() => readyForTravel(arrived, 'Area-18', 'Nomad')).toThrow('location');
   });
   it('rejects overlapping operations and invalid travel paths', () => {
     const state = setup();
-    expect(() => run(state, { type: 'travel', ship: 'Nomad', destination: 'Halo', loadRoc: false })).toThrow(
-      'flight path',
-    );
-    const start = run(state, { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false });
+    expect(() => readyForTravel(state, 'Halo', 'Nomad')).toThrow('flight path');
+    const start = run(readyForTravel(state, 'Lyria'), {
+      type: 'travel',
+      ship: 'Nomad',
+      destination: 'Lyria',
+      loadRoc: false,
+    });
     expect(() => run(start, { type: 'purchase', item: 'Roc', quantity: 1 })).toThrow('Finish');
   });
   it('refines atomically with an absolute deadline and no phantom refined inventory', () => {
     const state = setup();
-    const quote = refineryQuote(state, 'Dinyx Solventation', 1000);
+    const quote = refineryQuote(state, 'Dinyx Solventation', 100_000);
     const next = run(state, {
       type: 'refine',
       source: 'Prospector',
@@ -76,13 +83,13 @@ describe('production-derived game rules', () => {
     expect(next.wallet).toBe(state.wallet - quote.cost);
     expect(next.mining.Prospector.Gold).toBe(0);
     expect(next.orders[0]).toMatchObject({
-      rawUnits: 1000,
-      refinedUnits: 800,
+      rawUnits: 100_000,
+      refinedUnits: 80_000,
       createdAt: now,
       readyAt: now + quote.duration,
     });
     expect(next.cargo.Nomad?.refined).toEqual({});
-    expect(state.mining.Prospector.Gold).toBe(1000);
+    expect(state.mining.Prospector.Gold).toBe(100_000);
   });
   it('rejects insufficient cargo, funds, gems, and wrong-location refining', () => {
     const action: Action = {
@@ -110,10 +117,10 @@ describe('production-derived game rules', () => {
       method: 'Dinyx Solventation',
     });
     expect(() => run(state, { type: 'collect', orderId: 'order-1', ship: 'Nomad' })).toThrow('processing');
-    state.cargo.Nomad = { raw: { Iron: 2000 }, refined: { Gold: 200 } };
+    state.cargo.Nomad = { raw: { Iron: 200_000 }, refined: { Gold: 20_000 } };
     const next = run(state, { type: 'collect', orderId: 'order-1', ship: 'Nomad' }, now + 1000000);
-    expect(next.cargo.Nomad?.refined.Gold).toBe(400);
-    expect(next.orders[0].refinedUnits).toBe(600);
+    expect(next.cargo.Nomad?.refined.Gold).toBe(40_000);
+    expect(next.orders[0].refinedUnits).toBe(60_000);
     expect(() => run(next, { type: 'collect', orderId: 'order-1', ship: 'Nomad' }, now + 1000000)).toThrow(
       'full',
     );
@@ -130,7 +137,7 @@ describe('production-derived game rules', () => {
     expect(state.orders).toHaveLength(0);
     const balance = state.wallet;
     state = run(
-      state,
+      readyForTravel(state, 'Area-18'),
       { type: 'travel', ship: 'Nomad', destination: 'Area-18', loadRoc: false },
       now + 200000,
     );
@@ -149,11 +156,11 @@ describe('production-derived game rules', () => {
       ore: 'Aluminium',
       units: 100,
     });
-    expect(state.cargo.Nomad?.raw.Aluminium).toBe(100);
+    expect(state.cargo.Nomad?.raw.Aluminium).toBe(10_000);
     expect(state.cargo.Nomad?.refined.Aluminium).toBeUndefined();
     state.location = 'Area-18';
     state.positions.Nomad = 'Area-18';
-    state.cargo.Nomad!.refined.Aluminium = 100;
+    state.cargo.Nomad!.refined.Aluminium = 10_000;
     const balance = state.wallet;
     state = run(state, { type: 'sell', ship: 'Nomad', ore: 'Aluminium', category: 'refined', units: 100 });
     expect(state.wallet).toBe(balance + 349);

@@ -5,24 +5,24 @@ import { createApi } from '../../server/http';
 import { initialState } from '../../shared/game';
 import { firstShiftOf } from '../../shared/firstShift';
 import type { PlayerState } from '../../shared/schema';
+import { randomUUID } from 'node:crypto';
+import { beginAssignedTravel } from '../travelFixture';
 
-async function fixture(page: Page) {
+async function fixture(page: Page, options: { legacy?: boolean; travel?: boolean } = {}) {
+  const legacy = options.legacy ?? true;
+  const travel = options.travel ?? true;
   let now = 1_800_000_000_000;
   let posts = 0;
   const store = new MemoryStore();
   const state = initialState(() => 0.5);
-  state.location = 'Lyria';
-  state.positions.Nomad = 'Lyria';
+  if (legacy) state.firstShift = firstShiftOf(state);
   store.states.set('synthetic-player', state);
-  const api = createApi(
-    new GameService(
-      store,
-      () => now,
-      () => 0.5,
-    ),
-    async () => 'synthetic-player',
-    ['http://127.0.0.1:5173'],
+  const service = new GameService(
+    store,
+    () => now,
+    () => 0.5,
   );
+  const api = createApi(service, async () => 'synthetic-player', ['http://127.0.0.1:5173']);
   await page.route('https://extension-files.twitch.tv/**', (route) => route.abort());
   await page.route('http://127.0.0.1:8787/**', async (route) => {
     const request = route.request();
@@ -46,8 +46,23 @@ async function fixture(page: Page) {
     await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
   };
   await page.goto('/');
-  await expect(page.getByRole('img', { name: /Pixel-art map of Lyria/ })).toBeVisible();
-  await expect(page.getByLabel('DIME title scene')).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Original pixel-art map of ARC-L1 Habitation' })).toBeVisible();
+  if (travel) {
+    await beginAssignedTravel(service, 'synthetic-player', 'Lyria');
+    now += 1_000_000;
+    const beforeArrival = (await service.snapshot('synthetic-player')).state;
+    await service.mutate('synthetic-player', {
+      requestId: randomUUID(),
+      expectedRevision: beforeArrival.revision,
+      action: { type: 'finish' },
+    });
+    await page.reload();
+    await expect(
+      page.getByRole('img', {
+        name: legacy ? /Pixel-art map of Lyria/ : /Original pixel-art map of Lyria Mining Outpost/,
+      }),
+    ).toBeVisible();
+  }
   await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
   return {
     store,
@@ -62,12 +77,6 @@ async function walk(page: Page, key: string, duration: number) {
   await page.keyboard.down(key);
   await page.waitForTimeout(duration);
   await page.keyboard.up(key);
-}
-async function foreman(page: Page) {
-  await walk(page, 'ArrowRight', 1050);
-  await walk(page, 'ArrowUp', 360);
-  await expect(page.getByText('E · Shift Foreman Mara Voss')).toBeVisible();
-  await page.keyboard.press('e');
 }
 test('touch cutter completes one server-authoritative extraction', async ({ browser }) => {
   test.setTimeout(30_000);
@@ -94,33 +103,28 @@ test('touch cutter completes one server-authoritative extraction', async ({ brow
     await page.waitForTimeout(2350);
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await expect.poll(posts).toBe(1);
-    expect(store.states.get('synthetic-player')!.mining.Hand.Dolivine).toBe(4);
+    expect(store.states.get('synthetic-player')!.mining.Hand.Dolivine).toBe(400);
   } finally {
     await context.close();
   }
 });
 
 test('ARC-L1 player is directed to travel before accepting the shift', async ({ page }) => {
-  const { store, posts } = await fixture(page);
-  const current = store.states.get('synthetic-player')!;
-  current.location = 'ARC-L1';
-  current.positions.Nomad = 'ARC-L1';
-  await page.reload();
-  await expect(page.getByLabel('DIME title scene')).toBeVisible();
-  await expect(page.getByLabel('DIME title scene')).toHaveCount(0);
+  const { store, posts } = await fixture(page, { legacy: false, travel: false });
+  expect(store.states.get('synthetic-player')?.location).toBe('ARC-L1');
+  await expect(page.getByRole('img', { name: 'Original pixel-art map of ARC-L1 Habitation' })).toBeVisible();
   await expect(page.getByText('Travel to Lyria via the ship console')).toBeVisible();
-  await foreman(page);
-  await expect(page.getByRole('button', { name: 'Open Travel' })).toBeVisible();
-  await page.getByRole('button', { name: 'Open Travel' }).click();
-  await expect(page.getByRole('dialog', { name: 'travel menu' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Accept First Shift' })).toHaveCount(0);
   expect(posts()).toBe(0);
 });
 
 test('objective notification stays clear of the collapsible tracker', async ({ page }) => {
   await page.setViewportSize({ width: 318, height: 500 });
-  await fixture(page);
-  await foreman(page);
-  await page.getByRole('button', { name: 'Accept assignment' }).click();
+  await fixture(page, { legacy: false });
+  await walk(page, 'ArrowUp', 500);
+  await expect(page.getByText(/E · Mara Voss/)).toBeVisible();
+  await page.getByRole('button', { name: 'Interact' }).click();
+  await page.getByRole('button', { name: 'Accept First Shift' }).click();
   const tracker = page.getByRole('button', { name: 'Toggle objective tracker' });
   const toast = page.getByRole('status');
   await expect(toast).toContainText('Objective complete');
@@ -138,6 +142,13 @@ test('objective notification stays clear of the collapsible tracker', async ({ p
 test('legacy assignment reconciles once on load and shows one correction notice', async ({ page }) => {
   const { store, posts } = await fixture(page);
   const old = store.states.get('synthetic-player')!;
+  old.quantityVersion = undefined;
+  old.walletRemainder = undefined;
+  for (const rate of Object.values(old.refineryRates)) {
+    rate.yield /= 1_000_000;
+    rate.cost /= 1_000_000;
+    rate.time /= 1_000_000;
+  }
   old.firstShift = {
     ...firstShiftOf(old),
     version: undefined,
@@ -151,7 +162,7 @@ test('legacy assignment reconciles once on load and shows one correction notice'
   await page.reload();
   await expect.poll(() => store.states.get('synthetic-player')?.firstShift?.objective).toBe('SELL_MINED_GEM');
   expect(store.states.get('synthetic-player')?.firstShift?.reconciliation).toBe('CORRECTED');
-  expect(store.states.get('synthetic-player')?.mining.Hand.Dolivine).toBe(4);
+  expect(store.states.get('synthetic-player')?.mining.Hand.Dolivine).toBe(400);
   expect(posts()).toBe(1);
   await expect(page.getByRole('status')).toContainText('First Shift updated. Continue your assignment.');
   await page.reload();

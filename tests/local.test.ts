@@ -49,7 +49,7 @@ test('file-backed local API preserves state and retry receipts across process re
     const request = {
       requestId: crypto.randomUUID(),
       expectedRevision: 0,
-      action: { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false },
+      action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' },
     };
     const send = () =>
       fetch('http://127.0.0.1:8787/actions', {

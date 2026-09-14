@@ -1,11 +1,17 @@
 import { CAPACITIES, rawMineral } from './catalog';
 import { GameError, PlayerState } from './schema';
+import { saleProceeds, wholeCscuToMinor } from './mineralUnits';
 
 export const FIRST_SHIFT_REWARD = 500;
 export const TUTORIAL_RAW_UNITS = 4;
-export const TUTORIAL_SALE_AUEC = Math.round((TUTORIAL_RAW_UNITS * rawMineral('Dolivine').pricePerScu) / 100);
+const TUTORIAL_RAW_MINOR = wholeCscuToMinor(TUTORIAL_RAW_UNITS);
+export const TUTORIAL_SALE_AUEC = saleProceeds(
+  wholeCscuToMinor(TUTORIAL_RAW_UNITS),
+  rawMineral('Dolivine').pricePerScu,
+);
 export const LEGACY_TUTORIAL_SALE_AUEC = 300;
-export const HAND_TOOL = 'Hand mining tool';
+import { BASIC_MINING_TOOL } from './miningTool';
+export const HAND_TOOL = BASIC_MINING_TOOL.id;
 export type FirstShiftStep =
   | 'accept'
   | 'checkTool'
@@ -73,7 +79,7 @@ function reconcileFirstShift(state: PlayerState) {
     return;
   }
   if (quest.objective === 'RETURN_TO_OUTPOST' || quest.objective === 'START_REFINERY_ORDER') {
-    if (!mined || quest.tutorialOrderId !== null || (state.mining.Hand.Dolivine ?? 0) < TUTORIAL_RAW_UNITS)
+    if (!mined || quest.tutorialOrderId !== null || (state.mining.Hand.Dolivine ?? 0) < TUTORIAL_RAW_MINOR)
       return support();
     quest.version = 2;
     quest.reconciliation = 'CORRECTED';
@@ -92,16 +98,16 @@ function reconcileFirstShift(state: PlayerState) {
       order.source !== 'Hand' ||
       order.ore !== 'Dolivine' ||
       order.method !== 'Cormack Method' ||
-      order.rawUnits !== 4 ||
-      order.refinedUnits !== 3 ||
+      order.rawUnits !== 400 ||
+      order.refinedUnits !== 300 ||
       order.cost !== 0 ||
       order.readyAt !== order.createdAt + 3000 ||
-      Object.values(state.mining.Hand).reduce((sum, count) => sum + (count ?? 0), 0) + TUTORIAL_RAW_UNITS >
-        CAPACITIES.Hand
+      Object.values(state.mining.Hand).reduce((sum, count) => sum + (count ?? 0), 0) + TUTORIAL_RAW_MINOR >
+        wholeCscuToMinor(CAPACITIES.Hand)
     )
       return support();
     state.orders = state.orders.filter((item) => item.id !== orderId);
-    state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) + TUTORIAL_RAW_UNITS;
+    state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) + TUTORIAL_RAW_MINOR;
     quest.tutorialOrderId = null;
     quest.objective = 'SELL_MINED_GEM';
     quest.version = 2;
@@ -118,14 +124,14 @@ function reconcileFirstShift(state: PlayerState) {
       !collected ||
       matching.length !== 0 ||
       !hold ||
-      (hold.refined.Dolivine ?? 0) !== 3 ||
-      refinedTotal !== 3 ||
-      Object.values(state.mining.Hand).reduce((sum, count) => sum + (count ?? 0), 0) + TUTORIAL_RAW_UNITS >
-        CAPACITIES.Hand
+      (hold.refined.Dolivine ?? 0) !== 300 ||
+      refinedTotal !== 300 ||
+      Object.values(state.mining.Hand).reduce((sum, count) => sum + (count ?? 0), 0) + TUTORIAL_RAW_MINOR >
+        wholeCscuToMinor(CAPACITIES.Hand)
     )
       return support();
     hold.refined.Dolivine = 0;
-    state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) + TUTORIAL_RAW_UNITS;
+    state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) + TUTORIAL_RAW_MINOR;
     quest.counters.refined = 0;
     quest.tutorialOrderId = null;
     quest.objective = 'SELL_MINED_GEM';
@@ -153,11 +159,12 @@ export function applyFirstShift(state: PlayerState, step: FirstShiftStep, now: n
   if (step === 'reconcile') return reconcileFirstShift(state);
   if (step === 'accept') {
     if (state.firstShift) throw new GameError('QUEST_ORDER', 'Assignment already accepted.');
-    if (state.location !== 'Lyria') throw new GameError('QUEST_LOCATION', 'Meet the foreman on Lyria.');
+    if (state.location !== 'Lyria' || state.world?.zone !== 'LYRIA_OUTPOST_01')
+      throw new GameError('QUEST_LOCATION', 'Meet Mara at the Lyria mining outpost.');
     state.firstShift = {
       ...firstShiftOf(state),
       status: 'ACTIVE',
-      version: 2,
+      version: 3,
       reconciliation: 'NONE',
       objective: 'CHECK_EQUIPMENT',
       acceptedAt: now,
@@ -169,7 +176,7 @@ export function applyFirstShift(state: PlayerState, step: FirstShiftStep, now: n
   if (!quest) throw new GameError('QUEST_ORDER', 'Speak to the foreman first.');
   if (quest.reconciliation === 'SUPPORT_REQUIRED')
     throw new GameError('QUEST_SUPPORT_REQUIRED', 'Contact support about this assignment.');
-  if (quest.version !== 2)
+  if (quest.version !== 2 && quest.version !== 3)
     throw new GameError(
       'QUEST_VERSION',
       'This earlier assignment needs owner review before it can continue.',
@@ -191,22 +198,26 @@ export function applyFirstShift(state: PlayerState, step: FirstShiftStep, now: n
       break;
     case 'enterMine':
       requireObjective(state, 'ENTER_MINE');
-      quest.objective = 'MINE_ASSIGNED_ORE';
+      quest.objective = quest.version === 3 ? 'SCAN_ASSIGNED_NODE' : 'MINE_ASSIGNED_ORE';
       break;
     case 'mineDolivine': {
+      if (quest.version === 3)
+        throw new GameError('QUEST_ORDER', 'Use the scanner and collect fractured gems.');
       requireObjective(state, 'MINE_ASSIGNED_ORE');
       if ((state.equipment[HAND_TOOL] ?? 0) < 1)
         throw new GameError('TOOL_MISSING', 'A Hand tool is required.');
       const held = Object.values(state.mining.Hand).reduce((sum, count) => sum + (count ?? 0), 0);
-      if (held + TUTORIAL_RAW_UNITS > CAPACITIES.Hand)
+      if (held + TUTORIAL_RAW_MINOR > wholeCscuToMinor(CAPACITIES.Hand))
         throw new GameError('CARGO_FULL', 'Hand cargo is full.');
-      state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) + TUTORIAL_RAW_UNITS;
+      state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) + TUTORIAL_RAW_MINOR;
       quest.counters.mined = TUTORIAL_RAW_UNITS;
       quest.objective = 'RETURN_TO_OUTPOST';
       break;
     }
     case 'returnOutpost':
       requireObjective(state, 'RETURN_TO_OUTPOST');
+      if (quest.version === 3 && state.world?.zone !== 'LYRIA_OUTPOST_01')
+        throw new GameError('QUEST_LOCATION', 'Return to Mara’s Lyria outpost.');
       quest.objective = 'SELL_MINED_GEM';
       break;
     case 'startRefinery':
@@ -216,10 +227,11 @@ export function applyFirstShift(state: PlayerState, step: FirstShiftStep, now: n
       requireObjective(state, 'SELL_MINED_GEM');
       if (quest.reconciliation === 'LEGACY_SOLD' || quest.reconciliation === 'LEGACY_COMPLETE')
         throw new GameError('QUEST_ORDER', 'This earlier sale was already credited.');
-      if ((state.mining.Hand.Dolivine ?? 0) < TUTORIAL_RAW_UNITS)
+      const saleUnits = TUTORIAL_RAW_MINOR;
+      if ((state.mining.Hand.Dolivine ?? 0) < saleUnits)
         throw new GameError('INSUFFICIENT_CARGO', 'The assigned raw Dolivine is unavailable.');
-      state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) - TUTORIAL_RAW_UNITS;
-      state.wallet += TUTORIAL_SALE_AUEC;
+      state.mining.Hand.Dolivine = (state.mining.Hand.Dolivine ?? 0) - saleUnits;
+      state.wallet += saleProceeds(saleUnits, rawMineral('Dolivine').pricePerScu);
       quest.counters.sold = TUTORIAL_RAW_UNITS;
       quest.objective = 'RETURN_TO_FOREMAN';
       break;

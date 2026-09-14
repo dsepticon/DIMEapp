@@ -9,6 +9,8 @@ import {
   Snapshot,
 } from '../shared/schema';
 import { Store } from './store';
+import { LEGACY_ZONE } from '../shared/world';
+import { upgradeWholeCscuSave } from '../shared/quantityUpgrade';
 export class GameService {
   constructor(
     private store: Store,
@@ -36,6 +38,35 @@ export class GameService {
       if (!state?.saveGeneration)
         throw new GameError('UNAVAILABLE', 'State is temporarily unavailable.', 503);
     }
+    if (!state.world) {
+      const zone = LEGACY_ZONE[state.location];
+      if (zone) {
+        const upgraded = {
+          ...state,
+          world: {
+            zone,
+            entry: 'arrival',
+            nodes: {},
+            scanner: { pings: 0, analyses: 0, analyzed: [] },
+            miningSession: null,
+            roc: null,
+          },
+        };
+        if (await this.store.commit(player, state.revision, upgraded, undefined, state.saveGeneration))
+          state = upgraded;
+        else state = await this.store.read(player);
+        if (!state?.world) throw new GameError('UNAVAILABLE', 'State is temporarily unavailable.', 503);
+      }
+    }
+    for (let attempt = 0; state.quantityVersion !== 2 && attempt < 3; attempt++) {
+      const upgraded = upgradeWholeCscuSave(state);
+      if (await this.store.commit(player, state.revision, upgraded, undefined, state.saveGeneration))
+        state = upgraded;
+      else state = await this.store.read(player);
+      if (!state) throw new GameError('UNAVAILABLE', 'State is temporarily unavailable.', 503);
+    }
+    if (state.quantityVersion !== 2)
+      throw new GameError('UNAVAILABLE', 'State is temporarily unavailable.', 503);
     return { state, serverTime: this.clock() };
   }
   async reset(player: string, input: unknown): Promise<Snapshot> {

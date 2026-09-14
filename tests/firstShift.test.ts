@@ -22,15 +22,19 @@ function onLyria(): PlayerState {
   const state = initialState(() => 0.5);
   state.location = 'Lyria';
   state.positions.Nomad = 'Lyria';
+  state.world!.zone = 'LYRIA_OUTPOST_01';
   return state;
 }
 function run(state: PlayerState, step: FirstShiftStep, time = now): PlayerState {
-  return applyAction(
+  const result = applyAction(
     state,
     { type: 'firstShift', step, ...(step === 'mineDolivine' ? { depositId: 'dolivine' as const } : {}) },
     time,
     randomUUID(),
   );
+  // Exercise the pre-M3 route as a synthetic previously accepted v2 quest.
+  if (step === 'accept') result.firstShift!.version = 2;
+  return result;
 }
 describe('The First Shift authoritative progression', () => {
   it('charges a predictable tutorial cutter and permits cancel or failure without backend action', () => {
@@ -86,7 +90,7 @@ describe('The First Shift authoritative progression', () => {
     expect(recovered.equipment[HAND_TOOL]).toBe(1);
     expect(() => run(recovered, 'recoverTool')).toThrow();
     const entered = run(recovered, 'enterMine');
-    entered.mining.Hand.Hadanite = 12;
+    entered.mining.Hand.Hadanite = 1200;
     expect(() => run(entered, 'mineDolivine')).toThrow('full');
     entered.mining.Hand.Hadanite = 0;
     const mined = run(entered, 'mineDolivine');
@@ -116,7 +120,7 @@ describe('The First Shift authoritative progression', () => {
       ),
     ).toThrow();
     expect(entered).toEqual(before);
-    entered.mining.Hand.Hadanite = 1;
+    entered.mining.Hand.Hadanite = 100;
     const mined = run(entered, 'mineDolivine');
     expect(mined.firstShift?.counters).toEqual({ mined: 4, refined: 0, sold: 0 });
   });

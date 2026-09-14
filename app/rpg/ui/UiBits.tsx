@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Ore } from '../../../shared/schema';
 import { P } from '../palette';
 import { drawMiner } from '../sprites';
+import { formatCscuMinor, formatScuMinor, parseCscuMinor } from '../../../shared/mineralUnits';
 import styles from './GameUI.module.css';
 
 const oreColours: Partial<Record<Ore, string>> = {
@@ -80,7 +81,8 @@ export function Stepper({
   max: number;
   onChange: (value: number) => void;
 }) {
-  const set = (next: number) => onChange(Math.max(1, Math.min(Math.max(1, max), next)));
+  const [draft, setDraft] = useState<string | null>(null);
+  const set = (next: number) => onChange(max <= 0 ? 0 : Math.max(1, Math.min(max, next)));
   return (
     <div className={styles.stepper} role="group" aria-label={label}>
       <strong>{label}</strong>
@@ -88,16 +90,30 @@ export function Stepper({
         <button type="button" aria-label={`Decrease ${label}`} onClick={() => set(value - 1)}>
           −
         </button>
-        <span aria-label={label}>{(value / 100).toFixed(2)} SCU</span>
+        <input
+          aria-label={`${label} in cSCU`}
+          value={draft ?? formatCscuMinor(value)}
+          inputMode="decimal"
+          onChange={(event) => setDraft(event.currentTarget.value)}
+          onBlur={() => {
+            const parsed = parseCscuMinor(draft ?? formatCscuMinor(value));
+            if (parsed !== null) set(parsed);
+            setDraft(null);
+          }}
+        />
+        <span aria-label={label}>{formatCscuMinor(value)} cSCU</span>
         <button type="button" aria-label={`Increase ${label}`} onClick={() => set(value + 1)}>
           +
         </button>
       </div>
       <div className={styles.presets}>
         <button type="button" onClick={() => set(1)}>
-          0.01 SCU
+          0.01 cSCU
         </button>
         <button type="button" onClick={() => set(100)}>
+          1 cSCU
+        </button>
+        <button type="button" onClick={() => set(10_000)}>
           1 SCU
         </button>
         <button type="button" onClick={() => set(max)}>
@@ -115,7 +131,7 @@ export function CapacityBar({ label, used, capacity }: { label: string; used: nu
       <div>
         <strong>{label}</strong>
         <span>
-          {(used / 100).toFixed(2)} / {(capacity / 100).toFixed(2)} SCU
+          {formatScuMinor(used)} / {formatScuMinor(capacity)} SCU
         </span>
       </div>
       <div

@@ -58,7 +58,7 @@ describe('source-derived mineral rules', () => {
     const state = initialState(() => 0.5);
     state.ships.Prospector = 1;
     state.positions.Prospector = 'ARC-L1';
-    state.mining.Prospector[name] = 100;
+    state.mining.Prospector[name] = 10_000;
     state.wallet = 1000;
     expect(() =>
       applyAction(
@@ -73,8 +73,8 @@ describe('source-derived mineral rules', () => {
       source: 'Hand',
       ore: name,
       method: 'Cormack Method',
-      rawUnits: 100,
-      refinedUnits: 75,
+      rawUnits: 10_000,
+      refinedUnits: 7_500,
       cost: 0,
       createdAt: now - 1000,
       readyAt: now - 1,
@@ -85,7 +85,7 @@ describe('source-derived mineral rules', () => {
     expect(state.orders).toHaveLength(1);
     state.location = 'Area-18';
     state.positions.Nomad = 'Area-18';
-    state.cargo.Nomad!.raw[name] = 1;
+    state.cargo.Nomad!.raw[name] = 100;
     const sold = applyAction(
       state,
       { type: 'sell', ship: 'Nomad', ore: name, category: 'raw', units: 1 },

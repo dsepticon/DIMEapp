@@ -84,7 +84,7 @@ describe('HTTP API v2 named-stage routing', () => {
     const action = {
       requestId: randomUUID(),
       expectedRevision: 0,
-      action: { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false },
+      action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' },
     };
     const event = { ...request('POST', path, authorization, 'staging'), body: JSON.stringify(action) };
     const first = await handler(event);

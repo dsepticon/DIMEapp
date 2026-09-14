@@ -6,6 +6,9 @@ import { ApiClient } from './api';
 import { useGame } from './useGame';
 import { RpgPanel } from './RpgPanel';
 import { GameView, RpgScreens } from './rpg/ui/Screens';
+import { CAPACITIES } from '../shared/catalog';
+import { total } from '../shared/game';
+import { formatCscuMinor, wholeCscuToMinor } from '../shared/mineralUnits';
 
 export default function Home() {
   const config = useMemo(() => {
@@ -64,11 +67,17 @@ export default function Home() {
     resetProgress,
   } = useGame(client, identity);
   const [view, setView] = useState<GameView>('game');
+  const [travelAccess, setTravelAccess] = useState(false);
   const navigationGuard = useRef({ view, busy });
   navigationGuard.current = { view, busy };
   const navigate = useCallback((next: GameView) => {
     if (navigationGuard.current.view === 'reset' && navigationGuard.current.busy) return;
+    setTravelAccess(false);
     setView(next);
+  }, []);
+  const openTravelFromTerminal = useCallback(() => {
+    setTravelAccess(true);
+    setView('travel');
   }, []);
   const completeReset = useCallback(
     async (confirmation: string) => {
@@ -95,6 +104,20 @@ export default function Home() {
   }, [canAct, state, mutate]);
   const overlay = view !== 'game' || (!!pending && !busy);
   const status = config.error || session.message || notice;
+  const collectionContext = (() => {
+    const action = pending?.action;
+    if (action?.type !== 'collectPiece' || !state?.world) return null;
+    const node = state.world.nodes[action.nodeId];
+    const fragment = node?.fragments.find((piece) => piece.id === action.pieceId);
+    if (!node || !fragment) return null;
+    return {
+      source: node.source,
+      occupied: formatCscuMinor(total(state.mining[node.source])),
+      capacity: formatCscuMinor(wholeCscuToMinor(CAPACITIES[node.source])),
+      fragment: formatCscuMinor(fragment.units),
+    };
+  })();
+  const capacityFailure = !!collectionContext && notice.startsWith('Mining hold is full.');
   return (
     <main className={styles.gameShell}>
       {!state && (
@@ -128,9 +151,13 @@ export default function Home() {
             busy={busy}
             overlay={overlay}
             navigate={navigate}
+            openTravelFromTerminal={openTravelFromTerminal}
+            refresh={refresh}
           />
           {overlay && (
-            <div className={styles.overlayBackdrop}>
+            <div
+              className={`${styles.overlayBackdrop} ${capacityFailure ? styles.capacityBackdrop : pending ? styles.pendingBackdrop : ''}`}
+            >
               <section className={styles.gameOverlay} role="dialog" aria-label={`${view} menu`}>
                 <div className={styles.overlayHeading}>
                   <strong>
@@ -150,13 +177,22 @@ export default function Home() {
                 </div>
                 {pending && (
                   <section className={styles.status}>
-                    <p>
-                      {recoveryStatus === 'obsolete'
-                        ? 'This action belongs to a replaced save. Your current save is ready after you discard it.'
-                        : recoveryStatus === 'recovering'
-                          ? 'Checking the pending action with the server…'
-                          : 'An action is pending confirmation. Retry safely before starting another.'}
-                    </p>
+                    {collectionContext && (
+                      <p>
+                        {collectionContext.source} hold {collectionContext.occupied}/
+                        {collectionContext.capacity} cSCU · Fragment {collectionContext.fragment} cSCU
+                      </p>
+                    )}
+                    {notice && <p role="status">{notice}</p>}
+                    {!capacityFailure && (
+                      <p>
+                        {recoveryStatus === 'obsolete'
+                          ? 'This action belongs to a replaced save. Your current save is ready after you discard it.'
+                          : recoveryStatus === 'recovering'
+                            ? 'Checking the pending action with the server…'
+                            : 'An action is pending confirmation. Retry safely before starting another.'}
+                      </p>
+                    )}
                     {recoveryStatus === 'obsolete' ? (
                       <button disabled={busy} onClick={() => void discardObsolete()}>
                         Discard obsolete pending action
@@ -197,6 +233,7 @@ export default function Home() {
                     refresh={refresh}
                     resetProgress={completeReset}
                     navigate={navigate}
+                    travelAccess={travelAccess}
                   />
                 )}
               </section>

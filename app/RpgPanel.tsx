@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Action, PlayerState } from '../shared/schema';
 import { CAPACITIES } from '../shared/catalog';
 import { total } from '../shared/game';
+import { formatScuMinor, wholeCscuToMinor } from '../shared/mineralUnits';
 import { format } from './ui';
 import { CanvasEngine } from './rpg/canvasEngine';
 import { Direction, WorldObject } from './rpg/world';
@@ -12,17 +13,10 @@ import { firstShiftOf } from '../shared/firstShift';
 import { MiningSequence, objectiveText } from './rpg/ui/FirstShiftUI';
 import type { GameView } from './rpg/ui/Screens';
 import styles from './RpgPanel.module.css';
+import { validZoneEntry, zoneForSave } from '../shared/world';
+import { ZonePanel } from './rpg/ZonePanel';
 
-export function RpgPanel({
-  state,
-  canAct,
-  mutate,
-  notice,
-  status,
-  busy,
-  overlay,
-  navigate,
-}: {
+type PanelProps = {
   state: PlayerState;
   canAct: boolean;
   mutate: (action?: Action) => Promise<void>;
@@ -31,7 +25,47 @@ export function RpgPanel({
   busy: boolean;
   overlay: boolean;
   navigate: (view: GameView) => void;
-}) {
+  openTravelFromTerminal: () => void;
+  refresh: () => Promise<void>;
+};
+
+export function RpgPanel(props: PanelProps) {
+  const zone = zoneForSave(props.state.location, props.state.world?.zone);
+  if (!zone || !validZoneEntry(zone, props.state.world?.entry))
+    return <WorldRecovery refresh={props.refresh} />;
+  if (zone.id !== 'LYRIA_OUTPOST_01' || props.state.firstShift?.version === 3 || !props.state.firstShift)
+    return <ZonePanel key={zone.id} {...props} zone={zone} />;
+  return <LegacyLyriaPanel {...props} />;
+}
+
+function WorldRecovery({ refresh }: { refresh: () => Promise<void> }) {
+  const attempted = useRef(false);
+  useEffect(() => {
+    if (attempted.current) return;
+    attempted.current = true;
+    void refresh();
+  }, [refresh]);
+  return (
+    <section className={styles.panel} aria-label="World recovery required">
+      <div className={styles.connection}>
+        World location needs recovery. Refreshing your authoritative state.
+      </div>
+      <button onClick={() => void refresh()}>Retry loading world</button>
+    </section>
+  );
+}
+
+function LegacyLyriaPanel({
+  state,
+  canAct,
+  mutate,
+  notice,
+  status,
+  busy,
+  overlay,
+  navigate,
+  openTravelFromTerminal,
+}: PanelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<CanvasEngine | null>(null);
   const adapter = useRef(new MiningActionAdapter());
@@ -55,8 +89,8 @@ export function RpgPanel({
   } | null>(null);
   const dialogueRef = useRef(dialogue);
   dialogueRef.current = dialogue;
-  const latest = useRef({ state, canAct, mutate, navigate });
-  latest.current = { state, canAct, mutate, navigate };
+  const latest = useRef({ state, canAct, mutate, navigate, openTravelFromTerminal });
+  latest.current = { state, canAct, mutate, navigate, openTravelFromTerminal };
 
   useEffect(() => {
     const start = window.setTimeout(() => setTitle(false), 850);
@@ -129,7 +163,13 @@ export function RpgPanel({
           void submit({ type: 'firstShift', step: 'returnOutpost' });
       },
       interact: (object) => {
-        const { state: current, canAct: enabled, mutate: submit, navigate: open } = latest.current;
+        const {
+          state: current,
+          canAct: enabled,
+          mutate: submit,
+          navigate: open,
+          openTravelFromTerminal: openTerminal,
+        } = latest.current;
         const quest = firstShiftOf(current);
         if (object.kind === 'npc') {
           if (object.id === 'foreman') {
@@ -250,7 +290,7 @@ export function RpgPanel({
           setDialogue({
             speaker: 'Navigation console',
             text: 'Select a destination and ship. Every flight requires confirmation.',
-            next: () => open('travel'),
+            next: openTerminal,
           });
           return;
         }
@@ -338,7 +378,7 @@ export function RpgPanel({
         <div className={styles.hudValues}>
           <strong aria-label="Wallet">◈ {format(state.wallet)} aUEC</strong>
           <span aria-label="Cargo capacity">
-            ▣ Hand Cargo {cargo / 100}/{CAPACITIES.Hand / 100} SCU
+            ▣ Hand Cargo {formatScuMinor(cargo)}/{formatScuMinor(wholeCscuToMinor(CAPACITIES.Hand))} SCU
           </span>
         </div>
         <button className={styles.menuButton} aria-label="Open game menu" onClick={() => navigate('menu')}>

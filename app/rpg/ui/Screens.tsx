@@ -3,6 +3,8 @@ import { Action, MiningType, Ore, PlayerState, RESET_CONFIRMATION, Ship } from '
 import { CAPACITIES, MINING_TYPES, ORE_NAMES, SHIP_NAMES } from '../../../shared/catalog';
 import { scu, total } from '../../../shared/game';
 import { format } from '../../ui';
+import { MINING_TOOLS } from '../../../shared/miningTool';
+import { formatCscuMinor, wholeCscuToMinor } from '../../../shared/mineralUnits';
 import { MiningPanel } from '../../MiningPanel';
 import { CapacityBar, ChoiceRail, OreIcon, PixelPortrait, Stepper } from './UiBits';
 import { MarketScreen, RefineryScreen, TravelScreen } from './Operations';
@@ -37,6 +39,7 @@ export type ScreensProps = {
   refresh: () => Promise<void>;
   resetProgress: (confirmation: string) => Promise<boolean>;
   navigate: (view: GameView) => void;
+  travelAccess: boolean;
 };
 
 function CargoScreen({
@@ -57,6 +60,7 @@ function CargoScreen({
   const selectedShip = cargoShips.includes(ship) ? ship : (cargoShips[0] ?? 'Nomad');
   const hold = state.cargo[selectedShip];
   const available = state.mining[source][ore] ?? 0;
+  const selectedUnits = Math.min(units, available);
   const listed = ORE_NAMES.filter(
     (name) => (state.mining[source][name] ?? 0) + (hold?.raw[name] ?? 0) + (hold?.refined[name] ?? 0) > 0,
   );
@@ -65,7 +69,7 @@ function CargoScreen({
     ? 'Finish the current operation or reconnect.'
     : !available
       ? 'No selected raw ore in this mining hold.'
-      : units > available
+      : selectedUnits <= 0
         ? 'Choose an amount within the available stock.'
         : '';
   return (
@@ -82,12 +86,12 @@ function CargoScreen({
       <CapacityBar
         label={source + ' raw capacity'}
         used={total(state.mining[source])}
-        capacity={CAPACITIES[source]}
+        capacity={wholeCscuToMinor(CAPACITIES[source])}
       />
       <CapacityBar
         label={selectedShip + ' cargo capacity'}
         used={total(hold?.raw ?? {}) + total(hold?.refined ?? {})}
-        capacity={CAPACITIES[selectedShip]}
+        capacity={wholeCscuToMinor(CAPACITIES[selectedShip])}
       />
       <h2>{tab === 'Mining' ? 'Mineral inventory' : 'Ship inventory'}</h2>
       <div className={styles.cardGrid} role="group" aria-label="Ore inventory">
@@ -105,9 +109,8 @@ function CargoScreen({
               <br />
               <small>
                 {tab === 'Mining'
-                  ? scu(state.mining[source][name] ?? 0)
-                  : scu((hold?.raw[name] ?? 0) + (hold?.refined[name] ?? 0))}{' '}
-                SCU
+                  ? `${formatCscuMinor(state.mining[source][name] ?? 0)} cSCU`
+                  : `${scu((hold?.raw[name] ?? 0) + (hold?.refined[name] ?? 0))} SCU`}
               </small>
             </span>
           </button>
@@ -119,19 +122,21 @@ function CargoScreen({
           <div>
             <strong>{ore}</strong>
             <span>
-              {scu(available)} SCU raw · {source}
+              {formatCscuMinor(available)} cSCU raw · {source}
             </span>
             <span>
               Ship raw {scu(hold?.raw[ore] ?? 0)} · refined {scu(hold?.refined[ore] ?? 0)}
             </span>
           </div>
         </div>
-        <Stepper label="Transfer amount" value={units} max={available} onChange={setUnits} />
+        <Stepper label="Transfer amount" value={selectedUnits} max={available} onChange={setUnits} />
         {disabled && <p className={styles.warning}>{disabled}</p>}
         <button
           className={styles.accentButton}
           disabled={!!disabled}
-          onClick={() => void mutate({ type: 'transfer', source, ship: selectedShip, ore, units })}
+          onClick={() =>
+            void mutate({ type: 'transferMinor', source, ship: selectedShip, ore, unitsMinor: selectedUnits })
+          }
         >
           Transfer raw cargo
         </button>
@@ -171,7 +176,9 @@ function ProfileScreen({
         <div>
           TOOL
           <br />
-          <strong>{equipped[0]?.[0] ?? 'Hand mining tool'}</strong>
+          <strong>
+            {MINING_TOOLS[equipped[0]?.[0] ?? '']?.name ?? equipped[0]?.[0] ?? 'Basic Mining Tool'}
+          </strong>
         </div>
         <div>
           SUIT
@@ -336,6 +343,7 @@ export function RpgScreens(props: ScreensProps) {
     refresh,
     resetProgress,
     navigate,
+    travelAccess,
   } = props;
   const [miningSource, setMiningSource] = useState<MiningType>('Hand');
   if (view === 'menu') return <MenuScreen navigate={navigate} />;
@@ -366,7 +374,16 @@ export function RpgScreens(props: ScreensProps) {
   if (view === 'refinery')
     return <RefineryScreen state={state} canAct={canAct} mutate={mutate} notice={notice} now={now} />;
   if (view === 'travel')
-    return <TravelScreen state={state} canAct={canAct} blocked={blocked} mutate={mutate} now={now} />;
+    return (
+      <TravelScreen
+        state={state}
+        canAct={canAct}
+        blocked={blocked}
+        mutate={mutate}
+        now={now}
+        terminalAccess={travelAccess}
+      />
+    );
   if (view === 'controls')
     return (
       <section className={styles.screen}>

@@ -4,6 +4,7 @@ import { CAPACITIES, MINING_TYPES } from '../shared/catalog';
 import { Action, MiningType, PlayerState } from '../shared/schema';
 import { scu, total } from '../shared/game';
 import { SurveyIcon } from './rpg/ui/SurveyIcon';
+import { wholeCscuToMinor } from '../shared/mineralUnits';
 export function MiningPanel({
   state,
   source,
@@ -46,7 +47,7 @@ export function MiningPanel({
             <span>
               <strong>{name}</strong>
               <small>
-                {scu(total(state.mining[name]))} / {scu(CAPACITIES[name])} SCU
+                {scu(total(state.mining[name]))} / {scu(wholeCscuToMinor(CAPACITIES[name]))} SCU
               </small>
             </span>
           </button>
@@ -126,7 +127,7 @@ export function MiningPanel({
       )}
       <button
         className={styles.primary}
-        disabled={!canAct || total(state.mining[source]) >= CAPACITIES[source]}
+        disabled={!canAct || total(state.mining[source]) >= wholeCscuToMinor(CAPACITIES[source])}
         onClick={() =>
           void mutate({
             type: 'mine',

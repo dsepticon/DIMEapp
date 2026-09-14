@@ -17,6 +17,7 @@ import {
 
 const resetFields = [
   'wallet',
+  'walletRemainder',
   'location',
   'currentShip',
   'ships',
@@ -28,8 +29,9 @@ const resetFields = [
   'refineryRates',
   'pending',
   'firstShift',
+  'world',
 ];
-const technicalFields = ['schemaVersion', 'revision', 'saveGeneration'];
+const technicalFields = ['schemaVersion', 'quantityVersion', 'revision', 'saveGeneration'];
 
 function request(state: PlayerState) {
   return {
@@ -177,12 +179,12 @@ describe('authenticated gameplay reset', () => {
     await expect(
       service.reset('synthetic-player', { ...command, expectedRevision: 1 }),
     ).rejects.toMatchObject({ code: 'IDEMPOTENCY_CONFLICT' });
-    const travel = {
+    const laterAction = {
       requestId: randomUUID(),
       expectedRevision: 1,
-      action: { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false } as const,
+      action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' } as const,
     };
-    const later = await service.mutate('synthetic-player', travel);
+    const later = await service.mutate('synthetic-player', laterAction);
     expect(later.state.revision).toBe(2);
     expect((await service.reset('synthetic-player', command)).state).toEqual(later.state);
     expect((await service.snapshot('synthetic-player')).state).toEqual(later.state);
@@ -195,7 +197,7 @@ describe('authenticated gameplay reset', () => {
     const old = {
       requestId: randomUUID(),
       expectedRevision: 0,
-      action: { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false } as const,
+      action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' } as const,
     };
     const after = (await service.reset('synthetic-player', request(before))).state;
     await expect(service.mutate('synthetic-player', old)).rejects.toMatchObject({
@@ -216,7 +218,7 @@ describe('authenticated gameplay reset', () => {
     const old = {
       requestId: randomUUID(),
       expectedRevision: before.revision,
-      action: { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false } as const,
+      action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' } as const,
     };
     const oldResult = await service.mutate('synthetic-player', old);
     const fresh = (await service.reset('synthetic-player', request(oldResult.state))).state;

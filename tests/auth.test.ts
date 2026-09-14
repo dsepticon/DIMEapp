@@ -52,7 +52,7 @@ it('uses one authoritative save across channels while other players stay isolate
   const action = {
     requestId: crypto.randomUUID(),
     expectedRevision: state.revision,
-    action: { type: 'travel', ship: 'Nomad', destination: 'Lyria', loadRoc: false },
+    action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' },
   };
   const changed = await api({
     method: 'POST',

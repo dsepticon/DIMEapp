@@ -63,3 +63,9 @@ The file adapter persists one whole state/receipt snapshot via rename and restor
 # Milestone 2 local chapter
 
 The First Shift adds an optional, backward-compatible quest field and a server-derived `firstShift` action sequence to the v2 global save. Its transition table, tutorial economy, mining interaction, and release limits are documented in [dime-2d-rpg-m2.md](dime-2d-rpg-m2.md). This branch is not deployed; the new frontend requires a matching Lambda bundle in a future reviewed release.
+
+## Milestone 3 draft world/action contract
+
+The uncommitted Milestone 3 work adds `world` to the global save, with a stable zone ID, entry, deterministic node seed reference, sparse node exceptions, scanner history, active mining session, active ROC checkpoint and fractional cargo remainders. Older inventory and cargo numbers remain whole cSCU. A physical pickup is represented in integer minor units (100 units per cSCU); `world.minorRemainders` contains only the 0–99 unit carry, so a legacy 4 cSCU remains 400 units when combined. New and reset profiles start at `ARC-L1` / `ARC_L1_START`. The renderer must select the zone from the server snapshot and show recovery for unknown or mismatched location/zone pairs.
+
+The existing authenticated `POST /actions` route accepts `enterZone(zone)`, `scanZone`, `analyzeNode(nodeId)`, `beginFracture(nodeId,source)`, `completeFracture(nodeId)`, `cancelFracture(nodeId)`, `collectPiece(nodeId,pieceId)`, `retrieveRoc`, `enterRoc(occupied)` and `stowRoc`. No new route or IAM permission is proposed. The server chooses node mineral, properties, yield, fragment IDs and prices. Browser charge simulation cannot prove physical input, so the server also checks the persisted session and minimum elapsed duration. The same revision, save-generation and request-receipt guards cover all actions. See [Milestone 3](dime-2d-rpg-m3-world-mining.md) for formulas and known incomplete routes; this draft is not a release contract yet.

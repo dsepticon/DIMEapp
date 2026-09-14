@@ -11,13 +11,22 @@ import {
 } from '../shared/firstShift';
 import { actionSchema } from '../shared/schema';
 import type { PlayerState } from '../shared/schema';
+import { RATE_SCALE, upgradeWholeCscuSave } from '../shared/quantityUpgrade';
 
 const now = 1_800_000_000_000;
 const orderId = 'synthetic-tutorial-order';
 function legacy(objective: NonNullable<PlayerState['firstShift']>['objective']): PlayerState {
   const state = initialState(() => 0.5);
+  state.quantityVersion = undefined;
+  state.walletRemainder = undefined;
+  for (const rate of Object.values(state.refineryRates)) {
+    rate.yield /= RATE_SCALE;
+    rate.cost /= RATE_SCALE;
+    rate.time /= RATE_SCALE;
+  }
   state.location = 'Lyria';
   state.positions.Nomad = 'Lyria';
+  state.world = undefined;
   state.firstShift = {
     ...firstShiftOf(state),
     version: undefined,
@@ -107,8 +116,8 @@ describe('one-time legacy First Shift reconciliation', () => {
       counters: old.firstShift!.counters,
     });
     expect(state.wallet).toBe(800);
-    expect(state.mining).toEqual(old.mining);
-    expect(state.cargo).toEqual(old.cargo);
+    expect(state.mining).toEqual(upgradeWholeCscuSave(old).mining);
+    expect(state.cargo).toEqual(upgradeWholeCscuSave(old).cargo);
     await expect(
       service.mutate('synthetic-player-one', {
         requestId: randomUUID(),
@@ -130,7 +139,7 @@ describe('one-time legacy First Shift reconciliation', () => {
         objective,
         counters: { mined: 0, refined: 0, sold: 0 },
       });
-      expect(state.mining).toEqual(old.mining);
+      expect(state.mining).toEqual(upgradeWholeCscuSave(old).mining);
       expect(state.wallet).toBe(old.wallet);
     },
   );
@@ -145,7 +154,7 @@ describe('one-time legacy First Shift reconciliation', () => {
       expect(state.firstShift?.objective).toBe(
         objective === 'START_REFINERY_ORDER' ? 'SELL_MINED_GEM' : 'RETURN_TO_OUTPOST',
       );
-      expect(state.mining).toEqual(old.mining);
+      expect(state.mining).toEqual(upgradeWholeCscuSave(old).mining);
       expect(state.wallet).toBe(0);
     },
   );
@@ -166,8 +175,8 @@ describe('one-time legacy First Shift reconciliation', () => {
         tutorialOrderId: null,
         counters: { mined: 4, refined: 0, sold: 0 },
       });
-      expect(state.orders).toEqual([unrelated]);
-      expect(state.mining.Hand).toEqual({ Dolivine: 6, Aphorite: 1 });
+      expect(state.orders).toEqual([{ ...unrelated, rawUnits: 400, refinedUnits: 300 }]);
+      expect(state.mining.Hand).toEqual({ Dolivine: 600, Aphorite: 100 });
       expect(state.wallet).toBe(0);
     },
   );
@@ -183,8 +192,8 @@ describe('one-time legacy First Shift reconciliation', () => {
       objective: 'SELL_MINED_GEM',
       counters: { mined: 4, refined: 0, sold: 0 },
     });
-    expect(state.mining.Hand.Dolivine).toBe(5);
-    expect(state.cargo.Nomad!.refined).toEqual({ Dolivine: 0, Iron: 7 });
+    expect(state.mining.Hand.Dolivine).toBe(500);
+    expect(state.cargo.Nomad!.refined).toEqual({ Dolivine: 0, Iron: 700 });
     expect(state.wallet).toBe(0);
   });
 
@@ -269,16 +278,16 @@ describe('one-time legacy First Shift reconciliation', () => {
     const { state, service } = await reconcile(old);
     expect(state.firstShift).toMatchObject({ version: 2, reconciliation: 'SUPPORT_REQUIRED' });
     expect(state.wallet).toBe(old.wallet);
-    expect(state.mining).toEqual(old.mining);
-    expect(state.cargo).toEqual(old.cargo);
-    expect(state.orders).toEqual(old.orders);
-    const travel = await service.mutate('synthetic-player-one', {
+    expect(state.mining).toEqual(upgradeWholeCscuSave(old).mining);
+    expect(state.cargo).toEqual(upgradeWholeCscuSave(old).cargo);
+    expect(state.orders).toEqual(upgradeWholeCscuSave(old).orders);
+    const movement = await service.mutate('synthetic-player-one', {
       requestId: randomUUID(),
       expectedRevision: state.revision,
-      action: { type: 'travel', ship: 'Nomad', destination: 'ARC-L1', loadRoc: false },
+      action: { type: 'enterZone', zone: 'LYRIA_SURFACE_01' },
     });
-    expect(travel.state.pending?.kind).toBe('travel');
-    expect(travel.state.firstShift?.reconciliation).toBe('SUPPORT_REQUIRED');
+    expect(movement.state.world?.zone).toBe('LYRIA_SURFACE_01');
+    expect(movement.state.firstShift?.reconciliation).toBe('SUPPORT_REQUIRED');
   });
 
   it('isolates players and leaves an old save with no quest untouched', async () => {
@@ -292,9 +301,10 @@ describe('one-time legacy First Shift reconciliation', () => {
       expectedRevision: old.revision,
       action: { type: 'firstShift' as const, step: 'reconcile' as const },
     };
+    const otherBefore = (await service.snapshot('player-two')).state;
     await service.mutate('player-one', request);
     const other = (await service.snapshot('player-two')).state;
-    expect({ ...other, saveGeneration: undefined }).toEqual({ ...old, saveGeneration: undefined });
+    expect(other).toEqual(otherBefore);
     const noQuest = initialState(() => 0.5);
     store.states.set('player-three', noQuest);
     await expect(service.mutate('player-three', request)).rejects.toMatchObject({ code: 'QUEST_ORDER' });
@@ -305,6 +315,7 @@ describe('one-time legacy First Shift reconciliation', () => {
     const state = initialState(() => 0.5);
     state.location = 'Lyria';
     state.positions.Nomad = 'Lyria';
+    state.world!.zone = 'LYRIA_OUTPOST_01';
     const store = new MemoryStore();
     store.states.set('synthetic-new-player', state);
     const service = new GameService(store, () => now);
@@ -314,7 +325,7 @@ describe('one-time legacy First Shift reconciliation', () => {
       action: { type: 'firstShift', step: 'accept' },
     });
     expect(accepted.state.firstShift).toMatchObject({
-      version: 2,
+      version: 3,
       reconciliation: 'NONE',
       objective: 'CHECK_EQUIPMENT',
     });

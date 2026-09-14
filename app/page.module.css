@@ -59,6 +59,25 @@
   padding: 10px;
   background: #03111cc7;
 }
+.pendingBackdrop {
+  place-items: end center;
+  background: #03111c55;
+}
+.pendingBackdrop .gameOverlay {
+  max-height: min(42dvh, 220px);
+}
+.capacityBackdrop {
+  place-items: center end;
+  padding: 54px 7px 7px;
+  background: transparent;
+  pointer-events: none;
+}
+.capacityBackdrop .gameOverlay {
+  width: 136px;
+  max-height: 100%;
+  font: 10px/1.25 monospace;
+  pointer-events: auto;
+}
 .gameOverlay {
   display: flex;
   flex-direction: column;

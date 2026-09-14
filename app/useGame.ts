@@ -138,6 +138,9 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
         } else if (error instanceof ApiError && error.code === 'IDEMPOTENCY_CONFLICT') {
           setRecoveryStatus('stale');
           setNotice('This request ID was used for a different action. Contact support.');
+        } else if (error instanceof ApiError && error.code === 'INSUFFICIENT_CAPACITY') {
+          setRecoveryStatus('retry');
+          setNotice('Mining hold is full. Fragment remains. Cancel this rejected attempt to move cargo.');
         } else {
           setRecoveryStatus('retry');
           setNotice('The pending action was not confirmed. Retry the same action safely.');
@@ -265,6 +268,9 @@ export function useGame(client: ApiClient | null, identity: string | undefined) 
           }
           setRecoveryStatus('stale');
           setNotice('The pending action has a stale save revision. Review it before retrying.');
+        } else if (error instanceof ApiError && error.code === 'INSUFFICIENT_CAPACITY') {
+          setRecoveryStatus('retry');
+          setNotice('Mining hold is full. Fragment remains. Cancel this rejected attempt to move cargo.');
         } else {
           setRecoveryStatus('retry');
           setNotice('The action was not confirmed. Retry the pending action.');
