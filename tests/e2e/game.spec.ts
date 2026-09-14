@@ -594,7 +594,9 @@ test('rejected mineral action leaves authoritative inventory unchanged and shows
   await page.waitForTimeout(2400);
   await page.keyboard.up('e');
   await expect.poll(actionRequests).toBe(1);
-  await expect(page.getByRole('status')).toContainText('Mining request was not confirmed.');
+  await expect(
+    page.getByRole('status').filter({ hasText: 'Mining request was not confirmed.' }),
+  ).toContainText('Mining request was not confirmed.');
   await expect(page.getByText('Mining request was not confirmed.', { exact: false })).toBeVisible();
   expect(store.states.get('test')!.mining.Hand).toEqual(before);
   expect(store.states.get('test')!.revision).toBe(revision);
