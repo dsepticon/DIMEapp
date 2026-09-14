@@ -10,18 +10,18 @@ This is not a release validation. Under Node v22.23.2, `npm ci`, lint, strict ty
 
 With Node **v22.23.2**, SAM CLI **1.166.2**, cfn-lint **1.56.3**, CloudFormation Guard **3.2.1**, and offline `aws-sam-translator` **1.113.0**:
 
-| Check | Exact result |
-|---|---|
-| `sam validate --lint --template-file infra/staging/template.yaml` | Passed; valid SAM template |
-| `cfn-lint infra/staging/template.yaml` | Passed; no findings |
-| `sam build --template-file infra/staging/template.yaml` | Passed; local `.aws-sam/build` contains only `template.yaml` and `EbsFunction/index.mjs` |
-| `cfn-guard validate` with `staging.guard` | Passed **6/6** rules against SAM build template |
-| Offline SAM transform and `processed.guard` | **12** expected translated resources; passed **3/3** processed rules |
-| Guard negative probes | Rejected wildcard CORS, broad DynamoDB IAM, unexpected bucket, other-API invocation, other-function invocation, and processed wildcard CORS |
-| `npm ci` | Passed; 245 packages installed, 246 audited, 0 vulnerabilities |
-| `npm run check` | Passed lint, strict typecheck, **68/68 Vitest tests in 8 files**, frontend build and Lambda ESM bundle |
-| `npm run test:e2e` | Passed **5/5 Playwright Chromium tests** |
-| `npm run format:check`; `git diff --check` | Both passed |
+| Check                                                             | Exact result                                                                                                                                |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sam validate --lint --template-file infra/staging/template.yaml` | Passed; valid SAM template                                                                                                                  |
+| `cfn-lint infra/staging/template.yaml`                            | Passed; no findings                                                                                                                         |
+| `sam build --template-file infra/staging/template.yaml`           | Passed; local `.aws-sam/build` contains only `template.yaml` and `EbsFunction/index.mjs`                                                    |
+| `cfn-guard validate` with `staging.guard`                         | Passed **6/6** rules against SAM build template                                                                                             |
+| Offline SAM transform and `processed.guard`                       | **12** expected translated resources; passed **3/3** processed rules                                                                        |
+| Guard negative probes                                             | Rejected wildcard CORS, broad DynamoDB IAM, unexpected bucket, other-API invocation, other-function invocation, and processed wildcard CORS |
+| `npm ci`                                                          | Passed; 245 packages installed, 246 audited, 0 vulnerabilities                                                                              |
+| `npm run check`                                                   | Passed lint, strict typecheck, **68/68 Vitest tests in 8 files**, frontend build and Lambda ESM bundle                                      |
+| `npm run test:e2e`                                                | Passed **5/5 Playwright Chromium tests**                                                                                                    |
+| `npm run format:check`; `git diff --check`                        | Both passed                                                                                                                                 |
 
 The first SAM validation found an invalid HTTP API `Name` alongside inline OpenAPI title; cfn-lint found redundant `DependsOn`. Both were removed. Offline translation then showed SAM's CORS property lost methods and headers with a parameterized origin list; CORS now lives in the inline OpenAPI definition and all fields survive translation. The offline transform used an inert S3 CodeUri **in memory only** to reveal generated resources; no packaging, upload, bucket, change set or stack was created. It is not a CloudFormation-processed change set.
 
@@ -39,13 +39,13 @@ With Node v22.23.2, `npm run check` passed (lint, strict typecheck, **68/68 Vite
 
 Verified in the `codex/react-extension-rebuild-review` worktree with Node **v22.23.2** and the committed lockfile:
 
-| Command | Result |
-|---|---|
-| `npm ci` | Passed; 245 packages installed, 246 audited, 0 vulnerabilities |
-| `npm run test:e2e` | Passed; **5/5 Playwright Chromium tests** (6.1 seconds): mine/refine/collect/sell with refresh; lost-response retry; 320px panel layout; first wallet credit; corrupt retry storage |
-| `npm run check` | Passed: ESLint, strict TypeScript check, **68/68 Vitest tests across 8 files**, Vite frontend build and Lambda ESM bundle |
-| `npm run format:check` | Passed; all matched files use Prettier style |
-| `git diff --check` | Passed; no whitespace errors |
+| Command                | Result                                                                                                                                                                              |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm ci`               | Passed; 245 packages installed, 246 audited, 0 vulnerabilities                                                                                                                      |
+| `npm run test:e2e`     | Passed; **5/5 Playwright Chromium tests** (6.1 seconds): mine/refine/collect/sell with refresh; lost-response retry; 320px panel layout; first wallet credit; corrupt retry storage |
+| `npm run check`        | Passed: ESLint, strict TypeScript check, **68/68 Vitest tests across 8 files**, Vite frontend build and Lambda ESM bundle                                                           |
+| `npm run format:check` | Passed; all matched files use Prettier style                                                                                                                                        |
+| `git diff --check`     | Passed; no whitespace errors                                                                                                                                                        |
 
 The E2E web server ran only on `127.0.0.1:5173`; its API calls to `127.0.0.1:8787` were intercepted by an in-memory `GameService` fixture. The test aborts the Twitch helper request. Integration tests use synthetic JWTs, mocked DynamoDB senders and a loopback local server with temporary file state. These validation commands did not access production AWS or Twitch resources, invoke deployed Lambdas, or read/write production player records. `npm ci` contacted the npm registry for locked packages. Browser and build outputs are ignored and are not part of the documentation commit. Real hosted Twitch and AWS staging verification remains a separate release gate.
 
@@ -61,32 +61,32 @@ Verified September 11, 2026 using Node 22.23.2, the committed lockfile and Chrom
 
 The existing lockfile installed successfully. Baseline output is preserved in baseline-validation.json.
 
-| Command/check | Observed result |
-|---|---|
-| npm ci | Passed after allowing package network access |
-| npm run lint -- --no-cache | Exit 0, but opened the ESLint setup prompt; no valid lint run occurred |
-| tsc --noEmit | Passed |
-| npm test | Exit 1: missing test script; no unit/integration suite |
-| npm run build | First failed with sandbox EPERM for Next IPC; permitted retry passed with CSS flex-alignment and outdated Browserslist warnings |
-| npm audit | 86 findings: 13 low, 44 moderate, 25 high, 4 critical |
+| Command/check              | Observed result                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| npm ci                     | Passed after allowing package network access                                                                                    |
+| npm run lint -- --no-cache | Exit 0, but opened the ESLint setup prompt; no valid lint run occurred                                                          |
+| tsc --noEmit               | Passed                                                                                                                          |
+| npm test                   | Exit 1: missing test script; no unit/integration suite                                                                          |
+| npm run build              | First failed with sandbox EPERM for Next IPC; permitted retry passed with CSS flex-alignment and outdated Browserslist warnings |
+| npm audit                  | 86 findings: 13 low, 44 moderate, 25 high, 4 critical                                                                           |
 
 The old Next/Amplify dependency graph was removed from the active static extension build after confirming it was starter/SSR infrastructure, not the original game. React remains on version 18. Recovered legacy code is archived as text and is not compiled or executed.
 
 ## Final validation
 
-| Command/check | Result |
-|---|---|
-| npm ci --cache /tmp/dime-npm-cache | Exit 0; 245 packages installed; audit 0 vulnerabilities |
-| npm run lint | Exit 0; no errors or warnings |
-| npm run typecheck | Exit 0 |
-| npm test | Exit 0; 48 tests passed in 6 files |
-| npm run build | Exit 0; static index/panel/mobile bundles and separate Lambda ESM package generated |
-| npm run check | Exit 0; runs lint, typecheck, tests and build sequentially |
-| npm run format:check | Exit 0 |
-| npm run test:e2e | Exit 0; all 5 Chromium tests passed |
-| VITE_DIME_MODE=local npm run build | Expected exit 1; verified explicit rejection before release output generation |
-| git diff --check (final changes) | Passed; recovered reference whitespace is explicitly preserved by .gitattributes |
-| Local credential-pattern scan | No private keys, AWS access-key IDs, complete JWTs or credential-bearing URLs found in candidate tracked files |
+| Command/check                      | Result                                                                                                         |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| npm ci --cache /tmp/dime-npm-cache | Exit 0; 245 packages installed; audit 0 vulnerabilities                                                        |
+| npm run lint                       | Exit 0; no errors or warnings                                                                                  |
+| npm run typecheck                  | Exit 0                                                                                                         |
+| npm test                           | Exit 0; 48 tests passed in 6 files                                                                             |
+| npm run build                      | Exit 0; static index/panel/mobile bundles and separate Lambda ESM package generated                            |
+| npm run check                      | Exit 0; runs lint, typecheck, tests and build sequentially                                                     |
+| npm run format:check               | Exit 0                                                                                                         |
+| npm run test:e2e                   | Exit 0; all 5 Chromium tests passed                                                                            |
+| VITE_DIME_MODE=local npm run build | Expected exit 1; verified explicit rejection before release output generation                                  |
+| git diff --check (final changes)   | Passed; recovered reference whitespace is explicitly preserved by .gitattributes                               |
+| Local credential-pattern scan      | No private keys, AWS access-key IDs, complete JWTs or credential-bearing URLs found in candidate tracked files |
 
 Frontend build: 123 modules, main JavaScript 257.11 kB (79.67 kB gzip), CSS 7.62 kB (2.27 kB gzip). No release source maps are published with the frontend. Backend source maps are local build artifacts. Size is a build observation, not a hosted performance measurement.
 
@@ -120,15 +120,15 @@ On a normal Linux workstation/CI image, install Chromium prerequisites with the 
 
 ## Remaining release validation
 
-## Milestone 3 local work-in-progress validation (2026-09-14)
+## Milestone 3 local pre-push validation (2026-09-14)
 
-On Node 22.23.2, `npm ci` installed 245 packages without an audit finding. `npm run check` passed lint, strict typecheck, 191 Vitest tests across 23 files, and frontend/Lambda builds. The full Chromium suite passed 51/51 after correcting the legacy UI assertion: an empty selected mineral hold now keeps the transfer amount at zero. The added case records one physical ARC-L1 → Lyria → Wala → Area18 → ARC-L1 route with a continuous synthetic save. `npm run format:check`, `git diff --check`, `sam validate --lint` and source `cfn-lint` also passed. A clean `sam build --no-cached` in Linux-native `/tmp`, source/processed Guard rules and transformed-template lint passed, with the SAM Lambda byte-identical to the local build.
+On Node 22.23.2, `npm ci` installed 245 packages without an audit finding. Full lint, strict typecheck, 191 Vitest tests across 23 files, frontend/Lambda builds, and 53/53 Chromium tests passed. A subsequent screenshot paint-ready assertion passed its targeted Panel/Mobile replay 2/2. The continuous synthetic route travels ARC-L1 → Lyria → Wala → Area18 → ARC-L1. `npm run format:check`, `git diff --check`, `sam validate --lint`, and source/processed `cfn-lint` passed. A clean `sam build --no-cached` in Linux-native `/tmp` and all source/processed Guard rules passed; the SAM Lambda is byte-identical to the local build.
 
-The production-mode synthetic benchmark in `scripts/m3-performance.ts` writes `test-results/m3-performance.json`. It uses a localhost preview and intercepts the configured staging API URL with an in-memory service; it does not send a staging request. It records 19 physical zone transitions per layout plus 33 distinctly labelled reload transitions, scanner response, laser and owned-ROC frame timings, with heap readings. `test-results/m3-world` contains 167 Panel/Mobile world screenshots and the browser result directory contains 15 local videos, including the physical all-four-location trip. Complete visual audit, some full-loop recordings and longer-session hosted-webview performance remain open; the milestone is not release-ready.
+The production-mode synthetic benchmark in `scripts/m3-performance.ts` writes `test-results/m3-performance.json`. It uses a localhost preview and intercepts the configured staging API URL with an in-memory service; it does not send a staging request. The longer `scripts/m3-long-session.ts` benchmark completed 20 four-location cycles over 19.05 minutes with no console/page/network errors or increasing retained heap, DOM, or canvas counts; see `test-results/m3-long-session-performance.json`. The visual manifest records 64/64 required Panel/Mobile screenshot pairs with manual observations. All 17 local gameplay recordings were reviewed through contact sheets and their original videos; see `test-results/m3-recording-audit.json` and `test-results/m3-recording-review.json`. Real Twitch Hosted Test webview performance remains a release gate.
 
 Requires a separately approved staging deployment: actual Twitch hosted-test authorization/CSP, mobile Twitch webview behavior, real DynamoDB/IAM conditional writes, API Gateway integration/CORS/throttles, service telemetry and deployment/rollback rehearsal. No production readiness claim substitutes these release gates.
 
-The initial staged recovery diff reported trailing whitespace in authored archive files. Those files are provenance references, so their text was preserved. .gitattributes exempts only docs/recovered/** from whitespace normalization/checking; maintained source still receives normal diff and formatter checks.
+The initial staged recovery diff reported trailing whitespace in authored archive files. Those files are provenance references, so their text was preserved. .gitattributes exempts only docs/recovered/\*\* from whitespace normalization/checking; maintained source still receives normal diff and formatter checks.
 
 Global-save synthetic tests verify signed JWT derivation is channel-independent, different players remain isolated, forged body identities fail, anonymous identities are blocked, and browser retry keys do not contain raw Twitch IDs. The read-only migration-gate tests verify existing v2 priority, unverified links, duplicate-source reconciliation and deterministic no-write retry. A mocked DynamoDB test checks the prepared three-item conditional migration transaction and permanent source/player receipts. It is unreachable from the Lambda; verified legacy linking, complete field mapping and live transactional migration tests remain unavailable. Real Twitch two-channel staging verification is still required.
 

@@ -38,6 +38,8 @@ for (const [layout, width, height] of [
     await expect(
       page.getByRole('img', { name: 'Original pixel-art map of ARC-L1 Habitation' }),
     ).toBeVisible();
+    await waitForWorldPaint(page);
+    await expect.poll(() => playerClearOfHud(page, ZONES.ARC_L1_START)).toBe(true);
     await page.screenshot({ path: `test-results/m3-world/${layout}-physical-arc-arrival.png` });
     const openingZone = current().world!.zone;
     await page.getByRole('button', { name: 'Open local map' }).click();

@@ -1,4 +1,4 @@
-The uncommitted Milestone 3 world/mining expansion is in progress on `codex/dime-2d-rpg-m3-world-mining`, based on `55bd58fd5c773bfd47a64acdb4b2d47e0764cbb1`. It adds an ARC-L1 authoritative start, connected Lyria/Wala/Area18 zones, directional arrivals, physical departure and Area18 transit routes, integer fractional mineral pieces, held-laser and owned ROC flows, and reset integration. The First Shift tutorial is again 4 cSCU Dolivine in three pieces (1.25 + 1.25 + 1.50), with a 5,200 aUEC sale and one 500 aUEC reward. It is **not ready to commit, push or release**: the [Milestone 3 working document](dime-2d-rpg-m3-world-mining.md) lists remaining visual/recording coverage, map discovery, full in-game performance review and other closure requirements. Do not treat passing local tests as a release approval.
+Milestone 3 source and local evidence are ready for pre-push owner review on `codex/dime-2d-rpg-m3-world-mining`, based on `55bd58fd5c773bfd47a64acdb4b2d47e0764cbb1`. Local checkpoint commits have not been pushed. The work adds an ARC-L1 authoritative start, connected Lyria/Wala/Area18 zones, directional arrivals, physical departure and Area18 transit routes, integer fractional mineral pieces, held-laser and owned ROC flows, and reset integration. First Shift is 4 cSCU Dolivine in three pieces (1.25 + 1.25 + 1.50), with a 5,200 aUEC sale and one 500 aUEC reward. The [Milestone 3 document](dime-2d-rpg-m3-world-mining.md) records 53/53 Chromium tests, 191/191 Vitest tests, 64/64 visually audited Panel/Mobile screenshot pairs, 17/17 reviewed recordings, and a 20-cycle production-preview endurance run. **Do not push or release before owner review. Real Twitch Hosted Test webview performance remains a release gate.**
 
 Milestone 2.3 is a **local, undeployed** authenticated gameplay-reset candidate on `codex/dime-2d-rpg-m23-reset`, branched from `fb025afee0d39e7d59f6dbe5227d45481ba36db0`. `POST /profile/reset` requires the existing persistent Twitch identity, exact phrase, revision and save generation. A generation-guarded transaction replaces only that player’s global gameplay save with canonical starter state while retaining technical receipts until TTL. The Profile confirmation and synthetic proof are in [Milestone 2.3](dime-2d-rpg-m23-reset.md). Backend route deployment must precede matching frontend activation. No AWS/Twitch resource or real player record was changed for this source milestone.
 
@@ -89,15 +89,15 @@ No AWS rollback is needed for this investigation because nothing was deployed. F
 
 ## File map
 
-| Area | Material changes |
-|---|---|
-| app/ | React views, travel/mining panels, branded responsive styles, current-token API, Twitch lifecycle, retry/state hook, error boundary |
-| shared/ | Recovered catalog, strict schemas, immutable authoritative gameplay rules |
-| server/ | JWT verification, HTTP adapter, state service, DynamoDB transactions, memory/file stores, Lambda entry |
-| tests/ | Domain/auth/client/service/DynamoDB/local integration tests and Chromium game-flow tests |
-| scripts/, root configuration | Static multi-entry Vite build, separate bundled EBS, pinned lockfile, lint/typecheck/format/test setup, safe env example |
-| .github/, amplify.yml | Read-only validation workflow and defensive deployment block |
-| docs/, infra/ | Sanitized inventory, recovery references/provenance, legacy source archive, architecture, gameplay, testing, Twitch, staging, deployment and rollback |
-| removed active starter files | Next runtime/layout/config/types, unused starter SVGs/HTML, duplicate prototype game rules, active Amplify starter definitions |
+| Area                         | Material changes                                                                                                                                      |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| app/                         | React views, travel/mining panels, branded responsive styles, current-token API, Twitch lifecycle, retry/state hook, error boundary                   |
+| shared/                      | Recovered catalog, strict schemas, immutable authoritative gameplay rules                                                                             |
+| server/                      | JWT verification, HTTP adapter, state service, DynamoDB transactions, memory/file stores, Lambda entry                                                |
+| tests/                       | Domain/auth/client/service/DynamoDB/local integration tests and Chromium game-flow tests                                                              |
+| scripts/, root configuration | Static multi-entry Vite build, separate bundled EBS, pinned lockfile, lint/typecheck/format/test setup, safe env example                              |
+| .github/, amplify.yml        | Read-only validation workflow and defensive deployment block                                                                                          |
+| docs/, infra/                | Sanitized inventory, recovery references/provenance, legacy source archive, architecture, gameplay, testing, Twitch, staging, deployment and rollback |
+| removed active starter files | Next runtime/layout/config/types, unused starter SVGs/HTML, duplicate prototype game rules, active Amplify starter definitions                        |
 
 The exact changed paths are available through git diff --name-status (or git diff --cached --name-status after staging). Build outputs, downloaded packages, credentials and private data are excluded.
