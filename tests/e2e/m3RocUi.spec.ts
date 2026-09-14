@@ -7,7 +7,7 @@ import { initialState } from '../../shared/game';
 import { generatedNodes } from '../../shared/miningWorld';
 import type { Action } from '../../shared/schema';
 import { ZONES } from '../../shared/world';
-import { walkZoneTo } from './zoneWalking';
+import { waitForWorldPaint, walkZoneTo } from './zoneWalking';
 import { beginAssignedTravel } from '../travelFixture';
 
 test.use({ video: { mode: 'on', size: { width: 360, height: 640 } } });
@@ -84,6 +84,7 @@ for (const [layout, width, height] of [
     const pieces = store.states.get(player)!.world!.nodes[node.id].fragments;
     for (const piece of pieces) await act({ type: 'collectPiece', nodeId: node.id, pieceId: piece.id });
     await expect(page.getByRole('img', { name: 'Original pixel-art map of Lyria Haul Trail' })).toBeVisible();
+    await waitForWorldPaint(page);
     await page.screenshot({ path: `test-results/m3-world/${layout}-roc-mining.png` });
     const finished = store.states.get(player)!;
     expect(finished.mining.Roc[node.ore] ?? 0).toBe(node.yieldUnits);
