@@ -203,7 +203,8 @@ test('mine → refine → collect → sell persists across refresh with accurate
   await startTravel(page, store, service, 'Halo', 'Prospector');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
-  await expect(page.getByRole('status').first()).toHaveText('Operation saved.');
+  await expect.poll(() => store.states.get('test')!.location).toBe('Halo');
+  await expect(page.getByText(/Current location: Halo/)).toBeVisible();
   await navigate(page, 'mining');
   await page.getByRole('button', { name: 'Prospector', exact: false }).click();
   await page.getByRole('button', { name: 'Scan and mine Prospector' }).click();
@@ -217,7 +218,8 @@ test('mine → refine → collect → sell persists across refresh with accurate
   await startTravel(page, store, service, 'ARC-L1', 'Prospector');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
-  await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  await expect.poll(() => store.states.get('test')!.location).toBe('ARC-L1');
+  await expect(page.getByText(/Current location: ARC-L1/)).toBeVisible();
   await navigate(page, 'refinery');
   await page.getByRole('button', { name: `Select ${ore} recipe` }).click();
   await page
@@ -241,7 +243,8 @@ test('mine → refine → collect → sell persists across refresh with accurate
   await startTravel(page, store, service, 'Area-18', 'Nomad');
   await advance();
   await page.getByRole('button', { name: 'Complete arrival' }).click();
-  await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  await expect.poll(() => store.states.get('test')!.location).toBe('Area-18');
+  await expect(page.getByText(/Current location: Area-18/)).toBeVisible();
   await navigate(page, 'market');
   await choice(page, 'Trade mode', 'Sell').click();
   await choice(page, 'Material state', 'refined').click();
