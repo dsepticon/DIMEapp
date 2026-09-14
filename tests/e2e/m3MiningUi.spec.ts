@@ -121,19 +121,18 @@ for (const [layout, width, height] of [
     await expect(page.getByText(/E · Dolivine fragment/)).toBeVisible();
     await page.getByRole('button', { name: 'Interact' }).click();
     await expect.poll(collected).toBe(1);
-    await page.keyboard.down('ArrowDown');
-    await page.waitForTimeout(550);
-    await page.keyboard.up('ArrowDown');
-    await expect(page.getByText(/E · Dolivine fragment/)).toBeVisible();
-    await page.getByRole('button', { name: 'Interact' }).click();
-    await expect.poll(collected).toBe(2);
-    await page.screenshot({ path: `test-results/m3-world/${layout}-partial-ground-collection.png` });
-    await page.keyboard.down('ArrowUp');
-    await page.waitForTimeout(1120);
-    await page.keyboard.up('ArrowUp');
-    await expect(page.getByText(/E · Dolivine fragment/)).toBeVisible();
-    await page.getByRole('button', { name: 'Interact' }).click();
-    await expect.poll(collected).toBe(3);
+    for (const count of [2, 3]) {
+      const state = store.states.get(player)!;
+      const piece = state.world!.nodes['LYRIA_SURFACE_01-tutorial'].fragments.find(
+        (fragment) => !fragment.collected,
+      )!;
+      await walkZoneTo(page, ZONES.LYRIA_SURFACE_01, state.world!.entry, [piece.x, piece.y]);
+      await expect(page.getByText(/E · Dolivine fragment/)).toBeVisible();
+      await page.getByRole('button', { name: 'Interact' }).click();
+      await expect.poll(collected).toBe(count);
+      if (count === 2)
+        await page.screenshot({ path: `test-results/m3-world/${layout}-partial-ground-collection.png` });
+    }
     expect(store.states.get(player)?.mining.Hand.Dolivine).toBe(400);
     await page.screenshot({ path: `test-results/m3-world/${layout}-ground-collection-complete.png` });
   });
