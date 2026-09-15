@@ -1,0 +1,1955 @@
+{
+  "reviewedAt": "2026-09-14",
+  "basis": [
+    "shared/catalog.ts",
+    "shared/world.ts",
+    "shared/schema.ts",
+    "shared/game.ts"
+  ],
+  "state": "historical pre-approval inventory; superseded by dime-m4-final-mapping.json",
+  "approvedLocationDisplays": {
+    "ARC-L1": "Tessick Station",
+    "Lyria": "Loam Crescent",
+    "Wala": "Mica Slope",
+    "Area-18": "Avenbolt",
+    "Halo": "Far Shards"
+  },
+  "unresolvedCounts": {
+    "minerals": 20,
+    "ships": 14,
+    "equipment": 12,
+    "extractionClasses": 4,
+    "methods": 9,
+    "zones": 43,
+    "other": 12
+  },
+  "minerals": [
+    {
+      "source": "Dolivine",
+      "category": "GEM",
+      "candidateDisplay": "Garnet",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Dolivine",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        12,
+        80,
+        "ship-specific"
+      ],
+      "rawValuePerScu": 130000,
+      "processedValuePerScu": 0,
+      "rarityOrSpawnWeight": {
+        "Hand": 0.5,
+        "Roc": 0.5
+      },
+      "refinable": false,
+      "refinedCandidateDisplay": null,
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Aphorite",
+      "category": "GEM",
+      "candidateDisplay": "Fluorite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Aphorite",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        12,
+        80,
+        "ship-specific"
+      ],
+      "rawValuePerScu": 152500,
+      "processedValuePerScu": 0,
+      "rarityOrSpawnWeight": {
+        "Hand": 0.3,
+        "Roc": 0.3
+      },
+      "refinable": false,
+      "refinedCandidateDisplay": null,
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Hadanite",
+      "category": "GEM",
+      "candidateDisplay": "Spinel",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Hadanite",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        12,
+        80,
+        "ship-specific"
+      ],
+      "rawValuePerScu": 275000,
+      "processedValuePerScu": 0,
+      "rarityOrSpawnWeight": {
+        "Hand": 0.19,
+        "Roc": 0.2
+      },
+      "refinable": false,
+      "refinedCandidateDisplay": null,
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Janalite",
+      "category": "GEM",
+      "candidateDisplay": "Alexandrite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Janalite",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        12,
+        80,
+        "ship-specific"
+      ],
+      "rawValuePerScu": 17640000,
+      "processedValuePerScu": 0,
+      "rarityOrSpawnWeight": {
+        "Hand": 0.01,
+        "Roc": 0
+      },
+      "refinable": false,
+      "refinedCandidateDisplay": null,
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Agricium",
+      "category": "ORE",
+      "candidateDisplay": "Molybdenite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Agricium",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 1085,
+      "processedValuePerScu": 2833,
+      "rarityOrSpawnWeight": {
+        "M-Type": 0.3404
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Molybdenite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Aluminium",
+      "category": "ORE",
+      "candidateDisplay": "Bauxite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Aluminium",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 133,
+      "processedValuePerScu": 349,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.4444,
+        "P-Type": 0.3623,
+        "S-Type": 0.289,
+        "Q-Type": 0.3676,
+        "M-Type": 0.3922,
+        "C-Type": 0.3968
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Bauxite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Beryl",
+      "category": "ORE",
+      "candidateDisplay": "Beryl",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Beryl",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 1149,
+      "processedValuePerScu": 2817,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.2667,
+        "S-Type": 0.241
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Beryl",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Bexalite",
+      "category": "ORE",
+      "candidateDisplay": "Scheelite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Bexalite",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 3080,
+      "processedValuePerScu": 7983,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.0976,
+        "P-Type": 0.2033,
+        "S-Type": 0.1689,
+        "Q-Type": 0.1145,
+        "M-Type": 0.0426,
+        "C-Type": 0.2024
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Scheelite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Borase",
+      "category": "ORE",
+      "candidateDisplay": "Borax",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Borase",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 1416,
+      "processedValuePerScu": 3634,
+      "rarityOrSpawnWeight": {
+        "Q-Type": 0.2206
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Borax",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Copper",
+      "category": "ORE",
+      "candidateDisplay": "Chalcopyrite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Copper",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 153,
+      "processedValuePerScu": 408,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.4878,
+        "P-Type": 0.3623,
+        "S-Type": 0.3012,
+        "Q-Type": 0.3584,
+        "M-Type": 0.5051,
+        "C-Type": 0.3891
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Chalcopyrite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Corundum",
+      "category": "ORE",
+      "candidateDisplay": "Corundum",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Corundum",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 158,
+      "processedValuePerScu": 389,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.4717,
+        "P-Type": 0.3623,
+        "S-Type": 0.3012,
+        "Q-Type": 0.3584,
+        "M-Type": 0.3891,
+        "C-Type": 0.361
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Corundum",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Gold",
+      "category": "ORE",
+      "candidateDisplay": "Native Gold",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Gold",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 3211,
+      "processedValuePerScu": 8099,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.2222,
+        "P-Type": 0.0431,
+        "S-Type": 0.0685,
+        "Q-Type": 0.1145,
+        "M-Type": 0.1961,
+        "C-Type": 0.0844
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Native Gold",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Hephaestanite",
+      "category": "ORE",
+      "candidateDisplay": "Chromite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Hephaestanite",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 1122,
+      "processedValuePerScu": 2830,
+      "rarityOrSpawnWeight": {
+        "C-Type": 0.2888
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Chromite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Iron",
+      "category": "ORE",
+      "candidateDisplay": "Hematite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Iron",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 161,
+      "processedValuePerScu": 407,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.4444,
+        "P-Type": 0.4065,
+        "S-Type": 0.3378,
+        "Q-Type": 0.3817,
+        "M-Type": 0.3922,
+        "C-Type": 0.3546
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Hematite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Laranite",
+      "category": "ORE",
+      "candidateDisplay": "Sphalerite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Laranite",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 1173,
+      "processedValuePerScu": 3115,
+      "rarityOrSpawnWeight": {
+        "P-Type": 0.3125,
+        "S-Type": 0.2454,
+        "Q-Type": 0.1527
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Sphalerite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Quantanium",
+      "category": "ORE",
+      "candidateDisplay": "Native Platinum",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Quantanium",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 10118,
+      "processedValuePerScu": 25153,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.0566,
+        "P-Type": 0.0517,
+        "S-Type": 0.0411,
+        "Q-Type": 0.0458,
+        "M-Type": 0.0385,
+        "C-Type": 0.0476
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Native Platinum",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Quartz",
+      "category": "ORE",
+      "candidateDisplay": "Quartz",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Quartz",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 160,
+      "processedValuePerScu": 416,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.4255,
+        "P-Type": 0.431,
+        "S-Type": 0.3425,
+        "Q-Type": 0.3584,
+        "M-Type": 0.4255,
+        "C-Type": 0.4219
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Quartz",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Taranite",
+      "category": "ORE",
+      "candidateDisplay": "Cassiterite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Taranite",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 3118,
+      "processedValuePerScu": 7840,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.0943,
+        "P-Type": 0.1984,
+        "S-Type": 0.1634,
+        "Q-Type": 0.1075,
+        "M-Type": 0.0755,
+        "C-Type": 0.1984
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Cassiterite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Titanium",
+      "category": "ORE",
+      "candidateDisplay": "Ilmenite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Titanium",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 194,
+      "processedValuePerScu": 517,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.4717,
+        "P-Type": 0.3906,
+        "S-Type": 0.3268,
+        "Q-Type": 0.3817,
+        "M-Type": 0.3774,
+        "C-Type": 0.4049
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Ilmenite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    },
+    {
+      "source": "Tungsten",
+      "category": "ORE",
+      "candidateDisplay": "Wolframite",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Tungsten",
+      "existingQuantity": "per-save; do not read real saves",
+      "quantityPath": "mining.* / cargo.*.raw / cargo.*.refined / orders.*",
+      "startingQuantity": 0,
+      "capacity": [
+        "ship-specific",
+        "ship-specific"
+      ],
+      "rawValuePerScu": 172,
+      "processedValuePerScu": 431,
+      "rarityOrSpawnWeight": {
+        "E-Type": 0.4444,
+        "P-Type": 0.3968,
+        "S-Type": 0.3067,
+        "Q-Type": 0.3584,
+        "M-Type": 0.3846,
+        "C-Type": 0.361
+      },
+      "refinable": true,
+      "refinedCandidateDisplay": "Processed Wolframite",
+      "reason": "Slot pairing alone cannot prove that the original and proposed substance have equivalent meaning."
+    }
+  ],
+  "ships": [
+    {
+      "source": "Nomad",
+      "category": "SHIP",
+      "candidateDisplay": "Lark Skiff",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Nomad",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 2400,
+      "purchaseOrSaleValue": null,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Roc",
+      "category": "GROUND_VEHICLE",
+      "candidateDisplay": "Crawl Rig",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Roc",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 80,
+      "purchaseOrSaleValue": 103950,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Prospector",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Prospector",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 3200,
+      "purchaseOrSaleValue": 2929500,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Mole",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Mole",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 9600,
+      "purchaseOrSaleValue": 8930250,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Cutlass Black",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Cutlass Black",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 4600,
+      "purchaseOrSaleValue": 2116800,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Hull A",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Hull A",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 6400,
+      "purchaseOrSaleValue": 1701000,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Freelancer",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Freelancer",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 6600,
+      "purchaseOrSaleValue": 3118500,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "RAFT",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "RAFT",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 9600,
+      "purchaseOrSaleValue": 3543750,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Constellation Andromeda",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Constellation Andromeda",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 9600,
+      "purchaseOrSaleValue": 10160640,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Mercury Starrunner",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Mercury Starrunner",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 11400,
+      "purchaseOrSaleValue": 12285000,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Freelancer MAX",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Freelancer MAX",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 12000,
+      "purchaseOrSaleValue": 4252500,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Constellation Taurus",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Constellation Taurus",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 17400,
+      "purchaseOrSaleValue": 8043840,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "Caterpillar",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Caterpillar",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 57600,
+      "purchaseOrSaleValue": 12474000,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    },
+    {
+      "source": "C2 Hercules Starlifter",
+      "category": "SHIP",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "C2 Hercules Starlifter",
+      "existingOwnership": "per-save; starter Nomad=1, other types=0",
+      "ownershipPaths": [
+        "ships",
+        "currentShip",
+        "positions",
+        "cargo",
+        "pending",
+        "world.departure"
+      ],
+      "capacityCscu": 69600,
+      "purchaseOrSaleValue": 18900000,
+      "reason": "Only one ship and one ground-vehicle display candidate exist for 14 source types; class equivalence is not reviewed."
+    }
+  ],
+  "equipment": [
+    {
+      "source": "Basic Mining Tool",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Basic Mining Tool",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": null,
+      "startingOwnership": 1,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Arbor MH1",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Arbor MH1",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": null,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Arbor MH2",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Arbor MH2",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": null,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Hofstede S1",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Hofstede S1",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 12750,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Hofstede S2",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Hofstede S2",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 12750,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Impact I",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Impact I",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 57750,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Impact II",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Impact II",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 57750,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Helix I",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Helix I",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 108000,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Helix II",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Helix II",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 108000,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Terraphon",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Terraphon",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 250000,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Andirr",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Andirr",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 250000,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    },
+    {
+      "source": "Dora",
+      "category": "EQUIPMENT",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Dora",
+      "existingOwnership": "per-save",
+      "ownershipPath": "equipment",
+      "purchaseOrSaleValue": 500000,
+      "startingOwnership": 0,
+      "functionality": "see shared/game.ts mining-head modifiers and shared/miningTool.ts",
+      "reason": "No approved one-to-one functional replacement or tier matrix."
+    }
+  ],
+  "extractionClasses": [
+    {
+      "source": "Hand",
+      "category": "EXTRACTION_CLASS",
+      "candidateDisplay": "hand tool",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Hand",
+      "existingQuantity": "per-save mining hold",
+      "quantityPath": "mining.Hand",
+      "capacityCscu": 12,
+      "reason": "Class mapping must retain source hold capacity, extraction rules, and owned vehicle relationship."
+    },
+    {
+      "source": "Roc",
+      "category": "EXTRACTION_CLASS",
+      "candidateDisplay": "Crawl Rig class",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Roc",
+      "existingQuantity": "per-save mining hold",
+      "quantityPath": "mining.Roc",
+      "capacityCscu": 80,
+      "reason": "Class mapping must retain source hold capacity, extraction rules, and owned vehicle relationship."
+    },
+    {
+      "source": "Prospector",
+      "category": "EXTRACTION_CLASS",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Prospector",
+      "existingQuantity": "per-save mining hold",
+      "quantityPath": "mining.Prospector",
+      "capacityCscu": 3200,
+      "reason": "Class mapping must retain source hold capacity, extraction rules, and owned vehicle relationship."
+    },
+    {
+      "source": "Mole",
+      "category": "EXTRACTION_CLASS",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Mole",
+      "existingQuantity": "per-save mining hold",
+      "quantityPath": "mining.Mole",
+      "capacityCscu": 9600,
+      "reason": "Class mapping must retain source hold capacity, extraction rules, and owned vehicle relationship."
+    }
+  ],
+  "methods": [
+    {
+      "source": "Cormack Method",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": "Bed Sorting",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Cormack Method",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "Low",
+        "cost": "Medium",
+        "time": "Short"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "Dinyx Solventation",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": "Wash Lift",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Dinyx Solventation",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "High",
+        "cost": "Low",
+        "time": "Long"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "Electrostarolysis",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": "Arc Draw",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Electrostarolysis",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "Medium",
+        "cost": "Medium",
+        "time": "Short"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "Ferron Exchange",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": "Heat Pass",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Ferron Exchange",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "High",
+        "cost": "Medium",
+        "time": "Long"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "Gaskin Process",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Gaskin Process",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "Medium",
+        "cost": "High",
+        "time": "Short"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "Kazen Winnowing",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Kazen Winnowing",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "Low",
+        "cost": "Low",
+        "time": "Short"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "Pyrometric Cromalysis",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Pyrometric Cromalysis",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "High",
+        "cost": "High",
+        "time": "Short"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "Thermonatic Deposition",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Thermonatic Deposition",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "Medium",
+        "cost": "Low",
+        "time": "Medium"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    },
+    {
+      "source": "XCR Reaction",
+      "category": "REFINERY_METHOD",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "XCR Reaction",
+      "existingQuantity": "per-save orders; dynamically generated refineryRates",
+      "statePaths": [
+        "refineryRates",
+        "orders.*.method"
+      ],
+      "qualitativeProfile": {
+        "yield": "Low",
+        "cost": "High",
+        "time": "Long"
+      },
+      "reason": "Four candidate labels cannot cover nine methods; preserve each saved rate and existing order accounting."
+    }
+  ],
+  "zones": [
+    {
+      "source": "ARC_L1_START",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_START",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_CONCOURSE",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_CONCOURSE",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_TRANSIT",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_TRANSIT",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_REFINERY",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_REFINERY",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_CARGO",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_CARGO",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_TRADE",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_TRADE",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_EQUIPMENT",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_EQUIPMENT",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_DEPARTURE",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_DEPARTURE",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_HANGAR",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_HANGAR",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_OBSERVATION",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_OBSERVATION",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "ARC_L1_MAINTENANCE",
+      "category": "ZONE",
+      "candidateDisplay": "Tessick Station — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ARC_L1_MAINTENANCE",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_OUTPOST_01",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_OUTPOST_01",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_OUTPOST_02",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_OUTPOST_02",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_SURFACE_01",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_SURFACE_01",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_SURFACE_02",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_SURFACE_02",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_CAVE_01",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_CAVE_01",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_CAVE_02",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_CAVE_02",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_ASOP",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_ASOP",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "LYRIA_LANDING_PAD",
+      "category": "ZONE",
+      "candidateDisplay": "Loam Crescent — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "LYRIA_LANDING_PAD",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_OUTPOST_01",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_OUTPOST_01",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_OUTPOST_02",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_OUTPOST_02",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_SURFACE_01",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_SURFACE_01",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_SURFACE_02",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_SURFACE_02",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_CAVE_01",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_CAVE_01",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_CAVE_02",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_CAVE_02",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_ASOP",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_ASOP",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "WALA_LANDING_PAD",
+      "category": "ZONE",
+      "candidateDisplay": "Mica Slope — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "WALA_LANDING_PAD",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_SPACEPORT",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_SPACEPORT",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_HANGAR",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_HANGAR",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_SECURITY",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_SECURITY",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_SPACEPORT_PLATFORM",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_SPACEPORT_PLATFORM",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_SHUTTLE",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_SHUTTLE",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_CITY_PLATFORM",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_CITY_PLATFORM",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_TRANSIT",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_TRANSIT",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_PLAZA",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_PLAZA",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_HABITATION",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_HABITATION",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_SKYBRIDGE",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_SKYBRIDGE",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_MARKET",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_MARKET",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_RETAIL",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_RETAIL",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_ALLEY",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_ALLEY",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_INDUSTRIAL",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_INDUSTRIAL",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "AREA18_CARGO",
+      "category": "ZONE",
+      "candidateDisplay": "Avenbolt — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "AREA18_CARGO",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    },
+    {
+      "source": "HALO_ASTEROIDS",
+      "category": "ZONE",
+      "candidateDisplay": "Far Shards — zone design pending",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "HALO_ASTEROIDS",
+      "existingQuantity": "not applicable",
+      "statePaths": [
+        "world.zone",
+        "world.roc.zone"
+      ],
+      "reason": "Location family is owner-approved; exact original zone name, geometry, and stable ID require design review."
+    }
+  ],
+  "other": [
+    {
+      "source": "aUEC",
+      "category": "OTHER",
+      "candidateDisplay": "shift marks",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "aUEC",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "SCU",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "SCU",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "cSCU",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "cSCU",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "ASOP",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "ASOP",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "TDD",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "TDD",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "First Shift",
+      "category": "OTHER",
+      "candidateDisplay": "First Contract",
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "First Shift",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "Mara Voss",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Mara Voss",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "Neri Vale",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Neri Vale",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "Ivo Sen",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Ivo Sen",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "Star Citizen",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Star Citizen",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "Cloud Imperium Games",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Cloud Imperium Games",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    },
+    {
+      "source": "Roberts Space Industries",
+      "category": "OTHER",
+      "candidateDisplay": null,
+      "proposedSaveId": null,
+      "conversion": "SUPERSEDED_BY_EXPLICIT_FUNCTIONAL_MATRIX",
+      "currentSaveKey": "Roberts Space Industries",
+      "existingQuantity": "per-save where applicable",
+      "reason": "Requires semantic and history review; physical quantity units and legacy quest records must retain their exact meaning."
+    }
+  ]
+}

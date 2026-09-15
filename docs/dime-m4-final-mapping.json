@@ -1,0 +1,4072 @@
+{
+  "migrationVersion": 1,
+  "contentVersion": 4,
+  "saveFormatVersion": 3,
+  "screenDate": "2026-09-14",
+  "statement": "Explicit functional equivalents. Source signatures are verified before conversion; no balance change.",
+  "locations": [
+    {
+      "legacyIdentifier": "ARC-L1",
+      "originalStableIdentifier": "loc.l001",
+      "legacyDisplayName": "ARC-L1",
+      "originalDisplayName": "Tessick Station",
+      "category": "LOCATION",
+      "functionalRole": "world location",
+      "sourceStatSignature": "977caefaac321fb5e513fb988e4964c9891101715d8832044024334ae4ae0b15",
+      "sourceStats": {
+        "zoneCount": 11
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC-L1",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["location", "positions", "pending.destination", "world.departure.destination"]
+    },
+    {
+      "legacyIdentifier": "Lyria",
+      "originalStableIdentifier": "loc.l002",
+      "legacyDisplayName": "Lyria",
+      "originalDisplayName": "Loam Crescent",
+      "category": "LOCATION",
+      "functionalRole": "world location",
+      "sourceStatSignature": "a1a4e4aa27f2e39d0408bda9005c0d4b474a8f644b9f5e7962f40cc4dd979107",
+      "sourceStats": {
+        "zoneCount": 8
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Lyria",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["location", "positions", "pending.destination", "world.departure.destination"]
+    },
+    {
+      "legacyIdentifier": "Wala",
+      "originalStableIdentifier": "loc.l003",
+      "legacyDisplayName": "Wala",
+      "originalDisplayName": "Mica Slope",
+      "category": "LOCATION",
+      "functionalRole": "world location",
+      "sourceStatSignature": "a1a4e4aa27f2e39d0408bda9005c0d4b474a8f644b9f5e7962f40cc4dd979107",
+      "sourceStats": {
+        "zoneCount": 8
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Wala",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["location", "positions", "pending.destination", "world.departure.destination"]
+    },
+    {
+      "legacyIdentifier": "Area-18",
+      "originalStableIdentifier": "loc.l004",
+      "legacyDisplayName": "Area-18",
+      "originalDisplayName": "Avenbolt",
+      "category": "LOCATION",
+      "functionalRole": "world location",
+      "sourceStatSignature": "ac60c7be48535499edf6e7b5655eaf8262e49bbd92f9707acc5fdbe594cd2cb9",
+      "sourceStats": {
+        "zoneCount": 15
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Area-18",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["location", "positions", "pending.destination", "world.departure.destination"]
+    },
+    {
+      "legacyIdentifier": "Halo",
+      "originalStableIdentifier": "loc.l005",
+      "legacyDisplayName": "Halo",
+      "originalDisplayName": "Far Shards",
+      "category": "LOCATION",
+      "functionalRole": "world location",
+      "sourceStatSignature": "de768f8406901f5fb6081441fc8640ca093930d660a13cd25ee5c63a38efc2b3",
+      "sourceStats": {
+        "zoneCount": 1
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Halo",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["location", "positions", "pending.destination", "world.departure.destination"]
+    }
+  ],
+  "zones": [
+    {
+      "legacyIdentifier": "ARC_L1_START",
+      "originalStableIdentifier": "zone.z001",
+      "legacyDisplayName": "ARC_L1_START",
+      "originalDisplayName": "Crew Ring Arrival",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "71ad87bbc3c9eb72728bc2d6ac5e3796a134cbdb61824ddd5b07311bdc4c96aa",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_CONCOURSE",
+            "entry": "from:ARC_L1_START"
+          }
+        ],
+        "objectKinds": ["npc", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_START",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Crew Ring Arrival layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_CONCOURSE",
+      "originalStableIdentifier": "zone.z002",
+      "legacyDisplayName": "ARC_L1_CONCOURSE",
+      "originalDisplayName": "Tessick Concourse",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "bdf809a2801611267a3c30474136c986d0067e8efce071e4ea070cc951a52289",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_START",
+            "entry": "from:ARC_L1_CONCOURSE"
+          },
+          {
+            "to": "ARC_L1_TRANSIT",
+            "entry": "from:ARC_L1_CONCOURSE"
+          },
+          {
+            "to": "ARC_L1_TRADE",
+            "entry": "from:ARC_L1_CONCOURSE"
+          },
+          {
+            "to": "ARC_L1_OBSERVATION",
+            "entry": "from:ARC_L1_CONCOURSE"
+          }
+        ],
+        "objectKinds": ["npc", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_CONCOURSE",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Concourse layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_TRANSIT",
+      "originalStableIdentifier": "zone.z003",
+      "legacyDisplayName": "ARC_L1_TRANSIT",
+      "originalDisplayName": "Tessick Service Lift",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "d964db804ec57bc7625fb6029edae6473c49916b2099e13a423508251bacdf97",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_CONCOURSE",
+            "entry": "from:ARC_L1_TRANSIT"
+          },
+          {
+            "to": "ARC_L1_REFINERY",
+            "entry": "from:ARC_L1_TRANSIT"
+          },
+          {
+            "to": "ARC_L1_CARGO",
+            "entry": "from:ARC_L1_TRANSIT"
+          },
+          {
+            "to": "ARC_L1_EQUIPMENT",
+            "entry": "from:ARC_L1_TRANSIT"
+          },
+          {
+            "to": "ARC_L1_DEPARTURE",
+            "entry": "from:ARC_L1_TRANSIT"
+          },
+          {
+            "to": "ARC_L1_MAINTENANCE",
+            "entry": "from:ARC_L1_TRANSIT"
+          }
+        ],
+        "objectKinds": ["npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_TRANSIT",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Service Lift layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_REFINERY",
+      "originalStableIdentifier": "zone.z004",
+      "legacyDisplayName": "ARC_L1_REFINERY",
+      "originalDisplayName": "Tessick Processing Deck",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "266334318bec29b39eeeb25ea532e81b7b86f205f1ae4dedcb5548c67d4cb8a2",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_TRANSIT",
+            "entry": "from:ARC_L1_REFINERY"
+          }
+        ],
+        "objectKinds": ["refinery", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_REFINERY",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Processing Deck layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_CARGO",
+      "originalStableIdentifier": "zone.z005",
+      "legacyDisplayName": "ARC_L1_CARGO",
+      "originalDisplayName": "Tessick Cargo Deck",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "6ab8081fff7ae22579cf9bf68c08f1c7321fcf00782d37544e28c01c2598479e",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_TRANSIT",
+            "entry": "from:ARC_L1_CARGO"
+          }
+        ],
+        "objectKinds": ["cargo", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_CARGO",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Cargo Deck layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_TRADE",
+      "originalStableIdentifier": "zone.z006",
+      "legacyDisplayName": "ARC_L1_TRADE",
+      "originalDisplayName": "Tessick Exchange",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "9679783150d890ae7b313a21ff16046c43a094efd4fc7e0b6120cb2a5076aad6",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_CONCOURSE",
+            "entry": "from:ARC_L1_TRADE"
+          }
+        ],
+        "objectKinds": ["market", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_TRADE",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Exchange layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_EQUIPMENT",
+      "originalStableIdentifier": "zone.z007",
+      "legacyDisplayName": "ARC_L1_EQUIPMENT",
+      "originalDisplayName": "Tessick Supply Walk",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "e18146fa5784a216aaa29c5564e137d8c16fe3668c5015d78d187b1ac3ed16ba",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_TRANSIT",
+            "entry": "from:ARC_L1_EQUIPMENT"
+          }
+        ],
+        "objectKinds": ["equipment", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_EQUIPMENT",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Supply Walk layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_DEPARTURE",
+      "originalStableIdentifier": "zone.z008",
+      "legacyDisplayName": "ARC_L1_DEPARTURE",
+      "originalDisplayName": "Tessick Ship Desk",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "47f6e0f2f34a015413e29a815f6e76606c3e5ff8c666c10145b062ef9e6cb93b",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_TRANSIT",
+            "entry": "from:ARC_L1_DEPARTURE"
+          },
+          {
+            "to": "ARC_L1_HANGAR",
+            "entry": "from:ARC_L1_DEPARTURE"
+          }
+        ],
+        "objectKinds": ["travel", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_DEPARTURE",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Ship Desk layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_HANGAR",
+      "originalStableIdentifier": "zone.z009",
+      "legacyDisplayName": "ARC_L1_HANGAR",
+      "originalDisplayName": "Tessick Assigned Bay",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "822f3348cdf9ce0868324c2e450ff408ce9edabba2eb4fdca7d78c3212c85606",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_DEPARTURE",
+            "entry": "from:ARC_L1_HANGAR"
+          }
+        ],
+        "objectKinds": ["travel", "npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_HANGAR",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Assigned Bay layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_OBSERVATION",
+      "originalStableIdentifier": "zone.z010",
+      "legacyDisplayName": "ARC_L1_OBSERVATION",
+      "originalDisplayName": "Tessick Window Walk",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "ee6e4565c25e0830b9dda9eefae797c041858442df7e38779043ff68740c336f",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_CONCOURSE",
+            "entry": "from:ARC_L1_OBSERVATION"
+          }
+        ],
+        "objectKinds": ["npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_OBSERVATION",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Window Walk layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "ARC_L1_MAINTENANCE",
+      "originalStableIdentifier": "zone.z011",
+      "legacyDisplayName": "ARC_L1_MAINTENANCE",
+      "originalDisplayName": "Tessick Service Spine",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "8bd944dd51d02db29da6768f21dd1c0c33c70a9ce3f3fa877d245e1564f69d57",
+      "sourceStats": {
+        "location": "ARC-L1",
+        "width": 30,
+        "height": 24,
+        "exits": [
+          {
+            "to": "ARC_L1_TRANSIT",
+            "entry": "from:ARC_L1_MAINTENANCE"
+          }
+        ],
+        "objectKinds": ["npc"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "ARC_L1_MAINTENANCE",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Tessick Service Spine layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_OUTPOST_01",
+      "originalStableIdentifier": "zone.z012",
+      "legacyDisplayName": "LYRIA_OUTPOST_01",
+      "originalDisplayName": "Loam First Yard",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "956366cf877ac180ed8aa9b5bf7a05624be4414a86e445b5a0dcc0b2d915a16f",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "LYRIA_SURFACE_01",
+            "entry": "from:LYRIA_OUTPOST_01"
+          },
+          {
+            "to": "LYRIA_ASOP",
+            "entry": "from:LYRIA_OUTPOST_01"
+          },
+          {
+            "to": "LYRIA_OUTPOST_02",
+            "entry": "from:LYRIA_OUTPOST_01"
+          },
+          {
+            "to": "LYRIA_LANDING_PAD",
+            "entry": "from:LYRIA_OUTPOST_01"
+          }
+        ],
+        "objectKinds": ["foreman", "npc", "market", "travel"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_OUTPOST_01",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam First Yard layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_OUTPOST_02",
+      "originalStableIdentifier": "zone.z013",
+      "legacyDisplayName": "LYRIA_OUTPOST_02",
+      "originalDisplayName": "Loam North Yard",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "89eb5b93cd112019c7dcc019d71945b82d04b93d396b3e42a092a8a8f0f996a0",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "LYRIA_OUTPOST_01",
+            "entry": "from:LYRIA_OUTPOST_02"
+          },
+          {
+            "to": "LYRIA_SURFACE_02",
+            "entry": "from:LYRIA_OUTPOST_02"
+          }
+        ],
+        "objectKinds": ["equipment", "npc"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_OUTPOST_02",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam North Yard layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_SURFACE_01",
+      "originalStableIdentifier": "zone.z014",
+      "legacyDisplayName": "LYRIA_SURFACE_01",
+      "originalDisplayName": "Loam Survey Terrace",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "3fad9c7610b6ce89fb930d214a674c41ae8820e8df9a40a7fc3065d28878b203",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "LYRIA_OUTPOST_01",
+            "entry": "from:LYRIA_SURFACE_01"
+          },
+          {
+            "to": "LYRIA_SURFACE_02",
+            "entry": "from:LYRIA_SURFACE_01"
+          },
+          {
+            "to": "LYRIA_CAVE_01",
+            "entry": "from:LYRIA_SURFACE_01"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_SURFACE_01",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam Survey Terrace layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_SURFACE_02",
+      "originalStableIdentifier": "zone.z015",
+      "legacyDisplayName": "LYRIA_SURFACE_02",
+      "originalDisplayName": "Loam Cut Trail",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "0de63be761bdc548ef058ed55a4c10ec3aa844c42047375a5e5415eb836f9fd2",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "LYRIA_SURFACE_01",
+            "entry": "from:LYRIA_SURFACE_02"
+          },
+          {
+            "to": "LYRIA_OUTPOST_02",
+            "entry": "from:LYRIA_SURFACE_02"
+          },
+          {
+            "to": "LYRIA_CAVE_02",
+            "entry": "from:LYRIA_SURFACE_02"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_SURFACE_02",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam Cut Trail layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_CAVE_01",
+      "originalStableIdentifier": "zone.z016",
+      "legacyDisplayName": "LYRIA_CAVE_01",
+      "originalDisplayName": "Loam Upper Cut",
+      "category": "ZONE",
+      "functionalRole": "extraction tunnel",
+      "sourceStatSignature": "1a3a605e20d8d2b0539cf4f6f0a360c4483c20d57694b53b66757a5cfeacec9e",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "LYRIA_SURFACE_01",
+            "entry": "from:LYRIA_CAVE_01"
+          },
+          {
+            "to": "LYRIA_CAVE_02",
+            "entry": "from:LYRIA_CAVE_01"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_CAVE_01",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam Upper Cut layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_CAVE_02",
+      "originalStableIdentifier": "zone.z017",
+      "legacyDisplayName": "LYRIA_CAVE_02",
+      "originalDisplayName": "Loam Lower Cut",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "cf660982371bd97b50148c42c2d3e76800c1b213ece57d305e31e64d7fb21f20",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "LYRIA_CAVE_01",
+            "entry": "from:LYRIA_CAVE_02"
+          },
+          {
+            "to": "LYRIA_SURFACE_02",
+            "entry": "from:LYRIA_CAVE_02"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_CAVE_02",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam Lower Cut layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_ASOP",
+      "originalStableIdentifier": "zone.z018",
+      "legacyDisplayName": "LYRIA_ASOP",
+      "originalDisplayName": "Loam Vehicle Desk",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "ce8b291931a7e9857841a1e19ebb3b9f92a459909f7e5976a86049fc54a49c6c",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "LYRIA_OUTPOST_01",
+            "entry": "from:LYRIA_ASOP"
+          }
+        ],
+        "objectKinds": ["asop"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_ASOP",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam Vehicle Desk layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "LYRIA_LANDING_PAD",
+      "originalStableIdentifier": "zone.z019",
+      "legacyDisplayName": "LYRIA_LANDING_PAD",
+      "originalDisplayName": "Loam Landing Apron",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "9d7337fa1ee2fd6fcd225881ef6d233e639ded445cd0f57a26d9665878cc42b4",
+      "sourceStats": {
+        "location": "Lyria",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "LYRIA_OUTPOST_01",
+            "entry": "from:LYRIA_LANDING_PAD"
+          }
+        ],
+        "objectKinds": ["travel"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "LYRIA_LANDING_PAD",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Loam Landing Apron layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_OUTPOST_01",
+      "originalStableIdentifier": "zone.z020",
+      "legacyDisplayName": "WALA_OUTPOST_01",
+      "originalDisplayName": "Mica East Yard",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "3e20eec2e93cef1d9d4a4cb6f9bd545cf618a2c9bfc4c47ace4de94bafd467e9",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "WALA_SURFACE_01",
+            "entry": "from:WALA_OUTPOST_01"
+          },
+          {
+            "to": "WALA_OUTPOST_02",
+            "entry": "from:WALA_OUTPOST_01"
+          },
+          {
+            "to": "WALA_ASOP",
+            "entry": "from:WALA_OUTPOST_01"
+          },
+          {
+            "to": "WALA_LANDING_PAD",
+            "entry": "from:WALA_OUTPOST_01"
+          }
+        ],
+        "objectKinds": ["market", "npc", "travel"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_OUTPOST_01",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica East Yard layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_OUTPOST_02",
+      "originalStableIdentifier": "zone.z021",
+      "legacyDisplayName": "WALA_OUTPOST_02",
+      "originalDisplayName": "Mica West Yard",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "b0c07aa9ab5a78dcb560f4daf85dfdb73417b3981bba41a19377fb56690f25fa",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "WALA_OUTPOST_01",
+            "entry": "from:WALA_OUTPOST_02"
+          },
+          {
+            "to": "WALA_SURFACE_02",
+            "entry": "from:WALA_OUTPOST_02"
+          }
+        ],
+        "objectKinds": ["npc", "cargo"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_OUTPOST_02",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica West Yard layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_SURFACE_01",
+      "originalStableIdentifier": "zone.z022",
+      "legacyDisplayName": "WALA_SURFACE_01",
+      "originalDisplayName": "Mica Shelf Trail",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "c3a4298c7c92093f287a61faef3bcaec29ac0da62369cc0d7612b048a38a8ca7",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "WALA_OUTPOST_01",
+            "entry": "from:WALA_SURFACE_01"
+          },
+          {
+            "to": "WALA_SURFACE_02",
+            "entry": "from:WALA_SURFACE_01"
+          },
+          {
+            "to": "WALA_CAVE_01",
+            "entry": "from:WALA_SURFACE_01"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_SURFACE_01",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica Shelf Trail layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_SURFACE_02",
+      "originalStableIdentifier": "zone.z023",
+      "legacyDisplayName": "WALA_SURFACE_02",
+      "originalDisplayName": "Mica Ridge Trail",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "89391b0c7315643feefc29d7c24395360872b3ea4e36534ed0163e1e7c67b166",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "WALA_SURFACE_01",
+            "entry": "from:WALA_SURFACE_02"
+          },
+          {
+            "to": "WALA_OUTPOST_02",
+            "entry": "from:WALA_SURFACE_02"
+          },
+          {
+            "to": "WALA_CAVE_02",
+            "entry": "from:WALA_SURFACE_02"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_SURFACE_02",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica Ridge Trail layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_CAVE_01",
+      "originalStableIdentifier": "zone.z024",
+      "legacyDisplayName": "WALA_CAVE_01",
+      "originalDisplayName": "Mica Upper Tunnel",
+      "category": "ZONE",
+      "functionalRole": "extraction tunnel",
+      "sourceStatSignature": "dd13ae3e2a0b6cf354b6ae479520f0276e3fd7585b8b6049bf41e241bf7a462f",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "WALA_SURFACE_01",
+            "entry": "from:WALA_CAVE_01"
+          },
+          {
+            "to": "WALA_CAVE_02",
+            "entry": "from:WALA_CAVE_01"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_CAVE_01",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica Upper Tunnel layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_CAVE_02",
+      "originalStableIdentifier": "zone.z025",
+      "legacyDisplayName": "WALA_CAVE_02",
+      "originalDisplayName": "Mica Lower Tunnel",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "8d1e8d3d8862833cb06590cddc64937b7d4d8bcb09f33f869ea1450ab4991871",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 48,
+        "height": 34,
+        "exits": [
+          {
+            "to": "WALA_CAVE_01",
+            "entry": "from:WALA_CAVE_02"
+          },
+          {
+            "to": "WALA_SURFACE_02",
+            "entry": "from:WALA_CAVE_02"
+          }
+        ],
+        "objectKinds": [],
+        "regionCount": 1,
+        "spawn": [24.5, 17.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_CAVE_02",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica Lower Tunnel layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_ASOP",
+      "originalStableIdentifier": "zone.z026",
+      "legacyDisplayName": "WALA_ASOP",
+      "originalDisplayName": "Mica Vehicle Desk",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "9032fe328ae56f9739e7b827dc8edb96bc310888c4bc0eb32015c36fd5559bde",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "WALA_OUTPOST_01",
+            "entry": "from:WALA_ASOP"
+          }
+        ],
+        "objectKinds": ["asop", "npc"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_ASOP",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica Vehicle Desk layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "WALA_LANDING_PAD",
+      "originalStableIdentifier": "zone.z027",
+      "legacyDisplayName": "WALA_LANDING_PAD",
+      "originalDisplayName": "Mica Landing Apron",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "54967c455da90675162beee5bdfa27c4b0823068283bb63f5e7d3ebab5a327f3",
+      "sourceStats": {
+        "location": "Wala",
+        "width": 34,
+        "height": 26,
+        "exits": [
+          {
+            "to": "WALA_OUTPOST_01",
+            "entry": "from:WALA_LANDING_PAD"
+          }
+        ],
+        "objectKinds": ["travel"],
+        "regionCount": 0,
+        "spawn": [17.5, 13.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "WALA_LANDING_PAD",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Mica Landing Apron layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_SPACEPORT",
+      "originalStableIdentifier": "zone.z028",
+      "legacyDisplayName": "AREA18_SPACEPORT",
+      "originalDisplayName": "Avenbolt Port Hall",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "f7fbe9805a4b5523de47bc329b8f474905476fe00d8903af96ff7329ce2127be",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SECURITY",
+            "entry": "from:AREA18_SPACEPORT"
+          },
+          {
+            "to": "AREA18_HANGAR",
+            "entry": "from:AREA18_SPACEPORT"
+          },
+          {
+            "to": "AREA18_CARGO",
+            "entry": "from:AREA18_SPACEPORT"
+          }
+        ],
+        "objectKinds": ["travel", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_SPACEPORT",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Port Hall layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_HANGAR",
+      "originalStableIdentifier": "zone.z029",
+      "legacyDisplayName": "AREA18_HANGAR",
+      "originalDisplayName": "Avenbolt Assigned Bay",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "d567ff82acc65f4a43f4781e10ca01eec5c90d74277ccd85db0317b08f3fd8e7",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SPACEPORT",
+            "entry": "from:AREA18_HANGAR"
+          }
+        ],
+        "objectKinds": ["travel", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_HANGAR",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Assigned Bay layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_SECURITY",
+      "originalStableIdentifier": "zone.z030",
+      "legacyDisplayName": "AREA18_SECURITY",
+      "originalDisplayName": "Avenbolt Port Gate",
+      "category": "ZONE",
+      "functionalRole": "port/service",
+      "sourceStatSignature": "1d11d97c8e2e55db1391bc3d6ac2cde827cd4dcb245a3cd6f2fa6b3626dadc04",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SPACEPORT",
+            "entry": "from:AREA18_SECURITY"
+          },
+          {
+            "to": "AREA18_SPACEPORT_PLATFORM",
+            "entry": "from:AREA18_SECURITY"
+          }
+        ],
+        "objectKinds": ["npc", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_SECURITY",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Port Gate layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_SPACEPORT_PLATFORM",
+      "originalStableIdentifier": "zone.z031",
+      "legacyDisplayName": "AREA18_SPACEPORT_PLATFORM",
+      "originalDisplayName": "Avenbolt Port Platform",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "8696c28ac5ad57786014c27d2a0f4f6071869e8bbfcdceb607cd0bc3b6f6292c",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SECURITY",
+            "entry": "from:AREA18_SPACEPORT_PLATFORM"
+          },
+          {
+            "to": "AREA18_SHUTTLE",
+            "entry": "from:AREA18_SPACEPORT_PLATFORM"
+          }
+        ],
+        "objectKinds": ["npc", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_SPACEPORT_PLATFORM",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Port Platform layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_SHUTTLE",
+      "originalStableIdentifier": "zone.z032",
+      "legacyDisplayName": "AREA18_SHUTTLE",
+      "originalDisplayName": "Avenbolt Loop Car",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "05f22778e1fcae0c09fa2f231f9a5ab34173c767122939735f691e59f45f4f8c",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SPACEPORT_PLATFORM",
+            "entry": "from:AREA18_SHUTTLE"
+          },
+          {
+            "to": "AREA18_CITY_PLATFORM",
+            "entry": "from:AREA18_SHUTTLE"
+          }
+        ],
+        "objectKinds": ["npc", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_SHUTTLE",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Loop Car layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_CITY_PLATFORM",
+      "originalStableIdentifier": "zone.z033",
+      "legacyDisplayName": "AREA18_CITY_PLATFORM",
+      "originalDisplayName": "Avenbolt City Platform",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "7ae3da444915882142943801008de6d90677b829bca5317d3c7760f1f71ae66f",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SHUTTLE",
+            "entry": "from:AREA18_CITY_PLATFORM"
+          },
+          {
+            "to": "AREA18_TRANSIT",
+            "entry": "from:AREA18_CITY_PLATFORM"
+          }
+        ],
+        "objectKinds": ["npc", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_CITY_PLATFORM",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt City Platform layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_TRANSIT",
+      "originalStableIdentifier": "zone.z034",
+      "legacyDisplayName": "AREA18_TRANSIT",
+      "originalDisplayName": "Avenbolt Transit Hall",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "919be4fe531d13bd2ff3c0c96cc20c83e66b4bc046b8c8e08038e1f956201580",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_CITY_PLATFORM",
+            "entry": "from:AREA18_TRANSIT"
+          },
+          {
+            "to": "AREA18_PLAZA",
+            "entry": "from:AREA18_TRANSIT"
+          },
+          {
+            "to": "AREA18_INDUSTRIAL",
+            "entry": "from:AREA18_TRANSIT"
+          }
+        ],
+        "objectKinds": ["npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_TRANSIT",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Transit Hall layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_PLAZA",
+      "originalStableIdentifier": "zone.z035",
+      "legacyDisplayName": "AREA18_PLAZA",
+      "originalDisplayName": "Avenbolt Exchange Square",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "c655fa9b1418ec2a40d0cc0ed3238ff297f02128d8a14bd2033b5610ff8e7519",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_TRANSIT",
+            "entry": "from:AREA18_PLAZA"
+          },
+          {
+            "to": "AREA18_MARKET",
+            "entry": "from:AREA18_PLAZA"
+          },
+          {
+            "to": "AREA18_RETAIL",
+            "entry": "from:AREA18_PLAZA"
+          },
+          {
+            "to": "AREA18_ALLEY",
+            "entry": "from:AREA18_PLAZA"
+          },
+          {
+            "to": "AREA18_SKYBRIDGE",
+            "entry": "from:AREA18_PLAZA"
+          }
+        ],
+        "objectKinds": ["npc", "npc", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_PLAZA",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Exchange Square layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_HABITATION",
+      "originalStableIdentifier": "zone.z036",
+      "legacyDisplayName": "AREA18_HABITATION",
+      "originalDisplayName": "Avenbolt Crew Row",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "ee3bd5183b3cff7fe74e78563cdd04d6bc910095134a9194a5dd1ce902d7bef2",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SKYBRIDGE",
+            "entry": "from:AREA18_HABITATION"
+          },
+          {
+            "to": "AREA18_ALLEY",
+            "entry": "from:AREA18_HABITATION"
+          }
+        ],
+        "objectKinds": ["npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_HABITATION",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Crew Row layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_SKYBRIDGE",
+      "originalStableIdentifier": "zone.z037",
+      "legacyDisplayName": "AREA18_SKYBRIDGE",
+      "originalDisplayName": "Avenbolt Upper Link",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "e60dfd30867c766fc9931844659c7e3164c298a36bf1230c1d4a33577f42174c",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_PLAZA",
+            "entry": "from:AREA18_SKYBRIDGE"
+          },
+          {
+            "to": "AREA18_HABITATION",
+            "entry": "from:AREA18_SKYBRIDGE"
+          }
+        ],
+        "objectKinds": ["npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_SKYBRIDGE",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Upper Link layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_MARKET",
+      "originalStableIdentifier": "zone.z038",
+      "legacyDisplayName": "AREA18_MARKET",
+      "originalDisplayName": "Avenbolt Commodity Hall",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "7fd8868b781ceaaf623c5999ad0869e2065555d92d48de072ad5345b8c78f82b",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_PLAZA",
+            "entry": "from:AREA18_MARKET"
+          },
+          {
+            "to": "AREA18_INDUSTRIAL",
+            "entry": "from:AREA18_MARKET"
+          }
+        ],
+        "objectKinds": ["market", "npc", "npc", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_MARKET",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Commodity Hall layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_RETAIL",
+      "originalStableIdentifier": "zone.z039",
+      "legacyDisplayName": "AREA18_RETAIL",
+      "originalDisplayName": "Avenbolt Supply Walk",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "6a3954e3b80c8da3f19621e5989af165d4c07f73ecea48f17fdf4b09a5bdbeb5",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_PLAZA",
+            "entry": "from:AREA18_RETAIL"
+          },
+          {
+            "to": "AREA18_ALLEY",
+            "entry": "from:AREA18_RETAIL"
+          }
+        ],
+        "objectKinds": ["equipment", "npc", "npc", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_RETAIL",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Supply Walk layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_ALLEY",
+      "originalStableIdentifier": "zone.z040",
+      "legacyDisplayName": "AREA18_ALLEY",
+      "originalDisplayName": "Avenbolt Service Lane",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "6e074415540629aafd8f0f4350cc4979973aaf71b380f86a3ab4bfea3a927cb5",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_PLAZA",
+            "entry": "from:AREA18_ALLEY"
+          },
+          {
+            "to": "AREA18_RETAIL",
+            "entry": "from:AREA18_ALLEY"
+          },
+          {
+            "to": "AREA18_HABITATION",
+            "entry": "from:AREA18_ALLEY"
+          },
+          {
+            "to": "AREA18_INDUSTRIAL",
+            "entry": "from:AREA18_ALLEY"
+          }
+        ],
+        "objectKinds": ["npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_ALLEY",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Service Lane layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_INDUSTRIAL",
+      "originalStableIdentifier": "zone.z041",
+      "legacyDisplayName": "AREA18_INDUSTRIAL",
+      "originalDisplayName": "Avenbolt Works Quarter",
+      "category": "ZONE",
+      "functionalRole": "connected world zone",
+      "sourceStatSignature": "7e099fd25abe0512602548109cafdc5329029e3bb5eda832a356fb6a026fd8d8",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_ALLEY",
+            "entry": "from:AREA18_INDUSTRIAL"
+          },
+          {
+            "to": "AREA18_MARKET",
+            "entry": "from:AREA18_INDUSTRIAL"
+          },
+          {
+            "to": "AREA18_TRANSIT",
+            "entry": "from:AREA18_INDUSTRIAL"
+          }
+        ],
+        "objectKinds": ["npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_INDUSTRIAL",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Works Quarter layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "AREA18_CARGO",
+      "originalStableIdentifier": "zone.z042",
+      "legacyDisplayName": "AREA18_CARGO",
+      "originalDisplayName": "Avenbolt Port Cargo",
+      "category": "ZONE",
+      "functionalRole": "port/service",
+      "sourceStatSignature": "7b0259d53215e228a60cb03e1777fe243d651e5114bea382e2439903e7b36043",
+      "sourceStats": {
+        "location": "Area-18",
+        "width": 64,
+        "height": 42,
+        "exits": [
+          {
+            "to": "AREA18_SPACEPORT",
+            "entry": "from:AREA18_CARGO"
+          }
+        ],
+        "objectKinds": ["cargo", "npc", "npc"],
+        "regionCount": 0,
+        "spawn": [32.5, 21.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "AREA18_CARGO",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Avenbolt Port Cargo layout with equivalent services and paired directional exits."
+    },
+    {
+      "legacyIdentifier": "HALO_ASTEROIDS",
+      "originalStableIdentifier": "zone.z043",
+      "legacyDisplayName": "HALO_ASTEROIDS",
+      "originalDisplayName": "Far Shards Claims",
+      "category": "ZONE",
+      "functionalRole": "remote claims",
+      "sourceStatSignature": "9d8d04bc28427f74d15f1cb0dea2baa98b1cf73cf9c78a14909f6079a7c473b6",
+      "sourceStats": {
+        "location": "Halo",
+        "width": 30,
+        "height": 24,
+        "exits": [],
+        "objectKinds": ["travel"],
+        "regionCount": 0,
+        "spawn": [15.5, 12.5]
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "HALO_ASTEROIDS",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": [],
+      "preservedCapacityFields": [],
+      "stateKeys": ["world.zone", "world.roc.zone", "world.nodes"],
+      "originalDescription": "Original Far Shards Claims layout with equivalent services and paired directional exits."
+    }
+  ],
+  "minerals": [
+    {
+      "legacyIdentifier": "Dolivine",
+      "originalStableIdentifier": "mat.m001",
+      "legacyDisplayName": "Dolivine",
+      "originalDisplayName": "Garnet",
+      "category": "GEM",
+      "functionalRole": "raw hand/vehicle gem",
+      "sourceStatSignature": "e0d562ea08ab5421372d4f08b10b9c9e37c9003234e544c81622ebfb4d0b5492",
+      "sourceStats": {
+        "rawPricePerScu": 130000,
+        "processedPricePerScu": 0,
+        "spawnWeights": {
+          "Hand": 0.5,
+          "Roc": 0.5
+        },
+        "extractionClasses": ["HAND", "ROC"],
+        "cargoContainers": ["HAND_HOLD", "ROC_HOLD", "CARGO_SHIP"],
+        "refinable": false,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Dolivine",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A faceted silicate gem found in compact seam clusters.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": null,
+      "processedDisplayName": null,
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Aphorite",
+      "originalStableIdentifier": "mat.m002",
+      "legacyDisplayName": "Aphorite",
+      "originalDisplayName": "Fluorite",
+      "category": "GEM",
+      "functionalRole": "raw hand/vehicle gem",
+      "sourceStatSignature": "3b6687a56803e3fcac1a736590e4f6193188fe31066455a7f6517d2e7afa11f3",
+      "sourceStats": {
+        "rawPricePerScu": 152500,
+        "processedPricePerScu": 0,
+        "spawnWeights": {
+          "Hand": 0.3,
+          "Roc": 0.3
+        },
+        "extractionClasses": ["HAND", "ROC"],
+        "cargoContainers": ["HAND_HOLD", "ROC_HOLD", "CARGO_SHIP"],
+        "refinable": false,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Aphorite",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A translucent gem with flat cleavage faces.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": null,
+      "processedDisplayName": null,
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Hadanite",
+      "originalStableIdentifier": "mat.m003",
+      "legacyDisplayName": "Hadanite",
+      "originalDisplayName": "Spinel",
+      "category": "GEM",
+      "functionalRole": "raw hand/vehicle gem",
+      "sourceStatSignature": "3c189473a9d3507867103a3f3ac4b789bc9622c3ed1a24a92908ce3e34e100da",
+      "sourceStats": {
+        "rawPricePerScu": 275000,
+        "processedPricePerScu": 0,
+        "spawnWeights": {
+          "Hand": 0.19,
+          "Roc": 0.2
+        },
+        "extractionClasses": ["HAND", "ROC"],
+        "cargoContainers": ["HAND_HOLD", "ROC_HOLD", "CARGO_SHIP"],
+        "refinable": false,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Hadanite",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A hard crystal gem found in deeper pockets.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": null,
+      "processedDisplayName": null,
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Janalite",
+      "originalStableIdentifier": "mat.m004",
+      "legacyDisplayName": "Janalite",
+      "originalDisplayName": "Alexandrite",
+      "category": "GEM",
+      "functionalRole": "raw hand/vehicle gem",
+      "sourceStatSignature": "4ff582ac4b2c320ba7f10c3a68ccb151caf31804aa5b0c29c0062293b3cbca66",
+      "sourceStats": {
+        "rawPricePerScu": 17640000,
+        "processedPricePerScu": 0,
+        "spawnWeights": {
+          "Hand": 0.01,
+          "Roc": 0
+        },
+        "extractionClasses": ["HAND"],
+        "cargoContainers": ["HAND_HOLD", "ROC_HOLD", "CARGO_SHIP"],
+        "refinable": false,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Janalite",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A rare color-shifting chrysoberyl gem.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": null,
+      "processedDisplayName": null,
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Agricium",
+      "originalStableIdentifier": "mat.m005",
+      "legacyDisplayName": "Agricium",
+      "originalDisplayName": "Molybdenite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "78da6eb1d47dfd5e08c2bb245e6efb79a7aeef9f79d0e3167ecec7d5ae10aa59",
+      "sourceStats": {
+        "rawPricePerScu": 1085,
+        "processedPricePerScu": 2833,
+        "spawnWeights": {
+          "M-Type": 0.3404
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Agricium",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A soft metallic ore in thin layered sheets.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m005.processed",
+      "processedDisplayName": "Processed Molybdenite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Aluminium",
+      "originalStableIdentifier": "mat.m006",
+      "legacyDisplayName": "Aluminium",
+      "originalDisplayName": "Bauxite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "a4b2b540edae4e462f6ad1294db256ccc82ccbb8b0d74a2acdee434a165d76c3",
+      "sourceStats": {
+        "rawPricePerScu": 133,
+        "processedPricePerScu": 349,
+        "spawnWeights": {
+          "E-Type": 0.4444,
+          "P-Type": 0.3623,
+          "S-Type": 0.289,
+          "Q-Type": 0.3676,
+          "M-Type": 0.3922,
+          "C-Type": 0.3968
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Aluminium",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A granular aluminum-bearing ore rock.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m006.processed",
+      "processedDisplayName": "Processed Bauxite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Beryl",
+      "originalStableIdentifier": "mat.m007",
+      "legacyDisplayName": "Beryl",
+      "originalDisplayName": "Beryl",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "47d406a371cb264c0cf214f6cb7aee8244714c52651053bf9fefc3df5a767f3c",
+      "sourceStats": {
+        "rawPricePerScu": 1149,
+        "processedPricePerScu": 2817,
+        "spawnWeights": {
+          "E-Type": 0.2667,
+          "S-Type": 0.241
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Beryl",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A prismatic beryllium-bearing mineral.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m007.processed",
+      "processedDisplayName": "Processed Beryl",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Bexalite",
+      "originalStableIdentifier": "mat.m008",
+      "legacyDisplayName": "Bexalite",
+      "originalDisplayName": "Scheelite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "5e8e289bf776a2d6e080b89371ad16b29d6d765463bce1482899f1d335f615b5",
+      "sourceStats": {
+        "rawPricePerScu": 3080,
+        "processedPricePerScu": 7983,
+        "spawnWeights": {
+          "E-Type": 0.0976,
+          "P-Type": 0.2033,
+          "S-Type": 0.1689,
+          "Q-Type": 0.1145,
+          "M-Type": 0.0426,
+          "C-Type": 0.2024
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Bexalite",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A dense tungsten-bearing mineral.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m008.processed",
+      "processedDisplayName": "Processed Scheelite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Borase",
+      "originalStableIdentifier": "mat.m009",
+      "legacyDisplayName": "Borase",
+      "originalDisplayName": "Borax",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "558eebcfbf32d76d0d5290d26b7832c932bbb02463d44a7d3706af337de280e3",
+      "sourceStats": {
+        "rawPricePerScu": 1416,
+        "processedPricePerScu": 3634,
+        "spawnWeights": {
+          "Q-Type": 0.2206
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Borase",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A pale borate mineral from evaporite beds.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m009.processed",
+      "processedDisplayName": "Processed Borax",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Copper",
+      "originalStableIdentifier": "mat.m010",
+      "legacyDisplayName": "Copper",
+      "originalDisplayName": "Chalcopyrite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "ca30c8c5120d33a978dc5e60feb59eea1bb5058f62c28583555272ca96d61291",
+      "sourceStats": {
+        "rawPricePerScu": 153,
+        "processedPricePerScu": 408,
+        "spawnWeights": {
+          "E-Type": 0.4878,
+          "P-Type": 0.3623,
+          "S-Type": 0.3012,
+          "Q-Type": 0.3584,
+          "M-Type": 0.5051,
+          "C-Type": 0.3891
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Copper",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A copper-iron sulfide ore with a metallic sheen.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m010.processed",
+      "processedDisplayName": "Processed Chalcopyrite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Corundum",
+      "originalStableIdentifier": "mat.m011",
+      "legacyDisplayName": "Corundum",
+      "originalDisplayName": "Corundum",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "dde1edb8dbbd1ddf160b8ddb160bde0270f10687a5eeb65fd2e1c6ab25b6fbac",
+      "sourceStats": {
+        "rawPricePerScu": 158,
+        "processedPricePerScu": 389,
+        "spawnWeights": {
+          "E-Type": 0.4717,
+          "P-Type": 0.3623,
+          "S-Type": 0.3012,
+          "Q-Type": 0.3584,
+          "M-Type": 0.3891,
+          "C-Type": 0.361
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Corundum",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A hard aluminum-oxide mineral.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m011.processed",
+      "processedDisplayName": "Processed Corundum",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Gold",
+      "originalStableIdentifier": "mat.m012",
+      "legacyDisplayName": "Gold",
+      "originalDisplayName": "Native Gold",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "13f014f64cf1cc988000bbd6871af79e27c6b5127428cd9ea06851ba369599df",
+      "sourceStats": {
+        "rawPricePerScu": 3211,
+        "processedPricePerScu": 8099,
+        "spawnWeights": {
+          "E-Type": 0.2222,
+          "P-Type": 0.0431,
+          "S-Type": 0.0685,
+          "Q-Type": 0.1145,
+          "M-Type": 0.1961,
+          "C-Type": 0.0844
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Gold",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "Naturally occurring gold in host rock.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m012.processed",
+      "processedDisplayName": "Processed Native Gold",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Hephaestanite",
+      "originalStableIdentifier": "mat.m013",
+      "legacyDisplayName": "Hephaestanite",
+      "originalDisplayName": "Chromite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "46b3836e98944b667af423b72386c22ce623f4544d3002a3f8fc37dbd182af06",
+      "sourceStats": {
+        "rawPricePerScu": 1122,
+        "processedPricePerScu": 2830,
+        "spawnWeights": {
+          "C-Type": 0.2888
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Hephaestanite",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A dark chromium-bearing ore mineral.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m013.processed",
+      "processedDisplayName": "Processed Chromite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Iron",
+      "originalStableIdentifier": "mat.m014",
+      "legacyDisplayName": "Iron",
+      "originalDisplayName": "Hematite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "44f1808d87f8b3f07b936694b28008d565c0b2c50bf75d5042b26c4e8aa522df",
+      "sourceStats": {
+        "rawPricePerScu": 161,
+        "processedPricePerScu": 407,
+        "spawnWeights": {
+          "E-Type": 0.4444,
+          "P-Type": 0.4065,
+          "S-Type": 0.3378,
+          "Q-Type": 0.3817,
+          "M-Type": 0.3922,
+          "C-Type": 0.3546
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Iron",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "An iron-oxide ore with red-brown streaks.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m014.processed",
+      "processedDisplayName": "Processed Hematite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Laranite",
+      "originalStableIdentifier": "mat.m015",
+      "legacyDisplayName": "Laranite",
+      "originalDisplayName": "Sphalerite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "935226847fd2d6408d1b103cc3204d9a90dba0fd7c605bf5acf9579a5781e3f4",
+      "sourceStats": {
+        "rawPricePerScu": 1173,
+        "processedPricePerScu": 3115,
+        "spawnWeights": {
+          "P-Type": 0.3125,
+          "S-Type": 0.2454,
+          "Q-Type": 0.1527
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Laranite",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A zinc-bearing sulfide ore.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m015.processed",
+      "processedDisplayName": "Processed Sphalerite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Quantanium",
+      "originalStableIdentifier": "mat.m016",
+      "legacyDisplayName": "Quantanium",
+      "originalDisplayName": "Native Platinum",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "adaf609142eb0cb9b340c9df06393afeb5416f8039982e4096524454833619be",
+      "sourceStats": {
+        "rawPricePerScu": 10118,
+        "processedPricePerScu": 25153,
+        "spawnWeights": {
+          "E-Type": 0.0566,
+          "P-Type": 0.0517,
+          "S-Type": 0.0411,
+          "Q-Type": 0.0458,
+          "M-Type": 0.0385,
+          "C-Type": 0.0476
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Quantanium",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A scarce platinum-group mineral occurrence.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m016.processed",
+      "processedDisplayName": "Processed Native Platinum",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Quartz",
+      "originalStableIdentifier": "mat.m017",
+      "legacyDisplayName": "Quartz",
+      "originalDisplayName": "Quartz",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "5c0af3caff9ccf454186dd68ed1a0800dfcccf867a1be0087cd648159c7961b7",
+      "sourceStats": {
+        "rawPricePerScu": 160,
+        "processedPricePerScu": 416,
+        "spawnWeights": {
+          "E-Type": 0.4255,
+          "P-Type": 0.431,
+          "S-Type": 0.3425,
+          "Q-Type": 0.3584,
+          "M-Type": 0.4255,
+          "C-Type": 0.4219
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Quartz",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A common silica mineral with varied crystal habits.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m017.processed",
+      "processedDisplayName": "Processed Quartz",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Taranite",
+      "originalStableIdentifier": "mat.m018",
+      "legacyDisplayName": "Taranite",
+      "originalDisplayName": "Cassiterite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "581e73b7d829c9aa0a8100c88d1e40de80f055690e1a732bbed8ef12fa81c197",
+      "sourceStats": {
+        "rawPricePerScu": 3118,
+        "processedPricePerScu": 7840,
+        "spawnWeights": {
+          "E-Type": 0.0943,
+          "P-Type": 0.1984,
+          "S-Type": 0.1634,
+          "Q-Type": 0.1075,
+          "M-Type": 0.0755,
+          "C-Type": 0.1984
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Taranite",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A dense tin-oxide ore.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m018.processed",
+      "processedDisplayName": "Processed Cassiterite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Titanium",
+      "originalStableIdentifier": "mat.m019",
+      "legacyDisplayName": "Titanium",
+      "originalDisplayName": "Ilmenite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "7df71028d004cc23958cf96f8dbd26eb55f8d363520603824c7760211f580da4",
+      "sourceStats": {
+        "rawPricePerScu": 194,
+        "processedPricePerScu": 517,
+        "spawnWeights": {
+          "E-Type": 0.4717,
+          "P-Type": 0.3906,
+          "S-Type": 0.3268,
+          "Q-Type": 0.3817,
+          "M-Type": 0.3774,
+          "C-Type": 0.4049
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Titanium",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A titanium-iron oxide mineral.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m019.processed",
+      "processedDisplayName": "Processed Ilmenite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    },
+    {
+      "legacyIdentifier": "Tungsten",
+      "originalStableIdentifier": "mat.m020",
+      "legacyDisplayName": "Tungsten",
+      "originalDisplayName": "Wolframite",
+      "category": "ORE",
+      "functionalRole": "raw/refinable ship ore",
+      "sourceStatSignature": "8a8b6df594ec4370daf4642bdce59da7881dc132d6477d3d4b17daaab842e542",
+      "sourceStats": {
+        "rawPricePerScu": 172,
+        "processedPricePerScu": 431,
+        "spawnWeights": {
+          "E-Type": 0.4444,
+          "P-Type": 0.3968,
+          "S-Type": 0.3067,
+          "Q-Type": 0.3584,
+          "M-Type": 0.3846,
+          "C-Type": 0.361
+        },
+        "extractionClasses": ["SHIP"],
+        "cargoContainers": ["SHIP_MINING_HOLD", "CARGO_SHIP"],
+        "refinable": true,
+        "rawSale": true,
+        "quantityUnit": "0.01 cSCU"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Tungsten",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "REAL_WORLD_GEOLOGIC_TERM; no exclusive fictional name claimed",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "originalDescription": "A heavy tungsten-bearing ore mineral.",
+      "appearance": "Original programmatic silhouette and palette; no legacy sprite",
+      "processedStableIdentifier": "mat.m020.processed",
+      "processedDisplayName": "Processed Wolframite",
+      "preservedValueFields": ["rawPricePerScu", "processedPricePerScu"],
+      "preservedCapacityFields": ["cargoContainers"],
+      "inventoryKeys": [
+        "mining.*",
+        "cargo.*.raw",
+        "cargo.*.refined",
+        "pending.rewards",
+        "orders.*.ore",
+        "world.nodes.*.ore"
+      ]
+    }
+  ],
+  "shipsAndVehicles": [
+    {
+      "legacyIdentifier": "Nomad",
+      "originalStableIdentifier": "fleet.v001",
+      "legacyDisplayName": "Nomad",
+      "originalDisplayName": "Lark Skiff",
+      "category": "SHIP",
+      "functionalRole": "starter transport",
+      "sourceStatSignature": "16548a7578f8be8450658b24417d840bee73277ca578497515fac64792149c40",
+      "sourceStats": {
+        "capacityCscu": 2400,
+        "price": null,
+        "travelSeconds": 40,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Nomad",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries starter transport platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Roc",
+      "originalStableIdentifier": "fleet.v002",
+      "legacyDisplayName": "Roc",
+      "originalDisplayName": "Crawl Rig",
+      "category": "GROUND_VEHICLE",
+      "functionalRole": "ground gem miner",
+      "sourceStatSignature": "663bd35d26235dc95278a998a76d51e918f1e3dd5c17daddade25a2850573742",
+      "sourceStats": {
+        "capacityCscu": 80,
+        "price": 103950,
+        "travelSeconds": null,
+        "canTravel": false,
+        "canMine": true,
+        "cargoRole": false,
+        "equipmentEligibility": "vehicle mining"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Roc",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries ground gem miner platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Prospector",
+      "originalStableIdentifier": "fleet.v003",
+      "legacyDisplayName": "Prospector",
+      "originalDisplayName": "Seam Sloop",
+      "category": "SHIP",
+      "functionalRole": "solo ship miner",
+      "sourceStatSignature": "93993617d2a29b8691cdf948503432663f805420faa40be68793840dbdd1eeff",
+      "sourceStats": {
+        "capacityCscu": 3200,
+        "price": 2929500,
+        "travelSeconds": 55,
+        "canTravel": true,
+        "canMine": true,
+        "cargoRole": false,
+        "equipmentEligibility": "ship heads"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Prospector",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries solo ship miner platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Mole",
+      "originalStableIdentifier": "fleet.v004",
+      "legacyDisplayName": "Mole",
+      "originalDisplayName": "Fourbeam Barge",
+      "category": "SHIP",
+      "functionalRole": "crew ship miner",
+      "sourceStatSignature": "c1424fef598b7059d6db444aaa8182582f7cc5e9c11f2a2a4fae0e3e00c90e8f",
+      "sourceStats": {
+        "capacityCscu": 9600,
+        "price": 8930250,
+        "travelSeconds": 55,
+        "canTravel": true,
+        "canMine": true,
+        "cargoRole": false,
+        "equipmentEligibility": "ship heads"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Mole",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries crew ship miner platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Cutlass Black",
+      "originalStableIdentifier": "fleet.v005",
+      "legacyDisplayName": "Cutlass Black",
+      "originalDisplayName": "Cargo Lark",
+      "category": "SHIP",
+      "functionalRole": "light cargo support",
+      "sourceStatSignature": "1f84bcb1fea9fe52babe622e455374f50009e8bd41dad324ae215a9678410043",
+      "sourceStats": {
+        "capacityCscu": 4600,
+        "price": 2116800,
+        "travelSeconds": 35,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Cutlass Black",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries light cargo support platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Hull A",
+      "originalStableIdentifier": "fleet.v006",
+      "legacyDisplayName": "Hull A",
+      "originalDisplayName": "Rail Freighter",
+      "category": "SHIP",
+      "functionalRole": "compact freight",
+      "sourceStatSignature": "28c4882ec589fb2f5daecad17b7e13de9984bbf6e44e9f432e1f88f810992c43",
+      "sourceStats": {
+        "capacityCscu": 6400,
+        "price": 1701000,
+        "travelSeconds": 55,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Hull A",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries compact freight platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Freelancer",
+      "originalStableIdentifier": "fleet.v007",
+      "legacyDisplayName": "Freelancer",
+      "originalDisplayName": "Pairhold Carrier",
+      "category": "SHIP",
+      "functionalRole": "medium freight",
+      "sourceStatSignature": "7b3ae0b7ed3194f830e7c38ac6dd9e29c31c6d9972423625123f922b219df09d",
+      "sourceStats": {
+        "capacityCscu": 6600,
+        "price": 3118500,
+        "travelSeconds": 40,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Freelancer",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries medium freight platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "RAFT",
+      "originalStableIdentifier": "fleet.v008",
+      "legacyDisplayName": "RAFT",
+      "originalDisplayName": "Crate Trawler",
+      "category": "SHIP",
+      "functionalRole": "container freight",
+      "sourceStatSignature": "116de589d2e455fc765eeb5a68fc10e591203a70d5e1c002a4f06ee370923297",
+      "sourceStats": {
+        "capacityCscu": 9600,
+        "price": 3543750,
+        "travelSeconds": 57,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "RAFT",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries container freight platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Constellation Andromeda",
+      "originalStableIdentifier": "fleet.v009",
+      "legacyDisplayName": "Constellation Andromeda",
+      "originalDisplayName": "Reach Courier",
+      "category": "SHIP",
+      "functionalRole": "long-range transport",
+      "sourceStatSignature": "3939bcb83f3ab0f80028ed5ff13e233443e1cf4646d78369880986df85cfbccb",
+      "sourceStats": {
+        "capacityCscu": 9600,
+        "price": 10160640,
+        "travelSeconds": 47,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Constellation Andromeda",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries long-range transport platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Mercury Starrunner",
+      "originalStableIdentifier": "fleet.v010",
+      "legacyDisplayName": "Mercury Starrunner",
+      "originalDisplayName": "Slip Carrier",
+      "category": "SHIP",
+      "functionalRole": "fast support transport",
+      "sourceStatSignature": "d9f533a646e1abd1cf261fb9cb50edd2bc47291a92faa1711e5959f432b9fa7f",
+      "sourceStats": {
+        "capacityCscu": 11400,
+        "price": 12285000,
+        "travelSeconds": 35,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Mercury Starrunner",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries fast support transport platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Freelancer MAX",
+      "originalStableIdentifier": "fleet.v011",
+      "legacyDisplayName": "Freelancer MAX",
+      "originalDisplayName": "Widebay Carrier",
+      "category": "SHIP",
+      "functionalRole": "expanded freight",
+      "sourceStatSignature": "58e3ee166b3b471783434d412d85d6e6c517c5f4152731baf9dd94f71de21f47",
+      "sourceStats": {
+        "capacityCscu": 12000,
+        "price": 4252500,
+        "travelSeconds": 45,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Freelancer MAX",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries expanded freight platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Constellation Taurus",
+      "originalStableIdentifier": "fleet.v012",
+      "legacyDisplayName": "Constellation Taurus",
+      "originalDisplayName": "Reach Hauler",
+      "category": "SHIP",
+      "functionalRole": "heavy freight",
+      "sourceStatSignature": "e5eae04d57d8328c755d46f46b3cf839393dfe011e23046443437dce5f2425a5",
+      "sourceStats": {
+        "capacityCscu": 17400,
+        "price": 8043840,
+        "travelSeconds": 50,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Constellation Taurus",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries heavy freight platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "Caterpillar",
+      "originalStableIdentifier": "fleet.v013",
+      "legacyDisplayName": "Caterpillar",
+      "originalDisplayName": "Segment Hauler",
+      "category": "SHIP",
+      "functionalRole": "modular heavy freight",
+      "sourceStatSignature": "2c935b8620fd7cbf75fb1f29b6827d55acccd4e9d2b2acc74e904e852cc95291",
+      "sourceStats": {
+        "capacityCscu": 57600,
+        "price": 12474000,
+        "travelSeconds": 60,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Caterpillar",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries modular heavy freight platform with a distinct original hull and cabin."
+    },
+    {
+      "legacyIdentifier": "C2 Hercules Starlifter",
+      "originalStableIdentifier": "fleet.v014",
+      "legacyDisplayName": "C2 Hercules Starlifter",
+      "originalDisplayName": "Bayrise Carrier",
+      "category": "SHIP",
+      "functionalRole": "largest freight",
+      "sourceStatSignature": "019647138938c253c30615c31191a1023fa3937509f6ec30b15153272ebb1e4f",
+      "sourceStats": {
+        "capacityCscu": 69600,
+        "price": 18900000,
+        "travelSeconds": 57,
+        "canTravel": true,
+        "canMine": false,
+        "cargoRole": true,
+        "equipmentEligibility": "none"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "C2 Hercules Starlifter",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["capacityCscu"],
+      "ownershipKeys": ["ships", "currentShip", "positions", "cargo", "pending", "world.departure"],
+      "originalDescription": "Destroya Industries largest freight platform with a distinct original hull and cabin."
+    }
+  ],
+  "equipment": [
+    {
+      "legacyIdentifier": "Hand mining tool",
+      "originalStableIdentifier": "gear.e001",
+      "legacyDisplayName": "Basic Mining Tool",
+      "originalDisplayName": "Beamline One",
+      "category": "EQUIPMENT",
+      "functionalRole": "starter hand laser",
+      "sourceStatSignature": "3d545bd9d75d0a3cf4dd195690ac00bfdeb3431b8785912dc12ce9709e019e0f",
+      "sourceStats": {
+        "slot": "HAND_TOOL",
+        "price": null,
+        "starterQuantity": 1,
+        "compatibleWith": "Hand",
+        "toolStats": {
+          "id": "Hand mining tool",
+          "name": "Basic Mining Tool",
+          "tier": 1,
+          "laserPower": 0.18,
+          "chargeResponse": 0.68,
+          "stabilityAssistance": 0.12,
+          "optimalZoneAssistance": 0.04,
+          "collectionCapability": true,
+          "rangeTiles": 2.2,
+          "heatPerSecond": 0.2,
+          "cooldownPerSecond": 0.35,
+          "supportedNodeSizes": [1, 2, 3],
+          "miningType": "Hand"
+        },
+        "headTimingSeconds": null,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Hand mining tool",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": ["toolStats"],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original starter hand laser fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Arbor MH1",
+      "originalStableIdentifier": "gear.e002",
+      "legacyDisplayName": "Arbor MH1",
+      "originalDisplayName": "Bedline S1",
+      "category": "EQUIPMENT",
+      "functionalRole": "single-seat ship head",
+      "sourceStatSignature": "22135ed6bd71f884283463532214ddcef777b04fef295824e28f7d8555b08d21",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": null,
+        "starterQuantity": 0,
+        "compatibleWith": "Prospector",
+        "toolStats": null,
+        "headTimingSeconds": 120,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Arbor MH1",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original single-seat ship head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Arbor MH2",
+      "originalStableIdentifier": "gear.e003",
+      "legacyDisplayName": "Arbor MH2",
+      "originalDisplayName": "Bedline S2",
+      "category": "EQUIPMENT",
+      "functionalRole": "crew ship head",
+      "sourceStatSignature": "dfa55e7fc0851c5f21cca3e063a7f8115d40c5dd3416f03fc4ca595c06bcff8d",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": null,
+        "starterQuantity": 0,
+        "compatibleWith": "Prospector",
+        "toolStats": null,
+        "headTimingSeconds": 0,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Arbor MH2",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original crew ship head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Hofstede S1",
+      "originalStableIdentifier": "gear.e004",
+      "legacyDisplayName": "Hofstede S1",
+      "originalDisplayName": "Steady Arc I",
+      "category": "EQUIPMENT",
+      "functionalRole": "single-seat upgrade head",
+      "sourceStatSignature": "6a313ce5700535d92cb9ce3579c8508a121919638c7ed6bda99bd17b169da959",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": 12750,
+        "starterQuantity": 0,
+        "compatibleWith": "Prospector",
+        "toolStats": null,
+        "headTimingSeconds": 90,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Hofstede S1",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original single-seat upgrade head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Hofstede S2",
+      "originalStableIdentifier": "gear.e005",
+      "legacyDisplayName": "Hofstede S2",
+      "originalDisplayName": "Steady Arc II",
+      "category": "EQUIPMENT",
+      "functionalRole": "crew upgrade head",
+      "sourceStatSignature": "c44c4676e109d1296059e5bd30b3712f94467bdf7f1cb96c09b4f2c24a6f06a9",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": 12750,
+        "starterQuantity": 0,
+        "compatibleWith": "Mole",
+        "toolStats": null,
+        "headTimingSeconds": 15,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Hofstede S2",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original crew upgrade head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Impact I",
+      "originalStableIdentifier": "gear.e006",
+      "legacyDisplayName": "Impact I",
+      "originalDisplayName": "Fissurepath I",
+      "category": "EQUIPMENT",
+      "functionalRole": "single-seat force head",
+      "sourceStatSignature": "d557bda4416b5cd498a7683d085537fc150bd991ba315d33f4b1b63db689d36a",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": 57750,
+        "starterQuantity": 0,
+        "compatibleWith": "Prospector",
+        "toolStats": null,
+        "headTimingSeconds": 60,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Impact I",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original single-seat force head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Impact II",
+      "originalStableIdentifier": "gear.e007",
+      "legacyDisplayName": "Impact II",
+      "originalDisplayName": "Fissurepath II",
+      "category": "EQUIPMENT",
+      "functionalRole": "crew force head",
+      "sourceStatSignature": "29c4e7d2ea8c02a4a495ba762b355f3784967034ef672e7d655da62fe07cb3bb",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": 57750,
+        "starterQuantity": 0,
+        "compatibleWith": "Mole",
+        "toolStats": null,
+        "headTimingSeconds": 20,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Impact II",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original crew force head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Helix I",
+      "originalStableIdentifier": "gear.e008",
+      "legacyDisplayName": "Helix I",
+      "originalDisplayName": "Coilpath I",
+      "category": "EQUIPMENT",
+      "functionalRole": "single-seat high-output head",
+      "sourceStatSignature": "a863e86ce155145144ba19df10046456acc5d5bb0a7c33c49a55ddd279d0da8c",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": 108000,
+        "starterQuantity": 0,
+        "compatibleWith": "Prospector",
+        "toolStats": null,
+        "headTimingSeconds": 45,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Helix I",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original single-seat high-output head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Helix II",
+      "originalStableIdentifier": "gear.e009",
+      "legacyDisplayName": "Helix II",
+      "originalDisplayName": "Coilpath II",
+      "category": "EQUIPMENT",
+      "functionalRole": "crew high-output head",
+      "sourceStatSignature": "f6a8aeee76d82195a3057317f151b3102930b8413041fe0f48b06713fc1e5124",
+      "sourceStats": {
+        "slot": "SHIP_HEAD",
+        "price": 108000,
+        "starterQuantity": 0,
+        "compatibleWith": "Mole",
+        "toolStats": null,
+        "headTimingSeconds": 25,
+        "crewReductionSeconds": null
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Helix II",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original crew high-output head fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Terraphon",
+      "originalStableIdentifier": "gear.e010",
+      "legacyDisplayName": "Terraphon",
+      "originalDisplayName": "Deepwell Contractor",
+      "category": "EQUIPMENT",
+      "functionalRole": "crew specialist",
+      "sourceStatSignature": "66b5735477c84d0922e75c604f249d25d64dd7be59f531a7df13cd2771a008d1",
+      "sourceStats": {
+        "slot": "CREW",
+        "price": 250000,
+        "starterQuantity": 0,
+        "compatibleWith": "Mole",
+        "toolStats": null,
+        "headTimingSeconds": null,
+        "crewReductionSeconds": 5
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Terraphon",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original crew specialist fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Andirr",
+      "originalStableIdentifier": "gear.e011",
+      "legacyDisplayName": "Andirr",
+      "originalDisplayName": "Spanlink Contractor",
+      "category": "EQUIPMENT",
+      "functionalRole": "crew specialist",
+      "sourceStatSignature": "66b5735477c84d0922e75c604f249d25d64dd7be59f531a7df13cd2771a008d1",
+      "sourceStats": {
+        "slot": "CREW",
+        "price": 250000,
+        "starterQuantity": 0,
+        "compatibleWith": "Mole",
+        "toolStats": null,
+        "headTimingSeconds": null,
+        "crewReductionSeconds": 5
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Andirr",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original crew specialist fitted to its equivalent equipment slot."
+    },
+    {
+      "legacyIdentifier": "Dora",
+      "originalStableIdentifier": "gear.e012",
+      "legacyDisplayName": "Dora",
+      "originalDisplayName": "Bracepoint Contractor",
+      "category": "EQUIPMENT",
+      "functionalRole": "senior crew specialist",
+      "sourceStatSignature": "6a1b781053647b24d9b502a9b858ad8d2d4171cf5800e1ec7989604b160daef8",
+      "sourceStats": {
+        "slot": "CREW",
+        "price": 500000,
+        "starterQuantity": 0,
+        "compatibleWith": "Mole",
+        "toolStats": null,
+        "headTimingSeconds": null,
+        "crewReductionSeconds": 15
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Dora",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "preservedValueFields": ["price"],
+      "preservedCapacityFields": [],
+      "ownershipKeys": ["equipment"],
+      "originalDescription": "Original senior crew specialist fitted to its equivalent equipment slot."
+    }
+  ],
+  "refineryMethods": [
+    {
+      "legacyIdentifier": "Cormack Method",
+      "originalStableIdentifier": "process.p001",
+      "legacyDisplayName": "Cormack Method",
+      "originalDisplayName": "Bed Sorting A",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "69744e523cae9b331c37f235c93d16392bbea62213769c19a5d18c15e2a440e8",
+      "sourceStats": {
+        "profile": {
+          "yield": "Low",
+          "cost": "Medium",
+          "time": "Short"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Cormack Method",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Bed Sorting",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Bed Sorting A is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "Dinyx Solventation",
+      "originalStableIdentifier": "process.p002",
+      "legacyDisplayName": "Dinyx Solventation",
+      "originalDisplayName": "Wash Lift A",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "5ef7e33b9a8b7aadbeaec62762d0d054164bf2baa683279c0f74ee1f4ed158d3",
+      "sourceStats": {
+        "profile": {
+          "yield": "High",
+          "cost": "Low",
+          "time": "Long"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Dinyx Solventation",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Wash Lift",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Wash Lift A is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "Electrostarolysis",
+      "originalStableIdentifier": "process.p003",
+      "legacyDisplayName": "Electrostarolysis",
+      "originalDisplayName": "Arc Draw A",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "77d394d9d4f063b5870de156440615a8d6efa15b8a4b222b0baabde1de92ece4",
+      "sourceStats": {
+        "profile": {
+          "yield": "Medium",
+          "cost": "Medium",
+          "time": "Short"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Electrostarolysis",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Arc Draw",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Arc Draw A is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "Ferron Exchange",
+      "originalStableIdentifier": "process.p004",
+      "legacyDisplayName": "Ferron Exchange",
+      "originalDisplayName": "Arc Draw B",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "5e1b9b9b7da7b18eb2e62ec8c7b1b08b6e9d8216ed1e9bda2f050c882cc2840c",
+      "sourceStats": {
+        "profile": {
+          "yield": "High",
+          "cost": "Medium",
+          "time": "Long"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Ferron Exchange",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Arc Draw",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Arc Draw B is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "Gaskin Process",
+      "originalStableIdentifier": "process.p005",
+      "legacyDisplayName": "Gaskin Process",
+      "originalDisplayName": "Heat Pass A",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "5885d1c881d11e3d07dc733cb1ddad50341e002c67a77165a6c57c80697eb69e",
+      "sourceStats": {
+        "profile": {
+          "yield": "Medium",
+          "cost": "High",
+          "time": "Short"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Gaskin Process",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Heat Pass",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Heat Pass A is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "Kazen Winnowing",
+      "originalStableIdentifier": "process.p006",
+      "legacyDisplayName": "Kazen Winnowing",
+      "originalDisplayName": "Bed Sorting B",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "fbea591ca80ee2de88f4c36aa2c443e36e06282d5425720447360629e1d12b31",
+      "sourceStats": {
+        "profile": {
+          "yield": "Low",
+          "cost": "Low",
+          "time": "Short"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Kazen Winnowing",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Bed Sorting",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Bed Sorting B is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "Pyrometric Cromalysis",
+      "originalStableIdentifier": "process.p007",
+      "legacyDisplayName": "Pyrometric Cromalysis",
+      "originalDisplayName": "Heat Pass B",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "052dcf385d36900e1c31d4b2c3d9361ff0df76080006506f161464cd87d04f5a",
+      "sourceStats": {
+        "profile": {
+          "yield": "High",
+          "cost": "High",
+          "time": "Short"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Pyrometric Cromalysis",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Heat Pass",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Heat Pass B is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "Thermonatic Deposition",
+      "originalStableIdentifier": "process.p008",
+      "legacyDisplayName": "Thermonatic Deposition",
+      "originalDisplayName": "Wash Lift B",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "0157cb87688f9da556162abd4870d80a9a6285c41d24aee15b0ff36a6cb8fa26",
+      "sourceStats": {
+        "profile": {
+          "yield": "Medium",
+          "cost": "Low",
+          "time": "Medium"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "Thermonatic Deposition",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Wash Lift",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Wash Lift B is an original Destroya process variant with the source profile unchanged."
+    },
+    {
+      "legacyIdentifier": "XCR Reaction",
+      "originalStableIdentifier": "process.p009",
+      "legacyDisplayName": "XCR Reaction",
+      "originalDisplayName": "Arc Draw C",
+      "category": "REFINERY_METHOD",
+      "functionalRole": "refinable ship-ore processing",
+      "sourceStatSignature": "9f1845ebce223b1531d32e438ba437b7c393680bd81ab32061419841680b0c43",
+      "sourceStats": {
+        "profile": {
+          "yield": "Low",
+          "cost": "High",
+          "time": "Long"
+        },
+        "inputEligibility": "raw ship-mined refinable ore",
+        "dynamicRates": "preserve saved refineryRates.yield/cost/time exactly",
+        "orderFields": "preserve rawUnits/refinedUnits/cost/createdAt/readyAt"
+      },
+      "conversionClassification": "EXACT_FUNCTIONAL_EQUIVALENT",
+      "migrationVersion": 1,
+      "reversalMapping": "XCR Reaction",
+      "collisionScreening": {
+        "searchedOn": "2026-09-14",
+        "result": "PRELIMINARY_EXACT_AND_CLOSE_VARIANT_SCREEN; no prominent conflicting title retained",
+        "scope": "games, entertainment, software, products and companies; not legal clearance"
+      },
+      "testFixtureReference": "tests/m4FinalMapping.test.ts",
+      "processFamily": "Arc Draw",
+      "preservedValueFields": ["dynamicRates", "orderFields"],
+      "preservedCapacityFields": [],
+      "stateKeys": ["refineryRates", "orders.*.method"],
+      "originalDescription": "Arc Draw C is an original Destroya process variant with the source profile unchanged."
+    }
+  ],
+  "quest": {
+    "legacyIdentifier": "first-shift",
+    "originalStableIdentifier": "quest.q001",
+    "originalDisplayName": "First Contract",
+    "objectives": "Preserve semantic objective, status, historical counters, completion and reward claimed; no second payment"
+  },
+  "currency": {
+    "legacyIdentifier": "aUEC",
+    "originalStableIdentifier": "currency.c001",
+    "originalDisplayName": "shift marks",
+    "ratio": "1:1 integer wallet value"
+  },
+  "materialDisclaimer": "Material names are real. DIME availability, rarity, values, extraction and Destroya Industries processing compatibility are fictional game rules, not real-world mining or market guidance.",
+  "extractionClasses": [
+    {
+      "legacyIdentifier": "Hand",
+      "originalStableIdentifier": "extract.x001",
+      "originalDisplayName": "Hand tool",
+      "functionalRole": "portable gem extraction",
+      "migrationVersion": 1,
+      "reversalMapping": "Hand"
+    },
+    {
+      "legacyIdentifier": "Roc",
+      "originalStableIdentifier": "extract.x002",
+      "originalDisplayName": "Ground rig",
+      "functionalRole": "vehicle gem extraction",
+      "migrationVersion": 1,
+      "reversalMapping": "Roc"
+    },
+    {
+      "legacyIdentifier": "Prospector",
+      "originalStableIdentifier": "extract.x003",
+      "originalDisplayName": "Solo ship rig",
+      "functionalRole": "solo ship ore extraction",
+      "migrationVersion": 1,
+      "reversalMapping": "Prospector"
+    },
+    {
+      "legacyIdentifier": "Mole",
+      "originalStableIdentifier": "extract.x004",
+      "originalDisplayName": "Crew ship rig",
+      "functionalRole": "crew ship ore extraction",
+      "migrationVersion": 1,
+      "reversalMapping": "Mole"
+    }
+  ],
+  "organizations": [
+    {
+      "legacyIdentifier": "DIME",
+      "originalStableIdentifier": "organization.o001",
+      "originalDisplayName": "Destroya Industries",
+      "functionalRole": "player employer",
+      "migrationVersion": 1
+    },
+    {
+      "legacyIdentifier": "city transit",
+      "originalStableIdentifier": "organization.o002",
+      "originalDisplayName": "Avenbolt Loop",
+      "functionalRole": "city transit authority",
+      "migrationVersion": 1
+    },
+    {
+      "legacyIdentifier": "independent freight",
+      "originalStableIdentifier": "organization.o003",
+      "originalDisplayName": "Reach Haulers",
+      "functionalRole": "independent carriers",
+      "migrationVersion": 1
+    },
+    {
+      "legacyIdentifier": "commodity exchange",
+      "originalStableIdentifier": "organization.o004",
+      "originalDisplayName": "Avenbolt Exchange",
+      "functionalRole": "market operator",
+      "migrationVersion": 1
+    }
+  ],
+  "occupation": {
+    "legacyIdentifier": "miner",
+    "originalStableIdentifier": "occupation.j001",
+    "originalDisplayName": "Field Operator",
+    "functionalRole": "player contract",
+    "migrationVersion": 1
+  },
+  "characters": [
+    {
+      "legacyIdentifier": "Mara Voss",
+      "originalStableIdentifier": "character.n001",
+      "originalDisplayName": "Dara Keslin",
+      "functionalRole": "first assignment field lead",
+      "migrationVersion": 1,
+      "collisionScreening": "Preliminary exact/close search 2026-09-14; no prominent exact match",
+      "reversalMapping": "Mara Voss"
+    },
+    {
+      "legacyIdentifier": "Ivo Sen",
+      "originalStableIdentifier": "character.n002",
+      "originalDisplayName": "Oren Tavin",
+      "functionalRole": "processing technician",
+      "migrationVersion": 1,
+      "collisionScreening": "Preliminary exact/close search 2026-09-14; no prominent exact match",
+      "reversalMapping": "Ivo Sen"
+    },
+    {
+      "legacyIdentifier": "Neri Vale",
+      "originalStableIdentifier": "character.n003",
+      "originalDisplayName": "Lessa Brin",
+      "functionalRole": "supply coordinator",
+      "migrationVersion": 1,
+      "collisionScreening": "Preliminary exact/close search 2026-09-14; no prominent exact match",
+      "reversalMapping": "Neri Vale"
+    }
+  ],
+  "questTerminology": [
+    {
+      "legacyIdentifier": "First Shift",
+      "originalStableIdentifier": "quest.q001",
+      "originalDisplayName": "First Contract",
+      "functionalRole": "starter mining tutorial",
+      "migrationVersion": 1,
+      "reversalMapping": "First Shift"
+    },
+    {
+      "legacyIdentifier": "lyria-next-shift",
+      "originalStableIdentifier": "quest.q002",
+      "originalDisplayName": "Next Assignment",
+      "functionalRole": "post-tutorial unlock",
+      "migrationVersion": 1,
+      "reversalMapping": "lyria-next-shift"
+    }
+  ]
+}
