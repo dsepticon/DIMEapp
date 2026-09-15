@@ -9,18 +9,25 @@ import {
 } from '../../shared/continuousMining';
 import { originalNodeSpec } from '../../shared/originalMining';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
+import type { Position } from './walking';
 import { FIRST_CONTRACT_NODE } from '../../shared/originalQuest';
 
 type Props = {
   state: OriginalPlayerState;
   busy: boolean;
+  getPlayer: () => Position;
+  target: string;
+  onTarget: (id: string) => void;
   mutate: (action: Record<string, unknown>) => Promise<OriginalPlayerState | null>;
 };
-export function MiningConsole({ state, busy, mutate }: Props) {
+export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget }: Props) {
   const nodes = Object.values(state.world.nodes).filter(
-    (node) => node.id.startsWith(`${state.world.zone}.node.`) || node.id === FIRST_CONTRACT_NODE,
+    (node) =>
+      node.id.startsWith(`${state.world.zone}.node.`) ||
+      (state.world.zone === 'zone.z014' && node.id === FIRST_CONTRACT_NODE),
   );
-  const [selected, setSelected] = useState(nodes[0]?.id ?? '');
+  const selected = nodes.some((node) => node.id === target) ? target : (nodes[0]?.id ?? '');
+  const setSelected = onTarget;
   const [sim, setSim] = useState<MiningState>(initialState());
   const [held, setHeld] = useState(false);
   const [vacuuming, setVacuuming] = useState(false);
@@ -37,10 +44,17 @@ export function MiningConsole({ state, busy, mutate }: Props) {
   specRef.current = spec;
   const analyzed = !!node && state.world.scanner.analyzed.includes(node.id);
   useEffect(() => {
-    if (!node && nodes[0]) setSelected(nodes[0].id);
-    // Node identity is derived from the authoritative zone snapshot.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.world.zone, nodes.length, node]);
+    const release = () => {
+      setHeld(false);
+      extractionHeld.current = false;
+    };
+    window.addEventListener('blur', release);
+    document.addEventListener('visibilitychange', release);
+    return () => {
+      window.removeEventListener('blur', release);
+      document.removeEventListener('visibilitychange', release);
+    };
+  }, []);
   useEffect(() => {
     if (!state.world.miningSession || !specRef.current || resolving.current) return;
     const timer = setInterval(
@@ -76,7 +90,7 @@ export function MiningConsole({ state, busy, mutate }: Props) {
     const next = await mutate({
       type: 'startLaser',
       nodeId: node.id,
-      player: { x: node.x + 1, y: node.y + 0.5 },
+      player: getPlayer(),
     });
     if (next) {
       setSim(initialState());
@@ -88,13 +102,15 @@ export function MiningConsole({ state, busy, mutate }: Props) {
     if (!node) return;
     const piece = node.fragments.find((x) => x.id === pieceId);
     if (!piece) return;
-    const player = { x: piece.x + 1, y: piece.y + 0.5 };
+    const player = getPlayer();
     const started = await mutate({ type: 'startVacuum', nodeId: node.id, pieceId, player });
     if (!started) return;
     setVacuuming(true);
-    await new Promise((resolve) => setTimeout(resolve, 450));
-    if (extractionHeld.current) await mutate({ type: 'finishVacuum', nodeId: node.id, pieceId, player });
-    else await mutate({ type: 'cancelVacuum' });
+    const travelMs = 250 + Math.ceil(Math.hypot(piece.x + 0.5 - player.x, piece.y + 0.5 - player.y) * 200);
+    await new Promise((resolve) => setTimeout(resolve, travelMs));
+    if (extractionHeld.current)
+      await mutateRef.current({ type: 'finishVacuum', nodeId: node.id, pieceId, player });
+    else await mutateRef.current({ type: 'cancelVacuum' });
     setVacuuming(false);
   };
   if (!ORIGINAL_CONTENT.zones.find((item) => item.id === state.world.zone)?.regionCount) return null;
@@ -108,7 +124,12 @@ export function MiningConsole({ state, busy, mutate }: Props) {
         </button>
       </div>
       {nodes.length > 0 && (
-        <select aria-label="Nearby signature" value={selected} onChange={(e) => setSelected(e.target.value)}>
+        <select
+          disabled={busy || !!state.world.miningSession || !!state.world.extractionSession}
+          aria-label="Nearby signature"
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+        >
           {nodes.map((item, index) => (
             <option key={item.id} value={item.id}>
               {state.world.scanner.analyzed.includes(item.id)
@@ -146,9 +167,13 @@ export function MiningConsole({ state, busy, mutate }: Props) {
               </div>
               <button
                 disabled={busy}
-                onPointerDown={() => setHeld(true)}
+                onPointerDown={(event) => {
+                  event.currentTarget.setPointerCapture(event.pointerId);
+                  setHeld(true);
+                }}
                 onPointerUp={() => setHeld(false)}
                 onPointerCancel={() => setHeld(false)}
+                onLostPointerCapture={() => setHeld(false)}
                 onKeyDown={(event) => {
                   if (event.code === 'Space') {
                     event.preventDefault();
@@ -186,21 +211,24 @@ export function MiningConsole({ state, busy, mutate }: Props) {
               <button
                 key={piece.id}
                 disabled={busy}
-                onPointerDown={() => {
+                onPointerDown={(event) => {
+                  event.currentTarget.setPointerCapture(event.pointerId);
                   extractionHeld.current = true;
                   void vacuum(piece.id);
                 }}
                 onPointerUp={() => (extractionHeld.current = false)}
                 onPointerCancel={() => (extractionHeld.current = false)}
+                onLostPointerCapture={() => (extractionHeld.current = false)}
+                onBlur={() => (extractionHeld.current = false)}
                 onKeyDown={(event) => {
-                  if (event.code === 'Space') {
+                  if (event.code === 'Space' && !event.repeat) {
                     event.preventDefault();
                     extractionHeld.current = true;
                     void vacuum(piece.id);
                   }
                 }}
                 onKeyUp={(event) => {
-                  if (event.code === 'Space') {
+                  if (event.code === 'Space' && !event.repeat) {
                     event.preventDefault();
                     extractionHeld.current = false;
                   }

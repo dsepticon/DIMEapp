@@ -1,0 +1,213 @@
+import { useEffect, useMemo, useRef } from 'react';
+import { originalZoneMap } from '../../shared/originalWorld';
+import { FIRST_CONTRACT_NODE } from '../../shared/originalQuest';
+import type { OriginalPlayerState } from '../../shared/originalSchema';
+import { arrivalPosition, walk, type Position, type WalkingInput } from './walking';
+type Direction = keyof WalkingInput;
+const directions: Record<string, Direction | undefined> = {
+  KeyW: 'up',
+  ArrowUp: 'up',
+  KeyS: 'down',
+  ArrowDown: 'down',
+  KeyA: 'left',
+  ArrowLeft: 'left',
+  KeyD: 'right',
+  ArrowRight: 'right',
+};
+export function WalkingWorld({
+  state,
+  paused,
+  onPosition,
+  onTarget,
+  target,
+}: {
+  state: OriginalPlayerState;
+  paused: boolean;
+  onPosition: (position: Position) => void;
+  onTarget: (id: string) => void;
+  target: string;
+}) {
+  const canvas = useRef<HTMLCanvasElement>(null),
+    keys = useRef(new Set<string>()),
+    touch = useRef(new Map<number, Direction>());
+  const latest = useRef({ state, paused, onPosition, onTarget, target });
+  latest.current = { state, paused, onPosition, onTarget, target };
+  const map = useMemo(() => originalZoneMap(state.world.zone), [state.world.zone]);
+  const position = useRef(arrivalPosition(map, state.world.entry)),
+    camera = useRef({ x: 0, y: 0, scale: 24 });
+  const clear = () => {
+    keys.current.clear();
+    touch.current.clear();
+  };
+  useEffect(() => {
+    if (paused) {
+      keys.current.clear();
+      touch.current.clear();
+    }
+  }, [paused]);
+  useEffect(() => {
+    const element = canvas.current!,
+      context = element.getContext('2d');
+    if (!context) return;
+    position.current = arrivalPosition(map, latest.current.state.world.entry);
+    latest.current.onPosition(position.current);
+    keys.current.clear();
+    touch.current.clear();
+    let frame = 0,
+      last = 0;
+    const down = (event: KeyboardEvent) => {
+      if (
+        !directions[event.code] ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        latest.current.paused ||
+        document.hidden
+      )
+        return;
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest('input,textarea,select,[contenteditable="true"]')
+      )
+        return;
+      event.preventDefault();
+      keys.current.add(event.code);
+    };
+    const up = (event: KeyboardEvent) => {
+      keys.current.delete(event.code);
+    };
+    const reset = () => {
+      keys.current.clear();
+      touch.current.clear();
+      last = 0;
+    };
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    window.addEventListener('blur', reset);
+    document.addEventListener('visibilitychange', reset);
+    const draw = (now: number) => {
+      const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
+      last = now;
+      const input: WalkingInput = { up: false, down: false, left: false, right: false };
+      if (!latest.current.paused && !document.hidden) {
+        for (const key of keys.current) {
+          const d = directions[key];
+          if (d) input[d] = true;
+        }
+        for (const d of touch.current.values()) input[d] = true;
+      }
+      position.current = walk(map, position.current, input, dt);
+      latest.current.onPosition(position.current);
+      const bounds = element.getBoundingClientRect(),
+        ratio = Math.min(window.devicePixelRatio || 1, 2),
+        width = Math.max(1, bounds.width),
+        height = Math.max(1, bounds.height);
+      if (element.width !== Math.round(width * ratio) || element.height !== Math.round(height * ratio)) {
+        element.width = Math.round(width * ratio);
+        element.height = Math.round(height * ratio);
+      }
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const scale = 24,
+        cx = Math.max(0, Math.min(map.width - width / scale, position.current.x - width / scale / 2)),
+        cy = Math.max(0, Math.min(map.height - height / scale, position.current.y - height / scale / 2));
+      camera.current = { x: cx, y: cy, scale };
+      context.fillStyle = '#071116';
+      context.fillRect(0, 0, width, height);
+      for (let y = Math.max(0, Math.floor(cy)); y < Math.min(map.height, cy + height / scale + 1); y++)
+        for (let x = Math.max(0, Math.floor(cx)); x < Math.min(map.width, cx + width / scale + 1); x++) {
+          context.fillStyle = ['#0b171d', '#273c40', '#4e6e66'][map.tiles[y * map.width + x]!]!;
+          context.fillRect((x - cx) * scale, (y - cy) * scale, scale, scale);
+        }
+      for (const exit of map.exits) {
+        context.fillStyle = '#d3ad68';
+        context.fillRect((exit.x - cx) * scale + 3, (exit.y - cy) * scale + 3, 18, 18);
+      }
+      for (const node of Object.values(latest.current.state.world.nodes)) {
+        if (
+          !node.id.startsWith(map.id + '.node.') &&
+          !(map.id === 'zone.z014' && node.id === FIRST_CONTRACT_NODE)
+        )
+          continue;
+        if (node.status === 'INTACT') {
+          context.fillStyle = node.id === latest.current.target ? '#f7e7a1' : '#a8c7d4';
+          context.beginPath();
+          context.arc((node.x + 0.5 - cx) * scale, (node.y + 0.5 - cy) * scale, 7, 0, Math.PI * 2);
+          context.fill();
+        }
+        for (const piece of node.fragments)
+          if (!piece.collected) {
+            context.fillStyle = '#d3ad68';
+            context.fillRect((piece.x + 0.5 - cx) * scale - 3, (piece.y + 0.5 - cy) * scale - 3, 6, 6);
+          }
+      }
+      const px = (position.current.x - cx) * scale,
+        py = (position.current.y - cy) * scale;
+      context.fillStyle = '#f0d782';
+      context.fillRect(px - 4, py - 9, 8, 7);
+      context.fillStyle = '#91d8c0';
+      context.fillRect(px - 5, py - 2, 10, 9);
+      context.fillStyle = '#d5ebe0';
+      context.fillRect(px - 4, py + 7, 3, 5);
+      context.fillRect(px + 1, py + 7, 3, 5);
+      element.dataset.playerX = position.current.x.toFixed(3);
+      element.dataset.playerY = position.current.y.toFixed(3);
+      element.dataset.cameraX = cx.toFixed(3);
+      element.dataset.cameraY = cy.toFixed(3);
+      element.dataset.paused = String(latest.current.paused);
+      frame = requestAnimationFrame(draw);
+    };
+    frame = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(frame);
+      reset();
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+      window.removeEventListener('blur', reset);
+      document.removeEventListener('visibilitychange', reset);
+    };
+  }, [map, state.saveGeneration]);
+  return (
+    <>
+      <canvas
+        ref={canvas}
+        tabIndex={0}
+        aria-label={`${map.name} local map. Move with WASD, arrow keys or directional controls.`}
+        onPointerDown={(event) => {
+          event.currentTarget.focus();
+          if (paused) return;
+          const rect = event.currentTarget.getBoundingClientRect(),
+            view = camera.current,
+            x = (event.clientX - rect.left) / view.scale + view.x,
+            y = (event.clientY - rect.top) / view.scale + view.y;
+          const node = Object.values(state.world.nodes).find(
+            (node) =>
+              (node.id.startsWith(map.id + '.node.') ||
+                (map.id === 'zone.z014' && node.id === FIRST_CONTRACT_NODE)) &&
+              Math.hypot(node.x + 0.5 - x, node.y + 0.5 - y) < 0.8,
+          );
+          if (node) onTarget(node.id);
+        }}
+      />
+      <div className="walkingControls" aria-label="Walking controls">
+        {(['up', 'left', 'down', 'right'] as const).map((direction) => (
+          <button
+            key={direction}
+            aria-label={`Walk ${direction}`}
+            disabled={paused}
+            onPointerDown={(event) => {
+              event.preventDefault();
+              event.currentTarget.setPointerCapture(event.pointerId);
+              touch.current.set(event.pointerId, direction);
+            }}
+            onPointerUp={(event) => touch.current.delete(event.pointerId)}
+            onPointerCancel={(event) => touch.current.delete(event.pointerId)}
+            onLostPointerCapture={(event) => touch.current.delete(event.pointerId)}
+            onBlur={clear}
+          >
+            {{ up: '↑', left: '←', down: '↓', right: '→' }[direction]}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}

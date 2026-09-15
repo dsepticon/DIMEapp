@@ -18,7 +18,8 @@
     "build": "tsc --noEmit && vite build && node scripts/build-server.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "format": "prettier --write app shared server tests scripts *.ts *.json *.html",
-    "format:check": "prettier --check app shared server tests scripts *.ts *.json *.html"
+    "format:check": "prettier --check app shared server tests scripts *.ts *.json *.html",
+    "test:e2e:m4": "NODE_OPTIONS='--import tsx' playwright test --config playwright.m4.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.1130.0",

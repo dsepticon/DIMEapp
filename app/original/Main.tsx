@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twitchConnection, type TwitchSession } from '../twitch';
 import { originalStateSchema, type OriginalPlayerState } from '../../shared/originalSchema';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
@@ -7,6 +7,8 @@ import { formatCscuMinor } from '../../shared/mineralUnits';
 import { originalTravelService } from '../../shared/originalTravel';
 import './original.css';
 import { MiningConsole } from './MiningConsole';
+import { WalkingWorld } from './WalkingWorld';
+import type { Position } from './walking';
 import { ServiceConsole } from './ServiceConsole';
 
 type Gateway = {
@@ -33,6 +35,8 @@ function App() {
   } | null>(null);
   const [message, setMessage] = useState('Connecting to Destroya Industries operations…');
   const [busy, setBusy] = useState(false);
+  const playerPosition = useRef<Position>({ x: 0, y: 0 });
+  const [targetNode, setTargetNode] = useState('');
   const [resetOpen, setResetOpen] = useState(false);
   const [resetPhrase, setResetPhrase] = useState('');
   const [pendingBlocked, setPendingBlocked] = useState(false);
@@ -292,28 +296,14 @@ function App() {
       ) : (
         <>
           <section className="world">
-            <canvas
-              ref={(element) => {
-                if (!element || !zone) return;
-                const c = element.getContext('2d');
-                if (!c) return;
-                const w = zone.width,
-                  h = zone.height;
-                const colors = ['#0b171d', '#273c40', '#4e6e66', '#d3ad68'];
-                c.fillStyle = colors[0]!;
-                c.fillRect(0, 0, element.width, element.height);
-                const tw = element.width / w,
-                  th = element.height / h;
-                zone.tiles.forEach((tile, i) => {
-                  c.fillStyle = colors[tile] ?? colors[1]!;
-                  c.fillRect((i % w) * tw, Math.floor(i / w) * th, Math.ceil(tw), Math.ceil(th));
-                });
-                c.fillStyle = '#f0d782';
-                c.fillRect(element.width / 2 - 4, element.height / 2 - 6, 8, 12);
+            <WalkingWorld
+              state={state}
+              paused={resetOpen || !!state.world.miningSession || !!state.world.extractionSession}
+              onPosition={(position) => {
+                playerPosition.current = position;
               }}
-              width="600"
-              height="400"
-              aria-label={`${zoneInfo?.name} local map`}
+              onTarget={setTargetNode}
+              target={targetNode}
             />
             <div className="place">
               <b>{zoneInfo?.name}</b>
@@ -366,7 +356,14 @@ function App() {
               </span>
             </div>
           </section>
-          <MiningConsole state={state} busy={busy} mutate={mutate} />
+          <MiningConsole
+            state={state}
+            busy={busy}
+            mutate={mutate}
+            getPlayer={() => playerPosition.current}
+            target={targetNode}
+            onTarget={setTargetNode}
+          />
           <ServiceConsole state={state} busy={busy} mutate={mutate} kinds={zoneKinds as readonly string[]} />
           {state.world.zone === originalTravelService(state.location).assign && !state.world.departure && (
             <section className="actions">

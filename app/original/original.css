@@ -307,9 +307,41 @@ footer small {
 }
 @media (max-width: 400px) and (max-height: 540px) {
   .world {
-    flex: 0 1 105px;
+    flex: 1 1 130px;
+    min-height: 120px;
   }
   .miningConsole {
     max-height: 160px;
   }
+}
+
+.world canvas {
+  touch-action: none;
+  outline-offset: -3px;
+}
+.place {
+  pointer-events: none;
+}
+.walkingControls {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  gap: 3px;
+}
+.walkingControls button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  touch-action: none;
+  user-select: none;
+  background: #10262ee8;
+}
+
+.walkingControls button:first-child {
+  grid-column: 2;
+}
+.walkingControls button:nth-child(2) {
+  grid-column: 1;
 }
