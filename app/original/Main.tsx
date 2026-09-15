@@ -15,6 +15,8 @@ import {
   OriginalApiError,
 } from './recovery';
 import { PhysicalNavigation } from './PhysicalNavigation';
+import { VacuumConsole, type VacuumVisual, type ToolMode } from './VacuumConsole';
+import { nodeInZone } from '../../shared/originalVacuum';
 import { ServiceConsole } from './ServiceConsole';
 
 type Gateway = {
@@ -46,6 +48,17 @@ function App() {
   const [mapOpen, setMapOpen] = useState(false);
   const [objective, setObjective] = useState('');
   const [marker, setMarker] = useState<{ x: number; y: number } | undefined>();
+  const [toolMode, setToolMode] = useState<ToolMode>('laser');
+  const [vacuumVisual, setVacuumVisual] = useState<VacuumVisual | null>(null);
+  const [fragmentTarget, setFragmentTarget] = useState<{ nodeId: string; pieceId: string } | null>(null);
+  const hasFragments =
+    !!state &&
+    Object.values(state.world.nodes).some(
+      (n) => nodeInZone(state, n) && n.status === 'FRACTURED' && n.fragments.some((p) => !p.collected),
+    );
+  useEffect(() => {
+    if (hasFragments) setToolMode('extraction');
+  }, [hasFragments, state?.world.zone, state?.saveGeneration]);
   const [targetNode, setTargetNode] = useState('');
   const [resetOpen, setResetOpen] = useState(false);
   const [resetPhrase, setResetPhrase] = useState('');
@@ -419,6 +432,8 @@ function App() {
               onTarget={setTargetNode}
               target={targetNode}
               marker={marker}
+              vacuum={vacuumVisual}
+              fragmentTarget={fragmentTarget}
             />
             <div className="place">
               <b>{zoneInfo?.name}</b>
@@ -459,7 +474,18 @@ function App() {
               </span>
             </div>
           </section>
+          <VacuumConsole
+            state={state}
+            busy={busy || pendingBlocked || resetOpen}
+            mode={toolMode}
+            setMode={setToolMode}
+            getPlayer={() => playerPosition.current}
+            mutate={mutate}
+            onVisual={setVacuumVisual}
+            onTarget={setFragmentTarget}
+          />
           <MiningConsole
+            mode={toolMode}
             state={state}
             busy={busy || pendingBlocked}
             mutate={mutate}

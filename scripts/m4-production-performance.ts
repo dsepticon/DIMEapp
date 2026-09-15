@@ -8,7 +8,7 @@ import { zoneRoute, exitKind } from '../shared/originalNavigation';
 import type { OriginalPlayerState } from '../shared/originalSchema';
 
 const duration = Number(process.env.DIME_PERFORMANCE_DURATION_MS ?? 60_000);
-const output = process.env.DIME_PERFORMANCE_OUTPUT ?? '/tmp/dime-m41-navigation/performance.json';
+const output = process.env.DIME_PERFORMANCE_OUTPUT ?? '/tmp/dime-m41-vacuum/performance.json';
 const preview = 'http://127.0.0.1:4187';
 const server = spawn(
   process.execPath,
@@ -95,7 +95,80 @@ try {
     await page.waitForTimeout(1000);
     const idle = await sample();
     const sorted = [...transitions].sort((a, b) => a - b);
+    const mineralState = structuredClone(
+        fixture.store.states.get('synthetic-walking') as OriginalPlayerState,
+      ),
+      mineralMap = originalZoneMap('zone.z014');
+    mineralState.location = 'loc.l002';
+    mineralState.world.zone = mineralMap.id;
+    mineralState.world.entry = 'arrival';
+    mineralState.revision++;
+    const nodeId = 'zone.z014.node.performance';
+    mineralState.world.nodes = {
+      [nodeId]: {
+        id: nodeId,
+        ore: 'mat.m001',
+        source: 'extract.x001',
+        x: mineralMap.spawn.x,
+        y: mineralMap.spawn.y,
+        size: 1,
+        resistance: 0.6,
+        instability: 0.2,
+        yieldUnits: 80,
+        status: 'FRACTURED',
+        respawnAt: null,
+        fragments: [
+          [-1, -1],
+          [0, -1],
+          [1, -1],
+          [-1, 0],
+          [1, 0],
+          [-1, 1],
+          [0, 1],
+          [1, 1],
+        ].map(([x, y], i) => ({
+          id: 'performance-piece-' + i,
+          x: mineralMap.spawn.x + x!,
+          y: mineralMap.spawn.y + y!,
+          units: 10,
+          collected: false,
+        })),
+      },
+    };
+    mineralState.world.scanner.analyzed = [nodeId];
+    fixture.store.states.set('synthetic-walking', mineralState);
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('canvas')?.dataset.fragments === '8');
+    await page.evaluate(() => {
+      (window as Window & { dimePerformance: { frames: number[] } }).dimePerformance.frames = [];
+    });
+    const control = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+    await control.scrollIntoViewIfNeeded();
+    await control.focus();
+    const touch = layout.name === 'Mobile' ? await page.context().newCDPSession(page) : null;
+    if (touch) {
+      const b = (await control.boundingBox())!;
+      await touch.send('Input.dispatchTouchEvent', {
+        type: 'touchStart',
+        touchPoints: [{ x: b.x + b.width / 2, y: b.y + b.height / 2 }],
+      });
+    } else await page.keyboard.down('Space');
+    await page.waitForFunction(() => document.querySelector('canvas')?.dataset.fragments === '0');
+    if (touch) {
+      await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      await touch.detach();
+    } else await page.keyboard.up('Space');
+    const vacuumEffects = await sample();
+    if (
+      (fixture.store.states.get('synthetic-walking') as OriginalPlayerState).mining['extract.x001'][
+        'mat.m001'
+      ] !== 80
+    )
+      throw Error('Eight-piece quantity conservation failed');
     const result = {
+      vacuumEffects,
+      initialVisibleFragments: 8,
+      collectedFragmentUnits: 80,
       layout: layout.name,
       readyMs,
       durationMs: performance.now() - start,

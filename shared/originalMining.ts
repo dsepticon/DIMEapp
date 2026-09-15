@@ -1,6 +1,7 @@
 import { ORIGINAL_CONTENT } from './originalCatalog';
 import { originalStateSchema, type OriginalPlayerState } from './originalSchema';
 import { placeGroundPieces, replayPulseTrace, type NodeSpec, type PulseRun } from './continuousMining';
+import { vacuumEligibility, vacuumDuration } from './originalVacuum';
 import { FIRST_CONTRACT_NODE } from './originalQuest';
 
 const NODE_RESPAWN_MS = 30 * 60 * 1000;
@@ -76,7 +77,7 @@ export function beginOriginalMining(
   spatial: MiningSpatialCheck,
 ): OriginalPlayerState {
   const state = originalStateSchema.parse(structuredClone(source));
-  if (state.world.miningSession) throw new Error('MINING_SESSION_ACTIVE');
+  if (state.world.miningSession || state.world.extractionSession) throw new Error('MINING_SESSION_ACTIVE');
   const node = state.world.nodes[nodeId];
   if (
     !node ||
@@ -151,7 +152,9 @@ export function beginOriginalVacuum(
   const piece = node?.fragments.find((item) => item.id === pieceId);
   if (!node || node.status !== 'FRACTURED' || !piece || piece.collected || state.world.extractionSession)
     throw new Error('MINING_PIECE_UNAVAILABLE');
-  reachableTarget(state, { ...node, x: piece.x, y: piece.y }, player, spatial);
+  const eligibility = vacuumEligibility(state, node, piece, player, spatial);
+  if (eligibility === 'FULL') throw new Error('MINING_HOLD_FULL');
+  if (eligibility !== 'AVAILABLE') throw new Error('MINING_TARGET_UNREACHABLE');
   state.world.extractionSession = { nodeId, pieceId, startedAt: now, origin: player, zone: state.world.zone };
   state.revision++;
   return originalStateSchema.parse(state);
@@ -179,11 +182,14 @@ export function collectOriginalPiece(
     session.zone !== state.world.zone
   )
     throw new Error('MINING_EXTRACTION_NOT_STARTED');
-  const minimumMs =
-    200 + Math.ceil(Math.hypot(piece.x + 0.5 - session.origin.x, piece.y + 0.5 - session.origin.y) * 200);
+  const minimumMs = vacuumDuration(
+    Math.hypot(piece.x + 0.5 - session.origin.x, piece.y + 0.5 - session.origin.y),
+  );
   if (now - session.startedAt < minimumMs || now - session.startedAt > 30_000)
     throw new Error('MINING_EXTRACTION_TIMING');
-  reachableTarget(state, { ...node, x: piece.x, y: piece.y }, player, spatial);
+  const eligibility = vacuumEligibility(state, node, piece, player, spatial);
+  if (eligibility === 'FULL') throw new Error('MINING_HOLD_FULL');
+  if (eligibility !== 'AVAILABLE') throw new Error('MINING_TARGET_UNREACHABLE');
   const holdId = node.source;
   const hold = state.mining[holdId];
   if (!hold) throw new Error('MINING_HOLD_UNAVAILABLE');

@@ -10,17 +10,19 @@ import {
 import { originalNodeSpec } from '../../shared/originalMining';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
 import type { Position } from './walking';
+import type { ToolMode } from './VacuumConsole';
 import { FIRST_CONTRACT_NODE } from '../../shared/originalQuest';
 
 type Props = {
   state: OriginalPlayerState;
   busy: boolean;
+  mode: ToolMode;
   getPlayer: () => Position;
   target: string;
   onTarget: (id: string) => void;
   mutate: (action: Record<string, unknown>) => Promise<OriginalPlayerState | null>;
 };
-export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget }: Props) {
+export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, onTarget }: Props) {
   const nodes = Object.values(state.world.nodes).filter(
     (node) =>
       node.id.startsWith(`${state.world.zone}.node.`) ||
@@ -33,14 +35,12 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
   const setSelected = onTarget;
   const [sim, setSim] = useState<MiningState>(initialState());
   const [held, setHeld] = useState(false);
-  const [vacuuming, setVacuuming] = useState(false);
   const [runs, setRuns] = useState<PulseRun[]>([]);
   const runsRef = useRef<PulseRun[]>([]);
   runsRef.current = runs;
   const mutateRef = useRef(mutate);
   mutateRef.current = mutate;
   const resolving = useRef(false);
-  const extractionHeld = useRef(false);
   const node = state.world.nodes[selected];
   const spec = node ? originalNodeSpec(node) : null;
   const specRef = useRef(spec);
@@ -49,7 +49,6 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
   useEffect(() => {
     const release = () => {
       setHeld(false);
-      extractionHeld.current = false;
     };
     window.addEventListener('blur', release);
     document.addEventListener('visibilitychange', release);
@@ -101,21 +100,7 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
       setRuns([]);
     }
   };
-  const vacuum = async (pieceId: string) => {
-    if (!node) return;
-    const piece = node.fragments.find((x) => x.id === pieceId);
-    if (!piece) return;
-    const player = getPlayer();
-    const started = await mutate({ type: 'startVacuum', nodeId: node.id, pieceId, player });
-    if (!started) return;
-    setVacuuming(true);
-    const travelMs = 250 + Math.ceil(Math.hypot(piece.x + 0.5 - player.x, piece.y + 0.5 - player.y) * 200);
-    await new Promise((resolve) => setTimeout(resolve, travelMs));
-    if (extractionHeld.current)
-      await mutateRef.current({ type: 'finishVacuum', nodeId: node.id, pieceId, player });
-    else await mutateRef.current({ type: 'cancelVacuum' });
-    setVacuuming(false);
-  };
+  if (mode !== 'laser') return null;
   if (!ORIGINAL_CONTENT.zones.find((item) => item.id === state.world.zone)?.regionCount) return null;
   const p = spec ? parameters(spec) : null;
   return (
@@ -135,11 +120,6 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
           }}
         >
           Stop laser without yield
-        </button>
-      )}
-      {state.world.extractionSession && !vacuuming && (
-        <button disabled={busy} onClick={() => void mutate({ type: 'cancelVacuum' })}>
-          Cancel extraction and reposition
         </button>
       )}
       {nodes.length > 0 && (
@@ -221,47 +201,6 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
             </>
           )}
         </>
-      )}
-      {node?.status === 'FRACTURED' && (
-        <div className="fragments">
-          {node.fragments
-            .filter((x) => !x.collected)
-            .map((piece) => (
-              <button
-                key={piece.id}
-                disabled={busy}
-                onPointerDown={(event) => {
-                  event.currentTarget.setPointerCapture(event.pointerId);
-                  extractionHeld.current = true;
-                  void vacuum(piece.id);
-                }}
-                onPointerUp={() => (extractionHeld.current = false)}
-                onPointerCancel={() => (extractionHeld.current = false)}
-                onLostPointerCapture={() => (extractionHeld.current = false)}
-                onBlur={() => (extractionHeld.current = false)}
-                onKeyDown={(event) => {
-                  if (event.code === 'Space' && !event.repeat) {
-                    event.preventDefault();
-                    extractionHeld.current = true;
-                    void vacuum(piece.id);
-                  }
-                }}
-                onKeyUp={(event) => {
-                  if (event.code === 'Space' && !event.repeat) {
-                    event.preventDefault();
-                    extractionHeld.current = false;
-                  }
-                }}
-              >
-                Vacuum {piece.units} units
-              </button>
-            ))}
-        </div>
-      )}
-      {vacuuming && (
-        <div className="vacuumEffect" role="status">
-          EXTRACTION FIELD · drawing fragment
-        </div>
       )}
       {node?.status === 'DESTROYED' && <p>Overcharge destroyed this node. Zero yield; respawn pending.</p>}
     </section>

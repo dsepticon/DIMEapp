@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef } from 'react';
 import { originalZoneMap } from '../../shared/originalWorld';
 import { FIRST_CONTRACT_NODE } from '../../shared/originalQuest';
 import type { OriginalPlayerState } from '../../shared/originalSchema';
+import { drawMineralFragment } from './fragmentArt';
+import { attractedPosition, type VacuumVisual } from './VacuumConsole';
 import { arrivalPosition, walk, type Position, type WalkingInput } from './walking';
 type Direction = keyof WalkingInput;
 const directions: Record<string, Direction | undefined> = {
@@ -21,6 +23,8 @@ export function WalkingWorld({
   onTarget,
   target,
   marker,
+  vacuum,
+  fragmentTarget,
 }: {
   state: OriginalPlayerState;
   paused: boolean;
@@ -28,12 +32,14 @@ export function WalkingWorld({
   onTarget: (id: string) => void;
   target: string;
   marker?: Position;
+  vacuum?: VacuumVisual | null;
+  fragmentTarget?: { nodeId: string; pieceId: string } | null;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null),
     keys = useRef(new Set<string>()),
     touch = useRef(new Map<number, Direction>());
-  const latest = useRef({ state, paused, onPosition, onTarget, target, marker });
-  latest.current = { state, paused, onPosition, onTarget, target, marker };
+  const latest = useRef({ state, paused, onPosition, onTarget, target, marker, vacuum, fragmentTarget });
+  latest.current = { state, paused, onPosition, onTarget, target, marker, vacuum, fragmentTarget };
   const map = useMemo(() => originalZoneMap(state.world.zone), [state.world.zone]);
   const position = useRef(arrivalPosition(map, state.world.entry)),
     camera = useRef({ x: 0, y: 0, scale: 24 });
@@ -57,6 +63,7 @@ export function WalkingWorld({
     touch.current.clear();
     const incoming = map.exits.find((exit) => `from:${exit.to}` === latest.current.state.world.entry);
     let facing = incoming ? ({ N: 'S', S: 'N', E: 'W', W: 'E' } as const)[incoming.facing] : 'S';
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0,
       last = 0;
     const down = (event: KeyboardEvent) => {
@@ -142,6 +149,7 @@ export function WalkingWorld({
         context.lineWidth = 2;
         context.strokeRect(mx - 7, my - 7, 14, 14);
       }
+      let visiblePieces = 0;
       for (const node of Object.values(latest.current.state.world.nodes)) {
         if (
           !node.id.startsWith(map.id + '.node.') &&
@@ -156,8 +164,29 @@ export function WalkingWorld({
         }
         for (const piece of node.fragments)
           if (!piece.collected) {
-            context.fillStyle = '#d3ad68';
-            context.fillRect((piece.x + 0.5 - cx) * scale - 3, (piece.y + 0.5 - cy) * scale - 3, 6, 6);
+            visiblePieces++;
+            const active =
+              latest.current.vacuum?.nodeId === node.id && latest.current.vacuum.pieceId === piece.id
+                ? latest.current.vacuum
+                : null;
+            const point = attractedPosition(piece, position.current, active?.progress ?? 0);
+            if (active) {
+              context.strokeStyle = '#adf1dc';
+              context.lineWidth = 2;
+              context.beginPath();
+              context.moveTo((position.current.x - cx) * scale, (position.current.y - cy) * scale);
+              context.lineTo((point.x - cx) * scale, (point.y - cy) * scale);
+              context.stroke();
+            }
+            drawMineralFragment(
+              context,
+              (point.x - cx) * scale,
+              (point.y - cy) * scale,
+              node.ore,
+              latest.current.fragmentTarget?.pieceId === piece.id,
+              now,
+              reduced.matches,
+            );
           }
       }
       const px = (position.current.x - cx) * scale,
@@ -172,6 +201,10 @@ export function WalkingWorld({
       const facingVector = { N: [0, -1], S: [0, 1], E: [1, 0], W: [-1, 0] }[facing]!;
       context.fillStyle = '#ffffff';
       context.fillRect(px + facingVector[0]! * 8 - 1, py + facingVector[1]! * 8 - 1, 3, 3);
+      element.dataset.fragments = String(visiblePieces);
+      element.dataset.vacuumProgress = String(latest.current.vacuum?.progress ?? 0);
+      element.dataset.vacuumStage = latest.current.vacuum?.stage ?? 'idle';
+      element.dataset.fragmentArt = 'pixel-shards';
       element.dataset.playerX = position.current.x.toFixed(3);
       element.dataset.playerY = position.current.y.toFixed(3);
       element.dataset.cameraX = cx.toFixed(3);
@@ -208,7 +241,10 @@ export function WalkingWorld({
             (node) =>
               (node.id.startsWith(map.id + '.node.') ||
                 (map.id === 'zone.z014' && node.id === FIRST_CONTRACT_NODE)) &&
-              Math.hypot(node.x + 0.5 - x, node.y + 0.5 - y) < 0.8,
+              (Math.hypot(node.x + 0.5 - x, node.y + 0.5 - y) < 0.8 ||
+                node.fragments.some(
+                  (piece) => !piece.collected && Math.hypot(piece.x + 0.5 - x, piece.y + 0.5 - y) < 0.65,
+                )),
           );
           if (node) onTarget(node.id);
         }}

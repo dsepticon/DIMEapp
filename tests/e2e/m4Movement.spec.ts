@@ -192,7 +192,7 @@ for (const outcome of ['fracture', 'overcharge'] as const) {
         await page.waitForTimeout(75);
       }
       await page.keyboard.up('Space');
-      await expect(page.locator('.fragments button').first()).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Hold Vacuum', exact: true })).toBeVisible();
       const saved = fixture.store.states.get('synthetic-walking')!;
       if (saved.schemaVersion !== 3) throw Error('Expected synthetic v4 state');
       const pieces = saved.world.nodes[id]!.fragments;
@@ -201,17 +201,18 @@ for (const outcome of ['fracture', 'overcharge'] as const) {
       const p = await position(page),
         index = pieces.findIndex((piece) => Math.hypot(piece.x + 0.5 - p.x, piece.y + 0.5 - p.y) <= 2.2);
       expect(index).toBeGreaterThanOrEqual(0);
-      const vacuum = page.locator('.fragments button').nth(index),
-        box = (await vacuum.boundingBox())!;
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-      await page.mouse.down();
+      await walkTo(page, map, pieces[index]!);
+      const vacuum = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+      await vacuum.focus();
+      await page.keyboard.down('Space');
       await expect
         .poll(() => {
           const current = fixture.store.states.get('synthetic-walking')!;
           return current.schemaVersion === 3 && current.world.nodes[id]!.fragments[index]!.collected;
         })
         .toBe(true);
-      await page.mouse.up();
+      await page.keyboard.up('Space');
+      await expect(vacuum).toHaveAttribute('data-phase', 'idle');
     }
     await expect(page.locator('canvas')).toHaveAttribute('data-paused', 'false');
     await keyMove(page, 'a');

@@ -211,22 +211,19 @@ for (const layout of [
       await page.waitForTimeout(75);
     }
     await page.keyboard.up('Space');
-    await expect(page.locator('.fragments button')).toHaveCount(3);
+    await expect(page.locator('canvas')).toHaveAttribute('data-fragments', '3');
     for (const piece of [...current(fixture).world.nodes[node.id]!.fragments]) {
       await walkTo(page, map, piece, layout.name === 'Mobile');
-      const pieces = current(fixture).world.nodes[node.id]!.fragments.filter((p) => !p.collected),
-        index = pieces.findIndex((p) => p.id === piece.id);
-      const button = page.locator('.fragments button').nth(index);
-      await button.scrollIntoViewIfNeeded();
-      const box = (await button.boundingBox())!;
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-      await page.mouse.down();
+      const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+      await button.focus();
+      await page.keyboard.down('Space');
       await expect
         .poll(
           () => current(fixture).world.nodes[node.id]!.fragments.find((p) => p.id === piece.id)!.collected,
         )
         .toBe(true);
-      await page.mouse.up();
+      await page.keyboard.up('Space');
+      await expect(button).toHaveAttribute('data-phase', 'idle');
     }
     const saved = structuredClone(current(fixture));
     await page.reload();
@@ -242,8 +239,13 @@ for (const layout of [
       'true',
     );
     await page.getByRole('button', { name: 'Close map', exact: true }).click();
+    await goZone(page, fixture, 'zone.z012', layout.name === 'Mobile');
+    await page.getByRole('button', { name: 'Sell 4 cSCU Garnet · 5,200 shift marks', exact: true }).click();
+    await page.getByRole('button', { name: 'Report completed field work · 500 reward', exact: true }).click();
+    expect(current(fixture).quest?.status).toBe('COMPLETE');
+    expect(current(fixture).wallet).toBe(5700);
     expect(fixture.errors).toEqual([]);
-    await page.screenshot({ path: `/tmp/dime-m41-navigation/journey-${layout.name}.png` });
+    await page.screenshot({ path: `/tmp/dime-m41-vacuum/journey-${layout.name}.png` });
   });
 }
 
@@ -418,15 +420,12 @@ for (const file of ['panel.html', 'mobile.html']) {
     await expect(page.locator('.status')).toContainText('Save refreshed');
     expect(await pendingExists(page)).toBe(false);
     expect(fixture.store.receipts.size).toBe(0);
-    await page.getByRole('button', { name: 'Cancel extraction and reposition', exact: true }).click();
-    await expect(page.locator('canvas')).toHaveAttribute('data-paused', 'false');
-    const button = page.locator('.fragments button').first();
-    await button.scrollIntoViewIfNeeded();
-    const box = (await button.boundingBox())!;
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
+    const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+    await button.focus();
+    await page.keyboard.down('Space');
     await expect.poll(() => current(fixture).world.nodes[id]!.fragments[0]!.collected).toBe(true);
-    await page.mouse.up();
+    await page.keyboard.up('Space');
+    await expect(button).toHaveAttribute('data-phase', 'idle');
     expect(current(fixture).mining['extract.x001']['mat.m001']).toBe(100);
     const saved = structuredClone(current(fixture));
     await page.reload();
