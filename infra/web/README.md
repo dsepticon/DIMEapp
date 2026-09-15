@@ -27,3 +27,11 @@ Preserve distribution EC269D02M2JLD's existing website origin and unrelated beha
 Access logs must exclude callback query strings, cookies, authorization and response bodies. Keep the existing sanitized API log fields. Add CSP for the web document (`default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'`), nosniff, same-origin framing protection and no-referrer. Do not apply the standalone frame policy to Twitch assets.
 
 Before generating an executable change set, resolve only real approved secret references, confirm distinct credentials, review provider latency against the Lambda timeout, and complete actual OAuth/CSRF/session/linking tests. Then compare deployed/proposed processed resources, inspect `describe-events`, publish privacy, revalidate website ETags and rollback, and deploy conditionally. No DNS change is required by this plan.
+
+### Verified distribution baseline — 2026-09-15
+
+Read-only inspection confirmed the exact domain alias, one existing S3 website origin, no ordered behaviors, and disabled CloudFront logging with cookies excluded. The existing default behavior accepts GET/HEAD and redirects viewers to HTTPS. Its S3 website origin uses HTTP; the proposed authentication origin must independently use HTTPS-only. This update did not change either setting.
+
+The prepared routing plan uses AWS-managed `Managed-CachingDisabled` (`4135ea2d-6df8-44a3-9df3-4b5a84be39ad`), whose minimum/default/maximum TTLs are all zero, and `Managed-AllViewerExceptHostHeader` (`b689b0a8-53d0-40ab-baf2-68738e2966ac`), which forwards cookies and query strings while replacing the viewer Host at the origin. Both policies were inspected through AWS metadata. Permit all seven CloudFront method choices on only the two API behaviors; the application still permits only its explicit routes and methods. Cache GET/HEAD choices do not enable caching when every TTL is zero.
+
+Re-read the distribution ETag and logging configuration at rollout. Apply no cached configuration blindly, preserve the existing default behavior, and verify callback cleanup, Set-Cookie, CSRF headers and POST logout before publishing the web entry point. No distribution update or invalidation has been performed.

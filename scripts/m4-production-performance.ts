@@ -7,6 +7,7 @@ import { setup, walkTo } from '../tests/e2e/m4Harness';
 import { originalZoneMap } from '../shared/originalWorld';
 import { zoneRoute, exitKind } from '../shared/originalNavigation';
 import type { OriginalPlayerState } from '../shared/originalSchema';
+import { createOriginalApi } from '../server/originalApi';
 
 const duration = Number(process.env.DIME_PERFORMANCE_DURATION_MS ?? 60_000);
 const output = process.env.DIME_PERFORMANCE_OUTPUT ?? '/tmp/dime-m41-nodes/performance.json';
@@ -35,8 +36,49 @@ try {
     { name: 'Mobile', file: 'mobile.html', width: 360, height: 640 },
     { name: 'Desktop', file: 'index.html', width: 1280, height: 900 },
   ]) {
+    if (process.env.DIME_PERFORMANCE_LAYOUT && process.env.DIME_PERFORMANCE_LAYOUT !== layout.name) continue;
     const page = await browser.newPage({ viewport: layout });
     const fixture = await setup(page);
+    if (layout.name === 'Desktop') {
+      const api = createOriginalApi(fixture.store, async () => 'synthetic-walking', [], Date.now, {
+        mode: 'ENABLED',
+        testerCount: 0,
+        permits: () => true,
+      });
+      await page.route(preview + '/**', async (route) => {
+        const request = route.request(),
+          path = new URL(request.url()).pathname;
+        if (path === '/auth/session') {
+          await route.fulfill({
+            json: { identity: 'synthetic-walking', csrf: 'synthetic-csrf', linkingAvailable: false },
+          });
+        } else if (path.startsWith('/api/')) {
+          if (request.method() === 'POST') fixture.posts.push(path);
+          const response = await api({
+            method: request.method(),
+            path: path.slice(4),
+            headers: {},
+            body: request.postData() ?? undefined,
+          });
+          if (response.statusCode >= 400) fixture.errors.push(`${path}: ${response.statusCode}`);
+          await route.fulfill({
+            status: response.statusCode,
+            headers: response.headers,
+            body: response.body,
+          });
+        } else if (/^\/(?:index\.html|assets\/[A-Za-z0-9_.-]+)$/.test(path)) {
+          await route.fulfill({
+            body: await readFile((process.env.DIME_WEB_BUILD ?? '/tmp/dime-m43-release/web-build') + path),
+            contentType: path.endsWith('.html')
+              ? 'text/html'
+              : path.endsWith('.css')
+                ? 'text/css'
+                : 'application/javascript',
+          });
+        } else await route.fulfill({ status: 404, body: '' });
+      });
+    }
+    console.log('Measuring ' + layout.name);
     await page.addInitScript({
       content: `window.dimePerformance={frames:[],last:0};
       function measureFrame(now) {
@@ -242,6 +284,7 @@ try {
       throw Error('Production performance integrity check failed');
     }
     results.push(result);
+    console.log('Completed ' + layout.name);
     await cdpMetrics.detach();
     await page.close();
   }
@@ -258,7 +301,7 @@ try {
     gzipBytes,
     results,
     limitations:
-      'Local Chromium production build, actual API service with synthetic in-memory state. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap trend uses forced-GC samples after repeated physical travel; frame worst includes instrumentation and GC. This is not proof against every leak.',
+      'Local Chromium production builds, actual API service with synthetic in-memory state. Desktop loads the standalone web bundle with synthetic session transport; secure cookie/OAuth behavior is tested separately. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap trend uses forced-GC samples after repeated physical travel; frame worst includes instrumentation and GC. This is not proof against every leak.',
   };
   await writeFile(output, JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify({ assetBytes, gzipBytes, results }, null, 2));
