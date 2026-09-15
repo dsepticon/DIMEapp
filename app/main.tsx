@@ -1,6 +1,6 @@
 import React, { Component, ErrorInfo } from 'react';
 import { createRoot } from 'react-dom/client';
-import Home from './page';
+import Home from './activeHome';
 import './globals.css';
 class ErrorBoundary extends Component<{ children: React.ReactNode }, { failed: boolean }> {
   state = { failed: false };

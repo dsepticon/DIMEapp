@@ -1,6 +1,7 @@
 export function clientConfig(input: { dev: boolean; mode?: string; api?: string; hostname: string }) {
   if (import.meta.env.PROD) {
-    if (input.mode !== 'twitch') throw new Error('Twitch mode is required for this build.');
+    if (!['twitch', 'web'].includes(input.mode ?? ''))
+      throw new Error('Twitch or web mode is required for this build.');
     if (!input.api) throw new Error('Backend URL is not configured.');
     const url = new URL(input.api);
     if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash)
