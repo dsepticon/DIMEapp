@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { originalInitialState } from '../shared/originalGame';
+import { servicePoint } from '../shared/originalNavigation';
 import { OriginalActionService } from '../server/originalActionService';
 import { MemoryStore } from '../server/store';
 
@@ -51,6 +52,10 @@ describe('original action transactions', () => {
       expectedGeneration: a.saveGeneration,
       action: {
         type: 'assignDeparture',
+        player: {
+          x: servicePoint('zone.z008', 'travel')!.x + 0.5,
+          y: servicePoint('zone.z008', 'travel')!.y + 0.5,
+        },
         ship: 'fleet.v001',
         destination: 'loc.l002',
         loadGroundVehicle: false,

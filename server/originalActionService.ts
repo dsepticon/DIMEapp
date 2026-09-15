@@ -17,6 +17,7 @@ import {
   ensureFirstContractNode,
 } from '../shared/originalQuest';
 import type { Store } from './store';
+import { requirePhysicalInteraction } from '../shared/originalNavigation';
 import { transitionOriginalZone } from '../shared/originalWorld';
 import { analyzeOriginalNode, populateOriginalZone, scanOriginalZone } from '../shared/originalDiscovery';
 import {
@@ -25,22 +26,24 @@ import {
   stowOriginalGroundRig,
 } from '../shared/originalVehicle';
 
+const position = z.object({ x: z.number().finite(), y: z.number().finite() }).strict();
 const action = z.discriminatedUnion('type', [
   z
     .object({
       type: z.literal('assignDeparture'),
+      player: position,
       ship: z.string(),
       destination: z.string(),
       loadGroundVehicle: z.boolean(),
     })
     .strict(),
-  z.object({ type: z.literal('completeDeparture') }).strict(),
-  z.object({ type: z.literal('moveZone'), destination: z.string() }).strict(),
+  z.object({ type: z.literal('completeDeparture'), player: position }).strict(),
+  z.object({ type: z.literal('moveZone'), player: position, destination: z.string() }).strict(),
   z.object({ type: z.literal('scan') }).strict(),
   z.object({ type: z.literal('analyze'), nodeId: z.string().min(1).max(80) }).strict(),
-  z.object({ type: z.literal('retrieveGroundRig') }).strict(),
+  z.object({ type: z.literal('retrieveGroundRig'), player: position }).strict(),
   z.object({ type: z.literal('setGroundRigOccupied'), occupied: z.boolean() }).strict(),
-  z.object({ type: z.literal('stowGroundRig') }).strict(),
+  z.object({ type: z.literal('stowGroundRig'), player: position }).strict(),
   z
     .object({
       type: z.literal('transfer'),
@@ -118,12 +121,15 @@ export class OriginalActionService {
     try {
       switch (a.type) {
         case 'assignDeparture':
+          requirePhysicalInteraction(state, a.player, { service: 'travel' });
           next = assignOriginalDeparture(state, a.ship as never, a.destination as never, a.loadGroundVehicle);
           break;
         case 'completeDeparture':
+          requirePhysicalInteraction(state, a.player, { service: 'travel' });
           next = completeOriginalDeparture(state);
           break;
         case 'moveZone':
+          requirePhysicalInteraction(state, a.player, { exit: a.destination });
           next = ensureFirstContractNode(populateOriginalZone(transitionOriginalZone(state, a.destination)));
           break;
         case 'scan':
@@ -133,12 +139,14 @@ export class OriginalActionService {
           next = analyzeOriginalNode(state, a.nodeId);
           break;
         case 'retrieveGroundRig':
+          requirePhysicalInteraction(state, a.player, { service: 'vehicle_terminal' });
           next = retrieveOriginalGroundRig(state);
           break;
         case 'setGroundRigOccupied':
           next = setOriginalGroundRigOccupied(state, a.occupied);
           break;
         case 'stowGroundRig':
+          requirePhysicalInteraction(state, a.player, { service: 'vehicle_terminal' });
           next = stowOriginalGroundRig(state);
           break;
         case 'transfer':

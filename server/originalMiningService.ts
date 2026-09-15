@@ -42,6 +42,7 @@ const action = z.discriminatedUnion('type', [
     })
     .strict(),
   z.object({ type: z.literal('cancelVacuum') }).strict(),
+  z.object({ type: z.literal('cancelLaser') }).strict(),
 ]);
 const requestSchema = z
   .object({
@@ -115,6 +116,12 @@ export class OriginalMiningService {
             this.spatial,
           );
           next = updateFirstContractCollection(next, request.action.nodeId);
+          break;
+        case 'cancelLaser':
+          if (!state.world.miningSession) throw new Error('MINING_SESSION_MISSING');
+          next = originalStateSchema.parse(structuredClone(state));
+          next.world.miningSession = null;
+          next.revision++;
           break;
         case 'cancelVacuum':
           next = cancelOriginalVacuum(state);

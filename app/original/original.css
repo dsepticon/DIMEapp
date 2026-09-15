@@ -345,3 +345,62 @@ footer small {
 .walkingControls button:nth-child(2) {
   grid-column: 1;
 }
+.physicalNavigation {
+  flex: 0 0 auto;
+}
+.objective {
+  font-size: 10px;
+  margin: 0;
+  color: #f0d782;
+}
+.physicalInteractions {
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+}
+.physicalInteractions button {
+  font-size: 10px;
+  flex: 1;
+}
+.destinationMap {
+  max-height: 125px;
+  overflow: auto;
+  border: 1px solid #83c0ad;
+  padding: 4px;
+}
+.destinationMap div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.destinationMap button {
+  font-size: 10px;
+  padding: 3px;
+}
+.destinationMap button[aria-pressed='true'] {
+  border: 2px solid #ffe58d;
+  background: #486054;
+}
+.recoveryControls {
+  max-height: 110px;
+  overflow: auto;
+}
+.recoveryControls button {
+  font-size: 10px;
+  padding: 4px;
+}
+.recoveryControls p {
+  font-size: 11px;
+}
+.status {
+  flex-shrink: 0;
+}
+/* Reserve interaction space so a newly reached doorway never moves the touch pad under a held finger. */
+.physicalInteractions {
+  min-height: 44px;
+  height: 44px;
+}
+.physicalInteractions button {
+  max-height: 44px;
+  padding: 4px;
+}

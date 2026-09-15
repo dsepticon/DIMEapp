@@ -1,14 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { twitchConnection, type TwitchSession } from '../twitch';
-import { originalStateSchema, type OriginalPlayerState } from '../../shared/originalSchema';
+import { type OriginalPlayerState } from '../../shared/originalSchema';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
-import { originalZoneMap } from '../../shared/originalWorld';
 import { formatCscuMinor } from '../../shared/mineralUnits';
-import { originalTravelService } from '../../shared/originalTravel';
 import './original.css';
 import { MiningConsole } from './MiningConsole';
 import { WalkingWorld } from './WalkingWorld';
 import type { Position } from './walking';
+import {
+  classifyOriginalRecovery,
+  readOriginalPending,
+  recoverySnapshot,
+  recoveryMessage,
+  OriginalApiError,
+} from './recovery';
+import { PhysicalNavigation } from './PhysicalNavigation';
 import { ServiceConsole } from './ServiceConsole';
 
 type Gateway = {
@@ -36,6 +42,10 @@ function App() {
   const [message, setMessage] = useState('Connecting to Destroya Industries operations…');
   const [busy, setBusy] = useState(false);
   const playerPosition = useRef<Position>({ x: 0, y: 0 });
+  const [playerTile, setPlayerTile] = useState({ x: 0, y: 0 });
+  const [mapOpen, setMapOpen] = useState(false);
+  const [objective, setObjective] = useState('');
+  const [marker, setMarker] = useState<{ x: number; y: number } | undefined>();
   const [targetNode, setTargetNode] = useState('');
   const [resetOpen, setResetOpen] = useState(false);
   const [resetPhrase, setResetPhrase] = useState('');
@@ -60,209 +70,303 @@ function App() {
     setGateway(connection);
     return () => connection.stop();
   }, [mode]);
+  const lock = useRef(false);
+  const snapshotRef = useRef<ReturnType<typeof recoverySnapshot> | null>(null);
+  const [discardOpen, setDiscardOpen] = useState(false);
+  const [discardPhrase, setDiscardPhrase] = useState('');
   const request = async (path: string, body?: unknown) => {
-    if (!api) throw Error('Backend URL is not configured.');
-    const token = gateway?.token();
-    const response = await fetch(api + path, {
-      method: body ? 'POST' : 'GET',
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(body ? { 'Content-Type': 'application/json' } : {}),
-      },
-      body: body ? JSON.stringify(body) : undefined,
-      cache: 'no-store',
-    });
-    if (response.status === 401) gateway?.expired(token);
-    const value = await response.json();
-    if (!response.ok) throw Error(typeof value.message === 'string' ? value.message : 'Request failed.');
-    return value as Record<string, unknown>;
+    if (!api) throw Error('Backend unavailable.');
+    const identity = gateway?.identity();
+    const token = gateway?.token(),
+      controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12_000);
+    try {
+      const response = await fetch(api + path, {
+        method: body ? 'POST' : 'GET',
+        signal: controller.signal,
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(body ? { 'Content-Type': 'application/json' } : {}),
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        cache: 'no-store',
+      });
+      if (response.status === 401) gateway?.expired(token);
+      const value = await response.json();
+      if (identity !== gateway?.identity()) throw new OriginalApiError('IDENTITY_CHANGED', 409);
+      if (!response.ok)
+        throw new OriginalApiError(
+          typeof value.code === 'string' ? value.code : 'UNKNOWN_RESPONSE',
+          response.status,
+        );
+      return value as Record<string, unknown>;
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
+  const adopt = (value: Record<string, unknown>) => {
+    const snapshot = recoverySnapshot(value);
+    snapshotRef.current = snapshot;
+    setState(snapshot.state ?? null);
+    if (snapshot.legacy)
+      setConversion((old) => ({
+        revision: snapshot.revision,
+        saveGeneration: snapshot.generation,
+        available: value.conversionAvailable === true,
+        ...(old?.revision === snapshot.revision && old.saveGeneration === snapshot.generation
+          ? { requestId: old.requestId }
+          : {}),
+      }));
+    else setConversion(null);
+    return snapshot;
+  };
+  const clearPending = (key: string, raw: string) => {
+    if (sessionStorage.getItem(key) !== raw) return false;
+    sessionStorage.removeItem(key);
+    setPendingBlocked(false);
+    setDiscardOpen(false);
+    setDiscardPhrase('');
+    return true;
+  };
+  const uncertain = () => {
+    setPendingBlocked(true);
+    setMessage(
+      'Previous action is unconfirmed. Walking and inspection remain available. Retry to check its result.',
+    );
+  };
+  const recover = async (value: Record<string, unknown>, key: string, raw: string) => {
+    const snapshot = adopt(value),
+      record = readOriginalPending(raw);
+    const decision = classifyOriginalRecovery(record, snapshot);
+    if (decision === 'obsolete') {
+      clearPending(key, raw);
+      setMessage('An obsolete action was removed. Your current save is ready.');
+      return;
+    }
+    if (decision !== 'replay' || !record) {
+      uncertain();
+      return;
+    }
+    try {
+      const result = await request(record.path, record.request);
+      const canonical = recoverySnapshot(result);
+      if (classifyOriginalRecovery(record, canonical, { success: true }) === 'confirmed') {
+        adopt(result);
+        clearPending(key, raw);
+        setMessage('Previous action confirmed.');
+      }
+    } catch (error) {
+      if (classifyOriginalRecovery(record, snapshot, { error }) === 'rejected') {
+        try {
+          adopt(await request('/v4/state'));
+          clearPending(key, raw);
+          setMessage(recoveryMessage(error));
+        } catch {
+          uncertain();
+        }
+      } else uncertain();
+    }
   };
   const refresh = async () => {
     if (mode === 'web') {
       setMessage('Web sign-in is planned for Milestone 4.2. No OAuth credentials are configured.');
       return;
     }
-    if (!gateway?.identity()) return;
+    if (!gateway?.identity() || lock.current) return;
+    lock.current = true;
     setBusy(true);
     try {
-      const value = await request('/v4/state');
-      if (value.conversionRequired) {
-        const key = pendingKey(),
-          raw = key ? sessionStorage.getItem(key) : null;
-        if (raw) {
-          try {
-            const saved = JSON.parse(raw) as { version?: number; request?: unknown; saveGeneration?: string };
-            if (saved.saveGeneration && saved.saveGeneration !== String(value.saveGeneration))
-              sessionStorage.removeItem(key);
-            else {
-              const legacyRequest = saved.version === 1 ? saved.request : saved;
-              if (!legacyRequest) throw Error('Pending action is invalid.');
-              await request('/actions', legacyRequest);
-              sessionStorage.removeItem(key);
-              const updated = await request('/v4/state');
-              value.revision = updated.revision;
-              value.saveGeneration = updated.saveGeneration;
-              setMessage('Pending action recovered safely before content update.');
-            }
-          } catch {
-            setPendingBlocked(true);
-            setMessage(
-              'Pending action recovery failed safely. Retry the same action before content conversion.',
-            );
-            return;
-          }
-        }
+      const key = pendingKey(),
+        value = await request('/v4/state'),
+        raw = sessionStorage.getItem(key);
+      if (raw) await recover(value, key, raw);
+      else {
+        adopt(value);
         setPendingBlocked(false);
-        const available = value.conversionAvailable === true;
-        setConversion({
-          revision: Number(value.revision),
-          saveGeneration: String(value.saveGeneration),
-          available,
-        });
         setMessage(
-          available
-            ? 'Your established operation is eligible for a reviewed equivalent content update.'
-            : 'Equivalent content preview is available. Permanent conversion is not enabled.',
+          value.conversionRequired
+            ? 'Preview the equivalent content update before applying it.'
+            : 'Operation synchronized.',
         );
-      } else {
-        let canonical = originalStateSchema.parse(value.state);
-        const key = pendingKey(),
-          raw = key ? sessionStorage.getItem(key) : null;
-        if (raw) {
-          try {
-            const saved = JSON.parse(raw) as {
-              version?: number;
-              path?: string;
-              request?: { expectedGeneration?: string };
-            };
-            if (saved.version !== 4 || saved.path !== '/v4/actions' || !saved.request) {
-              setPendingBlocked(true);
-              setMessage(
-                'An earlier pending action must be recovered in the current Hosted Test client before content conversion.',
-              );
-              setState(canonical);
-              return;
-            }
-            if (saved.request.expectedGeneration !== canonical.saveGeneration) sessionStorage.removeItem(key);
-            else {
-              const recovered = await request(saved.path, saved.request);
-              canonical = originalStateSchema.parse(recovered.state);
-              sessionStorage.removeItem(key);
-              setMessage('Pending action recovered safely.');
-            }
-          } catch {
-            setPendingBlocked(true);
-            setMessage(
-              'Pending action recovery needs attention. Retry without clearing other browser storage.',
-            );
-            setState(canonical);
-            return;
-          }
-        }
-        setPendingBlocked(false);
-        setState(canonical);
-        setConversion(null);
-        setMessage('Operation synchronized.');
       }
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Connection unavailable.');
+    } catch {
+      setMessage('Connection unavailable. Retry to synchronize.');
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   };
   useEffect(() => {
+    if (mode !== 'local' && session.status !== 'authorized') {
+      setState(null);
+      snapshotRef.current = null;
+      return;
+    }
     void refresh();
-    // Refresh is intentionally keyed to the authenticated gateway/session boundary.
+    // Authentication changes are the synchronization boundary.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gateway, session.status]);
-  const mutate = async (action: Record<string, unknown>): Promise<OriginalPlayerState | null> => {
-    if (!state || busy || pendingBlocked) return null;
+  const execute = async (
+    path: string,
+    body: Record<string, unknown>,
+  ): Promise<OriginalPlayerState | null> => {
+    if (lock.current || pendingBlocked || !snapshotRef.current) return null;
+    const key = pendingKey();
+    if (!key) return null;
+    if (sessionStorage.getItem(key)) {
+      uncertain();
+      return null;
+    }
+    lock.current = true;
     setBusy(true);
+    const raw = JSON.stringify({ version: 4, contentVersion: 4, saveFormatVersion: 3, path, request: body });
+    const record = readOriginalPending(raw),
+      snapshot = snapshotRef.current;
+    let stored = false;
     try {
-      const actionRequest = {
-        requestId: uuid(),
-        expectedRevision: state.revision,
-        expectedGeneration: state.saveGeneration,
-        action,
-      };
-      const key = pendingKey();
-      if (!key) throw Error('Authenticated session is unavailable.');
-      sessionStorage.setItem(
-        key,
-        JSON.stringify({ version: 4, path: '/v4/actions', request: actionRequest }),
-      );
-      const value = await request('/v4/actions', actionRequest);
-      const next = originalStateSchema.parse(value.state);
-      setState(next);
-      sessionStorage.removeItem(key);
+      sessionStorage.setItem(key, raw);
+      stored = true;
+      const result = await request(path, body),
+        next = recoverySnapshot(result);
+      if (classifyOriginalRecovery(record, next, { success: true }) !== 'confirmed')
+        throw Error('Unknown outcome');
+      adopt(result);
+      clearPending(key, raw);
       setMessage('Action confirmed.');
-      return next;
+      return next.state ?? null;
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Action rejected.');
+      if (!stored) setMessage('Browser storage is unavailable. No action was sent.');
+      else if (classifyOriginalRecovery(record, snapshot, { error }) === 'rejected') {
+        try {
+          adopt(await request('/v4/state'));
+          clearPending(key, raw);
+          setMessage(recoveryMessage(error));
+        } catch {
+          uncertain();
+        }
+      } else uncertain();
       return null;
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   };
+  const bodyFor = (extra: Record<string, unknown>) => ({
+    requestId: uuid(),
+    expectedRevision: snapshotRef.current!.revision,
+    expectedGeneration: snapshotRef.current!.generation,
+    ...extra,
+  });
+  const mutate = (action: Record<string, unknown>) =>
+    snapshotRef.current?.state ? execute('/v4/actions', bodyFor({ action })) : Promise.resolve(null);
   const convert = async () => {
-    if (!conversion?.requestId || busy || pendingBlocked) return;
-    setBusy(true);
-    try {
-      const value = await request('/v4/content/convert', {
-        requestId: conversion.requestId,
-        expectedRevision: conversion.revision,
-        expectedGeneration: conversion.saveGeneration,
-      });
-      setState(originalStateSchema.parse(value.state));
-      setConversion(null);
-      setMessage('Operation updated with equivalent holdings and progress.');
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Content review required.');
-    } finally {
-      setBusy(false);
-    }
+    if (!conversion?.requestId) return;
+    await execute('/v4/content/convert', {
+      requestId: conversion.requestId,
+      expectedRevision: conversion.revision,
+      expectedGeneration: conversion.saveGeneration,
+    });
   };
   const previewConversion = async () => {
-    if (!conversion || busy || pendingBlocked) return;
+    if (!conversion || lock.current || pendingBlocked) return;
+    lock.current = true;
     setBusy(true);
-    try {
-      const requestId = uuid();
-      await request('/v4/content/preview', {
+    const requestId = uuid(),
+      body = {
         requestId,
         expectedRevision: conversion.revision,
         expectedGeneration: conversion.saveGeneration,
-      });
+      };
+    try {
+      await request('/v4/content/preview', body);
       setConversion({ ...conversion, requestId });
-      setMessage('Preview verified: values, quantities, ownership, orders and progress remain equivalent.');
+      setMessage('Equivalent values, holdings and progress previewed.');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Content review required.');
+      const decision = classifyOriginalRecovery(
+        {
+          version: 4,
+          path: '/v4/content/convert',
+          request: body,
+          generation: conversion.saveGeneration,
+          legacy: false,
+        },
+        snapshotRef.current!,
+        { error },
+      );
+      if (decision === 'rejected') {
+        try {
+          adopt(await request('/v4/state'));
+          setMessage(recoveryMessage(error));
+        } catch {
+          setMessage('Preview unavailable. Retry when connected.');
+        }
+      } else setMessage('Preview unavailable. Retry when connected.');
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   };
   const reset = async () => {
-    if (!state || resetPhrase !== 'RESET MY DIME PROFILE' || busy) return;
-    setBusy(true);
-    try {
-      const value = await request('/v4/profile/reset', {
-        requestId: uuid(),
-        expectedRevision: state.revision,
-        expectedGeneration: state.saveGeneration,
-        confirmation: resetPhrase,
-      });
-      setState(originalStateSchema.parse(value.state));
-      const identity = gateway?.identity();
-      if (identity) sessionStorage.removeItem(`dime-pending-v2:${identity}`);
+    if (!state || resetPhrase !== 'RESET MY DIME PROFILE') return;
+    const next = await execute('/v4/profile/reset', bodyFor({ confirmation: resetPhrase }));
+    if (next) {
       setResetOpen(false);
       setResetPhrase('');
       setMessage('Game progress reset.');
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Reset failed safely.');
+    }
+  };
+  const discard = async () => {
+    if (discardPhrase !== 'DISCARD' || lock.current) return;
+    const key = pendingKey(),
+      raw = sessionStorage.getItem(key);
+    if (!raw) return;
+    lock.current = true;
+    setBusy(true);
+    try {
+      adopt(await request('/v4/state'));
+      clearPending(key, raw);
+      setMessage('Pending retry discarded. Review the current save before repeating the action.');
+    } catch {
+      setMessage('Connect to refresh your save before discarding.');
     } finally {
+      lock.current = false;
       setBusy(false);
     }
   };
-  const zone = state ? originalZoneMap(state.world.zone) : null;
+  const recoveryControls = pendingBlocked && (
+    <section className="recoveryControls" aria-label="Pending action recovery">
+      <button disabled={busy} onClick={() => void refresh()}>
+        Retry pending action
+      </button>
+      <button disabled={busy} onClick={() => setDiscardOpen(true)}>
+        Review discard
+      </button>
+      {discardOpen && (
+        <div>
+          <p>
+            Its outcome may be unknown. Discard stops retries; it does not undo an accepted action. Review
+            your save before repeating it. Type DISCARD to confirm.
+          </p>
+          <input
+            aria-label="Discard confirmation"
+            value={discardPhrase}
+            onChange={(event) => setDiscardPhrase(event.target.value)}
+          />
+          <button disabled={busy || discardPhrase !== 'DISCARD'} onClick={() => void discard()}>
+            Confirm discard
+          </button>
+          <button
+            onClick={() => {
+              setDiscardOpen(false);
+              setDiscardPhrase('');
+            }}
+          >
+            Keep pending action
+          </button>
+        </div>
+      )}
+    </section>
+  );
   const location = ORIGINAL_CONTENT.locations.find((x) => x.id === state?.location);
   const zoneInfo = ORIGINAL_CONTENT.zones.find((x) => x.id === state?.world.zone);
   const zoneKinds = zoneInfo?.objectKinds ?? [];
@@ -279,13 +383,17 @@ function App() {
         <section className="gate">
           <h1>{conversion ? 'Equivalent content update' : 'Field operator access'}</h1>
           <p>{message}</p>
+          {recoveryControls}
           {conversion &&
             (conversion.requestId ? (
-              <button disabled={busy || !conversion.available} onClick={() => void convert()}>
+              <button
+                disabled={busy || pendingBlocked || !conversion.available}
+                onClick={() => void convert()}
+              >
                 {conversion.available ? 'Apply reviewed equivalent update' : 'Conversion rollout disabled'}
               </button>
             ) : (
-              <button disabled={busy} onClick={() => void previewConversion()}>
+              <button disabled={busy || pendingBlocked} onClick={() => void previewConversion()}>
                 Preview equivalent update
               </button>
             ))}
@@ -298,12 +406,19 @@ function App() {
           <section className="world">
             <WalkingWorld
               state={state}
-              paused={resetOpen || !!state.world.miningSession || !!state.world.extractionSession}
+              paused={
+                resetOpen ||
+                (!pendingBlocked && (!!state.world.miningSession || !!state.world.extractionSession))
+              }
               onPosition={(position) => {
                 playerPosition.current = position;
+                setPlayerTile((old) =>
+                  Math.abs(old.x - position.x) + Math.abs(old.y - position.y) > 0.2 ? position : old,
+                );
               }}
               onTarget={setTargetNode}
               target={targetNode}
+              marker={marker}
             />
             <div className="place">
               <b>{zoneInfo?.name}</b>
@@ -313,38 +428,26 @@ function App() {
             </div>
           </section>
           <nav>
-            <button
-              onClick={() =>
-                setMessage(`Connected exits: ${zone?.exits.length ?? 0}. Select a marked doorway below.`)
-              }
-            >
-              NAV
-            </button>
+            <button onClick={() => setMapOpen((open) => !open)}>NAV</button>
             <button onClick={() => setMessage('Beamline One · Laser / Extraction')}>TOOL</button>
             <button onClick={() => setMessage(ORIGINAL_CONTENT.materialDisclaimer)}>CARGO</button>
             <button onClick={() => setResetOpen(true)}>PROFILE</button>
           </nav>
-          <section className="exits" aria-label="Connected doorways">
-            {zone?.exits.map((exit) => {
-              const destination = ORIGINAL_CONTENT.zones.find((item) => item.id === exit.to);
-              return (
-                <button
-                  key={exit.to}
-                  disabled={busy}
-                  onClick={() => void mutate({ type: 'moveZone', destination: exit.to })}
-                >
-                  {exit.facing} · {destination?.name}
-                </button>
-              );
-            })}
-          </section>
+          <PhysicalNavigation
+            state={state}
+            player={playerTile}
+            getPlayer={() => playerPosition.current}
+            busy={busy || pendingBlocked || resetOpen}
+            mapOpen={mapOpen}
+            closeMap={() => setMapOpen(false)}
+            objective={objective}
+            select={setObjective}
+            marker={setMarker}
+            mutate={mutate}
+          />
           <section className="status">
             <p>{message}</p>
-            {pendingBlocked && (
-              <button disabled={busy} onClick={() => void refresh()}>
-                Retry pending action
-              </button>
-            )}
+            {recoveryControls}
             <div>
               <span>{state.wallet.toLocaleString()} shift marks</span>
               <span>
@@ -358,92 +461,49 @@ function App() {
           </section>
           <MiningConsole
             state={state}
-            busy={busy}
+            busy={busy || pendingBlocked}
             mutate={mutate}
             getPlayer={() => playerPosition.current}
             target={targetNode}
             onTarget={setTargetNode}
           />
-          <ServiceConsole state={state} busy={busy} mutate={mutate} kinds={zoneKinds as readonly string[]} />
-          {state.world.zone === originalTravelService(state.location).assign && !state.world.departure && (
-            <section className="actions">
-              {ORIGINAL_CONTENT.locations
-                .filter((item) => item.id !== state.location)
-                .map((item) => (
-                  <button
-                    key={item.id}
-                    disabled={busy}
-                    onClick={() =>
-                      void mutate({
-                        type: 'assignDeparture',
-                        ship: state.currentShip,
-                        destination: item.id,
-                        loadGroundVehicle: false,
-                      })
-                    }
-                  >
-                    Assign {item.name}
-                  </button>
-                ))}
-            </section>
-          )}
-          {state.world.zone === originalTravelService(state.location).depart && state.world.departure && (
-            <section className="actions">
-              <button disabled={busy} onClick={() => void mutate({ type: 'completeDeparture' })}>
-                Depart assigned bay
-              </button>
-            </section>
-          )}
-          {(zoneKinds as readonly string[]).includes('vehicle_terminal') && (
-            <section className="actions">
-              {!state.world.groundVehicle ? (
-                <button
-                  disabled={busy || (state.ships['fleet.v002'] ?? 0) < 1}
-                  onClick={() => void mutate({ type: 'retrieveGroundRig' })}
-                >
-                  Retrieve owned Trailbug Ground Rig
-                </button>
-              ) : state.world.groundVehicle.occupied ? (
-                <button
-                  disabled={busy}
-                  onClick={() => void mutate({ type: 'setGroundRigOccupied', occupied: false })}
-                >
-                  Exit ground rig
-                </button>
-              ) : (
-                <>
-                  <button
-                    disabled={busy}
-                    onClick={() => void mutate({ type: 'setGroundRigOccupied', occupied: true })}
-                  >
-                    Enter ground rig
-                  </button>
-                  <button disabled={busy} onClick={() => void mutate({ type: 'stowGroundRig' })}>
-                    Stow ground rig
-                  </button>
-                </>
-              )}
-            </section>
-          )}
+          <ServiceConsole
+            state={state}
+            busy={busy || pendingBlocked}
+            mutate={mutate}
+            kinds={zoneKinds as readonly string[]}
+          />
           {state.world.zone === 'zone.z012' && (
             <section className="actions">
               {!state.quest && (
-                <button disabled={busy} onClick={() => void mutate({ type: 'acceptFirstContract' })}>
+                <button
+                  disabled={busy || pendingBlocked}
+                  onClick={() => void mutate({ type: 'acceptFirstContract' })}
+                >
                   Begin First Contract
                 </button>
               )}
               {state.quest?.objective === 'CHECK_EQUIPMENT' && (
-                <button disabled={busy} onClick={() => void mutate({ type: 'confirmFirstContractTool' })}>
+                <button
+                  disabled={busy || pendingBlocked}
+                  onClick={() => void mutate({ type: 'confirmFirstContractTool' })}
+                >
                   Confirm Beamline One
                 </button>
               )}
               {state.quest?.objective === 'RETURN_TO_OUTPOST' && (
-                <button disabled={busy} onClick={() => void mutate({ type: 'sellFirstContractMaterial' })}>
+                <button
+                  disabled={busy || pendingBlocked}
+                  onClick={() => void mutate({ type: 'sellFirstContractMaterial' })}
+                >
                   Sell 4 cSCU Garnet · 5,200 shift marks
                 </button>
               )}
               {state.quest?.objective === 'RETURN_TO_FOREMAN' && (
-                <button disabled={busy} onClick={() => void mutate({ type: 'completeFirstContract' })}>
+                <button
+                  disabled={busy || pendingBlocked}
+                  onClick={() => void mutate({ type: 'completeFirstContract' })}
+                >
                   Report completed field work · 500 reward
                 </button>
               )}
@@ -503,14 +563,12 @@ function App() {
                   />
                 </label>
                 <button
-                  disabled={busy || resetPhrase !== 'RESET MY DIME PROFILE'}
+                  disabled={busy || pendingBlocked || resetPhrase !== 'RESET MY DIME PROFILE'}
                   onClick={() => void reset()}
                 >
                   {busy ? 'Resetting…' : 'Reset All My Game Progress'}
                 </button>
-                <button disabled={busy} onClick={() => setResetOpen(false)}>
-                  Cancel
-                </button>
+                <button onClick={() => setResetOpen(false)}>Cancel</button>
               </section>
             </div>
           )}

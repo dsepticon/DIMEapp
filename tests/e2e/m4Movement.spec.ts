@@ -4,62 +4,7 @@ import { initialState as legacyInitialState } from '../../shared/game';
 import { upgradeWholeCscuSave } from '../../shared/quantityUpgrade';
 import { originalInitialState } from '../../shared/originalGame';
 import { originalZoneMap } from '../../shared/originalWorld';
-import { createOriginalApi } from '../../server/originalApi';
-import { MemoryStore } from '../../server/store';
-import type { VersionedContentState } from '../../server/contentConversion';
-const endpoint = 'https://t2la0784p6.execute-api.us-east-2.amazonaws.com/staging';
-async function setup(page: Page) {
-  const store = new MemoryStore<VersionedContentState>();
-  const api = createOriginalApi(store, async () => 'synthetic-walking', [], Date.now, {
-    mode: 'ENABLED',
-    testerCount: 0,
-    permits: () => true,
-  });
-  const faults = { dropOnceAfterCommit: false };
-  const posts: string[] = [],
-    errors: string[] = [];
-  page.on('pageerror', (error) => errors.push(error.message));
-  page.on('console', (message) => {
-    if (message.type() === 'error') errors.push(message.text());
-  });
-  page.on('requestfailed', (request) => errors.push(new URL(request.url()).pathname));
-  await page.route('https://extension-files.twitch.tv/**', (route) =>
-    route.fulfill({ contentType: 'application/javascript', body: '' }),
-  );
-  await page.addInitScript(() => {
-    Object.assign(window, {
-      Twitch: {
-        ext: {
-          onAuthorized(callback: (auth: unknown) => void) {
-            queueMicrotask(() =>
-              callback({ token: 'synthetic', userId: 'U-synthetic-walking', channelId: 'synthetic' }),
-            );
-          },
-          onError() {},
-        },
-      },
-    });
-  });
-  await page.route(endpoint + '/**', async (route) => {
-    const request = route.request(),
-      path = new URL(request.url()).pathname.replace('/staging', '');
-    if (request.method() === 'POST') posts.push(path);
-    const response = await api({
-      method: request.method(),
-      path,
-      headers: {},
-      body: request.postData() ?? undefined,
-    });
-    if (response.statusCode >= 400) errors.push(`${path}: ${response.statusCode}`);
-    if (request.method() === 'POST' && response.statusCode === 200 && faults.dropOnceAfterCommit) {
-      faults.dropOnceAfterCommit = false;
-      await route.abort('failed');
-      return;
-    }
-    await route.fulfill({ status: response.statusCode, headers: response.headers, body: response.body });
-  });
-  return { store, posts, errors, faults };
-}
+import { setup, walkTo } from './m4Harness';
 const position = (page: Page) =>
   page
     .locator('canvas')
@@ -152,7 +97,11 @@ for (const layout of [
     await page.reload();
     await expect(page.locator('canvas')).toHaveAttribute('data-player-x', String(initial.x.toFixed(3)));
     await keyMove(page, 'd');
-    await page.locator('.exits button').first().click();
+    if (await page.getByRole('button', { name: 'Close map', exact: true }).count())
+      await page.getByRole('button', { name: 'Close map', exact: true }).click();
+    const map = originalZoneMap('zone.z001');
+    await walkTo(page, map, map.exits[0]!);
+    await page.getByRole('button', { name: /^Use doorway/ }).click();
     await expect(page.locator('.place b')).not.toHaveText('Crew Ring Arrival');
     await keyMove(page, 'd');
     await page.getByRole('button', { name: 'PROFILE', exact: true }).click();
@@ -299,8 +248,10 @@ test('production pending movement transition replays once after a lost response 
   await page.goto('/mobile.html');
   await expect(page.locator('.place b')).toHaveText('Crew Ring Arrival');
   fixture.faults.dropOnceAfterCommit = true;
-  await page.locator('.exits button').first().click();
-  await expect(page.locator('.status')).toContainText('Failed to fetch');
+  const map = originalZoneMap('zone.z001');
+  await walkTo(page, map, map.exits[0]!);
+  await page.getByRole('button', { name: /^Use doorway/ }).click();
+  await expect(page.locator('.status')).toContainText('Previous action is unconfirmed');
   const committed = structuredClone(fixture.store.states.get('synthetic-walking'));
   await page.reload();
   await expect(page.locator('.place b')).not.toHaveText('Crew Ring Arrival');

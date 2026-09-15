@@ -20,18 +20,20 @@ export function WalkingWorld({
   onPosition,
   onTarget,
   target,
+  marker,
 }: {
   state: OriginalPlayerState;
   paused: boolean;
   onPosition: (position: Position) => void;
   onTarget: (id: string) => void;
   target: string;
+  marker?: Position;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null),
     keys = useRef(new Set<string>()),
     touch = useRef(new Map<number, Direction>());
-  const latest = useRef({ state, paused, onPosition, onTarget, target });
-  latest.current = { state, paused, onPosition, onTarget, target };
+  const latest = useRef({ state, paused, onPosition, onTarget, target, marker });
+  latest.current = { state, paused, onPosition, onTarget, target, marker };
   const map = useMemo(() => originalZoneMap(state.world.zone), [state.world.zone]);
   const position = useRef(arrivalPosition(map, state.world.entry)),
     camera = useRef({ x: 0, y: 0, scale: 24 });
@@ -53,6 +55,8 @@ export function WalkingWorld({
     latest.current.onPosition(position.current);
     keys.current.clear();
     touch.current.clear();
+    const incoming = map.exits.find((exit) => `from:${exit.to}` === latest.current.state.world.entry);
+    let facing = incoming ? ({ N: 'S', S: 'N', E: 'W', W: 'E' } as const)[incoming.facing] : 'S';
     let frame = 0,
       last = 0;
     const down = (event: KeyboardEvent) => {
@@ -96,6 +100,10 @@ export function WalkingWorld({
         }
         for (const d of touch.current.values()) input[d] = true;
       }
+      if (input.right) facing = 'E';
+      else if (input.left) facing = 'W';
+      else if (input.up) facing = 'N';
+      else if (input.down) facing = 'S';
       position.current = walk(map, position.current, input, dt);
       latest.current.onPosition(position.current);
       const bounds = element.getBoundingClientRect(),
@@ -121,6 +129,18 @@ export function WalkingWorld({
       for (const exit of map.exits) {
         context.fillStyle = '#d3ad68';
         context.fillRect((exit.x - cx) * scale + 3, (exit.y - cy) * scale + 3, 18, 18);
+      }
+      for (const service of map.services) {
+        context.fillStyle = '#8bbaf4';
+        context.fillRect((service.x - cx) * scale + 5, (service.y - cy) * scale + 5, 14, 14);
+      }
+      const objective = latest.current.marker;
+      if (objective) {
+        const mx = Math.max(9, Math.min(width - 9, (objective.x + 0.5 - cx) * scale)),
+          my = Math.max(9, Math.min(height - 9, (objective.y + 0.5 - cy) * scale));
+        context.strokeStyle = '#fff19a';
+        context.lineWidth = 2;
+        context.strokeRect(mx - 7, my - 7, 14, 14);
       }
       for (const node of Object.values(latest.current.state.world.nodes)) {
         if (
@@ -149,10 +169,15 @@ export function WalkingWorld({
       context.fillStyle = '#d5ebe0';
       context.fillRect(px - 4, py + 7, 3, 5);
       context.fillRect(px + 1, py + 7, 3, 5);
+      const facingVector = { N: [0, -1], S: [0, 1], E: [1, 0], W: [-1, 0] }[facing]!;
+      context.fillStyle = '#ffffff';
+      context.fillRect(px + facingVector[0]! * 8 - 1, py + facingVector[1]! * 8 - 1, 3, 3);
       element.dataset.playerX = position.current.x.toFixed(3);
       element.dataset.playerY = position.current.y.toFixed(3);
       element.dataset.cameraX = cx.toFixed(3);
       element.dataset.cameraY = cy.toFixed(3);
+      element.dataset.zone = map.id;
+      element.dataset.facing = facing;
       element.dataset.paused = String(latest.current.paused);
       frame = requestAnimationFrame(draw);
     };

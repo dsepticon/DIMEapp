@@ -26,7 +26,10 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
       node.id.startsWith(`${state.world.zone}.node.`) ||
       (state.world.zone === 'zone.z014' && node.id === FIRST_CONTRACT_NODE),
   );
-  const selected = nodes.some((node) => node.id === target) ? target : (nodes[0]?.id ?? '');
+  const selected =
+    state.world.miningSession?.nodeId ??
+    state.world.extractionSession?.nodeId ??
+    (nodes.some((node) => node.id === target) ? target : (nodes[0]?.id ?? ''));
   const setSelected = onTarget;
   const [sim, setSim] = useState<MiningState>(initialState());
   const [held, setHeld] = useState(false);
@@ -56,7 +59,7 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
     };
   }, []);
   useEffect(() => {
-    if (!state.world.miningSession || !specRef.current || resolving.current) return;
+    if (busy || !state.world.miningSession || !specRef.current || resolving.current) return;
     const timer = setInterval(
       () =>
         setSim((value) => {
@@ -84,7 +87,7 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
       50,
     );
     return () => clearInterval(timer);
-  }, [state.world.miningSession, held, spec?.seed]);
+  }, [state.world.miningSession, held, spec?.seed, busy]);
   const start = async () => {
     if (!node) return;
     const next = await mutate({
@@ -123,6 +126,22 @@ export function MiningConsole({ state, busy, mutate, getPlayer, target, onTarget
           Ping signatures
         </button>
       </div>
+      {state.world.miningSession && (
+        <button
+          disabled={busy}
+          onClick={() => {
+            setHeld(false);
+            void mutate({ type: 'cancelLaser' });
+          }}
+        >
+          Stop laser without yield
+        </button>
+      )}
+      {state.world.extractionSession && !vacuuming && (
+        <button disabled={busy} onClick={() => void mutate({ type: 'cancelVacuum' })}>
+          Cancel extraction and reposition
+        </button>
+      )}
       {nodes.length > 0 && (
         <select
           disabled={busy || !!state.world.miningSession || !!state.world.extractionSession}

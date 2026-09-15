@@ -1,204 +1,137 @@
 import { chromium } from '@playwright/test';
-import { randomUUID } from 'node:crypto';
-import { writeFile } from 'node:fs/promises';
-import { originalInitialState } from '../shared/originalGame';
-import { ORIGINAL_CONTENT } from '../shared/originalCatalog';
-import { transitionOriginalZone } from '../shared/originalWorld';
-import {
-  assignOriginalDeparture,
-  completeOriginalDeparture,
-  originalTravelService,
-} from '../shared/originalTravel';
-import { analyzeOriginalNode, populateOriginalZone, scanOriginalZone } from '../shared/originalDiscovery';
-import { classifyHeapMeasurements } from '../shared/performanceMemory';
+import { spawn } from 'node:child_process';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { gzipSync } from 'node:zlib';
+import { setup, walkTo } from '../tests/e2e/m4Harness';
+import { originalZoneMap } from '../shared/originalWorld';
+import { zoneRoute, exitKind } from '../shared/originalNavigation';
+import type { OriginalPlayerState } from '../shared/originalSchema';
 
-const durationMs = Number(process.env.DIME_PERFORMANCE_DURATION_MS ?? 600_000);
-const output =
-  process.env.DIME_PERFORMANCE_OUTPUT ?? '/tmp/dime-m4-original-review/m4-production-long-session.json';
+const duration = Number(process.env.DIME_PERFORMANCE_DURATION_MS ?? 60_000);
+const output = process.env.DIME_PERFORMANCE_OUTPUT ?? '/tmp/dime-m41-navigation/performance.json';
+const preview = 'http://127.0.0.1:4187';
+const server = spawn(
+  process.execPath,
+  ['node_modules/vite/bin/vite.js', 'preview', '--host', '127.0.0.1', '--port', '4187'],
+  { stdio: 'ignore' },
+);
 const browser = await chromium.launch({ headless: true, args: ['--enable-precise-memory-info'] });
-const page = await browser.newPage({ viewport: { width: 360, height: 640 } });
-const errors: string[] = [];
-page.on('console', (message) => {
-  if (message.type() === 'error') errors.push(message.text());
-});
-page.on('pageerror', (error) => errors.push(error.message));
-page.on('requestfailed', (request) => errors.push(`network:${new URL(request.url()).pathname}`));
-await page.addInitScript({
-  content:
-    "window.Twitch={ext:{onAuthorized:function(callback){queueMicrotask(function(){callback({token:'synthetic',userId:'U-performance',channelId:'synthetic'})})},onError:function(){}}};window.__m4Frames=[];window.__m4Last=performance.now();window.__m4Frame=function(now){window.__m4Frames.push(now-window.__m4Last);if(window.__m4Frames.length>5000)window.__m4Frames.shift();window.__m4Last=now;requestAnimationFrame(window.__m4Frame)};requestAnimationFrame(window.__m4Frame);",
-});
-let state = originalInitialState(randomUUID(), () => 0.5);
-await page.route('https://t2la0784p6.execute-api.us-east-2.amazonaws.com/staging/**', async (route) => {
-  if (route.request().method() === 'GET')
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ state, serverTime: Date.now() }),
-    });
-  const input = route.request().postDataJSON() as { action: { type: string; [key: string]: unknown } };
-  const action = input.action;
-  try {
-    if (action.type === 'moveZone')
-      state = populateOriginalZone(transitionOriginalZone(state, String(action.destination)));
-    else if (action.type === 'assignDeparture')
-      state = assignOriginalDeparture(
-        state,
-        String(action.ship) as never,
-        String(action.destination) as never,
-        Boolean(action.loadGroundVehicle),
-      );
-    else if (action.type === 'completeDeparture') state = completeOriginalDeparture(state);
-    else if (action.type === 'scan') state = scanOriginalZone(state, Date.now());
-    else if (action.type === 'analyze') state = analyzeOriginalNode(state, String(action.nodeId));
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ state, replayed: false, serverTime: Date.now() }),
-    });
-  } catch {
-    return route.fulfill({
-      status: 409,
-      contentType: 'application/json',
-      body: JSON.stringify({ code: 'ACTION_REJECTED', message: 'Synthetic action rejected.' }),
-    });
+try {
+  let ready = false;
+  for (let i = 0; i < 50; i++) {
+    try {
+      ready = (await fetch(preview)).ok;
+    } catch {
+      /* preview is starting */
+    }
+    if (ready) break;
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
-});
-await page.goto('http://127.0.0.1:4180/mobile.html');
-await page.getByText('Crew Ring Arrival', { exact: true }).waitFor();
-const zone = (id: string) => ORIGINAL_CONTENT.zones.find((item) => item.id === id)!;
-function routePath(from: string, to: string) {
-  const queue: [string, string[]][] = [[from, []]],
-    seen = new Set([from]);
-  while (queue.length) {
-    const [id, path] = queue.shift()!;
-    if (id === to) return path;
-    for (const exit of zone(id).exits)
-      if (!seen.has(exit.to)) {
-        seen.add(exit.to);
-        queue.push([exit.to, [...path, exit.to]]);
+  if (!ready) throw Error('Production preview unavailable');
+  const results = [];
+  for (const layout of [
+    { name: 'Panel', file: 'panel.html', width: 318, height: 500 },
+    { name: 'Mobile', file: 'mobile.html', width: 360, height: 640 },
+  ]) {
+    const page = await browser.newPage({ viewport: layout });
+    const fixture = await setup(page);
+    await page.addInitScript({
+      content: `window.dimePerformance={frames:[],last:0};
+      function measureFrame(now) {
+        var metrics=window.dimePerformance;
+        if(metrics.last) metrics.frames.push(now-metrics.last);
+        if(metrics.frames.length>12000) metrics.frames.shift();
+        metrics.last=now;requestAnimationFrame(measureFrame);
       }
-  }
-  throw Error(`No path ${from} -> ${to}`);
-}
-const transitions: number[] = [];
-async function moveTo(id: string) {
-  for (const next of routePath(state.world.zone, id)) {
-    const started = performance.now(),
-      label = zone(next).name;
-    await page.getByRole('button', { name: new RegExp(label) }).click();
-    await page.getByText(label, { exact: true }).first().waitFor();
-    transitions.push(performance.now() - started);
-  }
-}
-async function travel(destination: string) {
-  const service = originalTravelService(state.location);
-  await moveTo(service.assign);
-  const name = ORIGINAL_CONTENT.locations.find((item) => item.id === destination)!.name;
-  await page.getByRole('button', { name: `Assign ${name}` }).click();
-  await moveTo(service.depart);
-  await page.getByRole('button', { name: 'Depart assigned bay' }).click();
-  await page.getByText(name, { exact: true }).first().waitFor();
-}
-type Sample = {
-  cycle: number;
-  phase: 'initial' | 'active' | 'final' | 'post-idle';
-  at: number;
-  heap: number | null;
-  dom: number;
-  canvas: number;
-  averageFrameMs: number;
-  p95FrameMs: number;
-  worstFrameMs: number;
-  documentScroll: boolean;
-};
-const samples: Sample[] = [];
-async function sample(cycle: number, phase: Sample['phase'] = 'active') {
-  samples.push(
-    await page.evaluate(
-      ({ cycle, phase }) => {
-        const target = window as Window & { __m4Frames?: number[] };
-        const frames = target.__m4Frames ?? [],
-          sorted = [...frames].sort((a, b) => a - b);
+      requestAnimationFrame(measureFrame);`,
+    });
+    const start = performance.now();
+    await page.goto(preview + '/' + layout.file);
+    await page.locator('canvas[data-player-x]').waitFor();
+    const readyMs = performance.now() - start;
+    const sample = () =>
+      page.evaluate(() => {
+        const frames = (window as Window & { dimePerformance: { frames: number[] } }).dimePerformance.frames;
+        const sorted = [...frames].sort((a, b) => a - b);
         return {
-          cycle,
-          phase,
-          at: Date.now(),
-          heap:
+          p95FrameMs: sorted[Math.floor(sorted.length * 0.95)] ?? 0,
+          worstFrameMs: sorted.at(-1) ?? 0,
+          frames: frames.length,
+          heapBytes:
             (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize ??
             null,
           dom: document.querySelectorAll('*').length,
           canvas: document.querySelectorAll('canvas').length,
-          averageFrameMs: frames.reduce((a, b) => a + b, 0) / Math.max(1, frames.length),
-          p95FrameMs: sorted[Math.floor(sorted.length * 0.95)] ?? 0,
-          worstFrameMs: sorted.at(-1) ?? 0,
           documentScroll: document.documentElement.scrollHeight > innerHeight,
         };
-      },
-      { cycle, phase },
-    ),
-  );
-}
-const started = Date.now();
-let cycles = 0;
-await sample(0, 'initial');
-while (cycles < 20 || Date.now() - started < durationMs) {
-  for (const destination of ['loc.l002', 'loc.l003', 'loc.l004', 'loc.l001']) {
-    await travel(destination);
-    if (destination === 'loc.l002') {
-      await moveTo('zone.z014');
-      await page.getByRole('button', { name: 'Ping signatures' }).click();
-      const analyze = page.getByRole('button', { name: 'Analyze selected signature' });
-      if (await analyze.isVisible()) await analyze.click();
+      });
+    const initial = await sample();
+    const transitions = [];
+    let cycles = 0;
+    while (performance.now() - start < duration || cycles < 1) {
+      for (const destination of ['zone.z008', 'zone.z001']) {
+        const state = fixture.store.states.get('synthetic-walking') as OriginalPlayerState;
+        for (const next of zoneRoute(state.world.zone, destination).slice(1)) {
+          const current = fixture.store.states.get('synthetic-walking') as OriginalPlayerState;
+          const map = originalZoneMap(current.world.zone),
+            exit = map.exits.find((e) => e.to === next)!;
+          const before = fixture.posts.length;
+          await walkTo(page, map, exit, layout.name === 'Mobile');
+          if (fixture.posts.length !== before) throw Error('Walking wrote to the save');
+          const started = performance.now();
+          await page
+            .getByRole('button', {
+              name: `Use ${exitKind(map.id, exit)} · ${originalZoneMap(next).name}`,
+              exact: true,
+            })
+            .click();
+          await page.waitForFunction((zone) => document.querySelector('canvas')?.dataset.zone === zone, next);
+          transitions.push(performance.now() - started);
+        }
+      }
+      cycles++;
     }
+    const final = await sample();
+    await page.waitForTimeout(1000);
+    const idle = await sample();
+    const sorted = [...transitions].sort((a, b) => a - b);
+    const result = {
+      layout: layout.name,
+      readyMs,
+      durationMs: performance.now() - start,
+      cycles,
+      transitions: transitions.length,
+      transitionP95Ms: sorted[Math.floor(sorted.length * 0.95)],
+      initial,
+      final,
+      idle,
+      errors: fixture.errors,
+    };
+    if (fixture.errors.length || final.documentScroll || final.canvas !== 1) {
+      await writeFile(output, JSON.stringify(result, null, 2));
+      throw Error('Production performance integrity check failed');
+    }
+    results.push(result);
+    await page.close();
   }
-  cycles++;
-  if (cycles % 5 === 0) await sample(cycles);
+  let assetBytes = 0,
+    gzipBytes = 0;
+  for (const name of await readdir('dist/frontend/assets')) {
+    const bytes = await readFile('dist/frontend/assets/' + name);
+    assetBytes += bytes.length;
+    gzipBytes += gzipSync(bytes).length;
+  }
+  const report = {
+    browser: browser.version(),
+    assetBytes,
+    gzipBytes,
+    results,
+    limitations:
+      'Local Chromium production build, actual API service with synthetic in-memory state. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap samples are observational, not proof against a leak.',
+  };
+  await writeFile(output, JSON.stringify(report, null, 2) + '\n');
+  console.log(JSON.stringify({ assetBytes, gzipBytes, results }, null, 2));
+} finally {
+  await browser.close();
+  server.kill();
 }
-await sample(cycles, 'final');
-await page.waitForTimeout(30_000);
-await sample(cycles, 'post-idle');
-const heapMeasurement = classifyHeapMeasurements(samples.map((sample) => sample.heap));
-samples.forEach((sample, index) => {
-  sample.heap = heapMeasurement.values[index] ?? null;
-});
-const sorted = [...transitions].sort((a, b) => a - b);
-const heapValues = samples.map((sample) => sample.heap).filter((value): value is number => value !== null);
-const heapAt = (phase: Sample['phase']) => samples.find((sample) => sample.phase === phase)?.heap ?? null;
-const report = {
-  browser: browser.version(),
-  platform: process.platform,
-  architecture: process.arch,
-  build: 'production Twitch preview',
-  durationMs: Date.now() - started,
-  cycles,
-  transition: {
-    averageMs: transitions.reduce((a, b) => a + b, 0) / transitions.length,
-    p95Ms: sorted[Math.floor(sorted.length * 0.95)],
-    worstMs: sorted.at(-1),
-  },
-  heapMeasurement: {
-    available: heapMeasurement.available,
-    method: heapMeasurement.method,
-    reason: heapMeasurement.reason,
-    initialBytes: heapAt('initial'),
-    midpointBytes: samples[Math.floor(samples.length / 2)]?.heap ?? null,
-    finalBytes: heapAt('final'),
-    postIdleBytes: heapAt('post-idle'),
-    minimumBytes: heapValues.length ? Math.min(...heapValues) : null,
-    maximumBytes: heapValues.length ? Math.max(...heapValues) : null,
-    forcedGarbageCollection: false,
-  },
-  samples,
-  errors,
-  limitations:
-    'Local Chromium production-preview surrogate. Real Twitch webview and domain performance remain release gates.',
-};
-await writeFile(output, JSON.stringify(report, null, 2) + '\n');
-console.log(
-  JSON.stringify(
-    { durationMs: report.durationMs, cycles, transition: report.transition, errors: errors.length },
-    null,
-    2,
-  ),
-);
-await browser.close();
