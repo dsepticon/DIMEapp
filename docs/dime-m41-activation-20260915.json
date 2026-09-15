@@ -1,0 +1,159 @@
+{
+  "date": "2026-09-15",
+  "branch": "codex/dime-m4-destroya-universe",
+  "source_commit": "d87da54b58b4adc5e7661c22f7341f496e0a1827",
+  "account": "861738068626",
+  "region": "us-east-2",
+  "stack": "dime-v2-review-20260912",
+  "change_set_arn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m41-conversion-enabled-20260915-1/c54d9ca1-7449-4529-bb0b-7be15b1a12c7",
+  "change_operations": [
+    {
+      "action": "Modify",
+      "logical_id": "EbsFunction",
+      "replacement": false,
+      "properties": [
+        "Environment.Variables.DIME_CONVERSION_MODE",
+        "Environment.Variables.DIME_CONFIG_REVISION"
+      ]
+    }
+  ],
+  "stack_result": "UPDATE_COMPLETE",
+  "function": {
+    "CodeSha256": "rxZnl9Z5emblaB6SLaAtIOzHYBtcrtCiSK5bj2H/HnA=",
+    "Revision": "m41-conversion-enabled-20260915-1",
+    "Mode": "ENABLED",
+    "TagsEmpty": true,
+    "Role": "arn:aws:iam::861738068626:role/dime-v2-review-20260912-EbsExecutionRole-UhpeXJJLIY3K",
+    "LastUpdateStatus": "Successful"
+  },
+  "routes": [
+    "GET /v4/state",
+    "GET /state",
+    "POST /actions",
+    "POST /v4/content/convert",
+    "POST /v4/profile/reset",
+    "POST /v4/actions",
+    "POST /profile/reset",
+    "POST /v4/content/preview"
+  ],
+  "wipe": {
+    "table": "dime-v2-staging-review01-dime-v2-review-20260912-player-state",
+    "start_utc": "2026-09-15T14:30:31.657484+00:00",
+    "initial_item_count": 592,
+    "deletion_requests_completed": 592,
+    "retry_rounds": 0,
+    "passes": [592, 0],
+    "categories": {
+      "STATE": 6,
+      "REQUEST": 586,
+      "OTHER_TECHNICAL": 0
+    },
+    "verification_counts": [0, 0],
+    "error": null,
+    "finish_utc": "2026-09-15T14:31:09.661417+00:00"
+  },
+  "table_metadata_unchanged": true,
+  "lambda_code_unchanged": true,
+  "processed_template_structurally_unchanged": true,
+  "twitch_artifact": {
+    "source_commit": "d87da54b58b4adc5e7661c22f7341f496e0a1827",
+    "filename": "DIME-Twitch-0.8.0-movement-fixed-20260915.zip",
+    "path": "/tmp/DIME-Twitch-0.8.0-movement-fixed-20260915.zip",
+    "bytes": 90608,
+    "sha256": "274fa1ce9067a368672f560e43ede29b6337b7e3244ef43e88afe01ca7ccdfb5",
+    "files": [
+      {
+        "path": "assets/main-CVF95crf.js",
+        "bytes": 303584,
+        "sha256": "f8c93e014e54ab451966dcf2cf3d1c4eea7eb4c4cf62dada24725680e9d7d060"
+      },
+      {
+        "path": "assets/main-DkFWm2hL.css",
+        "bytes": 5354,
+        "sha256": "c8801a0865e6c1e0f220bce89f8002e5460f1b73cc5239f746f34ea759e28b13"
+      },
+      {
+        "path": "index.html",
+        "bytes": 483,
+        "sha256": "7c116cbe89787ae4121e146978412e61dfc3fb464d26bdeff60c1f91513e36f6"
+      },
+      {
+        "path": "mobile.html",
+        "bytes": 573,
+        "sha256": "a1486daabe354194b193f5ed102382d9359ecce84a03ebfb0e1f24fd24d9c45f"
+      },
+      {
+        "path": "panel.html",
+        "bytes": 573,
+        "sha256": "a1486daabe354194b193f5ed102382d9359ecce84a03ebfb0e1f24fd24d9c45f"
+      }
+    ],
+    "audit": "PASS",
+    "images": 0,
+    "tests": 0,
+    "api": "https://t2la0784p6.execute-api.us-east-2.amazonaws.com/staging",
+    "privacy": "https://destroyaindustriesminingextension.com/privacy",
+    "rollback": "/tmp/dime-m41-activation/DIME-Twitch-0.8.0-movement-fixed-v4-rollback.zip",
+    "source_maps": 0,
+    "windows_path": "/mnt/c/Users/dylan/Downloads/DIME-Twitch-0.8.0-movement-fixed-20260915.zip",
+    "windows_copy_byte_identical": true
+  },
+  "twitch_upload": "BLOCKED: no authenticated browser control available",
+  "live_authenticated_gameplay": "BLOCKED: no approved live synthetic authentication mechanism or Twitch webview access",
+  "unit_tests": 270,
+  "production_browser_tests": 6,
+  "legacy_browser_tests": 66,
+  "local_performance": {
+    "environment": "Local production artifacts, headless Chromium, synthetic API; not a Twitch webview benchmark",
+    "results": [
+      {
+        "build": "old",
+        "layout": "panel",
+        "canvasChangedAfterKeyboard": false,
+        "directionalControls": 0,
+        "saveWritesDuringWalking": 0,
+        "errors": [],
+        "performance": null
+      },
+      {
+        "build": "old",
+        "layout": "mobile",
+        "canvasChangedAfterKeyboard": false,
+        "directionalControls": 0,
+        "saveWritesDuringWalking": 0,
+        "errors": [],
+        "performance": null
+      },
+      {
+        "build": "corrected",
+        "layout": "panel",
+        "canvasChangedAfterKeyboard": true,
+        "directionalControls": 4,
+        "saveWritesDuringWalking": 0,
+        "errors": [],
+        "performance": {
+          "frames": 301,
+          "p50FrameMs": 16.699999999999818,
+          "p95FrameMs": 16.799999999999727,
+          "maxFrameMs": 16.800000000000182
+        }
+      },
+      {
+        "build": "corrected",
+        "layout": "mobile",
+        "canvasChangedAfterKeyboard": true,
+        "directionalControls": 4,
+        "saveWritesDuringWalking": 0,
+        "errors": [],
+        "performance": {
+          "frames": 301,
+          "p50FrameMs": 16.699999999999818,
+          "p95FrameMs": 16.700000000000728,
+          "maxFrameMs": 16.800000000000182
+        }
+      }
+    ]
+  },
+  "total_browser_tests": 72,
+  "legacy_browser_duration": "24.2 minutes"
+}
