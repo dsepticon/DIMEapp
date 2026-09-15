@@ -8,7 +8,7 @@ import { zoneRoute, exitKind } from '../shared/originalNavigation';
 import type { OriginalPlayerState } from '../shared/originalSchema';
 
 const duration = Number(process.env.DIME_PERFORMANCE_DURATION_MS ?? 60_000);
-const output = process.env.DIME_PERFORMANCE_OUTPUT ?? '/tmp/dime-m41-vacuum/performance.json';
+const output = process.env.DIME_PERFORMANCE_OUTPUT ?? '/tmp/dime-m41-nodes/performance.json';
 const preview = 'http://127.0.0.1:4187';
 const server = spawn(
   process.execPath,
@@ -135,7 +135,20 @@ try {
         })),
       },
     };
-    mineralState.world.scanner.analyzed = [nodeId];
+    // Render-only stress fixture: maximum eight intact formations plus eight authoritative fragments.
+    for (let i = 0; i < 8; i++) {
+      const id = 'zone.z014.node.formation-stress-' + i;
+      mineralState.world.nodes[id] = {
+        ...mineralState.world.nodes[nodeId]!,
+        id,
+        x: mineralMap.spawn.x + [-4, -1, 2, 5][i % 4]!,
+        y: mineralMap.spawn.y + (i < 4 ? -2 : 1),
+        size: 1 + (i % 5),
+        status: 'INTACT',
+        fragments: [],
+      };
+    }
+    mineralState.world.scanner.analyzed = Object.keys(mineralState.world.nodes);
     fixture.store.states.set('synthetic-walking', mineralState);
     await page.reload();
     await page.waitForFunction(() => document.querySelector('canvas')?.dataset.fragments === '8');
@@ -168,6 +181,7 @@ try {
     const result = {
       vacuumEffects,
       initialVisibleFragments: 8,
+      intactFormationStressCount: 8,
       collectedFragmentUnits: 80,
       layout: layout.name,
       readyMs,

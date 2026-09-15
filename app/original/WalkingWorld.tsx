@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { originalZoneMap } from '../../shared/originalWorld';
-import { FIRST_CONTRACT_NODE } from '../../shared/originalQuest';
+import { nodeInZone } from '../../shared/originalVacuum';
+import { forwardNodeCandidates, pointedNode, type Facing } from '../../shared/originalNodeTargeting';
+import { drawNodeFormation } from './nodeArt';
+import type { ToolMode } from './VacuumConsole';
 import type { OriginalPlayerState } from '../../shared/originalSchema';
 import { drawMineralFragment } from './fragmentArt';
 import { attractedPosition, type VacuumVisual } from './VacuumConsole';
@@ -25,7 +28,9 @@ export function WalkingWorld({
   marker,
   vacuum,
   fragmentTarget,
+  mode,
 }: {
+  mode: ToolMode;
   state: OriginalPlayerState;
   paused: boolean;
   onPosition: (position: Position) => void;
@@ -38,8 +43,18 @@ export function WalkingWorld({
   const canvas = useRef<HTMLCanvasElement>(null),
     keys = useRef(new Set<string>()),
     touch = useRef(new Map<number, Direction>());
-  const latest = useRef({ state, paused, onPosition, onTarget, target, marker, vacuum, fragmentTarget });
-  latest.current = { state, paused, onPosition, onTarget, target, marker, vacuum, fragmentTarget };
+  const latest = useRef({
+    state,
+    paused,
+    onPosition,
+    onTarget,
+    target,
+    marker,
+    vacuum,
+    fragmentTarget,
+    mode,
+  });
+  latest.current = { state, paused, onPosition, onTarget, target, marker, vacuum, fragmentTarget, mode };
   const map = useMemo(() => originalZoneMap(state.world.zone), [state.world.zone]);
   const position = useRef(arrivalPosition(map, state.world.entry)),
     camera = useRef({ x: 0, y: 0, scale: 24 });
@@ -62,10 +77,13 @@ export function WalkingWorld({
     keys.current.clear();
     touch.current.clear();
     const incoming = map.exits.find((exit) => `from:${exit.to}` === latest.current.state.world.entry);
-    let facing = incoming ? ({ N: 'S', S: 'N', E: 'W', W: 'E' } as const)[incoming.facing] : 'S';
+    let facing: Facing = incoming ? ({ N: 'S', S: 'N', E: 'W', W: 'E' } as const)[incoming.facing] : 'S';
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0,
-      last = 0;
+      last = 0,
+      lastTargetTime = 0,
+      lastTargetPosition = { x: -1, y: -1 },
+      lastMode = latest.current.mode;
     const down = (event: KeyboardEvent) => {
       if (
         !directions[event.code] ||
@@ -113,6 +131,25 @@ export function WalkingWorld({
       else if (input.down) facing = 'S';
       position.current = walk(map, position.current, input, dt);
       latest.current.onPosition(position.current);
+      if (now - lastTargetTime > 100) {
+        lastTargetTime = now;
+        const current = latest.current,
+          selected = current.state.world.nodes[current.target];
+        const moved =
+          Math.hypot(position.current.x - lastTargetPosition.x, position.current.y - lastTargetPosition.y) >
+          0.15;
+        if (current.mode === 'laser' && !current.state.world.miningSession) {
+          if (moved || lastMode !== current.mode || !selected || selected.status !== 'INTACT') {
+            const next = forwardNodeCandidates(current.state, position.current, facing)[0]?.node;
+            if (next && next.id !== current.target) current.onTarget(next.id);
+            else if (selected && (selected.status !== 'INTACT' || !nodeInZone(current.state, selected)))
+              current.onTarget('');
+          }
+        }
+        lastTargetPosition = { ...position.current };
+        lastMode = current.mode;
+      }
+
       const bounds = element.getBoundingClientRect(),
         ratio = Math.min(window.devicePixelRatio || 1, 2),
         width = Math.max(1, bounds.width),
@@ -151,16 +188,19 @@ export function WalkingWorld({
       }
       let visiblePieces = 0;
       for (const node of Object.values(latest.current.state.world.nodes)) {
-        if (
-          !node.id.startsWith(map.id + '.node.') &&
-          !(map.id === 'zone.z014' && node.id === FIRST_CONTRACT_NODE)
-        )
-          continue;
+        if (!nodeInZone(latest.current.state, node)) continue;
         if (node.status === 'INTACT') {
-          context.fillStyle = node.id === latest.current.target ? '#f7e7a1' : '#a8c7d4';
-          context.beginPath();
-          context.arc((node.x + 0.5 - cx) * scale, (node.y + 0.5 - cy) * scale, 7, 0, Math.PI * 2);
-          context.fill();
+          drawNodeFormation(
+            context,
+            (node.x + 0.5 - cx) * scale,
+            (node.y + 0.5 - cy) * scale,
+            node.size,
+            latest.current.state.world.scanner.analyzed.includes(node.id) ? node.ore : undefined,
+            latest.current.mode === 'laser' && node.id === latest.current.target,
+            latest.current.state.world.miningSession?.nodeId === node.id,
+            now,
+            reduced.matches,
+          );
         }
         for (const piece of node.fragments)
           if (!piece.collected) {
@@ -205,6 +245,8 @@ export function WalkingWorld({
       element.dataset.vacuumProgress = String(latest.current.vacuum?.progress ?? 0);
       element.dataset.vacuumStage = latest.current.vacuum?.stage ?? 'idle';
       element.dataset.fragmentArt = 'pixel-shards';
+      element.dataset.nodeArt = 'pixel-formations';
+      element.dataset.nodeTarget = latest.current.mode === 'laser' ? latest.current.target : '';
       element.dataset.playerX = position.current.x.toFixed(3);
       element.dataset.playerY = position.current.y.toFixed(3);
       element.dataset.cameraX = cx.toFixed(3);
@@ -237,15 +279,7 @@ export function WalkingWorld({
             view = camera.current,
             x = (event.clientX - rect.left) / view.scale + view.x,
             y = (event.clientY - rect.top) / view.scale + view.y;
-          const node = Object.values(state.world.nodes).find(
-            (node) =>
-              (node.id.startsWith(map.id + '.node.') ||
-                (map.id === 'zone.z014' && node.id === FIRST_CONTRACT_NODE)) &&
-              (Math.hypot(node.x + 0.5 - x, node.y + 0.5 - y) < 0.8 ||
-                node.fragments.some(
-                  (piece) => !piece.collected && Math.hypot(piece.x + 0.5 - x, piece.y + 0.5 - y) < 0.65,
-                )),
-          );
+          const node = mode === 'laser' ? pointedNode(state, { x, y }, view.scale) : undefined;
           if (node) onTarget(node.id);
         }}
       />

@@ -384,7 +384,7 @@ function App() {
   const zoneInfo = ORIGINAL_CONTENT.zones.find((x) => x.id === state?.world.zone);
   const zoneKinds = zoneInfo?.objectKinds ?? [];
   return (
-    <main className="originalApp">
+    <main className="originalApp" data-tool-mode={toolMode}>
       <header>
         <div>
           <strong>D.I.M.E.</strong>
@@ -418,6 +418,7 @@ function App() {
         <>
           <section className="world">
             <WalkingWorld
+              mode={toolMode}
               state={state}
               paused={
                 resetOpen ||

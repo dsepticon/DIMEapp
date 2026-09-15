@@ -1,7 +1,8 @@
 import { ORIGINAL_CONTENT } from './originalCatalog';
 import { originalStateSchema, type OriginalPlayerState } from './originalSchema';
 import { settleSale } from './mineralUnits';
-import { originalReachableCells, originalZoneMap } from './originalWorld';
+import { originalZoneMap } from './originalWorld';
+import { nodePlacementCells, placementAvailable } from './originalNodePlacement';
 
 export const FIRST_CONTRACT_UNITS = 400;
 export const FIRST_CONTRACT_REWARD = 500;
@@ -17,10 +18,19 @@ export function ensureFirstContractNode(source: OriginalPlayerState): OriginalPl
   )
     return state;
   const map = originalZoneMap(state.world.zone);
-  const tile =
-    originalReachableCells(map).queue.find(
-      (point) => Math.hypot(point.x - map.spawn.x, point.y - map.spawn.y) >= 3,
-    ) ?? map.spawn;
+  const existing = Object.values(state.world.nodes).filter(
+    (n) => n.id.startsWith(state.world.zone + '.') || n.id.startsWith(state.world.zone + '-'),
+  );
+  const fragments = existing.flatMap((n) => n.fragments.filter((p) => !p.collected));
+  const tile = nodePlacementCells(state.world.zone)
+    .filter((p) => placementAvailable(p, existing, fragments))
+    .sort(
+      (a, b) =>
+        Math.hypot(a.x - map.spawn.x, a.y - map.spawn.y) - Math.hypot(b.x - map.spawn.x, b.y - map.spawn.y) ||
+        a.y - b.y ||
+        a.x - b.x,
+    )[0];
+  if (!tile) throw Error('NO_SAFE_NODE_REGION');
   state.world.nodes[FIRST_CONTRACT_NODE] = {
     id: FIRST_CONTRACT_NODE,
     ore: FIRST_CONTRACT_MATERIAL,

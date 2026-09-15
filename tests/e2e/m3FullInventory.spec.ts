@@ -135,13 +135,18 @@ for (const [layout, width, height] of [
           0,
           Math.min(34 * 16 - canvas.height, Math.round((playerY + 0.5) * 16 - canvas.height / 2)),
         );
-        return [
-          ...canvas
-            .getContext('2d')!
-            .getImageData(piece.x * 16 - cameraX + 5, piece.y * 16 - cameraY + 7, 1, 1).data,
-        ].slice(0, 3);
+        const data = canvas
+          .getContext('2d')!
+          .getImageData(piece.x * 16 - cameraX + 3, piece.y * 16 - cameraY + 3, 10, 10).data;
+        let body = 0,
+          facet = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i] === 103 && data[i + 1] === 224 && data[i + 2] === 222) body++;
+          if (data[i] === 230 && data[i + 1] === 255 && data[i + 2] === 255) facet++;
+        }
+        return body >= 8 && facet >= 1;
       }, fragment);
-    expect(await targetPixel()).toEqual([103, 224, 222]);
+    expect(await targetPixel()).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
     await page.screenshot({ path: `test-results/m3-world/m3-full-inventory-${layout}.png` });
     await recovery.getByRole('button', { name: 'Retry pending action' }).click();
@@ -178,7 +183,7 @@ for (const [layout, width, height] of [
           .world!.nodes[nodeId].fragments.filter((piece) => !piece.collected)
           .reduce((sum, piece) => sum + piece.units, 0),
     ).toBe(400);
-    await expect.poll(targetPixel).not.toEqual([103, 224, 222]);
+    await expect.poll(targetPixel).toBe(false);
     const clearOfTouchControls = await page.evaluate(
       (pieces) => {
         const canvas = document.querySelector<HTMLCanvasElement>(

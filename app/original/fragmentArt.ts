@@ -1,4 +1,4 @@
-/** Original code-drawn pixel art: nine-pixel shards, smaller than the fourteen-pixel source node. */
+/** Original code-drawn pixel art: nine-pixel shards, smaller than every intact rock formation. */
 const colors = ['#cd637a', '#77bdb5', '#b091d9', '#e7b96b', '#77bf82', '#74aee2', '#dca2ce', '#dae1b8'];
 const silhouettes = [
   ['0011000', '0111100', '1111110', '1111111', '0111111', '0011110', '0001100'],

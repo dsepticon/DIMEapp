@@ -1,7 +1,8 @@
 import { ORIGINAL_CONTENT } from './originalCatalog';
 import { originalStateSchema, type OriginalPlayerState } from './originalSchema';
 import { placeGroundPieces, replayPulseTrace, type NodeSpec, type PulseRun } from './continuousMining';
-import { vacuumEligibility, vacuumDuration } from './originalVacuum';
+import { nodeToolRange } from './originalNodeTargeting';
+import { vacuumEligibility, vacuumDuration, nodeInZone } from './originalVacuum';
 import { FIRST_CONTRACT_NODE } from './originalQuest';
 
 const NODE_RESPAWN_MS = 30 * 60 * 1000;
@@ -42,23 +43,8 @@ export function originalNodeSpec(node: Node): NodeSpec {
 }
 
 function reachableTarget(state: OriginalPlayerState, node: Node, player: Tile, spatial: MiningSpatialCheck) {
-  const handTool = ORIGINAL_CONTENT.equipment.find((item) => item.id === 'gear.e001');
-  if (
-    node.source === 'extract.x001' &&
-    !(handTool?.toolStats?.supportedNodeSizes as readonly number[] | undefined)?.includes(node.size)
-  )
-    throw new Error('MINING_TOOL_INELIGIBLE');
-  const range =
-    node.source === 'extract.x001'
-      ? (state.equipment['gear.e001'] ?? 0) > 0
-        ? handTool?.toolStats?.rangeTiles
-        : undefined
-      : (state.ships['fleet.v002'] ?? 0) > 0 &&
-          state.world.groundVehicle?.active &&
-          state.world.groundVehicle.occupied &&
-          state.world.groundVehicle.zone === state.world.zone
-        ? 4.5
-        : undefined;
+  const range = nodeToolRange(state, node);
+  if (!range && node.source === 'extract.x001') throw new Error('MINING_TOOL_INELIGIBLE');
   if (
     !range ||
     !spatial.validPosition(state.world.zone, player) ||
@@ -82,6 +68,7 @@ export function beginOriginalMining(
   if (
     !node ||
     node.status !== 'INTACT' ||
+    !nodeInZone(state, node) ||
     !state.world.scanner.analyzed.includes(nodeId) ||
     !spatial.miningAllowed(state.world.zone, node.source)
   )

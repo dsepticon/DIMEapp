@@ -450,3 +450,49 @@ footer small {
 .vacuumHold[aria-disabled='true'] {
   opacity: 0.55;
 }
+/* Keep target feedback and the hold control visible on the 500px Panel. */
+.miningConsole {
+  flex: 0 0 auto;
+  gap: 3px;
+  max-height: none;
+  overflow: visible;
+  padding: 4px;
+}
+.miningConsole .scannerHeading {
+  align-items: center;
+  font-size: 9px;
+}
+.miningConsole .scannerHeading button {
+  min-height: 26px;
+  padding: 3px;
+  font-size: 11px;
+}
+.miningConsole select {
+  min-height: 24px;
+}
+.nodeTargetStatus {
+  font-size: 11px;
+  line-height: 14px;
+}
+.miningConsole .nodeDetails {
+  display: none;
+}
+.miningConsole[data-active='true'] .scannerHeading {
+  display: none;
+}
+@media (max-height: 540px) {
+  .originalApp[data-tool-mode='laser']:has(.miningConsole) footer {
+    display: none;
+  }
+  .miningConsole[data-active='true'] .beamEffect {
+    display: none;
+  }
+  .miningConsole[data-active='true'] .nodeTargetStatus {
+    display: none;
+  }
+  .miningConsole[data-active='true'] > button:first-of-type {
+    min-height: 26px;
+    padding: 3px;
+    font-size: 11px;
+  }
+}

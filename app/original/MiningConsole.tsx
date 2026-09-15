@@ -11,7 +11,8 @@ import { originalNodeSpec } from '../../shared/originalMining';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
 import type { Position } from './walking';
 import type { ToolMode } from './VacuumConsole';
-import { FIRST_CONTRACT_NODE } from '../../shared/originalQuest';
+import { nodeInZone } from '../../shared/originalVacuum';
+import { nodeTargetStatus, nodeToolRange } from '../../shared/originalNodeTargeting';
 
 type Props = {
   state: OriginalPlayerState;
@@ -24,17 +25,15 @@ type Props = {
 };
 export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, onTarget }: Props) {
   const nodes = Object.values(state.world.nodes).filter(
-    (node) =>
-      node.id.startsWith(`${state.world.zone}.node.`) ||
-      (state.world.zone === 'zone.z014' && node.id === FIRST_CONTRACT_NODE),
+    (node) => nodeInZone(state, node) && node.status === 'INTACT',
   );
   const selected =
     state.world.miningSession?.nodeId ??
-    state.world.extractionSession?.nodeId ??
     (nodes.some((node) => node.id === target) ? target : (nodes[0]?.id ?? ''));
   const setSelected = onTarget;
   const [sim, setSim] = useState<MiningState>(initialState());
   const [held, setHeld] = useState(false);
+  const [outcome, setOutcome] = useState('');
   const [runs, setRuns] = useState<PulseRun[]>([]);
   const runsRef = useRef<PulseRun[]>([]);
   runsRef.current = runs;
@@ -45,6 +44,14 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
   const spec = node ? originalNodeSpec(node) : null;
   const specRef = useRef(spec);
   specRef.current = spec;
+  const [rangeStatus, setRangeStatus] = useState('Move closer');
+  useEffect(() => {
+    const timer = setInterval(
+      () => setRangeStatus(node ? nodeTargetStatus(state, node, getPlayer()) : 'Move closer'),
+      100,
+    );
+    return () => clearInterval(timer);
+  }, [state, node, getPlayer]);
   const analyzed = !!node && state.world.scanner.analyzed.includes(node.id);
   useEffect(() => {
     const release = () => {
@@ -75,7 +82,12 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
             resolving.current = true;
             setHeld(false);
             queueMicrotask(async () => {
-              await mutateRef.current({ type: 'resolveLaser', runs: runsRef.current });
+              const result = await mutateRef.current({ type: 'resolveLaser', runs: runsRef.current });
+              if (
+                result &&
+                Object.values(result.world.nodes).some((n) => n.id === selected && n.status === 'DESTROYED')
+              )
+                setOutcome('Overcharge destroyed this node. Zero yield; respawn pending.');
               resolving.current = false;
               runsRef.current = [];
               setRuns([]);
@@ -86,7 +98,7 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
       50,
     );
     return () => clearInterval(timer);
-  }, [state.world.miningSession, held, spec?.seed, busy]);
+  }, [state.world.miningSession, held, spec?.seed, busy, selected]);
   const start = async () => {
     if (!node) return;
     const next = await mutate({
@@ -95,6 +107,7 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
       player: getPlayer(),
     });
     if (next) {
+      setOutcome('');
       setSim(initialState());
       runsRef.current = [];
       setRuns([]);
@@ -104,8 +117,8 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
   if (!ORIGINAL_CONTENT.zones.find((item) => item.id === state.world.zone)?.regionCount) return null;
   const p = spec ? parameters(spec) : null;
   return (
-    <section className="miningConsole">
-      <div>
+    <section className="miningConsole" data-active={!!state.world.miningSession}>
+      <div className="scannerHeading">
         <b>{node?.status === 'FRACTURED' ? 'MODE: EXTRACTION' : 'MODE: LASER'} · FIELD SCANNER</b>
         <button disabled={busy} onClick={() => void mutate({ type: 'scan' })}>
           Ping signatures
@@ -122,7 +135,7 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
           Stop laser without yield
         </button>
       )}
-      {nodes.length > 0 && (
+      {nodes.length > 0 && !state.world.miningSession && (
         <select
           disabled={busy || !!state.world.miningSession || !!state.world.extractionSession}
           aria-label="Nearby signature"
@@ -138,6 +151,12 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
           ))}
         </select>
       )}
+      {node && (
+        <div className="nodeTargetStatus" role="status">
+          {rangeStatus}
+          {!nodeToolRange(state, node) && ' · Requires occupied Crawl Rig'}
+        </div>
+      )}
       {node && !analyzed && (
         <button disabled={busy} onClick={() => void mutate({ type: 'analyze', nodeId: node.id })}>
           Analyze selected signature
@@ -145,7 +164,7 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
       )}
       {node && analyzed && node.status === 'INTACT' && (
         <>
-          <p>
+          <p className="nodeDetails">
             {ORIGINAL_CONTENT.minerals.find((x) => x.id === node.ore)?.name} · size {node.size} · instability{' '}
             {Math.round(node.instability * 100)}
           </p>
@@ -202,7 +221,7 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
           )}
         </>
       )}
-      {node?.status === 'DESTROYED' && <p>Overcharge destroyed this node. Zero yield; respawn pending.</p>}
+      {outcome && <p role="status">{outcome}</p>}
     </section>
   );
 }
