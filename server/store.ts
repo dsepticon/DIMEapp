@@ -3,19 +3,20 @@ export interface Receipt {
   fingerprint: string;
   expiresAt: number;
 }
-export interface Store {
-  read(player: string): Promise<PlayerState | undefined>;
+type RevisionedState = { revision: number; saveGeneration?: string };
+export interface Store<State extends RevisionedState = PlayerState> {
+  read(player: string): Promise<State | undefined>;
   receipt(player: string, id: string): Promise<Receipt | undefined>;
   commit(
     player: string,
     expected: number | null,
-    state: PlayerState,
+    state: State,
     request?: { id: string; receipt: Receipt },
     generationGuard?: string | null,
   ): Promise<boolean>;
 }
-export class MemoryStore implements Store {
-  states = new Map<string, PlayerState>();
+export class MemoryStore<State extends RevisionedState = PlayerState> implements Store<State> {
+  states = new Map<string, State>();
   receipts = new Map<string, Receipt>();
   async read(player: string) {
     const value = this.states.get(player);
@@ -27,7 +28,7 @@ export class MemoryStore implements Store {
   async commit(
     player: string,
     expected: number | null,
-    state: PlayerState,
+    state: State,
     request?: { id: string; receipt: Receipt },
     generationGuard?: string | null,
   ) {

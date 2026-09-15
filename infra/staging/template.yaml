@@ -31,6 +31,18 @@ Parameters:
     MinLength: 1
     MaxLength: 64
     AllowedPattern: '^[a-z0-9][a-z0-9-]*$'
+  ContentConversionMode:
+    Type: String
+    Description: Server-enforced original-content conversion rollout mode.
+    Default: DISABLED
+    AllowedValues: [DISABLED, TESTERS, ENABLED]
+  ContentConversionTesterTags:
+    Type: String
+    Description: Optional comma-separated keyed tester tags; never player identifiers or keys.
+    Default: ''
+    NoEcho: true
+    MaxLength: 2048
+    AllowedPattern: '^$|^[a-f0-9,]+$'
   LogRetentionDays:
     Type: Number
     Description: Retention for the staging Lambda and API access log groups.
@@ -160,6 +172,8 @@ Resources:
           DIME_STATE_TABLE: !Ref PlayerStateTable
           DIME_ALLOWED_ORIGINS: !Join [',', !Ref TwitchAllowedOrigins]
           DIME_CONFIG_REVISION: !Ref ConfigurationRevision
+          DIME_CONVERSION_MODE: !Ref ContentConversionMode
+          DIME_CONVERSION_TESTER_TAGS: !Ref ContentConversionTesterTags
           TWITCH_EXTENSION_SECRET_B64: !Sub '{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}'
           DIME_PLAYER_ID_KEY_B64: !Sub '{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}'
       Events:
@@ -180,6 +194,36 @@ Resources:
           Properties:
             ApiId: !Ref StagingHttpApi
             Path: /profile/reset
+            Method: POST
+        GetOriginalState:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /v4/state
+            Method: GET
+        PostOriginalActions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /v4/actions
+            Method: POST
+        PostOriginalPreview:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /v4/content/preview
+            Method: POST
+        PostOriginalConvert:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /v4/content/convert
+            Method: POST
+        PostOriginalReset:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref StagingHttpApi
+            Path: /v4/profile/reset
             Method: POST
 
   StagingHttpApi:

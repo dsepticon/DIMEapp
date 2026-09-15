@@ -35,6 +35,7 @@ beforeEach(() => {
   vi.stubEnv('DIME_ENV', 'staging');
   vi.stubEnv('DIME_STATE_TABLE', 'dime-v2-staging-test-table');
   vi.stubEnv('DIME_CONFIG_REVISION', 'named-stage-path-fix-20260913-1');
+  vi.stubEnv('DIME_CONVERSION_MODE', 'DISABLED');
   vi.stubEnv('DIME_ALLOWED_ORIGINS', origin);
   vi.stubEnv('TWITCH_EXTENSION_SECRET_B64', signingKey.toString('base64'));
   vi.stubEnv('DIME_PLAYER_ID_KEY_B64', Buffer.alloc(32, 8).toString('base64'));
@@ -49,6 +50,44 @@ afterEach(() => {
 });
 
 describe('HTTP API v2 named-stage routing', () => {
+  it('never converts saves through legacy state, action, or reset endpoints', async () => {
+    vi.stubEnv('DIME_CONVERSION_MODE', 'ENABLED');
+    vi.resetModules();
+    const { handler } = await import('../server/handler');
+    const authorization = await token();
+    const initial = JSON.parse((await handler(request('GET', '/state', authorization))).body).state;
+    expect(initial.schemaVersion).toBe(2);
+    const action = {
+      requestId: randomUUID(),
+      expectedRevision: initial.revision,
+      action: { type: 'enterZone', zone: 'ARC_L1_CONCOURSE' },
+    };
+    const acted = JSON.parse(
+      (
+        await handler({
+          ...request('POST', '/actions', authorization),
+          body: JSON.stringify(action),
+        })
+      ).body,
+    ).state;
+    expect(acted.schemaVersion).toBe(2);
+    const reset = JSON.parse(
+      (
+        await handler({
+          ...request('POST', '/profile/reset', authorization),
+          body: JSON.stringify({
+            requestId: randomUUID(),
+            expectedRevision: acted.revision,
+            expectedGeneration: acted.saveGeneration,
+            confirmation: RESET_CONFIRMATION,
+          }),
+        })
+      ).body,
+    ).state;
+    expect(reset.schemaVersion).toBe(2);
+    expect(testState.store?.receipts.size).toBe(2);
+  });
+
   it.each([
     ['/staging/state', 'staging', '/state'],
     ['/staging/actions', 'staging', '/actions'],

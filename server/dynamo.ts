@@ -3,16 +3,18 @@ import { DynamoDBDocumentClient, GetCommand, TransactWriteCommand } from '@aws-s
 import { PlayerState, stateSchema } from '../shared/schema';
 import { Receipt, Store } from './store';
 export type DocumentSender = Pick<DynamoDBDocumentClient, 'send'>;
-export class DynamoStore implements Store {
+type RevisionedState = { revision: number; saveGeneration?: string };
+export class DynamoStore<State extends RevisionedState = PlayerState> implements Store<State> {
   constructor(
     private client: DocumentSender,
     private table: string,
+    private parseState: (value: unknown) => State = (value) => stateSchema.parse(value) as unknown as State,
   ) {}
   async read(player: string) {
     const result = await this.client.send(
       new GetCommand({ TableName: this.table, Key: { pk: player, sk: 'STATE' }, ConsistentRead: true }),
     );
-    return result.Item ? stateSchema.parse(result.Item.state) : undefined;
+    return result.Item ? this.parseState(result.Item.state) : undefined;
   }
   async receipt(player: string, id: string): Promise<Receipt | undefined> {
     const result = await this.client.send(
@@ -29,7 +31,7 @@ export class DynamoStore implements Store {
   async commit(
     player: string,
     expected: number | null,
-    state: PlayerState,
+    state: State,
     request?: { id: string; receipt: Receipt },
     generationGuard?: string | null,
   ) {
@@ -83,11 +85,16 @@ export class DynamoStore implements Store {
     }
   }
 }
-export function createDynamoStore(region: string, table: string) {
+export function createDynamoStore<State extends RevisionedState = PlayerState>(
+  region: string,
+  table: string,
+  parseState?: (value: unknown) => State,
+) {
   return new DynamoStore(
     DynamoDBDocumentClient.from(new DynamoDBClient({ region, maxAttempts: 3 }), {
       marshallOptions: { removeUndefinedValues: true },
     }),
     table,
+    parseState,
   );
 }

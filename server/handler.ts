@@ -1,13 +1,20 @@
 import { authenticate, decodeSecret } from './auth';
 import { createDynamoStore } from './dynamo';
+import { parseVersionedContent } from './contentConversion';
+import { createOriginalApi } from './originalApi';
 import { createApi } from './http';
 import { GameService } from './service';
+import type { PlayerState } from '../shared/schema';
+import type { Store } from './store';
+import { createConversionGate } from './conversionGate';
 type ConfigurationCode =
   | 'missing_setting'
   | 'invalid_environment'
   | 'invalid_table'
   | 'invalid_origin'
   | 'invalid_revision'
+  | 'invalid_conversion_mode'
+  | 'invalid_conversion_testers'
   | 'invalid_twitch_key'
   | 'invalid_identity_key'
   | 'invalid_previous_key'
@@ -53,11 +60,25 @@ function configure() {
   const identityKey = secret('DIME_PLAYER_ID_KEY_B64', 'invalid_identity_key');
   if (process.env.TWITCH_PREVIOUS_SECRET_B64)
     keys.push(secret('TWITCH_PREVIOUS_SECRET_B64', 'invalid_previous_key'));
-  return createApi(
-    new GameService(createDynamoStore(required('AWS_REGION'), table)),
-    (header) => authenticate(header, keys, identityKey),
-    origins,
-  );
+  const store = createDynamoStore(required('AWS_REGION'), table, parseVersionedContent);
+  const auth = (header: string | undefined) => authenticate(header, keys, identityKey);
+  let conversionGate;
+  try {
+    conversionGate = createConversionGate(
+      required('DIME_CONVERSION_MODE'),
+      process.env.DIME_CONVERSION_TESTER_TAGS ?? '',
+      identityKey,
+    );
+  } catch (error) {
+    const code = error instanceof Error ? error.message : '';
+    if (code === 'invalid_conversion_mode' || code === 'invalid_conversion_testers')
+      throw new ConfigurationError(code);
+    throw error;
+  }
+  const original = createOriginalApi(store, auth, origins, Date.now, conversionGate);
+  const legacy = createApi(new GameService(store as unknown as Store<PlayerState>), auth, origins);
+  return (request: Parameters<typeof original>[0]) =>
+    request.path.startsWith('/v4/') ? original(request) : legacy(request);
 }
 // Lazy initialization allows packaging/tests without production credentials; one client per warm container.
 let api: ReturnType<typeof configure> | undefined;

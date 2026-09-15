@@ -44,6 +44,13 @@ rule exact_lambda_trust_and_permissions {
 rule bounded_staging_lambda {
   Parameters.ConfigurationRevision.Type == 'String'
   Parameters.ConfigurationRevision.AllowedPattern == '^[a-z0-9][a-z0-9-]*$'
+  Parameters.ContentConversionMode.Type == 'String'
+  Parameters.ContentConversionMode.Default == 'DISABLED'
+  Parameters.ContentConversionMode.AllowedValues == ['DISABLED', 'TESTERS', 'ENABLED']
+  Parameters.ContentConversionTesterTags.Type == 'String'
+  Parameters.ContentConversionTesterTags.Default == ''
+  Parameters.ContentConversionTesterTags.NoEcho == true
+  Parameters.ContentConversionTesterTags.MaxLength == 2048
   Resources.EbsFunction.Type == 'AWS::Serverless::Function'
   Resources.EbsFunction.Properties.Runtime == 'nodejs22.x'
   Resources.EbsFunction.Properties.Handler == 'index.handler'
@@ -53,6 +60,8 @@ rule bounded_staging_lambda {
   Resources.EbsFunction.Properties.Environment.Variables.DIME_ENV == 'staging'
   Resources.EbsFunction.Properties.Environment.Variables.DIME_STATE_TABLE.Ref == 'PlayerStateTable'
   Resources.EbsFunction.Properties.Environment.Variables.DIME_CONFIG_REVISION.Ref == 'ConfigurationRevision'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONVERSION_MODE.Ref == 'ContentConversionMode'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONVERSION_TESTER_TAGS.Ref == 'ContentConversionTesterTags'
   Resources.EbsFunction.Properties.Environment.Variables.TWITCH_EXTENSION_SECRET_B64.'Fn::Sub' == '{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}'
   Resources.EbsFunction.Properties.Environment.Variables.DIME_PLAYER_ID_KEY_B64.'Fn::Sub' == '{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}'
   Resources.EbsFunction.Properties.Events.GetState.Properties.Path == '/state'

@@ -5,6 +5,7 @@ const validEnvironment = {
   DIME_ENV: 'staging',
   DIME_STATE_TABLE: 'dime-v2-staging-test-table',
   DIME_CONFIG_REVISION: 'twitch-secret-fix-20260912-1',
+  DIME_CONVERSION_MODE: 'DISABLED',
   DIME_ALLOWED_ORIGINS: 'https://test.ext-twitch.tv',
   TWITCH_EXTENSION_SECRET_B64: validKey,
   DIME_PLAYER_ID_KEY_B64: validKey,
@@ -30,6 +31,12 @@ describe('Lambda configuration diagnostics', () => {
   it.each([
     [{ DIME_CONFIG_REVISION: undefined }, 'missing_setting'],
     [{ DIME_CONFIG_REVISION: 'bad revision' }, 'invalid_revision'],
+    [{ DIME_CONVERSION_MODE: undefined }, 'missing_setting'],
+    [{ DIME_CONVERSION_MODE: 'OPEN' }, 'invalid_conversion_mode'],
+    [
+      { DIME_CONVERSION_MODE: 'TESTERS', DIME_CONVERSION_TESTER_TAGS: 'not-a-tag' },
+      'invalid_conversion_testers',
+    ],
     [{ TWITCH_EXTENSION_SECRET_B64: '"not-base64"' }, 'invalid_twitch_key'],
     [{ DIME_PLAYER_ID_KEY_B64: 'invalid' }, 'invalid_identity_key'],
     [{ DIME_ALLOWED_ORIGINS: 'http://test.ext-twitch.tv' }, 'invalid_origin'],
