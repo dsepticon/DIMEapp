@@ -60,6 +60,7 @@ Network/503/429 errors retain the original request for retry. A 401 invalidates 
 Failed database writes do not publish speculative state. Conditional transaction failures are reconciled; permissions/throttling/infrastructure exceptions become generic 503 responses. Logs contain status and an AWS request ID only, never request bodies or raw exception text.
 
 The file adapter persists one whole state/receipt snapshot via rename and restores memory on persistence failure. It is a single-process development adapter, not a production database.
+
 # Milestone 2 local chapter
 
 The First Shift adds an optional, backward-compatible quest field and a server-derived `firstShift` action sequence to the v2 global save. Its transition table, tutorial economy, mining interaction, and release limits are documented in [dime-2d-rpg-m2.md](dime-2d-rpg-m2.md). This branch is not deployed; the new frontend requires a matching Lambda bundle in a future reviewed release.
@@ -69,3 +70,9 @@ The First Shift adds an optional, backward-compatible quest field and a server-d
 The uncommitted Milestone 3 work adds `world` to the global save, with a stable zone ID, entry, deterministic node seed reference, sparse node exceptions, scanner history, active mining session, active ROC checkpoint and fractional cargo remainders. Older inventory and cargo numbers remain whole cSCU. A physical pickup is represented in integer minor units (100 units per cSCU); `world.minorRemainders` contains only the 0–99 unit carry, so a legacy 4 cSCU remains 400 units when combined. New and reset profiles start at `ARC-L1` / `ARC_L1_START`. The renderer must select the zone from the server snapshot and show recovery for unknown or mismatched location/zone pairs.
 
 The existing authenticated `POST /actions` route accepts `enterZone(zone)`, `scanZone`, `analyzeNode(nodeId)`, `beginFracture(nodeId,source)`, `completeFracture(nodeId)`, `cancelFracture(nodeId)`, `collectPiece(nodeId,pieceId)`, `retrieveRoc`, `enterRoc(occupied)` and `stowRoc`. No new route or IAM permission is proposed. The server chooses node mineral, properties, yield, fragment IDs and prices. Browser charge simulation cannot prove physical input, so the server also checks the persisted session and minimum elapsed duration. The same revision, save-generation and request-receipt guards cover all actions. See [Milestone 3](dime-2d-rpg-m3-world-mining.md) for formulas and known incomplete routes; this draft is not a release contract yet.
+
+# Milestone 4.1 original-content boundary (proposed)
+
+The proposed handler keeps the same authenticated global Twitch identity and DynamoDB state/receipt transaction. Original-universe operations use `/v4/state`, `/v4/content/preview`, `/v4/content/convert`, `/v4/actions`, and `/v4/profile/reset`. Schema 3 uses stable opaque content IDs, content version 4, save format 3, and integer mineral units where one unit is 0.01 cSCU. The server owns node parameters, yields, pieces, prices, processing, travel destinations, arrival points, revision and save generation.
+
+Legacy endpoints remain temporarily available only to unconverted Milestone 3 clients. Conversion is an explicit guarded transaction; after it, the version-3 snapshot is served only by `/v4`. No OAuth or internal-account linking is part of Milestone 4.1.

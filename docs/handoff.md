@@ -101,3 +101,7 @@ No AWS rollback is needed for this investigation because nothing was deployed. F
 | removed active starter files | Next runtime/layout/config/types, unused starter SVGs/HTML, duplicate prototype game rules, active Amplify starter definitions                        |
 
 The exact changed paths are available through git diff --name-status (or git diff --cached --name-status after staging). Build outputs, downloaded packages, credentials and private data are excluded.
+
+# Milestone 4.1 uncommitted review state
+
+The original-universe candidate is uncommitted on `codex/dime-m4-destroya-universe`. It has not been deployed or packaged. The complete one-to-one mapping is in `docs/dime-m4-final-mapping.json`; implementation invariants and the gated rollout are in `docs/dime-m4-implementation-review.md`. Every proposed deployment defaults conversion to `DISABLED`: verify legacy endpoints, test the v4 frontend locally and in Hosted Test, then seek separate approvals for `TESTERS` and later `ENABLED`. Converted saves always require a v4-compatible rollback frontend; Milestone 3 cannot read them. Web OAuth and account linking remain Milestone 4.2 work.
