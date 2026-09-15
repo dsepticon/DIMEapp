@@ -22,7 +22,7 @@ AWS documents transaction authorization per underlying action, including Conditi
 
 ## Same-origin website forwarding
 
-Preserve distribution EC269D02M2JLD's existing website origin and unrelated behaviors. Add only `/auth/*` and `/api/*` behaviors to the reviewed staging API origin, origin path `/staging`, HTTPS-only. Disable caching entirely. Forward cookies, query parameters needed by callback, and Origin, Content-Type, X-Dime-CSRF and Authorization; do not forward the website Host header to API Gateway. Preserve Set-Cookie. Retain API CORS and throttling unchanged; the web browser calls its own origin.
+Preserve distribution EC269D02M2JLD's website bucket, object keys and unrelated behaviors. Before authenticated web deployment, migrate the existing static origin from its HTTP-only website endpoint to the native regional S3 REST origin described below. Add only `/auth/*` and `/api/*` behaviors to the reviewed staging API origin, origin path `/staging`, HTTPS-only. Disable caching entirely. Forward cookies, query parameters needed by callback, and Origin, Content-Type, X-Dime-CSRF and Authorization; do not forward the website Host header to API Gateway. Preserve Set-Cookie. Retain API CORS and throttling unchanged; the web browser calls its own origin.
 
 Access logs must exclude callback query strings, cookies, authorization and response bodies. Keep the existing sanitized API log fields. Add CSP for the web document (`default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'`), nosniff, same-origin framing protection and no-referrer. Do not apply the standalone frame policy to Twitch assets.
 
@@ -35,3 +35,11 @@ Read-only inspection confirmed the exact domain alias, one existing S3 website o
 The prepared routing plan uses AWS-managed `Managed-CachingDisabled` (`4135ea2d-6df8-44a3-9df3-4b5a84be39ad`), whose minimum/default/maximum TTLs are all zero, and `Managed-AllViewerExceptHostHeader` (`b689b0a8-53d0-40ab-baf2-68738e2966ac`), which forwards cookies and query strings while replacing the viewer Host at the origin. Both policies were inspected through AWS metadata. Permit all seven CloudFront method choices on only the two API behaviors; the application still permits only its explicit routes and methods. Cache GET/HEAD choices do not enable caching when every TTL is zero.
 
 Re-read the distribution ETag and logging configuration at rollout. Apply no cached configuration blindly, preserve the existing default behavior, and verify callback cleanup, Set-Cookie, CSRF headers and POST logout before publishing the web entry point. No distribution update or invalidation has been performed.
+
+### Required static-origin TLS correction
+
+The current HTTP-only website origin is not suitable for serving the authenticated application's executable HTML and JavaScript. The prepared candidate replaces only that origin's domain with `destroyaindustriesminingextension.com.s3.us-west-2.amazonaws.com`, retains its origin ID and empty origin path, removes `CustomOriginConfig`, and uses native `S3OriginConfig` with an empty legacy access-identity value. Preserve the default behavior's existing `redirect-to-https` policy: native S3 then receives HTTPS requests. This does not require a DNS, object, bucket-policy or IAM change.
+
+Set `DefaultRootObject` to `index.html`. Read-only inspection confirmed the current S3 website index is `index.html`, with no error document, redirect-all target or routing rules; CloudFront currently has no custom error responses. Revalidate these facts and existing public-object access before execution. Test `/`, `/index.html`, `/privacy` and every candidate asset, and retain the old distribution configuration as the rollback. This correction is mandatory in the credential-gated website rollout; it has not been applied to the live site.
+
+AWS documents the native S3 HTTPS behavior and the website endpoint limitation in [Require HTTPS between CloudFront and S3](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-s3-origin.html).

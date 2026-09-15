@@ -25,8 +25,11 @@ Real OAuth is **not deployment-ready**: the separate registered OAuth applicatio
 | Token leakage | No provider tokens in frontend code/storage, application logs or completed callback URL; clean redirect after callback | Proxy logging must exclude query strings, cookies, authorization and response bodies |
 | XSS / third-party script supply | React escaping, no raw HTML insertion; original code-native art; production excludes development review entry | Same-origin CSP and final deployed-header verification |
 | Auth endpoint abuse | Bounded bodies, short-lived intents/sessions, fixed provider hosts, timeouts, existing throttling | Real latency/throttle behavior, including 10-second current Lambda timeout |
+| Static executable-content transport | Prepared native S3 REST origin with HTTPS viewer policy and explicit index root | Existing HTTP-only website origin must be replaced through the reviewed website rollout before OAuth publication |
 
 Source tests cover encryption context swapping, replay, expiry, CSRF, provider revocation, refresh contention, binding races and save isolation. No confirmed critical/high source finding remains from this review. This is not a declaration that undeployed infrastructure or untested real OAuth is secure.
+
+The existing static site's HTTP-only S3 website-origin hop is a deployment security finding for the future authenticated application. Its source-supported TLS correction is prepared in `infra/web/README.md` and the local routing plan. Do not publish OAuth on the unchanged origin; applying and verifying that correction belongs to the gated website rollout. No live website configuration changed during this review.
 
 ## Unlink, recovery and privacy deletion
 
