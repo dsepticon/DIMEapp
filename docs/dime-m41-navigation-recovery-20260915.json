@@ -1,0 +1,335 @@
+{
+  "recordedAtUTC": "2026-09-15T15:55:25.676348+00:00",
+  "branch": "codex/dime-m4-destroya-universe",
+  "sourceCommit": "1423af439db4d2f532f189920b0d610881b6c26f",
+  "startingCommit": "d5c583411ac36ba90e33c54342fd0ea128c08f45",
+  "changedFiles": [
+    "app/original/Main.tsx",
+    "app/original/MiningConsole.tsx",
+    "app/original/PhysicalNavigation.tsx",
+    "app/original/WalkingWorld.tsx",
+    "app/original/original.css",
+    "app/original/recovery.ts",
+    "docs/dime-m41-navigation-recovery-design.md",
+    "playwright.config.ts",
+    "playwright.m4.config.ts",
+    "scripts/m4-production-performance.ts",
+    "server/originalActionService.ts",
+    "server/originalMiningService.ts",
+    "shared/originalNavigation.ts",
+    "tests/e2e/m4Harness.ts",
+    "tests/e2e/m4Movement.spec.ts",
+    "tests/e2e/m4Release.spec.ts",
+    "tests/m4OriginalActionService.test.ts",
+    "tests/m4PhysicalNavigation.test.ts",
+    "tests/m4RecoveryClassification.test.ts",
+    "tests/m4RecoveryTransactions.test.ts"
+  ],
+  "tests": {
+    "vitestTests": 297,
+    "vitestFiles": 47,
+    "existingChromium": 66,
+    "productionChromium": 28,
+    "productionRunDetails": "26 passed in full run; the two stale-vacuum pointer fixtures were corrected and both passed their focused rerun. Runtime source remained unchanged.",
+    "totalChromium": 94,
+    "npmCi": "passed; 245 packages, zero vulnerabilities",
+    "lint": "passed",
+    "strictTypecheck": "passed",
+    "formatting": "passed",
+    "diffCheck": "passed",
+    "builds": [
+      "default",
+      "Twitch",
+      "web",
+      "Lambda",
+      "clean Linux-native SAM"
+    ],
+    "samByteIdentical": true,
+    "cfnLint": [
+      "source",
+      "SAM packaged",
+      "S3 packaged",
+      "offline processed",
+      "CloudFormation processed"
+    ],
+    "guard": {
+      "sourceRules": 6,
+      "processedRules": 4,
+      "all": "passed"
+    }
+  },
+  "lambda": {
+    "path": "/tmp/dime-m41-navigation/DIME-Lambda-4.1-navigation-recovery.zip",
+    "bytes": 486531,
+    "sha256": "d68aa9dad07cbdb0b6a2c139cc1b18f72c457d0eba8dd5111bf81e911f0d4414",
+    "indexSha256": "011d01d52435bb31ccdbae16c0ee1fd69995a5dc0e68a432f61c90e71c679210",
+    "samByteIdentical": true,
+    "rootFiles": [
+      "index.mjs"
+    ]
+  },
+  "s3": {
+    "bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+    "key": "dime-v2/review/1423af439db4d2f532f189920b0d610881b6c26f/DIME-Lambda-4.1-navigation-recovery.zip",
+    "versionId": "c5gr8AJfH3aQqkLnVzHgAe1oXGiIPjpk",
+    "checksum": "1oqp2tB8vbC2osE5zBsY9yxFfQ66jdURG/gekR8NRBQ=",
+    "createOnly": true
+  },
+  "changeSet": {
+    "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m41-navigation-recovery-20260915-1/0eae41d9-1920-43f9-b9b9-ca1f15f05e39",
+    "operations": [
+      {
+        "resource": "EbsFunction",
+        "action": "Modify",
+        "replacement": false,
+        "paths": [
+          "/Properties/Code/S3Key",
+          "/Properties/Code/S3ObjectVersion",
+          "/Properties/Environment/Variables/DIME_CONFIG_REVISION"
+        ]
+      }
+    ],
+    "onlyProcessedDifference": "EbsFunction.Properties.Code",
+    "allOtherDefinitionsIdentical": true,
+    "conversionMode": "ENABLED",
+    "testerTagsInputEmpty": true
+  },
+  "execution": {
+    "Id": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m41-navigation-recovery-20260915-1/0eae41d9-1920-43f9-b9b9-ca1f15f05e39",
+    "Status": "CREATE_COMPLETE",
+    "Execution": "EXECUTE_COMPLETE"
+  },
+  "stack": {
+    "Name": "dime-v2-review-20260912",
+    "Status": "UPDATE_COMPLETE",
+    "Updated": "2026-09-15T15:51:22.481000+00:00"
+  },
+  "deployedFunction": {
+    "CodeSha256": "1oqp2tB8vbC2osE5zBsY9yxFfQ66jdURG/gekR8NRBQ=",
+    "Mode": "ENABLED",
+    "TagsEmpty": true,
+    "Revision": "m41-navigation-recovery-20260915-1",
+    "Update": "Successful"
+  },
+  "routes": [
+    "GET /v4/state",
+    "GET /state",
+    "POST /actions",
+    "POST /v4/content/convert",
+    "POST /v4/profile/reset",
+    "POST /v4/actions",
+    "POST /profile/reset",
+    "POST /v4/content/preview"
+  ],
+  "publicChecks": [
+    {
+      "route": "GET /state",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "route": "GET /v4/state",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "route": "POST /actions",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "route": "POST /profile/reset",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "route": "POST /v4/actions",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "route": "POST /v4/content/convert",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "route": "POST /v4/content/preview",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "route": "POST /v4/profile/reset",
+      "status": 401,
+      "code": "UNAUTHORIZED"
+    },
+    {
+      "preflightAllowedOrigin": true,
+      "status": 204,
+      "allowOriginMatches": true
+    },
+    {
+      "preflightAllowedOrigin": false,
+      "status": 204,
+      "allowOriginMatches": false
+    }
+  ],
+  "table": {
+    "name": "dime-v2-staging-review01-dime-v2-review-20260912-player-state",
+    "metadataUnchanged": true,
+    "TTLUnchanged": true,
+    "PITRUnchanged": true,
+    "itemsRead": 0,
+    "itemsScanned": 0,
+    "itemsDeleted": 0,
+    "noSecondWipe": true
+  },
+  "IAMUnchanged": true,
+  "invokePolicyUnchanged": true,
+  "failedDeploymentEvents": 0,
+  "twitch": {
+    "path": "/tmp/DIME-Twitch-0.8.0-navigation-recovery-fixed-20260915.zip",
+    "bytes": 94154,
+    "sha256": "fda1a65f5230ee7b116480992b9ba80eac2d97dbd1ec1b3ecbd0b0304ad65bd1",
+    "source": "1423af439db4d2f532f189920b0d610881b6c26f",
+    "files": [
+      "assets/main-DM6hv97k.js",
+      "assets/main-dnWiaVaE.css",
+      "index.html",
+      "mobile.html",
+      "panel.html"
+    ],
+    "windowsPath": "/mnt/c/Users/dylan/Downloads/DIME-Twitch-0.8.0-navigation-recovery-fixed-20260915.zip",
+    "copiesByteIdentical": true,
+    "targetVersion": "0.8.0 replacement only if mutable; otherwise 0.8.1",
+    "remoteStatus": "unverified; no authenticated browser control available",
+    "uploadedThisRun": false,
+    "localTestThisRun": false,
+    "hostedTestThisRun": false,
+    "publicReviewSubmitted": false
+  },
+  "performance": {
+    "browser": "153.0.8010.12",
+    "assetBytes": 318536,
+    "gzipBytes": 92741,
+    "results": [
+      {
+        "layout": "Panel",
+        "readyMs": 158.81616700000006,
+        "durationMs": 62850.164385000004,
+        "cycles": 6,
+        "transitions": 36,
+        "transitionP95Ms": 88.3989769999971,
+        "initial": {
+          "p95FrameMs": 16.700000000000003,
+          "worstFrameMs": 16.700000000000003,
+          "frames": 8,
+          "heapBytes": 5160721,
+          "dom": 47,
+          "canvas": 1,
+          "documentScroll": false
+        },
+        "final": {
+          "p95FrameMs": 16.700000000004366,
+          "worstFrameMs": 16.80000000000291,
+          "frames": 3710,
+          "heapBytes": 12893062,
+          "dom": 48,
+          "canvas": 1,
+          "documentScroll": false
+        },
+        "idle": {
+          "p95FrameMs": 16.700000000004366,
+          "worstFrameMs": 16.80000000000291,
+          "frames": 3770,
+          "heapBytes": 13328342,
+          "dom": 48,
+          "canvas": 1,
+          "documentScroll": false
+        },
+        "errors": []
+      },
+      {
+        "layout": "Mobile",
+        "readyMs": 150.05191000000195,
+        "durationMs": 67333.047052,
+        "cycles": 6,
+        "transitions": 36,
+        "transitionP95Ms": 84.98995899999863,
+        "initial": {
+          "p95FrameMs": 16.80000000000001,
+          "worstFrameMs": 16.80000000000001,
+          "frames": 8,
+          "heapBytes": 5237354,
+          "dom": 47,
+          "canvas": 1,
+          "documentScroll": false
+        },
+        "final": {
+          "p95FrameMs": 16.700000000004366,
+          "worstFrameMs": 16.80000000000291,
+          "frames": 3979,
+          "heapBytes": 18988814,
+          "dom": 48,
+          "canvas": 1,
+          "documentScroll": false
+        },
+        "idle": {
+          "p95FrameMs": 16.700000000004366,
+          "worstFrameMs": 16.80000000000291,
+          "frames": 4039,
+          "heapBytes": 19552198,
+          "dom": 48,
+          "canvas": 1,
+          "documentScroll": false
+        },
+        "errors": []
+      }
+    ],
+    "limitations": "Local Chromium production build, actual API service with synthetic in-memory state. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap samples are observational, not proof against a leak."
+  },
+  "frontendAudit": {
+    "checks": {
+      "only_html_js_css": true,
+      "entry_files": true,
+      "staging_url": true,
+      "privacy_url": true,
+      "original_universe": true,
+      "no_legacy_display_terms": true,
+      "no_dev_endpoint": true,
+      "no_secret_literals": true,
+      "no_fixtures": true,
+      "no_old_teleport_ui": true
+    },
+    "files": [
+      {
+        "path": "assets/main-DM6hv97k.js",
+        "bytes": 312452,
+        "sha256": "edf136dd2f17aefa929b7f35448407dae623847156aa3e7639e0f793da8d0697"
+      },
+      {
+        "path": "assets/main-dnWiaVaE.css",
+        "bytes": 6084,
+        "sha256": "8fcf22498564f2e487161c7ec5006602000b2e037506583104b06c6f1bac3374"
+      },
+      {
+        "path": "index.html",
+        "bytes": 483,
+        "sha256": "383ed49db61b3ea0614b770caa154b3b4818c4d40493fa22bf22cc0ba8a8be21"
+      },
+      {
+        "path": "mobile.html",
+        "bytes": 573,
+        "sha256": "01b9d6e15b34b9d58ea456d99c04a645906270fd71ee6564fd2abef6e91b98ac"
+      },
+      {
+        "path": "panel.html",
+        "bytes": 573,
+        "sha256": "01b9d6e15b34b9d58ea456d99c04a645906270fd71ee6564fd2abef6e91b98ac"
+      }
+    ]
+  },
+  "privacyPublication": "Unchanged; no new personal-data collection in this correction",
+  "websiteDeployment": "None; production web build validated, no website objects replaced",
+  "blocker": "Authenticated Twitch Developer Console/browser control unavailable. No approved synthetic authorization mechanism exists for live authenticated API tests; no signing keys or tokens were retrieved or manufactured.",
+  "safety": "Only authorized branch and staging artifact/Lambda configuration changed. No real player fields, item keys, credentials, signing keys, OAuth tokens or cookies inspected or displayed. No table item scan or wipe. No production/legacy resource mutation, DNS, website publication or public Twitch review."
+}
