@@ -32,6 +32,15 @@ button {
   gap: 5px;
   overflow: hidden;
 }
+.originalApp a,
+.originalApp a:visited {
+  color: #b5decd;
+  text-underline-offset: 3px;
+}
+.originalApp a:focus-visible {
+  outline: 2px solid #f2cf76;
+  outline-offset: 3px;
+}
 header {
   display: flex;
   justify-content: space-between;
