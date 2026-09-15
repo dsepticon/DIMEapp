@@ -460,6 +460,13 @@ function App() {
             <span>Cairncoil Reach · Lomrek system</span>
             <span>Founded by Dorathaadestroya · Founder and Operations Director</span>
             <small>{ORIGINAL_CONTENT.materialDisclaimer}</small>
+            <a
+              href="https://destroyaindustriesminingextension.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </a>
             <small>
               DIME is an original industrial exploration game operated by Dsepticon. No creator likeness,
               voice, biography, or attributed dialogue is used.
@@ -479,6 +486,10 @@ function App() {
                 </p>
                 <p>{ORIGINAL_CONTENT.materialDisclaimer}</p>
                 <h2>Reset Game Progress</h2>
+                <p>
+                  Gameplay reset is different from content conversion and verified privacy deletion. Technical
+                  receipts and recoverable backups follow the retention periods in the Privacy Policy.
+                </p>
                 <p>
                   This resets DIME progress across every Twitch channel. Wallet, fleet, equipment, cargo,
                   processing orders, location and assignments return to canonical defaults. Your Twitch
