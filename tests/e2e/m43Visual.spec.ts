@@ -1,3 +1,4 @@
+import { openOperations } from './m4Harness';
 import { test, expect } from '@playwright/test';
 import { setup } from './m4Harness';
 import { originalInitialState } from '../../shared/originalGame';
@@ -67,6 +68,7 @@ for (const layout of [
     }
     expect(f.posts).toHaveLength(0);
     expect(f.errors).toEqual([]);
+    await openOperations(page);
     await page.getByRole('button', { name: 'PROFILE', exact: true }).click();
     await page.screenshot({
       path: `/tmp/dime-m43-release/screenshots/${layout.name}-profile-high-contrast.png`,

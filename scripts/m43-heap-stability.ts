@@ -155,7 +155,10 @@ try {
     method:
       'Compiled Panel; actual synthetic API. One browser-owned physical pathfinding loop; no per-step Playwright polling, frame-history array or repeated function injection. GC and heap usage sampled directly through CDP after six warmup cycles, then every six cycles.',
   };
-  await writeFile('/tmp/dime-m43-release/heap-stability.json', JSON.stringify(result, null, 2) + '\n');
+  await writeFile(
+    process.env.DIME_HEAP_REPORT ?? '/tmp/dime-m43-release/heap-stability.json',
+    JSON.stringify(result, null, 2) + '\n',
+  );
   if (fixture.errors.length) throw Error('Long-session request or browser error');
 } finally {
   await browser.close();

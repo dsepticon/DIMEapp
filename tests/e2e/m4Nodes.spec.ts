@@ -1,3 +1,4 @@
+import { openOperations, resumeGame } from './m4Harness';
 import { test, expect } from '@playwright/test';
 import { setup, walkTo } from './m4Harness';
 import { originalInitialState } from '../../shared/originalGame';
@@ -32,7 +33,9 @@ for (const [name, width, height, file] of [
         map = originalZoneMap(s.world.zone);
       const nodes = Object.values(s.world.nodes);
       expect(nodes).toHaveLength(3);
+      await openOperations(page);
       await page.getByRole('button', { name: 'Ping signatures' }).click();
+      await resumeGame(page);
       for (const node of nodes) {
         const tile = nodeInteractionTiles(map.id, node)[0]!;
         const before = f.posts.length;
@@ -67,11 +70,17 @@ for (const [name, width, height, file] of [
           await cdp.detach();
         } else await page.mouse.click(point.x, point.y);
         await expect(c).toHaveAttribute('data-node-target', node.id);
+        await openOperations(page);
         await page.getByRole('button', { name: 'Analyze selected signature' }).click();
+        await resumeGame(page);
+        await resumeGame(page);
         await page.getByRole('button', { name: 'Target node', exact: true }).click();
         await expect(page.getByRole('button', { name: 'Hold laser · release to cool' })).toBeVisible();
+        await openOperations(page);
         await page.getByRole('button', { name: 'Stop laser without yield' }).click();
+        await resumeGame(page);
       }
+      await resumeGame(page);
       const control = await page.getByRole('button', { name: 'Target node', exact: true }).boundingBox();
       expect(control!.y).toBeGreaterThanOrEqual(0);
       expect(control!.y + control!.height).toBeLessThanOrEqual(height);
@@ -93,16 +102,23 @@ for (const [name, width, height, file] of [
       const f = await fixture(page, width, height, file),
         map = originalZoneMap(f.current().world.zone),
         nodes = Object.values(f.current().world.nodes);
+      await openOperations(page);
       await page.getByRole('button', { name: 'Ping signatures' }).click();
+      await resumeGame(page);
       for (const n of nodes) {
         await walkTo(page, map, nodeInteractionTiles(map.id, n)[0]!, name === 'Mobile');
+        await openOperations(page);
         await page.getByLabel('Nearby signature').selectOption(n.id);
+        await openOperations(page);
         await page.getByRole('button', { name: 'Analyze selected signature' }).click();
+        await resumeGame(page);
       }
       await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/nodes-analyzed-${name}.png` });
       const n = nodes[0]!;
       await walkTo(page, map, nodeInteractionTiles(map.id, n)[0]!, name === 'Mobile');
+      await openOperations(page);
       await page.getByLabel('Nearby signature').selectOption(n.id);
+      await resumeGame(page);
       await page.getByRole('button', { name: 'Target node', exact: true }).click();
       const laser = page.getByRole('button', { name: 'Hold laser · release to cool' });
       await laser.focus();
@@ -144,19 +160,24 @@ for (const [name, width, height, file] of [
         if (f.current().world.nodes[n.id]!.fragments.find((p) => p.id === piece.id)!.collected) continue;
         await walkTo(page, map, piece, name === 'Mobile');
         const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+        await expect(button).toBeVisible();
         await button.focus();
         await page.keyboard.down('Space');
         await expect
           .poll(() => f.current().world.nodes[n.id]!.fragments.find((p) => p.id === piece.id)!.collected)
           .toBe(true);
         await page.keyboard.up('Space');
-        await expect(button).toHaveAttribute('data-phase', 'idle');
+        await expect(page.locator('.vacuumHold')).toHaveAttribute('data-phase', 'idle');
       }
       expect(f.current().mining[n.source][n.ore]).toBe(n.yieldUnits);
+      await openOperations(page);
       await page.getByRole('button', { name: 'Laser mode', exact: true }).click();
+      await resumeGame(page);
       const other = nodes[1]!;
       await walkTo(page, map, nodeInteractionTiles(map.id, other)[0]!, name === 'Mobile');
+      await openOperations(page);
       await page.getByLabel('Nearby signature').selectOption(other.id);
+      await resumeGame(page);
       await page.getByRole('button', { name: 'Target node', exact: true }).click();
       await laser.focus();
       await page.keyboard.down('Space');
@@ -171,11 +192,15 @@ for (const [name, width, height, file] of [
       expect(f.current()).toEqual(saved);
       const remaining = nodes[2]!;
       await walkTo(page, map, nodeInteractionTiles(map.id, remaining)[0]!, name === 'Mobile');
+      await openOperations(page);
       await page.getByLabel('Nearby signature').selectOption(remaining.id);
       await expect(page.locator('.nodeTargetStatus')).toContainText('In range');
+      await resumeGame(page);
       await page.getByRole('button', { name: 'Target node', exact: true }).click();
       await expect(laser).toBeVisible();
+      await openOperations(page);
       await page.getByRole('button', { name: 'Stop laser without yield' }).click();
+      await resumeGame(page);
       expect(f.errors).toEqual([]);
       await expect(page.getByRole('button', { name: 'Retry pending action' })).toHaveCount(0);
     },
@@ -187,9 +212,12 @@ for (const file of ['panel.html', 'mobile.html'])
       map = originalZoneMap(f.current().world.zone),
       n = Object.values(f.current().world.nodes)[0]!;
     await walkTo(page, map, nodeInteractionTiles(map.id, n)[0]!, file === 'mobile.html');
+    await openOperations(page);
     await page.getByLabel('Nearby signature').selectOption(n.id);
     await expect(page.locator('canvas')).toHaveAttribute('data-node-target', n.id);
+    await openOperations(page);
     await page.getByRole('button', { name: 'Extraction mode', exact: true }).click();
+    await resumeGame(page);
     await expect(page.locator('canvas')).toHaveAttribute('data-node-target', '');
     const c = page.locator('canvas'),
       rect = (await c.boundingBox())!,
@@ -201,7 +229,9 @@ for (const file of ['panel.html', 'mobile.html'])
     await page.mouse.click(rect.x + (n.x + 0.5 - cam.x) * 24, rect.y + (n.y + 0.5 - cam.y) * 24);
     await expect(c).toHaveAttribute('data-node-target', '');
     expect(f.posts).toHaveLength(0);
+    await openOperations(page);
     await page.getByRole('button', { name: 'Laser mode', exact: true }).click();
+    await resumeGame(page);
     await expect(page.locator('.nodeTargetStatus')).toContainText('In range');
     const before = f.posts.length;
     await walkTo(page, map, map.spawn, file === 'mobile.html');

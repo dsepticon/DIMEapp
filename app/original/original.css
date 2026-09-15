@@ -683,3 +683,387 @@ footer small {
   line-height: 1.2;
   pointer-events: none;
 }
+
+/* World-first viewport. The full-size hit areas remain separate from their compact glyphs. */
+.originalApp[data-playing='true'] {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  padding: 0;
+  display: block;
+  --safe-top: max(4px, env(safe-area-inset-top));
+  --safe-bottom: max(4px, env(safe-area-inset-bottom));
+  --safe-left: max(4px, env(safe-area-inset-left));
+  --safe-right: max(4px, env(safe-area-inset-right));
+}
+.originalApp[data-playing='true'] .world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+}
+.originalApp[data-playing='true'] > header,
+.originalApp[data-playing='true'] > footer,
+.originalApp[data-playing='true'] > .status,
+.originalApp[data-playing='true'] > .serviceConsole,
+.originalApp[data-playing='true'] > .actions,
+.originalApp[data-playing='true'] .objective,
+.originalApp[data-playing='true'] .toolReadout {
+  display: none;
+}
+.originalApp .menuToggle,
+.originalApp .hudToggle {
+  position: absolute;
+  z-index: 3;
+  top: var(--safe-top);
+  min-height: 44px;
+  background: #0b2029cc;
+}
+.menuToggle {
+  right: var(--safe-right);
+  width: 44px;
+  font-size: 20px;
+}
+.originalApp .hudToggle {
+  left: var(--safe-left);
+  top: calc(var(--safe-top) + 26px);
+  font-size: 11px;
+  min-height: 44px;
+  padding: 2px 6px;
+}
+.originalApp .place {
+  top: var(--safe-top);
+  left: var(--safe-left);
+  padding: 2px 5px;
+  max-width: calc(100% - 60px);
+  font-size: 11px;
+}
+.originalApp .place small {
+  display: none;
+}
+.originalApp .walkingControls {
+  left: var(--safe-left);
+  right: auto;
+  bottom: var(--safe-bottom);
+  gap: 0;
+  grid-template-columns: repeat(3, 44px);
+}
+.originalApp .walkingControls button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  box-shadow: none;
+  background: radial-gradient(circle, #142f3bdd 0 14px, transparent 15px);
+  font-size: 18px;
+}
+.originalApp .physicalInteractions {
+  position: absolute;
+  right: var(--safe-right);
+  bottom: var(--safe-bottom);
+  max-width: 164px;
+  height: auto;
+  min-height: 0;
+  flex-wrap: wrap;
+  justify-content: end;
+  overflow: visible;
+}
+.originalApp .physicalInteractions button {
+  flex: 0 1 auto;
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 120px;
+  background: #102934dd;
+}
+.originalApp .miningConsole,
+.originalApp .vacuumConsole {
+  position: absolute;
+  bottom: var(--safe-bottom);
+  right: var(--safe-right);
+  width: 120px;
+  max-height: none;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+  background: transparent;
+  gap: 3px;
+}
+.originalApp:not([data-menu='true']) .miningConsole > *,
+.originalApp:not([data-menu='true']) .vacuumConsole > * {
+  display: none;
+}
+.originalApp:not([data-menu='true']) .miningConsole[data-near='true'] .primaryMine,
+.originalApp:not([data-menu='true']) .miningConsole[data-active='true'] .laserHold,
+.originalApp:not([data-menu='true']) .miningConsole[data-active='true'] .charge,
+.originalApp:not([data-menu='true']) .miningConsole[data-active='true'] > small,
+.originalApp:not([data-menu='true']) .vacuumConsole[data-near='true'] .vacuumHold,
+.originalApp:not([data-menu='true']) .vacuumConsole[data-near='true'] .fragmentPrompt {
+  display: block;
+}
+.originalApp .primaryMine,
+.originalApp .laserHold,
+.originalApp .vacuumHold {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: none;
+  background: #183e42df;
+}
+.originalApp .fragmentPrompt,
+.originalApp .miningConsole > small {
+  background: #071b27e8;
+  padding: 3px;
+  font-size: 10px;
+}
+.originalApp .fragmentPrompt span,
+.originalApp .fragmentPrompt small {
+  display: block;
+}
+.originalApp .gameSheet[hidden] {
+  display: none;
+}
+.originalApp[data-menu='true'] {
+  overflow-y: auto;
+  padding: calc(var(--safe-top) + 50px) 10px var(--safe-bottom);
+  background: #0b2029;
+}
+.originalApp[data-menu='true'] .world {
+  position: fixed;
+  opacity: 0.16;
+  pointer-events: none;
+}
+.originalApp[data-menu='true'] > .gameSheet,
+.originalApp[data-menu='true'] > .status,
+.originalApp[data-menu='true'] > .serviceConsole,
+.originalApp[data-menu='true'] > .actions,
+.originalApp[data-menu='true'] > footer,
+.originalApp[data-menu='true'] > header,
+.originalApp[data-menu='true'] .miningConsole,
+.originalApp[data-menu='true'] .vacuumConsole {
+  display: grid;
+  position: relative;
+  width: min(100%, 560px);
+  margin: 8px auto;
+  inset: auto;
+  max-height: none;
+  overflow: visible;
+  background: #122c38;
+  padding: 8px;
+  gap: 8px;
+  z-index: 4;
+}
+.originalApp[data-menu='true'] button,
+.originalApp .destinationMap button {
+  min-height: 44px;
+}
+.originalApp[data-menu='true'] .physicalInteractions,
+.originalApp[data-menu='true'] .hudToggle {
+  display: none;
+}
+.originalApp .destinationMap {
+  position: fixed;
+  inset: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+  z-index: 8;
+  max-height: none;
+  padding: 12px;
+  background: #102632f5;
+  overflow-y: auto;
+}
+.originalApp[data-idle='true'] .walkingControls,
+.originalApp[data-idle='true'] .menuToggle,
+.originalApp[data-idle='true'] .hudToggle {
+  opacity: 0.55;
+}
+.originalApp .walkingControls,
+.originalApp .menuToggle,
+.originalApp .hudToggle {
+  transition: none;
+}
+.keyboardOption {
+  display: none;
+}
+@media (min-width: 800px) and (pointer: fine) {
+  .standalone .keyboardOption {
+    display: block;
+  }
+  .standalone[data-touch-hidden='true'] .walkingControls {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .originalApp .walkingControls,
+  .originalApp .menuToggle,
+  .originalApp .hudToggle {
+    transition: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .originalApp .menuToggle,
+  .originalApp .hudToggle,
+  .originalApp .fragmentPrompt {
+    background: #07151b;
+    border: 1px solid white;
+  }
+}
+.originalApp:not([data-menu='true']) .gameSheet {
+  display: contents;
+}
+.originalApp:not([data-menu='true']) .gameSheet > .status,
+.originalApp:not([data-menu='true']) .gameSheet > .serviceConsole,
+.originalApp:not([data-menu='true']) .gameSheet > .actions,
+.originalApp:not([data-menu='true']) .resumeGame,
+.originalApp:not([data-menu='true']) .operationsNav,
+.originalApp:not([data-menu='true']) .keyboardOption {
+  display: none;
+}
+.originalApp[data-menu='true'] > .gameSheet {
+  display: grid;
+  position: relative;
+}
+.originalApp[data-menu='true'] .status,
+.originalApp[data-menu='true'] .serviceConsole,
+.originalApp[data-menu='true'] .actions {
+  display: grid;
+  max-height: none;
+}
+.originalApp[data-menu='true'] .miningConsole,
+.originalApp[data-menu='true'] .vacuumConsole {
+  position: relative;
+}
+.originalApp .interactToggle {
+  position: absolute;
+  right: var(--safe-right);
+  bottom: calc(var(--safe-bottom) + 48px);
+  min-height: 44px;
+  background: #122d39df;
+}
+.originalApp .recoveryBadge {
+  position: absolute;
+  right: var(--safe-right);
+  top: calc(var(--safe-top) + 48px);
+  min-height: 44px;
+  background: #442a20ef;
+}
+.originalApp[data-menu='true'] .interactToggle {
+  display: none;
+}
+.originalApp .physicalInteractions button {
+  font-size: 0;
+  width: 64px;
+}
+.originalApp .physicalInteractions button::after {
+  content: 'Enter';
+  font-size: 11px;
+}
+.originalApp .physicalInteractions button:has(+ button) {
+  width: 76px;
+}
+.originalApp .physicalInteractions button[data-action]::after {
+  content: attr(data-action);
+}
+.originalApp:not([data-menu='true']) .miningConsole[data-near='true'] .nodeTargetStatus {
+  display: block;
+  background: #081d28e8;
+  font-size: 11px;
+}
+.originalApp .objective[data-selected='true'] {
+  display: block;
+  position: absolute;
+  left: var(--safe-left);
+  top: calc(var(--safe-top) + 74px);
+  width: 180px;
+  padding: 3px;
+  background: #081d28df;
+  pointer-events: none;
+}
+.originalApp[data-menu='true'] .objective {
+  position: static;
+  width: auto;
+}
+.originalApp[data-menu='true'] .operationsNav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+.originalApp[data-menu='true'] .miningConsole .nodeDetails {
+  display: block;
+}
+.originalApp:not([data-menu='true']) .miningConsole > .miningOutcome,
+.originalApp:not([data-menu='true']) .vacuumConsole > .vacuumFeedback[data-feedback='true'] {
+  display: block;
+  padding: 4px;
+  background: #0b2029ef;
+  font-size: 11px;
+}
+.originalApp[data-menu='true'] .primaryMine,
+.originalApp[data-menu='true'] .laserHold,
+.originalApp[data-menu='true'] .vacuumHold {
+  display: none;
+}
+.originalApp:not([data-menu='true']) .gameSheet > header,
+.originalApp:not([data-menu='true']) .gameSheet > footer {
+  display: none;
+}
+.originalApp[data-menu='true'] .gameSheet > header,
+.originalApp[data-menu='true'] .gameSheet > footer {
+  display: flex;
+  position: relative;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+@media (min-width: 800px) and (pointer: fine) {
+  .originalApp.standalone[data-playing='true'][data-touch-hidden='true'] .miningConsole button.primaryMine,
+  .originalApp.standalone[data-playing='true'][data-touch-hidden='true'] .miningConsole button.laserHold,
+  .originalApp.standalone[data-playing='true'][data-touch-hidden='true'] .vacuumConsole button.vacuumHold {
+    display: none;
+  }
+}
+.originalApp .fragmentPrompt,
+.originalApp .miningConsole > small {
+  font-size: 11px;
+}
+.originalApp:not([data-menu='true']) .fragmentPrompt[data-full='false'] > span {
+  display: none;
+}
+.originalApp[data-idle='true'] .physicalInteractions,
+.originalApp[data-idle='true'] .primaryMine,
+.originalApp[data-idle='true'] .laserHold,
+.originalApp[data-idle='true'] .vacuumHold,
+.originalApp[data-idle='true'] .interactToggle {
+  opacity: 0.75;
+}
+/* Objectives share the expandable summary; their world marker stays visible. */
+.originalApp:not([data-menu='true']) .objective {
+  display: none;
+}
+.originalApp .hudToggle {
+  width: 124px;
+  height: 44px;
+  overflow: hidden;
+}
+
+/* Held targets must not move when confirmation feedback or labels change. */
+.originalApp:not([data-menu='true']) .vacuumHold {
+  height: 44px;
+  max-height: 44px;
+  padding: 4px;
+  font-size: 11px;
+  line-height: 14px;
+}
+.originalApp:not([data-menu='true']) .vacuumConsole > .vacuumFeedback[data-feedback='true'] {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 4px);
+  width: 120px;
+}
+.originalApp[data-menu='true'] .menuToggle {
+  position: fixed;
+  z-index: 9;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .originalApp[data-idle='true'] .walkingControls,
+  .originalApp[data-idle='true'] .menuToggle,
+  .originalApp[data-idle='true'] .hudToggle {
+    transition: opacity 0.18s;
+  }
+}

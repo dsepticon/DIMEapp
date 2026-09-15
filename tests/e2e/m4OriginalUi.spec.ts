@@ -1,3 +1,4 @@
+import { openOperations } from './m4Harness';
 import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { originalInitialState } from '../../shared/originalGame';
@@ -42,8 +43,10 @@ for (const layout of [
     );
     await page.goto('/original-review.html');
     await expect(page.getByText('Loam Survey Terrace')).toBeVisible();
+    await openOperations(page);
     await expect(page.getByText('MODE: LASER')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(layout.height);
+    await openOperations(page);
     await page.getByRole('button', { name: 'PROFILE' }).click();
     await expect(page.getByText('About DIME')).toBeVisible();
     const input = page.getByRole('textbox');

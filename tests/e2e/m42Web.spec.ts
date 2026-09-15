@@ -1,3 +1,4 @@
+import { openOperations } from './m4Harness';
 import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { originalInitialState } from '../../shared/originalGame';
@@ -15,9 +16,22 @@ for (const viewport of [
       route.fulfill({ json: { state, serverTime: Date.now() } }),
     );
     await page.goto('/web-review.html');
+    await openOperations(page);
     await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
     await expect(page.getByText('Crew Ring Arrival', { exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    if (viewport.width > 800) {
+      await page.getByRole('button', { name: 'Hide touch controls (keyboard)' }).click();
+      await page.getByRole('button', { name: 'Resume game' }).click();
+      await expect(page.getByRole('button', { name: 'Walk right', exact: true })).toBeHidden();
+      await page.locator('canvas').focus();
+      const x = Number(await page.locator('canvas').getAttribute('data-player-x'));
+      await page.keyboard.down('d');
+      await page.waitForTimeout(150);
+      await page.keyboard.up('d');
+      expect(Number(await page.locator('canvas').getAttribute('data-player-x'))).toBeGreaterThan(x);
+      await openOperations(page);
+    }
     let checked = false;
     await page.route('**/auth/logout', (route) => {
       expect(route.request().headers()['x-dime-csrf']).toBe('synthetic-csrf');
@@ -26,6 +40,7 @@ for (const viewport of [
       return route.fulfill({ json: { signedOut: true } });
     });
     await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/web-${viewport.width}.png` });
+    await openOperations(page);
     await page.getByRole('button', { name: 'Sign out' }).click();
     await expect(page.getByRole('link', { name: 'Sign in with Twitch' })).toBeVisible();
     expect(checked).toBe(true);
@@ -64,6 +79,7 @@ test('account-link capability stays in memory and requires explicit confirmation
     return route.fulfill({ json: { intent: 's'.repeat(43), expiresIn: 300 } });
   });
   await page.goto('/web-review.html');
+  await openOperations(page);
   await page.getByRole('button', { name: 'PROFILE' }).click();
   await page.getByRole('button', { name: 'Create link code' }).click();
   await expect(page.getByLabel('One-use link code')).toHaveValue('s'.repeat(43));

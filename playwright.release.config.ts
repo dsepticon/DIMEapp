@@ -6,6 +6,7 @@ const production = [
   'm4Nodes.spec.ts',
   'm43Visual.spec.ts',
   'm43Travel.spec.ts',
+  'm43WorldView.spec.ts',
 ];
 export default defineConfig({
   testDir: './tests/e2e',

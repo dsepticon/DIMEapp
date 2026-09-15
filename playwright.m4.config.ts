@@ -8,6 +8,7 @@ export default defineConfig({
     'm4Nodes.spec.ts',
     'm43Visual.spec.ts',
     'm43Travel.spec.ts',
+    'm43WorldView.spec.ts',
   ],
   workers: 1,
   use: { baseURL: 'http://127.0.0.1:4186', headless: true },

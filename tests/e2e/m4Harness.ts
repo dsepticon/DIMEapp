@@ -72,6 +72,7 @@ export async function walkTo(
   target: { x: number; y: number },
   touch = false,
 ) {
+  await resumeGame(page);
   const position = () =>
     page.locator('canvas').evaluate((c) => ({ x: Number(c.dataset.playerX), y: Number(c.dataset.playerY) }));
   const initial = await position(),
@@ -139,4 +140,16 @@ export async function walkTo(
   } finally {
     if (cdp) await cdp.detach();
   }
+}
+
+/** Navigate the production operations overlay through its public controls. */
+export async function openOperations(page: Page) {
+  if (
+    (await page.getByRole('button', { name: 'Menu', exact: true }).getAttribute('aria-expanded')) !== 'true'
+  )
+    await page.getByRole('button', { name: 'Menu', exact: true }).click();
+}
+export async function resumeGame(page: Page) {
+  if (await page.getByRole('button', { name: 'Resume game', exact: true }).isVisible())
+    await page.getByRole('button', { name: 'Resume game', exact: true }).click();
 }

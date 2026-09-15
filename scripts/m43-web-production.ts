@@ -1,3 +1,4 @@
+import { openOperations } from '../tests/e2e/m4Harness';
 /** Production web verification with HTTPS and synthetic, server-held identity only. */
 import { chromium } from '@playwright/test';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -91,7 +92,7 @@ try {
       });
     });
     await page.goto(origin);
-    await page.getByRole('button', { name: 'Sign out', exact: true }).waitFor();
+    await page.locator('canvas').waitFor();
     const canvas = page.locator('canvas');
     await canvas.waitFor();
     const x = Number(await canvas.getAttribute('data-player-x'));
@@ -100,18 +101,21 @@ try {
     await page.keyboard.up('d');
     const moved = Number(await canvas.getAttribute('data-player-x')) > x;
     if (!moved || mutations !== 0) throw Error('Production web walking failed');
+    await openOperations(page);
     await page.getByRole('button', { name: 'PROFILE', exact: true }).click();
     await page.getByRole('button', { name: 'Create link code', exact: true }).click();
     if ((await page.getByLabel('One-use link code').inputValue()).length !== 43)
       throw Error('Link intent unavailable');
     await page.screenshot({
-      path: `/tmp/dime-m43-release/screenshots/web-production-profile-${viewport.width}.png`,
+      path: `/tmp/dime-m43-world-ui/screenshots/web-production-profile-${viewport.width}.png`,
       mask: [page.getByLabel('One-use link code')],
     });
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await page.reload();
     await canvas.waitFor();
-    await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/web-production-${viewport.width}.png` });
+    await page.screenshot({
+      path: `/tmp/dime-m43-world-ui/screenshots/web-production-${viewport.width}.png`,
+    });
     const safety = await page.evaluate(() => ({
       dom: document.querySelectorAll('*').length,
       canvas: document.querySelectorAll('canvas').length,
@@ -124,6 +128,7 @@ try {
       noReadableSessionCookie: !document.cookie.includes('__Host-dime-session'),
       cleanUrl: !location.search && !location.hash,
     }));
+    await openOperations(page);
     await page.getByRole('button', { name: 'Sign out', exact: true }).click();
     await page.getByRole('link', { name: 'Sign in with Twitch', exact: true }).waitFor();
     const privacyAfterLogout = await page

@@ -1,3 +1,4 @@
+import { openOperations } from './m4Harness';
 import { test, expect, type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { originalSpatial } from '../../shared/originalSpatial';
@@ -74,6 +75,7 @@ for (const file of ['panel.html', 'mobile.html']) {
           id
         ]!.fragments.every((p) => Math.hypot(p.x + 0.5 - (originalZoneMap('zone.z014').spawn.x + 0.5), p.y + 0.5 - (originalZoneMap('zone.z014').spawn.y + 0.5)) === 1),
     ).toBe(true);
+    await expect(button).toBeVisible();
     await button.focus();
     const touch = file === 'mobile.html' ? await touchHold(page) : null;
     if (!touch) await page.keyboard.down('Space');
@@ -82,10 +84,24 @@ for (const file of ['panel.html', 'mobile.html']) {
       .toBeGreaterThan(0);
     await expect(canvas).toHaveAttribute('data-fragments', '3');
     await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/attract-${file}.png` });
+    if (touch) {
+      await expect
+        .poll(() => f.current().mining['extract.x001']['mat.m001'] ?? 0)
+        .toBeGreaterThanOrEqual(100);
+      const duringRetarget = (await button.boundingBox())!;
+      expect(duringRetarget.y).toBeCloseTo(touch.box.y, 0);
+      expect(duringRetarget.height).toBe(44);
+      await touch.cdp.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [
+          { x: touch.box.x + touch.box.width / 2 + 1, y: touch.box.y + touch.box.height / 2 + 1 },
+        ],
+      });
+    }
     await expect.poll(() => f.current().mining['extract.x001']['mat.m001']).toBe(300);
     if (touch) await touch.release();
     else await page.keyboard.up('Space');
-    await expect(button).toHaveAttribute('data-phase', 'idle');
+    await expect(page.locator('.vacuumHold')).toHaveAttribute('data-phase', 'idle');
     await expect(canvas).toHaveAttribute('data-fragments', '0');
     const saved = structuredClone(f.current());
     await page.reload();
@@ -113,7 +129,7 @@ for (const file of ['panel.html', 'mobile.html']) {
       else await touch.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
       if (stop === 'release' || stop === 'cancel') await touch.cdp.detach();
       else await touch.release();
-      await expect(button).toHaveAttribute('data-phase', 'idle');
+      await expect(page.locator('.vacuumHold')).toHaveAttribute('data-phase', 'idle');
       expect(f.current().world.nodes[id]!.fragments.every((p) => !p.collected)).toBe(true);
       expect(f.current().mining['extract.x001']).toEqual({});
       await expect(page.locator('canvas')).toHaveAttribute('data-vacuum-stage', 'idle');
@@ -123,6 +139,7 @@ for (const file of ['panel.html', 'mobile.html']) {
     const f = await fixture(page, file, true);
     await expect(page.locator('.fragmentPrompt')).toContainText('Free 100 more units');
     const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+    await expect(button).toBeVisible();
     await button.focus();
     await page.keyboard.down('Space');
     await page.keyboard.up('Space');
@@ -135,16 +152,22 @@ for (const file of ['panel.html', 'mobile.html']) {
     const f = await fixture(page, file),
       button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
     f.faults.dropOnceAfterCommit = true;
+    await expect(button).toBeVisible();
     await button.focus();
     await page.keyboard.down('Space');
     await page.keyboard.up('Space');
-    await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeVisible();
+    await expect(
+      page
+        .getByRole('button', { name: 'Pending · Retry', exact: true })
+        .or(page.locator('.gate').getByRole('button', { name: 'Retry pending action' })),
+    ).toBeVisible();
     await expect(page.locator('canvas')).toHaveAttribute('data-vacuum-stage', 'idle');
     const before = await page.locator('canvas').getAttribute('data-player-x');
     await page.keyboard.down('d');
     await page.waitForTimeout(100);
     await page.keyboard.up('d');
     expect(await page.locator('canvas').getAttribute('data-player-x')).not.toBe(before);
+    if (await page.getByRole('button', { name: 'Menu', exact: true }).isVisible()) await openOperations(page);
     await page.getByRole('button', { name: 'Retry pending action' }).click();
     await expect(page.getByRole('button', { name: 'Retry pending action' })).toHaveCount(0);
     expect(f.store.receipts.size).toBe(1);
@@ -188,8 +211,8 @@ for (const file of ['panel.html', 'mobile.html'])
       file === 'mobile.html',
     );
     await expect(page.locator('.fragmentPrompt')).toContainText('clear line of sight');
-    const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
-    await button.focus();
+    await expect(page.getByRole('button', { name: 'Hold Vacuum', exact: true })).toBeHidden();
+    await page.locator('canvas').focus();
     await page.keyboard.down('Space');
     await page.keyboard.up('Space');
     expect(f.posts).toHaveLength(0);
@@ -202,11 +225,12 @@ for (const file of ['panel.html', 'mobile.html']) {
     await expect(page.locator('.fragmentPrompt')).toContainText('Hold Vacuum');
     f.current().mining['extract.x001']['mat.m001'] = 1200;
     const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+    await expect(button).toBeVisible();
     await button.focus();
     await page.keyboard.down('Space');
     await expect(page.locator('.status')).toContainText('Mining hold is full');
     await page.keyboard.up('Space');
-    await expect(button).toHaveAttribute('data-phase', 'idle');
+    await expect(page.locator('.vacuumHold')).toHaveAttribute('data-phase', 'idle');
     await expect(page.locator('.fragmentPrompt')).toContainText('Free 100 more units');
     await expect(page.getByRole('button', { name: 'Retry pending action' })).toHaveCount(0);
     expect(f.current().world.nodes[id]!.fragments).toEqual(before);
@@ -216,15 +240,21 @@ for (const file of ['panel.html', 'mobile.html']) {
     const f = await fixture(page, file),
       button = page.getByRole('button', { name: 'Hold Vacuum', exact: true }),
       canvas = page.locator('canvas');
+    await expect(button).toBeVisible();
     await button.focus();
     await page.keyboard.down('Space');
     await expect(button).toHaveAttribute('data-phase', 'attracting');
     f.faults.dropOnceAfterCommit = true;
-    await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeVisible();
+    await expect(
+      page
+        .getByRole('button', { name: 'Pending · Retry', exact: true })
+        .or(page.locator('.gate').getByRole('button', { name: 'Retry pending action' })),
+    ).toBeVisible();
     await page.keyboard.up('Space');
     await expect(canvas).toHaveAttribute('data-vacuum-stage', 'idle');
     await expect(canvas).toHaveAttribute('data-fragments', '3');
     expect(f.current().mining['extract.x001']['mat.m001']).toBe(100);
+    if (await page.getByRole('button', { name: 'Menu', exact: true }).isVisible()) await openOperations(page);
     await page.getByRole('button', { name: 'Retry pending action' }).click();
     await expect(canvas).toHaveAttribute('data-fragments', '2');
     expect(f.current().mining['extract.x001']['mat.m001']).toBe(100);

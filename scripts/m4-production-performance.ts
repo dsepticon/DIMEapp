@@ -3,7 +3,7 @@ import { chromium } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
-import { setup, walkTo } from '../tests/e2e/m4Harness';
+import { setup, walkTo, openOperations, resumeGame } from '../tests/e2e/m4Harness';
 import { originalZoneMap } from '../shared/originalWorld';
 import { zoneRoute, exitKind } from '../shared/originalNavigation';
 import type { OriginalPlayerState } from '../shared/originalSchema';
@@ -229,10 +229,12 @@ try {
       ] !== 80
     )
       throw Error('Eight-piece quantity conservation failed');
+    await openOperations(page);
     await page.getByRole('button', { name: 'Laser mode', exact: true }).click();
     await page
       .getByRole('combobox', { name: 'Nearby signature' })
       .selectOption('zone.z014.node.formation-stress-5');
+    await resumeGame(page);
     await page.getByRole('button', { name: 'Target node', exact: true }).click();
     const laser = page.getByRole('button', { name: 'Hold laser · release to cool', exact: true });
     await laser.focus();
@@ -241,6 +243,7 @@ try {
     await page.keyboard.up('Space');
     await page.waitForTimeout(1000);
     const laserEffects = await sample();
+    await openOperations(page);
     await page.getByRole('button', { name: 'Stop laser without yield', exact: true }).click();
     const city = ORIGINAL_CONTENT.zones
       .filter((z) => z.location === 'loc.l004')

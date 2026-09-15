@@ -1,3 +1,4 @@
+import { openOperations } from './m4Harness';
 import { test, expect } from '@playwright/test';
 import { setup, walkTo } from './m4Harness';
 import { originalZoneMap } from '../../shared/originalWorld';
@@ -37,6 +38,7 @@ for (const layout of [
     for (const destination of ['loc.l002', 'loc.l003', 'loc.l004', 'loc.l005', 'loc.l001']) {
       const services = originalTravelService(current().location),
         name = ORIGINAL_CONTENT.locations.find((x) => x.id === destination)!.name;
+      await openOperations(page);
       await page.getByRole('button', { name: 'NAV', exact: true }).click();
       const before = current().location;
       await page.getByRole('button', { name, exact: true }).click();

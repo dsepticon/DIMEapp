@@ -1,3 +1,5 @@
+import { originalZoneMap } from '../../shared/originalWorld';
+import { nearInteraction } from '../../shared/originalNavigation';
 import { emitGameAudio } from './audioEvents';
 import { useEffect, useRef, useState } from 'react';
 import { twitchConnection, type TwitchSession } from '../twitch';
@@ -53,6 +55,65 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const playerPosition = useRef<Position>({ x: 0, y: 0 });
   const [playerTile, setPlayerTile] = useState({ x: 0, y: 0 });
   const [mapOpen, setMapOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [touchHidden, setTouchHidden] = useState(false);
+  const [controlsIdle, setControlsIdle] = useState(false);
+  useEffect(() => {
+    let last = performance.now();
+    const pointers = new Set<number>();
+    const wake = (event?: Event) => {
+      if (event instanceof PointerEvent) {
+        if (event.type === 'pointerdown') pointers.add(event.pointerId);
+        if (event.type === 'pointerup' || event.type === 'pointercancel') pointers.delete(event.pointerId);
+      }
+      last = performance.now();
+      setControlsIdle(false);
+    };
+    let gamepadAllowed = true;
+    const tick = window.setInterval(() => {
+      if (gamepadAllowed) {
+        try {
+          if (
+            navigator
+              .getGamepads?.()
+              .some(
+                (pad) =>
+                  pad &&
+                  (pad.buttons.some((button) => button.pressed) ||
+                    pad.axes.some((axis) => Math.abs(axis) > 0.2)),
+              )
+          )
+            wake();
+        } catch {
+          // Embedding policies may deny gamepads; other input and idle handling still work.
+          gamepadAllowed = false;
+        }
+      }
+      setControlsIdle(pointers.size === 0 && performance.now() - last > 4500);
+    }, 50);
+    const events = [
+      'pointerdown',
+      'pointermove',
+      'pointerup',
+      'pointercancel',
+      'keydown',
+      'keyup',
+      'touchstart',
+    ] as const;
+    const releasePointers = () => {
+      pointers.clear();
+      wake();
+    };
+    window.addEventListener('blur', releasePointers);
+    document.addEventListener('visibilitychange', releasePointers);
+    events.forEach((name) => window.addEventListener(name, wake, { passive: true }));
+    return () => {
+      clearInterval(tick);
+      window.removeEventListener('blur', releasePointers);
+      document.removeEventListener('visibilitychange', releasePointers);
+      events.forEach((name) => window.removeEventListener(name, wake));
+    };
+  }, []);
   const [objective, setObjective] = useState('');
   const [marker, setMarker] = useState<{ x: number; y: number } | undefined>();
   const [toolMode, setToolMode] = useState<ToolMode>('laser');
@@ -71,6 +132,50 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const [resetOpen, setResetOpen] = useState(false);
   const [resetPhrase, setResetPhrase] = useState('');
   const [pendingBlocked, setPendingBlocked] = useState(false);
+  const overlayOpen = menuOpen || mapOpen || resetOpen;
+  useEffect(() => {
+    if (!overlayOpen) return;
+    window.dispatchEvent(new Event('blur'));
+    const previous = document.activeElement as HTMLElement | null;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        setMapOpen(false);
+        setResetOpen(false);
+      }
+      if (event.key === 'Tab') {
+        const sheet =
+          document.querySelector('.modal') ??
+          document.querySelector('.destinationMap') ??
+          document.querySelector('.gameSheet');
+        const controls = Array.from(
+          sheet?.querySelectorAll<HTMLElement>('button:not(:disabled), a, input, select') ?? [],
+        ).filter((el) => el.getClientRects().length);
+        const first = controls[0],
+          last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', close);
+    const focus = requestAnimationFrame(() =>
+      (
+        document.querySelector<HTMLElement>('.modal button') ??
+        document.querySelector<HTMLElement>('.destinationMap button') ??
+        document.querySelector<HTMLElement>('.gameSheet button')
+      )?.focus(),
+    );
+    return () => {
+      cancelAnimationFrame(focus);
+      document.removeEventListener('keydown', close);
+      previous?.focus();
+    };
+  }, [overlayOpen, menuOpen, mapOpen, resetOpen]);
   const pendingKey = () => {
     const identity = gateway?.identity();
     return identity ? `dime-pending-v2:${identity}` : '';
@@ -429,34 +534,63 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const location = ORIGINAL_CONTENT.locations.find((x) => x.id === state?.location);
   const zoneInfo = ORIGINAL_CONTENT.zones.find((x) => x.id === state?.world.zone);
   const zoneKinds = zoneInfo?.objectKinds ?? [];
-  return (
-    <main className={`originalApp${mode === 'web' ? ' standalone' : ''}`} data-tool-mode={toolMode}>
-      <header>
-        <div>
-          <strong>D.I.M.E.</strong>
-          <small>DESTROYA INDUSTRIES MINING EXPERIENCE</small>
-        </div>
-        <span>{location?.name ?? 'Secure connection'}</span>
-        {mode === 'web' && gateway && (
-          <button
-            onClick={() =>
-              void fetch('/auth/logout', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: { 'Content-Type': 'application/json', 'X-Dime-CSRF': gateway.csrf?.() ?? '' },
-                body: '{}',
+  const identityHeader = (
+    <header>
+      <div>
+        <strong>D.I.M.E.</strong>
+        <small>DESTROYA INDUSTRIES MINING EXPERIENCE</small>
+      </div>
+      <span>{location?.name ?? 'Secure connection'}</span>
+      {mode === 'web' && gateway && (
+        <button
+          onClick={() =>
+            void fetch('/auth/logout', {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: { 'Content-Type': 'application/json', 'X-Dime-CSRF': gateway.csrf?.() ?? '' },
+              body: '{}',
+            })
+              .then((response) => {
+                if (!response.ok) throw Error();
+                gateway.expired(undefined);
               })
-                .then((response) => {
-                  if (!response.ok) throw Error();
-                  gateway.expired(undefined);
-                })
-                .catch(() => setMessage('Sign out could not be confirmed. Retry.'))
-            }
-          >
-            Sign out
-          </button>
-        )}
-      </header>
+              .catch(() => setMessage('Sign out could not be confirmed. Retry.'))
+          }
+        >
+          Sign out
+        </button>
+      )}
+    </header>
+  );
+  const legalFooter = (
+    <footer>
+      <b>Destroya Industries</b>
+      <span>Cairncoil Reach · Lomrek system</span>
+      <span>Founded by Dorathaadestroya · Founder and Operations Director</span>
+      <small>{ORIGINAL_CONTENT.materialDisclaimer}</small>
+      <a
+        href="https://destroyaindustriesminingextension.com/privacy"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Privacy Policy
+      </a>
+      <small>
+        DIME is an original industrial exploration game operated by Dsepticon. No creator likeness, voice,
+        biography, or attributed dialogue is used.
+      </small>
+    </footer>
+  );
+  return (
+    <main
+      className={`originalApp${mode === 'web' ? ' standalone' : ''}`}
+      data-tool-mode={toolMode}
+      data-playing={!!state}
+      data-menu={menuOpen}
+      data-idle={controlsIdle && !overlayOpen && !busy && !laserVisual?.held && !vacuumVisual}
+      data-touch-hidden={touchHidden}
+    >
+      {!state && identityHeader}
       {!state ? (
         <section className="gate">
           <h1>{conversion ? 'Equivalent content update' : 'Field operator access'}</h1>
@@ -487,7 +621,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
               mode={toolMode}
               state={state}
               paused={
-                resetOpen ||
+                overlayOpen ||
                 (!pendingBlocked && (!!state.world.miningSession || !!state.world.extractionSession))
               }
               onPosition={(position) => {
@@ -528,103 +662,175 @@ function App({ webReview = false }: { webReview?: boolean }) {
               </small>
             </div>
           </section>
-          <nav onClick={() => emitGameAudio('ui')}>
-            <button onClick={() => setMapOpen((open) => !open)}>NAV</button>
-            <button onClick={() => setMessage('Beamline One · Laser / Extraction')}>TOOL</button>
-            <button onClick={() => setMessage(ORIGINAL_CONTENT.materialDisclaimer)}>CARGO</button>
-            <button onClick={() => setResetOpen(true)}>PROFILE</button>
-          </nav>
-          <PhysicalNavigation
-            state={state}
-            player={playerTile}
-            getPlayer={() => playerPosition.current}
-            busy={busy || pendingBlocked || resetOpen}
-            mapOpen={mapOpen}
-            closeMap={() => setMapOpen(false)}
-            objective={objective}
-            select={setObjective}
-            marker={setMarker}
-            mutate={mutate}
-          />
-          <section className="status">
-            <p>{message}</p>
-            {recoveryControls}
-            <div>
-              <span>{state.wallet.toLocaleString()} shift marks</span>
-              <span>
-                Hand hold{' '}
-                {formatCscuMinor(
-                  Object.values(state.mining['extract.x001']).reduce<number>((a, b) => a + (b ?? 0), 0),
-                )}{' '}
-                cSCU
-              </span>
-            </div>
-          </section>
-          <VacuumConsole
-            state={state}
-            busy={busy || pendingBlocked || resetOpen}
-            mode={toolMode}
-            setMode={setToolMode}
-            getPlayer={() => playerPosition.current}
-            mutate={mutate}
-            onVisual={setVacuumVisual}
-            onTarget={setFragmentTarget}
-          />
-          <MiningConsole
-            onVisual={setLaserVisual}
-            mode={toolMode}
-            state={state}
-            busy={busy || pendingBlocked}
-            mutate={mutate}
-            getPlayer={() => playerPosition.current}
-            target={targetNode}
-            onTarget={setTargetNode}
-          />
-          <ServiceConsole
-            state={state}
-            busy={busy || pendingBlocked}
-            mutate={mutate}
-            kinds={zoneKinds as readonly string[]}
-          />
-          {state.world.zone === 'zone.z012' && (
-            <section className="actions">
-              {!state.quest && (
-                <button
-                  disabled={busy || pendingBlocked}
-                  onClick={() => void mutate({ type: 'acceptFirstContract' })}
-                >
-                  Begin First Contract
-                </button>
-              )}
-              {state.quest?.objective === 'CHECK_EQUIPMENT' && (
-                <button
-                  disabled={busy || pendingBlocked}
-                  onClick={() => void mutate({ type: 'confirmFirstContractTool' })}
-                >
-                  Confirm Beamline One
-                </button>
-              )}
-              {state.quest?.objective === 'RETURN_TO_OUTPOST' && (
-                <button
-                  disabled={busy || pendingBlocked}
-                  onClick={() => void mutate({ type: 'sellFirstContractMaterial' })}
-                >
-                  Sell 4 cSCU Garnet · 5,200 shift marks
-                </button>
-              )}
-              {state.quest?.objective === 'RETURN_TO_FOREMAN' && (
-                <button
-                  disabled={busy || pendingBlocked}
-                  onClick={() => void mutate({ type: 'completeFirstContract' })}
-                >
-                  Report completed field work · 500 reward
-                </button>
-              )}
-              {state.quest?.status === 'COMPLETE' && (
-                <span>First Contract complete · mined 4 cSCU · sold 4 cSCU</span>
-              )}
-            </section>
+          <button
+            className="menuToggle"
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            ☰
+          </button>
+          <button className="hudToggle" aria-label="Status and objective" onClick={() => setMenuOpen(true)}>
+            {state.wallet.toLocaleString()} marks ·{' '}
+            {formatCscuMinor(
+              Object.values(state.mining['extract.x001']).reduce<number>((a, b) => a + (b ?? 0), 0),
+            )}{' '}
+            cSCU {objective && <span aria-hidden="true">⌖</span>}
+          </button>
+          {pendingBlocked && (
+            <button className="recoveryBadge" onClick={() => setMenuOpen(true)}>
+              Pending · Retry
+            </button>
           )}
+          {originalZoneMap(state.world.zone).services.some((service) =>
+            nearInteraction(state.world.zone, playerTile, service),
+          ) && (
+            <button className="interactToggle" onClick={() => setMenuOpen(true)}>
+              Interact
+            </button>
+          )}
+          <div
+            className="gameSheet"
+            role={menuOpen ? 'dialog' : undefined}
+            aria-modal={menuOpen || undefined}
+            aria-label="Operations menu"
+          >
+            <button className="resumeGame" onClick={() => setMenuOpen(false)}>
+              Resume game
+            </button>
+            {identityHeader}
+            <p>Walk: WASD / arrows · Enter: E · Mine: hold Space · Vacuum: hold V. Release to stop.</p>
+            <nav className="operationsNav" onClick={() => emitGameAudio('ui')}>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  setMapOpen(true);
+                }}
+              >
+                NAV
+              </button>
+              <button
+                onClick={() =>
+                  document
+                    .querySelector('.miningConsole, .vacuumConsole')
+                    ?.scrollIntoView({ block: 'center' })
+                }
+              >
+                TOOL
+              </button>
+              <button onClick={() => document.querySelector('.status')?.scrollIntoView({ block: 'center' })}>
+                CARGO
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  setResetOpen(true);
+                }}
+              >
+                PROFILE
+              </button>
+            </nav>
+            <button
+              className="keyboardOption"
+              aria-pressed={touchHidden}
+              onClick={() => setTouchHidden((value) => !value)}
+            >
+              {touchHidden ? 'Show touch controls' : 'Hide touch controls (keyboard)'}
+            </button>
+            <PhysicalNavigation
+              state={state}
+              player={playerTile}
+              getPlayer={() => playerPosition.current}
+              busy={busy || pendingBlocked || overlayOpen}
+              mapOpen={mapOpen}
+              closeMap={() => setMapOpen(false)}
+              objective={objective}
+              select={setObjective}
+              marker={setMarker}
+              mutate={mutate}
+            />
+            <section className="status">
+              <p>{message}</p>
+              {recoveryControls}
+              <div>
+                <span>{state.wallet.toLocaleString()} shift marks</span>
+                <span>
+                  Hand hold{' '}
+                  {formatCscuMinor(
+                    Object.values(state.mining['extract.x001']).reduce<number>((a, b) => a + (b ?? 0), 0),
+                  )}{' '}
+                  cSCU
+                </span>
+              </div>
+            </section>
+            <VacuumConsole
+              state={state}
+              paused={overlayOpen}
+              busy={busy || pendingBlocked || resetOpen}
+              mode={toolMode}
+              setMode={setToolMode}
+              getPlayer={() => playerPosition.current}
+              mutate={mutate}
+              onVisual={setVacuumVisual}
+              onTarget={setFragmentTarget}
+            />
+            <MiningConsole
+              onVisual={setLaserVisual}
+              mode={toolMode}
+              state={state}
+              busy={busy || pendingBlocked}
+              mutate={mutate}
+              getPlayer={() => playerPosition.current}
+              target={targetNode}
+              onTarget={setTargetNode}
+            />
+            <ServiceConsole
+              state={state}
+              busy={busy || pendingBlocked}
+              mutate={mutate}
+              kinds={zoneKinds as readonly string[]}
+            />
+            {state.world.zone === 'zone.z012' && (
+              <section className="actions">
+                {!state.quest && (
+                  <button
+                    disabled={busy || pendingBlocked}
+                    onClick={() => void mutate({ type: 'acceptFirstContract' })}
+                  >
+                    Begin First Contract
+                  </button>
+                )}
+                {state.quest?.objective === 'CHECK_EQUIPMENT' && (
+                  <button
+                    disabled={busy || pendingBlocked}
+                    onClick={() => void mutate({ type: 'confirmFirstContractTool' })}
+                  >
+                    Confirm Beamline One
+                  </button>
+                )}
+                {state.quest?.objective === 'RETURN_TO_OUTPOST' && (
+                  <button
+                    disabled={busy || pendingBlocked}
+                    onClick={() => void mutate({ type: 'sellFirstContractMaterial' })}
+                  >
+                    Sell 4 cSCU Garnet · 5,200 shift marks
+                  </button>
+                )}
+                {state.quest?.objective === 'RETURN_TO_FOREMAN' && (
+                  <button
+                    disabled={busy || pendingBlocked}
+                    onClick={() => void mutate({ type: 'completeFirstContract' })}
+                  >
+                    Report completed field work · 500 reward
+                  </button>
+                )}
+                {state.quest?.status === 'COMPLETE' && (
+                  <span>First Contract complete · mined 4 cSCU · sold 4 cSCU</span>
+                )}
+              </section>
+            )}
+            {legalFooter}
+          </div>
           {resetOpen && (
             <div className="modal" role="dialog" aria-label="Reset game progress">
               <section>
@@ -683,23 +889,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
           )}
         </>
       )}
-      <footer>
-        <b>Destroya Industries</b>
-        <span>Cairncoil Reach · Lomrek system</span>
-        <span>Founded by Dorathaadestroya · Founder and Operations Director</span>
-        <small>{ORIGINAL_CONTENT.materialDisclaimer}</small>
-        <a
-          href="https://destroyaindustriesminingextension.com/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Privacy Policy
-        </a>
-        <small>
-          DIME is an original industrial exploration game operated by Dsepticon. No creator likeness, voice,
-          biography, or attributed dialogue is used.
-        </small>
-      </footer>
+      {!state && legalFooter}
     </main>
   );
 }

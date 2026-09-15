@@ -98,17 +98,25 @@ export function PhysicalNavigation({
           </div>
         </section>
       )}
-      <p className="objective" role="status">
+      <p className="objective" data-selected={!!plan} role="status">
         {plan?.text ?? 'Walk to a marked exit or open NAV to choose an objective.'}
       </p>
       <div className="physicalInteractions">
         {exits.map((exit) => (
-          <button key={exit.to} disabled={busy} onClick={() => activateExit(exit.to)}>
+          <button
+            aria-label={`Use ${exitKind(map.id, exit)} · ${ORIGINAL_CONTENT.zones.find((zone) => zone.id === exit.to)?.name}`}
+            data-action="Enter"
+            key={exit.to}
+            disabled={busy}
+            onClick={() => activateExit(exit.to)}
+          >
             Use {exitKind(map.id, exit)} · {ORIGINAL_CONTENT.zones.find((zone) => zone.id === exit.to)?.name}
           </button>
         ))}
         {atTravel && map.id === services.assign && !state.world.departure && (
           <button
+            aria-label={`Assign Lark Skiff${selectedLocation ? ` · ${selectedLocation.name}` : ' · select a destination in NAV'}`}
+            data-action="Travel"
             disabled={busy || !selectedLocation}
             onClick={() =>
               selectedLocation &&
@@ -128,6 +136,8 @@ export function PhysicalNavigation({
         {atTravel && map.id === services.depart && state.world.departure && (
           <button
             disabled={busy}
+            aria-label="Board assigned ship"
+            data-action="Travel"
             onClick={() => void mutate({ type: 'completeDeparture', player: getPlayer() })}
           >
             Board assigned ship
@@ -135,6 +145,8 @@ export function PhysicalNavigation({
         )}
         {atRig && !state.world.groundVehicle && (
           <button
+            aria-label="Retrieve owned Crawl Rig"
+            data-action="Interact"
             disabled={busy || !state.ships['fleet.v002']}
             onClick={() => void mutate({ type: 'retrieveGroundRig', player: getPlayer() })}
           >
@@ -143,6 +155,8 @@ export function PhysicalNavigation({
         )}
         {state.world.groundVehicle?.active && (
           <button
+            aria-label={`${state.world.groundVehicle.occupied ? 'Exit' : 'Enter'} ground rig`}
+            data-action={state.world.groundVehicle.occupied ? 'Exit' : 'Enter'}
             disabled={busy}
             onClick={() =>
               void mutate({ type: 'setGroundRigOccupied', occupied: !state.world.groundVehicle?.occupied })
@@ -152,7 +166,12 @@ export function PhysicalNavigation({
           </button>
         )}
         {atRig && state.world.groundVehicle?.active && !state.world.groundVehicle.occupied && (
-          <button disabled={busy} onClick={() => void mutate({ type: 'stowGroundRig', player: getPlayer() })}>
+          <button
+            aria-label="Stow ground rig"
+            data-action="Interact"
+            disabled={busy}
+            onClick={() => void mutate({ type: 'stowGroundRig', player: getPlayer() })}
+          >
             Stow ground rig
           </button>
         )}

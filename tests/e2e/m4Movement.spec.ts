@@ -1,3 +1,4 @@
+import { openOperations, resumeGame } from './m4Harness';
 import { test, expect, type Page } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { initialState as legacyInitialState } from '../../shared/game';
@@ -49,6 +50,7 @@ for (const layout of [
     await page.keyboard.up('a');
     await page.evaluate(() => window.dispatchEvent(new Event('focus')));
     await keyMove(page, 'a');
+    await openOperations(page);
     await page.getByRole('button', { name: 'PROFILE', exact: true }).click();
     await expect(page.locator('canvas')).toHaveAttribute('data-paused', 'true');
     const paused = await position(page);
@@ -59,7 +61,10 @@ for (const layout of [
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
     await keyMove(page, 'd');
     for (const name of ['NAV', 'TOOL', 'CARGO']) {
+      await openOperations(page);
       await page.getByRole('button', { name, exact: true }).click();
+      await expect(page.locator('canvas')).toHaveAttribute('data-paused', 'true');
+      await page.keyboard.press('Escape');
       await keyMove(page, 'a');
       await keyMove(page, 'd');
     }
@@ -104,6 +109,7 @@ for (const layout of [
     await page.getByRole('button', { name: /^Use doorway/ }).click();
     await expect(page.locator('.place b')).not.toHaveText('Crew Ring Arrival');
     await keyMove(page, 'd');
+    await openOperations(page);
     await page.getByRole('button', { name: 'PROFILE', exact: true }).click();
     await page.getByRole('textbox').fill('RESET MY DIME PROFILE');
     await page.getByRole('button', { name: 'Reset All My Game Progress', exact: true }).click();
@@ -146,6 +152,7 @@ for (const outcome of ['fracture', 'overcharge'] as const) {
     fixture.store.states.set('synthetic-walking', state);
     await page.goto('/panel.html');
     await expect(page.getByRole('button', { name: 'Target node', exact: true })).toBeVisible();
+    await resumeGame(page);
     await page.getByRole('button', { name: 'Target node', exact: true }).click();
     const laser = page.getByRole('button', { name: 'Hold laser · release to cool', exact: true });
     await expect(laser).toBeVisible();
@@ -212,7 +219,7 @@ for (const outcome of ['fracture', 'overcharge'] as const) {
         })
         .toBe(true);
       await page.keyboard.up('Space');
-      await expect(vacuum).toHaveAttribute('data-phase', 'idle');
+      await expect(page.locator('.vacuumHold')).toHaveAttribute('data-phase', 'idle');
     }
     await expect(page.locator('canvas')).toHaveAttribute('data-paused', 'false');
     await keyMove(page, 'a');

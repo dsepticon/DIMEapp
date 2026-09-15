@@ -1,3 +1,4 @@
+import { openOperations, resumeGame } from './m4Harness';
 import { test, expect, type Page } from '@playwright/test';
 import { createHash, randomUUID } from 'node:crypto';
 import { setup, walkTo } from './m4Harness';
@@ -68,8 +69,13 @@ for (const layout of [
     fixture.store.states.set('synthetic-walking', state);
     await seedStorage(page, pending(undefined));
     await page.goto('/' + layout.file);
-    await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeVisible();
+    await expect(
+      page
+        .getByRole('button', { name: 'Pending · Retry', exact: true })
+        .or(page.locator('.gate').getByRole('button', { name: 'Retry pending action' })),
+    ).toBeVisible();
     const before = structuredClone(current(fixture));
+    await openOperations(page);
     await page.getByRole('button', { name: 'NAV', exact: true }).click();
     const choices = page.locator('.destinationMap button[aria-pressed]');
     for (let i = 0; i < (await choices.count()); i++) {
@@ -83,6 +89,7 @@ for (const layout of [
     await page.waitForTimeout(150);
     await page.keyboard.up('d');
     expect(await page.locator('canvas').getAttribute('data-player-x')).not.toBe(x);
+    if (await page.getByRole('button', { name: 'Menu', exact: true }).isVisible()) await openOperations(page);
     await page.getByRole('button', { name: 'Review discard' }).click();
     await expect(page.getByRole('button', { name: 'Confirm discard', exact: true })).toBeDisabled();
     expect(await pendingExists(page)).toBe(true);
@@ -126,8 +133,8 @@ for (const layout of [
       id,
       ore: 'mat.m001',
       source: 'extract.x001',
-      x: 2,
-      y: 2,
+      x: originalZoneMap('zone.z014').spawn.x + 1,
+      y: originalZoneMap('zone.z014').spawn.y,
       size: 1,
       resistance: 0.6,
       instability: 0.2,
@@ -139,6 +146,11 @@ for (const layout of [
     state.world.scanner.analyzed = [id];
     fixture.store.states.set('synthetic-walking', state);
     await page.goto('/' + layout.file);
+    await resumeGame(page);
+    await expect(page.getByRole('button', { name: 'Target node', exact: true })).toBeVisible();
+    // The server can reject a previously eligible client target; no mutation may remain pending.
+    state.world.nodes[id]!.x = 2;
+    state.world.nodes[id]!.y = 2;
     await page.getByRole('button', { name: 'Target node', exact: true }).click();
     await expect(page.locator('.status')).toContainText('Mining not started');
     expect(await pendingExists(page)).toBe(false);
@@ -166,6 +178,7 @@ for (const layout of [
     await page.goto('/' + layout.file);
     await expect(page.locator('canvas')).toHaveAttribute('data-zone', 'zone.z001');
     expect(current(fixture).conversionReceipt).toBeUndefined();
+    await openOperations(page);
     await page.getByRole('button', { name: 'NAV', exact: true }).click();
     await page.getByRole('button', { name: 'Loam Crescent', exact: true }).click();
     await expect(page.locator('.objective')).toContainText('Walk to');
@@ -182,15 +195,23 @@ for (const layout of [
     await page.getByRole('button', { name: 'Board assigned ship', exact: true }).click();
     await expect(page.locator('canvas')).toHaveAttribute('data-zone', 'zone.z019');
     await goZone(page, fixture, 'zone.z012', layout.name === 'Mobile');
+    await openOperations(page);
     await page.getByRole('button', { name: 'Begin First Contract', exact: true }).click();
+    await openOperations(page);
     await page.getByRole('button', { name: 'Confirm Beamline One', exact: true }).click();
     await goZone(page, fixture, 'zone.z014', layout.name === 'Mobile');
     map = originalZoneMap('zone.z014');
     const node = current(fixture).world.nodes['assignment.q001.node']!;
     await walkTo(page, map, node, layout.name === 'Mobile');
+    await openOperations(page);
     await page.getByRole('button', { name: 'Ping signatures', exact: true }).click();
+    await resumeGame(page);
+    await openOperations(page);
     await page.getByRole('combobox', { name: 'Nearby signature' }).selectOption(node.id);
+    await openOperations(page);
     await page.getByRole('button', { name: 'Analyze selected signature', exact: true }).click();
+    await resumeGame(page);
+    await resumeGame(page);
     await page.getByRole('button', { name: 'Target node', exact: true }).click();
     const laser = page.getByRole('button', { name: 'Hold laser · release to cool', exact: true });
     await laser.focus();
@@ -215,6 +236,7 @@ for (const layout of [
     for (const piece of [...current(fixture).world.nodes[node.id]!.fragments]) {
       await walkTo(page, map, piece, layout.name === 'Mobile');
       const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+      await expect(button).toBeVisible();
       await button.focus();
       await page.keyboard.down('Space');
       await expect
@@ -223,7 +245,7 @@ for (const layout of [
         )
         .toBe(true);
       await page.keyboard.up('Space');
-      await expect(button).toHaveAttribute('data-phase', 'idle');
+      await expect(page.locator('.vacuumHold')).toHaveAttribute('data-phase', 'idle');
     }
     const saved = structuredClone(current(fixture));
     await page.reload();
@@ -231,6 +253,7 @@ for (const layout of [
     expect(current(fixture)).toEqual(saved);
     expect(saved.mining['extract.x001']['mat.m001']).toBe(400);
     expect(saved.world.nodes[node.id]!.status).toBe('DEPLETED');
+    await openOperations(page);
     await page.getByRole('button', { name: 'NAV', exact: true }).click();
     await page.getByRole('button', { name: 'Avenbolt', exact: true }).click();
     expect(current(fixture)).toEqual(saved);
@@ -240,7 +263,9 @@ for (const layout of [
     );
     await page.getByRole('button', { name: 'Close map', exact: true }).click();
     await goZone(page, fixture, 'zone.z012', layout.name === 'Mobile');
+    await openOperations(page);
     await page.getByRole('button', { name: 'Sell 4 cSCU Garnet · 5,200 shift marks', exact: true }).click();
+    await openOperations(page);
     await page.getByRole('button', { name: 'Report completed field work · 500 reward', exact: true }).click();
     expect(current(fixture).quest?.status).toBe('COMPLETE');
     expect(current(fixture).wallet).toBe(5700);
@@ -264,7 +289,11 @@ for (const file of ['panel.html', 'mobile.html']) {
     await seedStorage(page, pending(state.saveGeneration));
     fixture.faults.unknownOnceBeforeCommit = true;
     await page.goto('/' + file);
-    await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeVisible();
+    await expect(
+      page
+        .getByRole('button', { name: 'Pending · Retry', exact: true })
+        .or(page.locator('.gate').getByRole('button', { name: 'Retry pending action' })),
+    ).toBeVisible();
     expect(await pendingExists(page)).toBe(true);
     expect(fixture.store.receipts.size).toBe(0);
     const raw = await page.evaluate((key) => sessionStorage.getItem(key), key);
@@ -277,6 +306,7 @@ for (const file of ['panel.html', 'mobile.html']) {
     await other.close();
     await page.bringToFront();
     expect(await page.evaluate((key) => sessionStorage.getItem(key), key)).toBe(raw);
+    if (await page.getByRole('button', { name: 'Menu', exact: true }).isVisible()) await openOperations(page);
     await page.getByRole('button', { name: 'Retry pending action' }).click();
     await expect.poll(() => pendingExists(page)).toBe(false);
     expect(fixture.store.receipts.size).toBe(1);
@@ -293,13 +323,18 @@ for (const file of ['panel.html', 'mobile.html']) {
     await page.goto('/' + file);
     await expect(page.locator('canvas')).toBeVisible();
     const generation = current(fixture).saveGeneration;
+    await openOperations(page);
     await page.getByRole('button', { name: 'PROFILE', exact: true }).click();
     await page.getByRole('textbox').fill('RESET MY DIME PROFILE');
     fixture.faults.dropOnceAfterCommit = true;
     await page.getByRole('button', { name: 'Reset All My Game Progress', exact: true }).click();
     await expect.poll(() => fixture.store.receipts.size).toBe(1);
     await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeVisible();
+    await expect(
+      page
+        .getByRole('button', { name: 'Pending · Retry', exact: true })
+        .or(page.locator('.gate').getByRole('button', { name: 'Retry pending action' })),
+    ).toBeVisible();
     await page.reload();
     await expect(page.locator('canvas')).toHaveAttribute('data-zone', 'zone.z001');
     await expect.poll(() => pendingExists(page)).toBe(false);
@@ -331,7 +366,11 @@ for (const file of ['panel.html', 'mobile.html']) {
         await page.getByRole('button', { name: 'Preview equivalent update' }).click();
         fixture.faults.dropOnceAfterCommit = true;
         await page.getByRole('button', { name: 'Apply reviewed equivalent update' }).click();
-        await expect(page.getByRole('button', { name: 'Retry pending action' })).toBeVisible();
+        await expect(
+          page
+            .getByRole('button', { name: 'Pending · Retry', exact: true })
+            .or(page.locator('.gate').getByRole('button', { name: 'Retry pending action' })),
+        ).toBeVisible();
         await page.reload();
       }
       await expect(page.locator('canvas')).toBeVisible();
@@ -421,11 +460,12 @@ for (const file of ['panel.html', 'mobile.html']) {
     expect(await pendingExists(page)).toBe(false);
     expect(fixture.store.receipts.size).toBe(0);
     const button = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
+    await expect(button).toBeVisible();
     await button.focus();
     await page.keyboard.down('Space');
     await expect.poll(() => current(fixture).world.nodes[id]!.fragments[0]!.collected).toBe(true);
     await page.keyboard.up('Space');
-    await expect(button).toHaveAttribute('data-phase', 'idle');
+    await expect(page.locator('.vacuumHold')).toHaveAttribute('data-phase', 'idle');
     expect(current(fixture).mining['extract.x001']['mat.m001']).toBe(100);
     const saved = structuredClone(current(fixture));
     await page.reload();

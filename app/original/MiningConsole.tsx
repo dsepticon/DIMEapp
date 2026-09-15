@@ -45,6 +45,11 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
   const [sim, setSim] = useState<MiningState>(initialState());
   const [held, setHeld] = useState(false);
   const [outcome, setOutcome] = useState('');
+  useEffect(() => {
+    if (!outcome) return;
+    const timer = setTimeout(() => setOutcome(''), 8000);
+    return () => clearTimeout(timer);
+  }, [outcome]);
   const [runs, setRuns] = useState<PulseRun[]>([]);
   const runsRef = useRef<PulseRun[]>([]);
   runsRef.current = runs;
@@ -153,11 +158,38 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
       setRuns([]);
     }
   };
+  const keyboardAction = useRef<() => void>(() => {});
+  keyboardAction.current = () => {
+    if (busy || mode !== 'laser' || document.querySelector('.originalApp[data-menu="true"]')) return;
+    if (state.world.miningSession) setHeld(true);
+    else if (rangeStatus === 'In range') document.querySelector<HTMLButtonElement>('.primaryMine')?.click();
+  };
+  useEffect(() => {
+    const down = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && !event.repeat && event.target instanceof HTMLCanvasElement) {
+        event.preventDefault();
+        keyboardAction.current();
+      }
+    };
+    const up = (event: KeyboardEvent) => {
+      if (event.code === 'Space') setHeld(false);
+    };
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+    };
+  }, []);
   if (mode !== 'laser') return null;
   if (!ORIGINAL_CONTENT.zones.find((item) => item.id === state.world.zone)?.regionCount) return null;
   const p = spec ? parameters(spec) : null;
   return (
-    <section className="miningConsole" data-active={!!state.world.miningSession}>
+    <section
+      className="miningConsole"
+      data-near={rangeStatus === 'In range'}
+      data-active={!!state.world.miningSession}
+    >
       <div className="scannerHeading">
         <b>{node?.status === 'FRACTURED' ? 'MODE: EXTRACTION' : 'MODE: LASER'} · FIELD SCANNER</b>
         <button disabled={busy} onClick={() => void mutate({ type: 'scan' })}>
@@ -198,6 +230,27 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
         </div>
       )}
       {node && !analyzed && (
+        <button
+          className="primaryMine"
+          disabled={busy}
+          onClick={async () => {
+            const scanned = state.world.scanner.scannedZones?.includes(state.world.zone)
+              ? state
+              : await mutate({ type: 'scan' });
+            if (!scanned || scanned.saveGeneration !== state.saveGeneration) return;
+            const next = await mutate({ type: 'analyze', nodeId: node.id });
+            if (!next || next.saveGeneration !== state.saveGeneration) return;
+            setOutcome('');
+            setSim(initialState());
+            runsRef.current = [];
+            setRuns([]);
+            await mutate({ type: 'startLaser', nodeId: node.id, player: getPlayer() });
+          }}
+        >
+          Mine
+        </button>
+      )}
+      {node && !analyzed && (
         <button disabled={busy} onClick={() => void mutate({ type: 'analyze', nodeId: node.id })}>
           Analyze selected signature
         </button>
@@ -209,8 +262,13 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
             {Math.round(node.instability * 100)}
           </p>
           {!state.world.miningSession ? (
-            <button disabled={busy} onClick={() => void start()}>
-              Target node
+            <button
+              className="primaryMine"
+              aria-label="Target node"
+              disabled={busy}
+              onClick={() => void start()}
+            >
+              Mine
             </button>
           ) : (
             <>
@@ -238,6 +296,8 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
                 />
               </div>
               <button
+                className="laserHold"
+                aria-label="Hold laser · release to cool"
                 disabled={busy}
                 onPointerDown={(event) => {
                   event.currentTarget.setPointerCapture(event.pointerId);
@@ -260,7 +320,7 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
                 }}
                 onBlur={() => setHeld(false)}
               >
-                Hold laser · release to cool
+                Mine
               </button>
               {held && (
                 <div className="beamEffect" aria-label="Laser active">
@@ -274,14 +334,17 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
                   ? '⚠ Danger — release'
                   : sim.charge >= (p?.lower ?? 1000)
                     ? '◆ Optimal'
-                    : '↑ Charging'}{' '}
-                · {sim.phase}
+                    : '↑ Charging'}
               </small>
             </>
           )}
         </>
       )}
-      {outcome && <p role="status">{outcome}</p>}
+      {outcome && (
+        <p className="miningOutcome" role="status">
+          {outcome}
+        </p>
+      )}
     </section>
   );
 }

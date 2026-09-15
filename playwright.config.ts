@@ -8,6 +8,7 @@ export default defineConfig({
     'm4Nodes.spec.ts',
     'm43Visual.spec.ts',
     'm43Travel.spec.ts',
+    'm43WorldView.spec.ts',
   ],
   fullyParallel: false,
   workers: 1,

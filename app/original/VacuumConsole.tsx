@@ -22,6 +22,7 @@ export type ToolMode = 'laser' | 'extraction';
 export function VacuumConsole({
   state,
   busy,
+  paused = false,
   mode,
   setMode,
   getPlayer,
@@ -31,6 +32,7 @@ export function VacuumConsole({
 }: {
   state: OriginalPlayerState;
   busy: boolean;
+  paused?: boolean;
   mode: ToolMode;
   setMode: (mode: ToolMode) => void;
   getPlayer: () => Point;
@@ -38,8 +40,8 @@ export function VacuumConsole({
   onVisual: (visual: VacuumVisual | null) => void;
   onTarget: (target: { nodeId: string; pieceId: string } | null) => void;
 }) {
-  const latest = useRef({ state, busy, mode, getPlayer, mutate, onVisual, onTarget });
-  latest.current = { state, busy, mode, getPlayer, mutate, onVisual, onTarget };
+  const latest = useRef({ state, busy, paused, mode, getPlayer, mutate, onVisual, onTarget });
+  latest.current = { state, busy, paused, mode, getPlayer, mutate, onVisual, onTarget };
   const held = useRef(false),
     running = useRef(false),
     mounted = useRef(true);
@@ -81,7 +83,13 @@ export function VacuumConsole({
   }, [mode]);
   const pause = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
   const start = async () => {
-    if (running.current || latest.current.busy || latest.current.mode !== 'extraction') return;
+    if (
+      running.current ||
+      latest.current.busy ||
+      latest.current.paused ||
+      latest.current.mode !== 'extraction'
+    )
+      return;
     held.current = true;
     running.current = true;
     setFeedback('');
@@ -190,6 +198,22 @@ export function VacuumConsole({
       }
     }
   };
+  const keyboardStart = useRef(start);
+  keyboardStart.current = start;
+  useEffect(() => {
+    const down = (event: KeyboardEvent) => {
+      if (
+        ['Space', 'KeyV'].includes(event.code) &&
+        !event.repeat &&
+        event.target instanceof HTMLCanvasElement
+      ) {
+        event.preventDefault();
+        void keyboardStart.current();
+      }
+    };
+    window.addEventListener('keydown', down);
+    return () => window.removeEventListener('keydown', down);
+  }, []);
   const piece = target?.piece,
     node = target?.node;
   const name =
@@ -200,7 +224,7 @@ export function VacuumConsole({
   const miningZone = ORIGINAL_CONTENT.zones.find((z) => z.id === state.world.zone)?.regionCount;
   if (!miningZone) return null;
   return (
-    <section className="vacuumConsole" aria-label="Mining tool mode">
+    <section className="vacuumConsole" data-near={!!target || running.current} aria-label="Mining tool mode">
       <div className="toolModes">
         <button
           disabled={running.current || busy || !!state.world.miningSession}
@@ -219,7 +243,7 @@ export function VacuumConsole({
       </div>
       {mode === 'extraction' && (
         <>
-          <div className="fragmentPrompt" role="status">
+          <div className="fragmentPrompt" data-full={!!target?.full} role="status">
             {piece && node && nodeInZone(state, node) ? (
               <>
                 <b>
@@ -231,7 +255,7 @@ export function VacuumConsole({
                     : 'Hold Vacuum · release to stop'}
                 </span>
                 <small>
-                  Available hold: {capacity?.free} / {capacity?.capacity} units
+                  Free: {capacity?.free} / {capacity?.capacity} units
                 </small>
               </>
             ) : (
@@ -281,7 +305,7 @@ export function VacuumConsole({
                   ? 'Confirming collection…'
                   : 'Hold Vacuum'}
           </button>
-          <small className="vacuumFeedback" role="status">
+          <small className="vacuumFeedback" data-feedback={!!feedback} role="status">
             {feedback || 'Hold Space, V, or the Vacuum control. No exact overlap needed.'}
           </small>
         </>
