@@ -126,6 +126,10 @@ try {
     }));
     await page.getByRole('button', { name: 'Sign out', exact: true }).click();
     await page.getByRole('link', { name: 'Sign in with Twitch', exact: true }).waitFor();
+    const privacyAfterLogout = await page
+      .getByRole('link', { name: 'Privacy Policy', exact: true })
+      .getAttribute('href');
+    if (privacyAfterLogout !== origin + '/privacy') throw Error('Privacy link missing before sign-in');
     if (
       !safety.noScroll ||
       !safety.noCredentialStorage ||
@@ -135,7 +139,15 @@ try {
       safety.canvas !== 1
     )
       throw Error('Production web safety check failed');
-    results.push({ viewport, moved, safety, linkIntentCreated: true, signedOut: true, errors });
+    results.push({
+      viewport,
+      moved,
+      safety,
+      linkIntentCreated: true,
+      signedOut: true,
+      privacyBeforeSignIn: true,
+      errors,
+    });
     await context.close();
   }
   await writeFile(

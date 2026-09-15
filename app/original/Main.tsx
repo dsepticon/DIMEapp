@@ -625,23 +625,6 @@ function App({ webReview = false }: { webReview?: boolean }) {
               )}
             </section>
           )}
-          <footer>
-            <b>Destroya Industries</b>
-            <span>Cairncoil Reach · Lomrek system</span>
-            <span>Founded by Dorathaadestroya · Founder and Operations Director</span>
-            <small>{ORIGINAL_CONTENT.materialDisclaimer}</small>
-            <a
-              href="https://destroyaindustriesminingextension.com/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Privacy Policy
-            </a>
-            <small>
-              DIME is an original industrial exploration game operated by Dsepticon. No creator likeness,
-              voice, biography, or attributed dialogue is used.
-            </small>
-          </footer>
           {resetOpen && (
             <div className="modal" role="dialog" aria-label="Reset game progress">
               <section>
@@ -700,6 +683,23 @@ function App({ webReview = false }: { webReview?: boolean }) {
           )}
         </>
       )}
+      <footer>
+        <b>Destroya Industries</b>
+        <span>Cairncoil Reach · Lomrek system</span>
+        <span>Founded by Dorathaadestroya · Founder and Operations Director</span>
+        <small>{ORIGINAL_CONTENT.materialDisclaimer}</small>
+        <a
+          href="https://destroyaindustriesminingextension.com/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Privacy Policy
+        </a>
+        <small>
+          DIME is an original industrial exploration game operated by Dsepticon. No creator likeness, voice,
+          biography, or attributed dialogue is used.
+        </small>
+      </footer>
     </main>
   );
 }
