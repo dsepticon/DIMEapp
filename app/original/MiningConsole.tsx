@@ -1,3 +1,4 @@
+import { emitGameAudio } from './audioEvents';
 import { useEffect, useRef, useState } from 'react';
 import type { OriginalPlayerState } from '../../shared/originalSchema';
 import {
@@ -14,7 +15,17 @@ import type { ToolMode } from './VacuumConsole';
 import { nodeInZone } from '../../shared/originalVacuum';
 import { nodeTargetStatus, nodeToolRange } from '../../shared/originalNodeTargeting';
 
+export type LaserVisual = {
+  nodeId: string;
+  held: boolean;
+  charge: number;
+  progress: number;
+  lower: number;
+  upper: number;
+  stable: number;
+};
 type Props = {
+  onVisual?: (visual: LaserVisual | null) => void;
   state: OriginalPlayerState;
   busy: boolean;
   mode: ToolMode;
@@ -23,7 +34,7 @@ type Props = {
   onTarget: (id: string) => void;
   mutate: (action: Record<string, unknown>) => Promise<OriginalPlayerState | null>;
 };
-export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, onTarget }: Props) {
+export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, onTarget, onVisual }: Props) {
   const nodes = Object.values(state.world.nodes).filter(
     (node) => nodeInZone(state, node) && node.status === 'INTACT',
   );
@@ -99,6 +110,35 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
     );
     return () => clearInterval(timer);
   }, [state.world.miningSession, held, spec?.seed, busy, selected]);
+  useEffect(() => {
+    const config = specRef.current ? parameters(specRef.current) : null;
+    onVisual?.(
+      state.world.miningSession && config
+        ? {
+            nodeId: selected,
+            held,
+            charge: sim.charge,
+            progress: sim.progress,
+            lower: config.lower,
+            upper: config.upper,
+            stable: config.stableTicks,
+          }
+        : null,
+    );
+  }, [onVisual, state.world.miningSession, selected, held, sim.charge, sim.progress]);
+  useEffect(() => {
+    if (held) emitGameAudio('laser');
+  }, [held]);
+  const chargeBand = !spec
+    ? 'idle'
+    : sim.charge > parameters(spec).upper
+      ? 'danger'
+      : sim.charge >= parameters(spec).lower
+        ? 'optimal'
+        : 'charging';
+  useEffect(() => {
+    if (chargeBand === 'optimal' || chargeBand === 'danger') emitGameAudio(chargeBand);
+  }, [chargeBand]);
   const start = async () => {
     if (!node) return;
     const next = await mutate({
@@ -174,7 +214,21 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
             </button>
           ) : (
             <>
-              <div className="charge">
+              <div
+                className="charge"
+                role="meter"
+                aria-label="Node charge"
+                aria-valuenow={sim.charge}
+                aria-valuemin={0}
+                aria-valuemax={1000}
+                data-band={
+                  sim.charge > (p?.upper ?? 1000)
+                    ? 'danger'
+                    : sim.charge >= (p?.lower ?? 1000)
+                      ? 'optimal'
+                      : 'charging'
+                }
+              >
                 <i style={{ width: `${sim.charge / 10}%` }} />
                 <em
                   style={{
@@ -215,7 +269,13 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
                 </div>
               )}
               <small>
-                Stable {sim.progress}/{p?.stableTicks} · {sim.phase}
+                Stable {sim.progress}/{p?.stableTicks} ·{' '}
+                {sim.charge > (p?.upper ?? 1000)
+                  ? '⚠ Danger — release'
+                  : sim.charge >= (p?.lower ?? 1000)
+                    ? '◆ Optimal'
+                    : '↑ Charging'}{' '}
+                · {sim.phase}
               </small>
             </>
           )}

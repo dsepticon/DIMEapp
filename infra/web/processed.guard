@@ -1,0 +1,181 @@
+# Apply to an offline SAM-translated template or a future reviewed processed
+# CloudFormation template. The offline transform uses an inert CodeUri placeholder
+# only to reveal generated resources; it does not package or upload code.
+
+let resource_count = count(Resources.*)
+
+rule only_expected_processed_resources {
+  %resource_count == 29
+  Resources.*.Type IN [
+    'AWS::DynamoDB::Table',
+    'AWS::Logs::LogGroup',
+    'AWS::IAM::Role',
+    'AWS::Lambda::Function',
+    'AWS::Lambda::Permission',
+    'AWS::ApiGatewayV2::Api',
+    'AWS::ApiGatewayV2::Stage',
+    'AWS::CloudWatch::Alarm'
+  ]
+}
+
+rule api_integration_and_stage {
+  Resources.StagingHttpApi.Type == 'AWS::ApiGatewayV2::Api'
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowOrigins.Ref == 'TwitchAllowedOrigins'
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowHeaders == ['Authorization', 'Content-Type']
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowMethods == ['GET', 'POST', 'OPTIONS']
+  Resources.StagingHttpApi.Properties.Body.'x-amazon-apigateway-cors'.allowCredentials == false
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/state'.get.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/actions'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/profile/reset'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/v4/state'.get.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/v4/actions'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/v4/content/preview'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/v4/content/convert'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApi.Properties.Body.'paths'.'/v4/profile/reset'.post.'x-amazon-apigateway-integration'.uri.'Fn::Sub' == 'arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations'
+  Resources.StagingHttpApistagingStage.Type == 'AWS::ApiGatewayV2::Stage'
+  Resources.StagingHttpApistagingStage.Properties.StageName == 'staging'
+  Resources.StagingHttpApistagingStage.Properties.AccessLogSettings.DestinationArn.'Fn::GetAtt' == ['ApiAccessLogGroup', 'Arn']
+}
+
+rule generated_invoke_permissions_are_api_route_scoped {
+  Resources.EbsFunctionGetStatePermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostActionsPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostProfileResetPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionGetOriginalStatePermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostOriginalActionsPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostOriginalPreviewPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostOriginalConvertPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionPostOriginalResetPermission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionGetStatePermission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionPostActionsPermission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionGetStatePermission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionPostActionsPermission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionGetStatePermission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionPostActionsPermission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/state'
+  Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/actions'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/profile/reset'
+  Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionGetStatePermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionPostActionsPermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionPostProfileResetPermission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionGetOriginalStatePermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/v4/state'
+  Resources.EbsFunctionPostOriginalActionsPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/actions'
+  Resources.EbsFunctionPostOriginalPreviewPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/content/preview'
+  Resources.EbsFunctionPostOriginalConvertPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/content/convert'
+  Resources.EbsFunctionPostOriginalResetPermission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/profile/reset'
+}
+
+rule configuration_revision_is_lambda_only {
+  Parameters.ConfigurationRevision.Type == 'String'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONFIG_REVISION.Ref == 'ConfigurationRevision'
+  Parameters.ContentConversionMode.Default == 'ENABLED'
+  Parameters.ContentConversionMode.AllowedValues == ['ENABLED']
+  Parameters.ContentConversionTesterTags.Default == ''
+  Parameters.ContentConversionTesterTags.NoEcho == true
+  Parameters.ContentConversionTesterTags.MaxLength == 2048
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONVERSION_MODE.Ref == 'ContentConversionMode'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONVERSION_TESTER_TAGS.Ref == 'ContentConversionTesterTags'
+  Resources.EbsFunction.Properties.Environment.Variables.TWITCH_EXTENSION_SECRET_B64.'Fn::Sub' == '{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_PLAYER_ID_KEY_B64.'Fn::Sub' == '{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}'
+}
+
+rule web_runtime_and_auth_permissions {
+  Parameters.ContentConversionTesterTags.AllowedValues == ['']
+  Parameters.AccountLinkingMode.Default == 'DISABLED'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_WEB_ORIGIN == 'https://destroyaindustriesminingextension.com'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_OAUTH_CLIENT_SECRET.'Fn::Sub' == '{{resolve:secretsmanager:${OAuthClientSecretArn}:SecretString}}'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_WEB_ID_KEY_B64.'Fn::Sub' == '{{resolve:secretsmanager:${WebIdentityKeySecretArn}:SecretString}}'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_AUTH_ENCRYPTION_KEY_B64.'Fn::Sub' == '{{resolve:secretsmanager:${AuthEncryptionKeySecretArn}:SecretString}}'
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[2].Action == ['dynamodb:ConditionCheckItem']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[2].Resource.'Fn::GetAtt' == ['PlayerStateTable', 'Arn']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[3].Action == ['dynamodb:DeleteItem']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[3].Resource.'Fn::GetAtt' == ['PlayerStateTable', 'Arn']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[3].Condition.'ForAllValues:StringLike'.'dynamodb:LeadingKeys' == ['AUTH#v1#*']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[3].Condition.Null.'dynamodb:LeadingKeys' == 'false'
+}
+
+rule exact_new_web_invoke_permissions {
+  Resources.EbsFunctionWebRoute0Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute0Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute0Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute0Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute0Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/login'
+  Resources.EbsFunctionWebRoute0Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute0Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute1Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute1Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute1Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute1Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute1Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/callback'
+  Resources.EbsFunctionWebRoute1Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute1Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute2Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute2Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute2Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute2Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute2Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/session'
+  Resources.EbsFunctionWebRoute2Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute2Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute3Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute3Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute3Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute3Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute3Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/logout'
+  Resources.EbsFunctionWebRoute3Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute3Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute4Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute4Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute4Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute4Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute4Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/link/intent'
+  Resources.EbsFunctionWebRoute4Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute4Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute5Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute5Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute5Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute5Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute5Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/link/accept'
+  Resources.EbsFunctionWebRoute5Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute5Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute6Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute6Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute6Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute6Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute6Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/v4/state'
+  Resources.EbsFunctionWebRoute6Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute6Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute7Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute7Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute7Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute7Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute7Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/actions'
+  Resources.EbsFunctionWebRoute7Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute7Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute8Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute8Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute8Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute8Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute8Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/content/preview'
+  Resources.EbsFunctionWebRoute8Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute8Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute9Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute9Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute9Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute9Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute9Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/content/convert'
+  Resources.EbsFunctionWebRoute9Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute9Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+  Resources.EbsFunctionWebRoute10Permission.Type == 'AWS::Lambda::Permission'
+  Resources.EbsFunctionWebRoute10Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.EbsFunctionWebRoute10Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.EbsFunctionWebRoute10Permission.Properties.FunctionName.Ref == 'EbsFunction'
+  Resources.EbsFunctionWebRoute10Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/profile/reset'
+  Resources.EbsFunctionWebRoute10Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
+  Resources.EbsFunctionWebRoute10Permission.Properties.SourceArn.'Fn::Sub'[1].'__Stage__' == '*'
+}

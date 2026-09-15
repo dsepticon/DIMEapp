@@ -1,3 +1,4 @@
+import { disabledConversionGate, type ConversionGate } from './conversionGate';
 /** M4.2 API composition: every identity uses the same binding-aware transaction store. */
 import { WebAuth, WebAuthError } from './webAuth';
 import { createWebApi, type WebResponse } from './webHttp';
@@ -13,8 +14,9 @@ export function createAccountApi(
     origins: string[];
     linkingEnabled: boolean;
   },
+  conversionGate: ConversionGate = disabledConversionGate,
 ) {
-  const web = createWebApi(auth, extension);
+  const web = createWebApi(auth, extension, conversionGate);
   return async (request: Request): Promise<WebResponse> => {
     const path = request.path.split('?')[0]!,
       origin = request.headers.origin;
@@ -53,7 +55,13 @@ export function createAccountApi(
         },
       };
       const api = path.startsWith('/v4/')
-        ? createOriginalApi(bound.store, async () => bound.player, extension.origins)
+        ? createOriginalApi(
+            bound.store,
+            async () => bound.player,
+            extension.origins,
+            Date.now,
+            conversionGate,
+          )
         : createApi(new GameService(legacy), async () => bound.player, extension.origins);
       const response = await api(request);
       if (request.method === 'GET' && path === '/v4/state' && response.statusCode === 200)

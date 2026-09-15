@@ -31,6 +31,11 @@ const choice = (page: Page, label: string, value: string) =>
 async function openPhysicalTravelTerminal(page: Page, state: ReturnType<typeof initialState>) {
   const zone = ZONES[state.world!.zone];
   if (zone.id === 'LYRIA_OUTPOST_01' && state.firstShift?.version !== 3) {
+    // The title DOM disappears before the canvas overlay effect settles.
+    // Wait for paint before sending a timed direction, otherwise keydown can be ignored.
+    await page.evaluate(
+      () => new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done()))),
+    );
     await page.keyboard.down('ArrowLeft');
     await page.waitForTimeout(880);
     await page.keyboard.up('ArrowLeft');

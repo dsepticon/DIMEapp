@@ -64,15 +64,15 @@
         We store your in-game wallet, ships, equipment, cargo, mining inventory, refinery orders, location,
         pending actions, and progression. Gameplay progression can include your current world, location and
         zone; travel and quest progress; mining-node status and collected or remaining ground pieces; mineral
-        quantities represented in 0.01-cSCU units; ship and ROC ownership, assignments, cargo, stowage and
-        service checkpoints; and mining equipment, scanner and tool progression. A random per-save generation
-        marker helps prevent an action from an earlier save from changing a reset save. The original Destroya
-        Industries universe uses content version 4 and save format 3. A non-mutating conversion preview lets
-        you review a functional-equivalent conversion from earlier game content without changing your save.
-        Conversion preserves gameplay quantities, ownership, fictional game values, capacities, processing
-        orders, quests, and progression while replacing content identifiers and names. Permanent conversion
-        begins disabled and is controlled by the server. If conversion is later enabled, an idempotent
-        conversion receipt records the request ID, source revision, save generation, migration version, and a
+        quantities represented in 0.01-cSCU units; ship and ground-rig ownership, assignments, cargo, stowage
+        and service checkpoints; and mining equipment, scanner and tool progression. A random per-save
+        generation marker helps prevent an action from an earlier save from changing a reset save. The
+        original Destroya Industries universe uses content version 4 and save format 3. A non-mutating
+        conversion preview lets you review a functional-equivalent conversion from earlier game content
+        without changing your save. Conversion preserves gameplay quantities, ownership, fictional game
+        values, capacities, processing orders, quests, and progression while replacing content identifiers and
+        names. Conversion is controlled by the server. When conversion is applied, an idempotent conversion
+        receipt records the request ID, source revision, save generation, migration version, and a
         non-reversible source digest to support safe retries. The receipt stores no full pre-conversion save.
         Conversion is distinct from gameplay reset and verified privacy deletion. We create action request IDs
         and receipts to prevent duplicate transactions. The stored save key is derived on the server from your

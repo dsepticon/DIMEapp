@@ -16,7 +16,8 @@ No credentials are embedded in this document or the application. `scripts/build-
 | TWITCH_EXTENSION_SECRET_B64 | Existing approved dynamic secret reference, never retrieved for inspection |
 | DIME_PLAYER_ID_KEY_B64 | Existing stable Extension identity-key reference |
 | DIME_ALLOWED_ORIGINS | Existing exact Twitch Extension origin |
-| DIME_CONVERSION_MODE | DISABLED, required by the new handler |
+| DIME_CONVERSION_MODE | ENABLED, required by the integrated handler |
+| DIME_CONVERSION_TESTER_TAGS | Empty |
 | DIME_ACCOUNT_LINKING | Initially DISABLED; ENABLED only after all writers use the new binding-aware API and live gates pass |
 
 Callback registration: `https://destroyaindustriesminingextension.com/auth/callback`. Requested scope: `openid`. Browser sign-in/consent and authenticated console configuration are external gates. Do not paste secrets or tokens into chat, command arguments, repository files or logs.
@@ -36,6 +37,12 @@ CloudFront same-origin `/auth/*` and `/api/*` behaviors must disable caching and
 3. Validate DynamoDB persistence/conditional conflict behavior with synthetic accounts only; verify both clients share the guarded store.
 4. Reverify code/IAM/CORS/CloudFront changes, security review, privacy publication and retained backup hashes.
 5. Deploy only the reviewed application objects with conditional index replacement and create-only versioned assets. Do not overwrite unrelated website keys.
-6. Test desktop/mobile real-domain performance, account-link replay/conflict handling and rollback. Conversion remains DISABLED.
+6. Test desktop/mobile real-domain performance, account-link replay/conflict handling and rollback. Conversion remains ENABLED with empty tester tags.
 
 The prepared rollback index references existing assets, which this candidate does not replace. Before publication, recheck its ETag and back it up again if changed. No live web rollout or rollback is claimed.
+
+## M4.3 integration supersedes the earlier conversion gate
+
+The graphics/web integration starts from verified M4.1 `e21e5c8fa4681569fbb8c5d5387ce8d9bd1df042`, preserving all intervening gameplay fixes. The separate combined handler now requires `DIME_CONVERSION_MODE=ENABLED` and empty `DIME_CONVERSION_TESTER_TAGS`, and passes that gate to both web and Extension APIs. It also checks the exact authorized staging table name. Earlier DISABLED instructions above describe the historical M4.2 prototype and must not be used for this release.
+
+Real OAuth client registration and secure runtime references remain missing. The existing gameplay Lambda is unchanged; do not replace it with the opt-in web handler until the required configuration exists. No website or auth infrastructure is deployed by building the candidate.

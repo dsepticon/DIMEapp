@@ -12,6 +12,10 @@ export default defineConfig(({ command, mode }) => {
         command === 'build'
           ? [
               {
+                find: /^\.\/globals\.css$/,
+                replacement: fileURLToPath(new URL('./app/original/original.css', import.meta.url)),
+              },
+              {
                 find: /^\.\/activeHome$/,
                 replacement: fileURLToPath(new URL('./app/original/Main.tsx', import.meta.url)),
               },

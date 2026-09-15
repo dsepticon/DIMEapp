@@ -1,5 +1,12 @@
 import { defineConfig } from '@playwright/test';
-const production = ['m4Movement.spec.ts', 'm4Release.spec.ts', 'm4Vacuum.spec.ts', 'm4Nodes.spec.ts'];
+const production = [
+  'm4Movement.spec.ts',
+  'm4Release.spec.ts',
+  'm4Vacuum.spec.ts',
+  'm4Nodes.spec.ts',
+  'm43Visual.spec.ts',
+  'm43Travel.spec.ts',
+];
 export default defineConfig({
   testDir: './tests/e2e',
   workers: 1,

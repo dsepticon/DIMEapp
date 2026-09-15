@@ -1,10 +1,11 @@
+import { emitGameAudio } from './audioEvents';
 import { useEffect, useRef, useState } from 'react';
 import { twitchConnection, type TwitchSession } from '../twitch';
 import { type OriginalPlayerState } from '../../shared/originalSchema';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
 import { formatCscuMinor } from '../../shared/mineralUnits';
 import './original.css';
-import { MiningConsole } from './MiningConsole';
+import { MiningConsole, type LaserVisual } from './MiningConsole';
 import { WalkingWorld } from './WalkingWorld';
 import type { Position } from './walking';
 import {
@@ -32,7 +33,10 @@ const uuid = () => crypto.randomUUID();
 function App({ webReview = false }: { webReview?: boolean }) {
   const configuredApi = import.meta.env.VITE_DIME_API_URL as string | undefined;
   const mode = import.meta.env.DEV && webReview ? 'web' : import.meta.env.VITE_DIME_MODE || 'web';
-  const api = mode==='web'?'/api':(configuredApi || (mode==='local'?'http://127.0.0.1:8787':'')).replace(/\/$/,'');
+  const api =
+    mode === 'web'
+      ? '/api'
+      : (configuredApi || (mode === 'local' ? 'http://127.0.0.1:8787' : '')).replace(/\/$/, '');
   const [session, setSession] = useState<TwitchSession>({ status: 'connecting' });
   const [gateway, setGateway] = useState<Gateway | null>(null);
   const [state, setState] = useState<OriginalPlayerState | null>(null);
@@ -44,14 +48,15 @@ function App({ webReview = false }: { webReview?: boolean }) {
   } | null>(null);
   const [message, setMessage] = useState('Connecting to Destroya Industries operations…');
   const [busy, setBusy] = useState(false);
-  const [canLink,setCanLink]=useState(false);
-  const requestEpoch=useRef(0);
+  const [canLink, setCanLink] = useState(false);
+  const requestEpoch = useRef(0);
   const playerPosition = useRef<Position>({ x: 0, y: 0 });
   const [playerTile, setPlayerTile] = useState({ x: 0, y: 0 });
   const [mapOpen, setMapOpen] = useState(false);
   const [objective, setObjective] = useState('');
   const [marker, setMarker] = useState<{ x: number; y: number } | undefined>();
   const [toolMode, setToolMode] = useState<ToolMode>('laser');
+  const [laserVisual, setLaserVisual] = useState<LaserVisual | null>(null);
   const [vacuumVisual, setVacuumVisual] = useState<VacuumVisual | null>(null);
   const [fragmentTarget, setFragmentTarget] = useState<{ nodeId: string; pieceId: string } | null>(null);
   const hasFragments =
@@ -120,7 +125,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const request = async (path: string, body?: unknown) => {
     if (!api) throw Error('Backend unavailable.');
     const identity = gateway?.identity();
-    const epoch=requestEpoch.current;
+    const epoch = requestEpoch.current;
     const token = gateway?.token(),
       controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12_000);
@@ -131,15 +136,16 @@ function App({ webReview = false }: { webReview?: boolean }) {
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
           ...(body ? { 'Content-Type': 'application/json' } : {}),
-          ...(mode==='web'&&body?{'X-Dime-CSRF':gateway?.csrf?.()??''}:{}),
+          ...(mode === 'web' && body ? { 'X-Dime-CSRF': gateway?.csrf?.() ?? '' } : {}),
         },
         body: body ? JSON.stringify(body) : undefined,
         cache: 'no-store',
-        credentials:mode==='web'?'same-origin':'omit',
+        credentials: mode === 'web' ? 'same-origin' : 'omit',
       });
       if (response.status === 401) gateway?.expired(token);
       const value = await response.json();
-      if (epoch!==requestEpoch.current || identity !== gateway?.identity()) throw new OriginalApiError('IDENTITY_CHANGED', 409);
+      if (epoch !== requestEpoch.current || identity !== gateway?.identity())
+        throw new OriginalApiError('IDENTITY_CHANGED', 409);
       if (!response.ok)
         throw new OriginalApiError(
           typeof value.code === 'string' ? value.code : 'UNKNOWN_RESPONSE',
@@ -151,7 +157,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
     }
   };
   const adopt = (value: Record<string, unknown>) => {
-    if(mode!=='web')setCanLink(value.linkingAvailable===true);
+    if (mode !== 'web') setCanLink(value.linkingAvailable === true);
     const snapshot = recoverySnapshot(value);
     snapshotRef.current = snapshot;
     setState(snapshot.state ?? null);
@@ -300,8 +306,18 @@ function App({ webReview = false }: { webReview?: boolean }) {
     expectedGeneration: snapshotRef.current!.generation,
     ...extra,
   });
-  const mutate = (action: Record<string, unknown>) =>
-    snapshotRef.current?.state ? execute('/v4/actions', bodyFor({ action })) : Promise.resolve(null);
+  const mutate = async (action: Record<string, unknown>) => {
+    const result = snapshotRef.current?.state ? await execute('/v4/actions', bodyFor({ action })) : null;
+    if (result)
+      emitGameAudio(
+        action.type === 'finishExtraction'
+          ? 'collection'
+          : action.type === 'startExtraction'
+            ? 'vacuum'
+            : 'terminal',
+      );
+    return result;
+  };
   const convert = async () => {
     if (!conversion?.requestId) return;
     await execute('/v4/content/convert', {
@@ -414,7 +430,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const zoneInfo = ORIGINAL_CONTENT.zones.find((x) => x.id === state?.world.zone);
   const zoneKinds = zoneInfo?.objectKinds ?? [];
   return (
-    <main className={`originalApp${mode==='web'?' standalone':''}`} data-tool-mode={toolMode}>
+    <main className={`originalApp${mode === 'web' ? ' standalone' : ''}`} data-tool-mode={toolMode}>
       <header>
         <div>
           <strong>D.I.M.E.</strong>
@@ -445,7 +461,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
         <section className="gate">
           <h1>{conversion ? 'Equivalent content update' : 'Field operator access'}</h1>
           <p>{message}</p>
-          {mode==='web'&&!gateway&&<a href="/auth/login">Sign in with Twitch</a>}
+          {mode === 'web' && !gateway && <a href="/auth/login">Sign in with Twitch</a>}
           {recoveryControls}
           {conversion &&
             (conversion.requestId ? (
@@ -484,8 +500,27 @@ function App({ webReview = false }: { webReview?: boolean }) {
               target={targetNode}
               marker={marker}
               vacuum={vacuumVisual}
+              laser={laserVisual}
               fragmentTarget={fragmentTarget}
             />
+            {toolMode === 'laser' && state.world.nodes[targetNode]?.status === 'INTACT' && (
+              <div className="toolReadout" aria-label="Mining target details">
+                <b>SIZE {state.world.nodes[targetNode]!.size} · INTACT</b>
+                {state.world.scanner.analyzed.includes(targetNode) && (
+                  <span>Instability {Math.round(state.world.nodes[targetNode]!.instability * 100)}%</span>
+                )}
+                {laserVisual && (
+                  <span>
+                    Integrity{' '}
+                    {Math.max(
+                      0,
+                      100 - Math.round((laserVisual.progress / Math.max(1, laserVisual.stable)) * 100),
+                    )}
+                    % · charge {Math.round(laserVisual.charge / 10)}%
+                  </span>
+                )}
+              </div>
+            )}
             <div className="place">
               <b>{zoneInfo?.name}</b>
               <small>
@@ -493,7 +528,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
               </small>
             </div>
           </section>
-          <nav>
+          <nav onClick={() => emitGameAudio('ui')}>
             <button onClick={() => setMapOpen((open) => !open)}>NAV</button>
             <button onClick={() => setMessage('Beamline One · Laser / Extraction')}>TOOL</button>
             <button onClick={() => setMessage(ORIGINAL_CONTENT.materialDisclaimer)}>CARGO</button>
@@ -536,6 +571,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
             onTarget={setFragmentTarget}
           />
           <MiningConsole
+            onVisual={setLaserVisual}
             mode={toolMode}
             state={state}
             busy={busy || pendingBlocked}

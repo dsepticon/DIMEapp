@@ -1,0 +1,11 @@
+{
+  "generator": "iam-policy-autopilot 0.3.0",
+  "retainedExistingActions": ["dynamodb:GetItem", "dynamodb:PutItem"],
+  "addedActions": ["dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+  "deleteScope": "AUTH#v1#* only, explicit non-null LeadingKeys",
+  "resource": "exact existing staging table",
+  "rejectedBaselineActions": ["dynamodb:ReadDataForReplication", "dynamodb:UpdateItem", "kms:Decrypt"],
+  "rejectedBaselineResources": ["table/*", "key/*"],
+  "reason": "No replication, Update transaction operation or direct KMS call exists; app encryption uses Node AES-GCM. Existing table encryption configuration is unchanged.",
+  "deployed": false
+}

@@ -11,21 +11,45 @@ export function drawNodeFormation(
   active: boolean,
   now: number,
   reduced: boolean,
+  variant = 0,
 ) {
   const width = nodePixelWidth(size),
     unit = width / 10,
     px = Math.round(x - width / 2),
     py = Math.round(y - width / 2);
-  const rows = [
-    '0001110000',
-    '0011111100',
-    '0111111110',
-    '1111111110',
-    '1111111111',
-    '1111111111',
-    '0111111111',
-    '0011111110',
+  const silhouettes = [
+    [
+      '0001110000',
+      '0011111100',
+      '0111111110',
+      '1111111110',
+      '1111111111',
+      '1111111111',
+      '0111111111',
+      '0011111110',
+    ],
+    [
+      '0000111000',
+      '0011111100',
+      '0111111110',
+      '0111111111',
+      '1111111111',
+      '1111111110',
+      '0111111110',
+      '0011111100',
+    ],
+    [
+      '0011100000',
+      '0111110100',
+      '1111111110',
+      '1111111111',
+      '1111111111',
+      '0111111111',
+      '0111111110',
+      '0001111100',
+    ],
   ];
+  const rows = silhouettes[Math.abs(variant) % silhouettes.length]!;
   ctx.fillStyle = '#071015';
   ctx.fillRect(px + 1, py + width * 0.75, width - 2, 4);
   for (let row = 0; row < rows.length; row++)

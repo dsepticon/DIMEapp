@@ -522,3 +522,155 @@ footer small {
     min-height: 64px;
   }
 }
+/* Destroya Industries visual system: quiet surfaces, structural amber, mint feedback. */
+:root {
+  --di-ink: #0c1c29;
+  --di-panel: #192e3b;
+  --di-edge: #64878d;
+  --di-paper: #e8eddf;
+  --di-accent: #e5bd70;
+}
+.originalApp {
+  background: linear-gradient(150deg, #152b37, #091923 70%);
+  color: var(--di-paper);
+  gap: 5px;
+}
+.originalApp header {
+  border-bottom: 2px solid var(--di-accent);
+  padding: 2px 3px 5px;
+}
+.originalApp header strong {
+  letter-spacing: 0.04em;
+  text-shadow: 2px 2px #07131c;
+}
+.originalApp button {
+  border-radius: 2px;
+  background: linear-gradient(#304b59, #213a46);
+  border-color: #76969a;
+  box-shadow:
+    inset 0 1px #91aaa433,
+    0 2px #06151e;
+  font-weight: 600;
+}
+.originalApp button:focus-visible,
+.originalApp select:focus-visible {
+  outline: 3px solid #ffdc86;
+  outline-offset: 2px;
+}
+.originalApp button:active {
+  background: #476b70;
+  box-shadow: inset 0 2px #0b202c;
+}
+.originalApp button:disabled {
+  box-shadow: none;
+  border-style: dashed;
+}
+.originalApp .world {
+  border-color: #638389;
+  box-shadow: inset 0 0 0 1px #0d1f2b;
+  background: #132937;
+}
+.originalApp .place {
+  border-left: 3px solid var(--di-accent);
+  background: #0a1a27ed;
+  box-shadow: 2px 2px #05111b88;
+  pointer-events: none;
+}
+.originalApp .miningConsole,
+.originalApp .vacuumConsole {
+  background: #132a37;
+  border-color: #5e8289;
+  box-shadow: inset 3px 0 #dcbb70;
+}
+.originalApp .nodeTargetStatus {
+  border-left: 2px solid #bbd6c1;
+  padding-left: 5px;
+  font-weight: 600;
+}
+.originalApp select {
+  background: #0d2230;
+  color: #edf0dd;
+  border: 1px solid #789698;
+  padding: 4px;
+}
+.originalApp .charge {
+  background: repeating-linear-gradient(90deg, #142b3b 0 9px, #45616a 9px 10px);
+  border: 1px solid #b8c5b2;
+}
+.originalApp .charge em {
+  background: repeating-linear-gradient(135deg, #b7edb733 0 3px, #b7edb788 3px 5px);
+  border: 2px solid #d3f6cb;
+}
+.originalApp .charge[data-band='danger'] {
+  outline: 2px solid #f7ab80;
+}
+.originalApp .charge[data-band='optimal'] {
+  outline: 2px solid #b9f5df;
+}
+.originalApp .modal,
+.originalApp dialog {
+  background: #102635;
+  border: 2px solid #c3ac73;
+  box-shadow: 5px 5px #020b12bb;
+}
+@media (min-width: 900px) {
+  .originalApp.standalone {
+    width: min(100%, 1440px);
+    padding: 14px;
+    gap: 9px;
+  }
+  .standalone .world {
+    min-height: 300px;
+  }
+  .standalone header strong {
+    font-size: 24px;
+  }
+  .standalone nav {
+    gap: 12px;
+  }
+}
+@media (prefers-contrast: more) {
+  .originalApp {
+    --di-edge: #eff9df;
+    --di-panel: #061521;
+  }
+  .originalApp button,
+  .originalApp .world,
+  .originalApp .miningConsole {
+    border-color: #edf7da;
+  }
+  .originalApp .place {
+    background: #000;
+  }
+  .originalApp small {
+    color: #f2f4dd;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .originalApp *,
+  .originalApp *::before,
+  .originalApp *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (max-height: 540px) {
+  .originalApp {
+    gap: 4px;
+  }
+}
+.toolReadout {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  max-width: calc(100% - 155px);
+  display: grid;
+  gap: 1px;
+  padding: 3px;
+  background: #081c2aee;
+  border-left: 2px solid #e5bd70;
+  font-size: 9px;
+  line-height: 1.2;
+  pointer-events: none;
+}

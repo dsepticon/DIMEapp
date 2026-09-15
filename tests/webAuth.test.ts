@@ -314,3 +314,66 @@ it('the combined API requires independent Extension auth and preserves shared sa
   expect(ext.player).toBe(a.session.player);
   await expect(f.auth.authorize(a.sid)).rejects.toThrow();
 });
+
+it('integrated web and Extension adapters preserve ENABLED conversion and canonical fresh saves', async () => {
+  const f = fixture(),
+    a = await f.login();
+  const { createAccountApi } = await import('../server/accountApi');
+  const api = createAccountApi(
+    f.auth,
+    {
+      linkingEnabled: false,
+      origins: ['https://synthetic.ext-twitch.tv'],
+      authorize: async () => 'PLAYER#v1#' + 'e'.repeat(64),
+    },
+    { mode: 'ENABLED', testerCount: 0, permits: () => true },
+  );
+  for (const request of [
+    { method: 'GET', path: '/api/v4/state', headers: { cookie: '__Host-dime-session=' + a.sid } },
+    { method: 'GET', path: '/v4/state', headers: { origin: 'https://synthetic.ext-twitch.tv' } },
+  ]) {
+    const response = await api(request);
+    expect(response.statusCode).toBe(200);
+    const body = JSON.parse(response.body);
+    expect(body.state.schemaVersion).toBe(3);
+    expect(body.state.contentVersion).toBe(4);
+    expect(body.state.saveGeneration).toEqual(expect.any(String));
+  }
+});
+
+it('both integrated adapters expose the configured conversion gate for synthetic legacy saves', async () => {
+  const f = fixture(),
+    a = await f.login();
+  const { initialState } = await import('../shared/game');
+  const { createAccountApi } = await import('../server/accountApi');
+  const extension = 'PLAYER#v1#' + 'f'.repeat(64);
+  await f.repo.transaction(async (tx) => {
+    await tx.put(
+      'state:' + a.session.player,
+      initialState(() => 0.5),
+    );
+    await tx.put(
+      'state:' + extension,
+      initialState(() => 0.5),
+    );
+  });
+  for (const enabled of [false, true]) {
+    const api = createAccountApi(
+      f.auth,
+      {
+        linkingEnabled: false,
+        origins: ['https://synthetic.ext-twitch.tv'],
+        authorize: async () => extension,
+      },
+      { mode: enabled ? 'ENABLED' : 'DISABLED', testerCount: 0, permits: () => enabled },
+    );
+    for (const request of [
+      { method: 'GET', path: '/api/v4/state', headers: { cookie: '__Host-dime-session=' + a.sid } },
+      { method: 'GET', path: '/v4/state', headers: { origin: 'https://synthetic.ext-twitch.tv' } },
+    ]) {
+      const response = await api(request);
+      expect(response.statusCode).toBe(200);
+      expect(JSON.parse(response.body).conversionAvailable).toBe(enabled);
+    }
+  }
+});

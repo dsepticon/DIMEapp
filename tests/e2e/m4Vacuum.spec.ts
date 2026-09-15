@@ -81,7 +81,7 @@ for (const file of ['panel.html', 'mobile.html']) {
       .poll(async () => Number(await canvas.getAttribute('data-vacuum-progress')))
       .toBeGreaterThan(0);
     await expect(canvas).toHaveAttribute('data-fragments', '3');
-    await page.screenshot({ path: `/tmp/dime-m41-vacuum/attract-${file}.png` });
+    await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/attract-${file}.png` });
     await expect.poll(() => f.current().mining['extract.x001']['mat.m001']).toBe(300);
     if (touch) await touch.release();
     else await page.keyboard.up('Space');

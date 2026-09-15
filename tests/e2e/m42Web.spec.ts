@@ -25,7 +25,7 @@ for (const viewport of [
       checked = true;
       return route.fulfill({ json: { signedOut: true } });
     });
-    await page.screenshot({ path: `/tmp/dime-m41-release/web-${viewport.width}.png` });
+    await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/web-${viewport.width}.png` });
     await page.getByRole('button', { name: 'Sign out' }).click();
     await expect(page.getByRole('link', { name: 'Sign in with Twitch' })).toBeVisible();
     expect(checked).toBe(true);

@@ -4,6 +4,7 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { DynamoAuthRecords, TokenEnvelope } from './authRecords';
 import { TwitchOAuth } from './twitchOAuth';
 import { WebAuth } from './webAuth';
+import { createConversionGate } from './conversionGate';
 import { createAccountApi } from './accountApi';
 import { authenticate, decodeSecret } from './auth';
 import { routePath } from './handler';
@@ -25,11 +26,14 @@ function configure() {
   const keys = [encryption, identity, extensionKey, extensionIdentity];
   if (keys.some((key, i) => keys.slice(i + 1).some((other) => Buffer.from(key).equals(Buffer.from(other)))))
     throw Error('Credential separation is required.');
+  const table = required('DIME_STATE_TABLE');
+  if (table !== 'dime-v2-staging-review01-dime-v2-review-20260912-player-state')
+    throw Error('Unreviewed web storage.');
   const repo = new DynamoAuthRecords(
     DynamoDBDocumentClient.from(new DynamoDBClient({ region, maxAttempts: 3 }), {
       marshallOptions: { removeUndefinedValues: true },
     }),
-    required('DIME_STATE_TABLE'),
+    table,
     new TokenEnvelope(new Map([['v1', encryption]]), 'v1'),
   );
   const provider = new TwitchOAuth(
@@ -41,12 +45,22 @@ function configure() {
   const origins = required('DIME_ALLOWED_ORIGINS').split(',');
   if (origins.some((value) => !/^https:\/\/[a-z0-9-]+\.ext-twitch\.tv$/.test(value)))
     throw Error('Invalid Extension origins.');
-  if (required('DIME_CONVERSION_MODE') !== 'DISABLED') throw Error('Conversion must remain disabled.');
-  return createAccountApi(auth, {
-    authorize: (header) => authenticate(header, [extensionKey], extensionIdentity),
-    origins,
-    linkingEnabled: process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
-  });
+  const conversion = createConversionGate(
+    required('DIME_CONVERSION_MODE'),
+    process.env.DIME_CONVERSION_TESTER_TAGS ?? '',
+    extensionIdentity,
+  );
+  if (conversion.mode !== 'ENABLED' || conversion.testerCount !== 0)
+    throw Error('Unreviewed conversion configuration.');
+  return createAccountApi(
+    auth,
+    {
+      authorize: (header) => authenticate(header, [extensionKey], extensionIdentity),
+      origins,
+      linkingEnabled: process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
+    },
+    conversion,
+  );
 }
 export async function handler(event: {
   rawPath?: string;

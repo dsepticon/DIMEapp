@@ -1,3 +1,16 @@
+import type { LaserVisual } from './MiningConsole';
+import { emitGameAudio } from './audioEvents';
+import {
+  sceneCamera,
+  settledFragmentPosition,
+  drawTerrain,
+  drawExit,
+  drawService,
+  drawWorker,
+  SCENE_PALETTES,
+  ART_LIMITS,
+  artHash,
+} from './sceneArt';
 import { useEffect, useMemo, useRef } from 'react';
 import { originalZoneMap } from '../../shared/originalWorld';
 import { nodeInZone } from '../../shared/originalVacuum';
@@ -26,10 +39,12 @@ export function WalkingWorld({
   onTarget,
   target,
   marker,
+  laser,
   vacuum,
   fragmentTarget,
   mode,
 }: {
+  laser?: LaserVisual | null;
   mode: ToolMode;
   state: OriginalPlayerState;
   paused: boolean;
@@ -50,11 +65,23 @@ export function WalkingWorld({
     onTarget,
     target,
     marker,
+    laser,
     vacuum,
     fragmentTarget,
     mode,
   });
-  latest.current = { state, paused, onPosition, onTarget, target, marker, vacuum, fragmentTarget, mode };
+  latest.current = {
+    state,
+    paused,
+    onPosition,
+    onTarget,
+    target,
+    marker,
+    laser,
+    vacuum,
+    fragmentTarget,
+    mode,
+  };
   const map = useMemo(() => originalZoneMap(state.world.zone), [state.world.zone]);
   const position = useRef(arrivalPosition(map, state.world.entry)),
     camera = useRef({ x: 0, y: 0, scale: 24 });
@@ -81,6 +108,7 @@ export function WalkingWorld({
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0,
       last = 0,
+      lastFootstep = 0,
       lastTargetTime = 0,
       lastTargetPosition = { x: -1, y: -1 },
       lastMode = latest.current.mode;
@@ -114,6 +142,10 @@ export function WalkingWorld({
     window.addEventListener('keyup', up);
     window.addEventListener('blur', reset);
     document.addEventListener('visibilitychange', reset);
+    let previousNodes: Record<string, string> | null = null;
+    let bursts: Array<{ x: number; y: number; born: number; destroyed: boolean }> = [];
+    let settling = new Map<string, { x: number; y: number; born: number }>();
+    emitGameAudio('transit');
     const draw = (now: number) => {
       const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
       last = now;
@@ -131,6 +163,10 @@ export function WalkingWorld({
       else if (input.down) facing = 'S';
       position.current = walk(map, position.current, input, dt);
       latest.current.onPosition(position.current);
+      if (Object.values(input).some(Boolean) && now - lastFootstep > 300) {
+        emitGameAudio('footstep');
+        lastFootstep = now;
+      }
       if (now - lastTargetTime > 100) {
         lastTargetTime = now;
         const current = latest.current,
@@ -159,24 +195,66 @@ export function WalkingWorld({
         element.height = Math.round(height * ratio);
       }
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const scale = 24,
-        cx = Math.max(0, Math.min(map.width - width / scale, position.current.x - width / scale / 2)),
-        cy = Math.max(0, Math.min(map.height - height / scale, position.current.y - height / scale / 2));
+      const { scale, x: cx, y: cy } = sceneCamera(map, width, height, position.current);
       camera.current = { x: cx, y: cy, scale };
+      context.imageSmoothingEnabled = false;
       context.fillStyle = '#071116';
       context.fillRect(0, 0, width, height);
+      const at = (x: number, y: number, paint: () => void) => {
+        context.save();
+        context.translate(Math.round((x - cx) * scale), Math.round((y - cy) * scale));
+        context.scale(scale / 24, scale / 24);
+        paint();
+        context.restore();
+      };
       for (let y = Math.max(0, Math.floor(cy)); y < Math.min(map.height, cy + height / scale + 1); y++)
-        for (let x = Math.max(0, Math.floor(cx)); x < Math.min(map.width, cx + width / scale + 1); x++) {
-          context.fillStyle = ['#0b171d', '#273c40', '#4e6e66'][map.tiles[y * map.width + x]!]!;
-          context.fillRect((x - cx) * scale, (y - cy) * scale, scale, scale);
+        for (let x = Math.max(0, Math.floor(cx)); x < Math.min(map.width, cx + width / scale + 1); x++)
+          at(x, y, () => drawTerrain(context, map, x, y));
+      const accent = SCENE_PALETTES[map.palette].accent;
+      for (const exit of map.exits)
+        at(exit.x + 0.5, exit.y + 0.5, () => drawExit(context, exit.facing, accent));
+      const actors: Array<{ y: number; draw: () => void }> = [];
+      for (let y = Math.max(0, Math.floor(cy)); y < Math.min(map.height, cy + height / scale + 1); y++)
+        for (let x = Math.max(0, Math.floor(cx)); x < Math.min(map.width, cx + width / scale + 1); x++)
+          if (!map.tiles[y * map.width + x])
+            actors.push({
+              y: y + 1,
+              draw: () =>
+                at(x, y, () => {
+                  if (
+                    position.current.y < y + 1 &&
+                    Math.abs(position.current.x - x - 0.5) < 0.8 &&
+                    Math.abs(position.current.y - y) < 0.7
+                  )
+                    context.globalAlpha = 0.65;
+                  drawTerrain(context, map, x, y);
+                }),
+            });
+      for (const [i, service] of map.services.entries()) {
+        actors.push({
+          y: service.y + 0.5,
+          draw: () =>
+            at(service.x + 0.5, service.y + 0.5, () =>
+              drawService(
+                context,
+                service.kind,
+                i < ART_LIMITS.animatedProps ? now : 0,
+                reduced.matches,
+                accent,
+              ),
+            ),
+        });
+        if (i < ART_LIMITS.workers && map.tiles[service.y * map.width + service.x + 1]) {
+          const nx = service.x + 1.5,
+            ny = service.y + 0.5 + (reduced.matches ? 0 : Math.sin(now / 2400 + i) * 0.12);
+          actors.push({
+            y: ny,
+            draw: () =>
+              at(nx, ny, () =>
+                drawWorker(context, 'W', false, now + i * 200, reduced.matches, null, false, true),
+              ),
+          });
         }
-      for (const exit of map.exits) {
-        context.fillStyle = '#d3ad68';
-        context.fillRect((exit.x - cx) * scale + 3, (exit.y - cy) * scale + 3, 18, 18);
-      }
-      for (const service of map.services) {
-        context.fillStyle = '#8bbaf4';
-        context.fillRect((service.x - cx) * scale + 5, (service.y - cy) * scale + 5, 14, 14);
       }
       const objective = latest.current.marker;
       if (objective) {
@@ -186,21 +264,65 @@ export function WalkingWorld({
         context.lineWidth = 2;
         context.strokeRect(mx - 7, my - 7, 14, 14);
       }
+      const currentNodes = Object.values(latest.current.state.world.nodes).filter((node) =>
+        nodeInZone(latest.current.state, node),
+      );
+      if (previousNodes)
+        for (const node of currentNodes) {
+          if (previousNodes[node.id] === 'INTACT' && ['FRACTURED', 'DESTROYED'].includes(node.status)) {
+            bursts.push({
+              x: node.x + 0.5,
+              y: node.y + 0.5,
+              born: now,
+              destroyed: node.status === 'DESTROYED',
+            });
+            if (node.status === 'FRACTURED') {
+              emitGameAudio('fracture');
+              for (const piece of node.fragments)
+                if (!piece.collected) settling.set(piece.id, { x: node.x + 0.5, y: node.y + 0.5, born: now });
+            }
+          }
+        }
+      previousNodes = Object.fromEntries(currentNodes.map((node) => [node.id, node.status]));
+      bursts = bursts.filter((b) => now - b.born < 700).slice(-2);
+      settling = new Map([...settling].filter(([, value]) => now - value.born < 450));
       let visiblePieces = 0;
       for (const node of Object.values(latest.current.state.world.nodes)) {
         if (!nodeInZone(latest.current.state, node)) continue;
         if (node.status === 'INTACT') {
-          drawNodeFormation(
-            context,
-            (node.x + 0.5 - cx) * scale,
-            (node.y + 0.5 - cy) * scale,
-            node.size,
-            latest.current.state.world.scanner.analyzed.includes(node.id) ? node.ore : undefined,
-            latest.current.mode === 'laser' && node.id === latest.current.target,
-            latest.current.state.world.miningSession?.nodeId === node.id,
-            now,
-            reduced.matches,
-          );
+          actors.push({
+            y: node.y + 0.5,
+            draw: () =>
+              at(node.x + 0.5, node.y + 0.5, () => {
+                drawNodeFormation(
+                  context,
+                  0,
+                  0,
+                  node.size,
+                  latest.current.state.world.scanner.analyzed.includes(node.id) ? node.ore : undefined,
+                  latest.current.mode === 'laser' && node.id === latest.current.target,
+                  latest.current.state.world.miningSession?.nodeId === node.id,
+                  now,
+                  reduced.matches,
+                  artHash(node.id),
+                );
+                if (
+                  latest.current.state.world.scanner.scannedZones?.includes(map.id) &&
+                  !latest.current.state.world.scanner.analyzed.includes(node.id)
+                ) {
+                  context.strokeStyle = '#b7d0c088';
+                  context.lineWidth = 1;
+                  for (let i = -6; i <= 6; i += 6) {
+                    context.beginPath();
+                    context.moveTo(-9, i);
+                    context.lineTo(9, i);
+                    context.moveTo(i, -9);
+                    context.lineTo(i, 9);
+                    context.stroke();
+                  }
+                }
+              }),
+          });
         }
         for (const piece of node.fragments)
           if (!piece.collected) {
@@ -209,7 +331,11 @@ export function WalkingWorld({
               latest.current.vacuum?.nodeId === node.id && latest.current.vacuum.pieceId === piece.id
                 ? latest.current.vacuum
                 : null;
-            const point = attractedPosition(piece, position.current, active?.progress ?? 0);
+            const settled = settling.get(piece.id),
+              t = settled && !reduced.matches ? Math.min(1, (now - settled.born) / 450) : 1;
+            const point = active
+              ? attractedPosition(piece, position.current, active.progress)
+              : settledFragmentPosition(piece, settled, t);
             if (active) {
               context.strokeStyle = '#adf1dc';
               context.lineWidth = 2;
@@ -217,30 +343,102 @@ export function WalkingWorld({
               context.moveTo((position.current.x - cx) * scale, (position.current.y - cy) * scale);
               context.lineTo((point.x - cx) * scale, (point.y - cy) * scale);
               context.stroke();
+              if (!reduced.matches)
+                for (let i = 0; i < 6; i++) {
+                  const t = (now / 650 + i / 6) % 1,
+                    ax = point.x + (position.current.x - point.x) * t,
+                    ay = point.y + (position.current.y - point.y) * t;
+                  context.fillStyle = '#c4e0c5';
+                  context.fillRect(
+                    (ax - cx) * scale,
+                    (ay - cy) * scale + Math.sin(i * 3 + now / 300) * 2,
+                    2,
+                    2,
+                  );
+                }
             }
-            drawMineralFragment(
-              context,
-              (point.x - cx) * scale,
-              (point.y - cy) * scale,
-              node.ore,
-              latest.current.fragmentTarget?.pieceId === piece.id,
-              now,
-              reduced.matches,
-            );
+            actors.push({
+              y: point.y,
+              draw: () =>
+                at(point.x, point.y, () => {
+                  drawMineralFragment(
+                    context,
+                    0,
+                    0,
+                    node.ore,
+                    latest.current.fragmentTarget?.pieceId === piece.id,
+                    now,
+                    reduced.matches,
+                  );
+                }),
+            });
           }
       }
-      const px = (position.current.x - cx) * scale,
-        py = (position.current.y - cy) * scale;
-      context.fillStyle = '#f0d782';
-      context.fillRect(px - 4, py - 9, 8, 7);
-      context.fillStyle = '#91d8c0';
-      context.fillRect(px - 5, py - 2, 10, 9);
-      context.fillStyle = '#d5ebe0';
-      context.fillRect(px - 4, py + 7, 3, 5);
-      context.fillRect(px + 1, py + 7, 3, 5);
-      const facingVector = { N: [0, -1], S: [0, 1], E: [1, 0], W: [-1, 0] }[facing]!;
-      context.fillStyle = '#ffffff';
-      context.fillRect(px + facingVector[0]! * 8 - 1, py + facingVector[1]! * 8 - 1, 3, 3);
+      actors.push({
+        y: position.current.y,
+        draw: () =>
+          at(position.current.x, position.current.y, () =>
+            drawWorker(
+              context,
+              facing,
+              Object.values(input).some(Boolean),
+              now,
+              reduced.matches,
+              latest.current.mode,
+              !!latest.current.vacuum || !!latest.current.state.world.miningSession,
+            ),
+          ),
+      });
+      actors.sort((a, b) => a.y - b.y).forEach((actor) => actor.draw());
+      const laser = latest.current.laser,
+        laserNode = laser && latest.current.state.world.nodes[laser.nodeId];
+      if (laser && laserNode?.status === 'INTACT') {
+        const lx = (laserNode.x + 0.5 - cx) * scale,
+          ly = (laserNode.y + 0.5 - cy) * scale;
+        const danger = laser.charge > laser.upper,
+          optimal = laser.charge >= laser.lower && !danger;
+        if (laser.held) {
+          context.strokeStyle = danger ? '#f49a78' : optimal ? '#b9f5df' : '#e5c575';
+          context.lineWidth = ((2 + laser.charge / 350) * scale) / 24;
+          context.beginPath();
+          context.moveTo((position.current.x - cx) * scale + 7, (position.current.y - cy) * scale + 2);
+          context.lineTo(lx, ly);
+          context.stroke();
+          context.strokeStyle = '#fff3ce';
+          context.lineWidth = 1;
+          context.stroke();
+        }
+        if (laser.progress > 0)
+          at(laserNode.x + 0.5, laserNode.y + 0.5, () => {
+            context.strokeStyle = '#101a23';
+            context.lineWidth = 2;
+            context.beginPath();
+            context.moveTo(-7, -8);
+            context.lineTo(1, -2);
+            context.lineTo(-2, 3);
+            context.lineTo(6, 7);
+            context.stroke();
+          });
+      }
+
+      if (!reduced.matches)
+        for (const burst of bursts)
+          for (let i = 0; i < 16; i++) {
+            const age = (now - burst.born) / 700,
+              angle = i * 2.39996;
+            context.globalAlpha = 1 - age;
+            context.fillStyle = burst.destroyed ? '#ca9775' : '#9dafa5';
+            context.fillRect(
+              (burst.x - cx) * scale + Math.cos(angle) * age * 28,
+              (burst.y - cy) * scale + Math.sin(angle) * age * 20,
+              3,
+              2,
+            );
+          }
+      context.globalAlpha = 1;
+      element.dataset.particles = String(reduced.matches ? 0 : bursts.length * 16);
+      element.dataset.artSystem = 'destroya-16bit-v1';
+      element.dataset.cameraScale = String(scale);
       element.dataset.fragments = String(visiblePieces);
       element.dataset.vacuumProgress = String(latest.current.vacuum?.progress ?? 0);
       element.dataset.vacuumStage = latest.current.vacuum?.stage ?? 'idle';

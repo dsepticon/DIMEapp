@@ -1,3 +1,4 @@
+import { ORIGINAL_CONTENT } from '../shared/originalCatalog';
 import { chromium } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
@@ -32,6 +33,7 @@ try {
   for (const layout of [
     { name: 'Panel', file: 'panel.html', width: 318, height: 500 },
     { name: 'Mobile', file: 'mobile.html', width: 360, height: 640 },
+    { name: 'Desktop', file: 'index.html', width: 1280, height: 900 },
   ]) {
     const page = await browser.newPage({ viewport: layout });
     const fixture = await setup(page);
@@ -65,10 +67,16 @@ try {
           documentScroll: document.documentElement.scrollHeight > innerHeight,
         };
       });
+    const cdpMetrics = await page.context().newCDPSession(page);
+    const retained = async () => {
+      await cdpMetrics.send('HeapProfiler.collectGarbage');
+      return (await sample()).heapBytes;
+    };
+    const heapTrend = [await retained()];
     const initial = await sample();
     const transitions = [];
     let cycles = 0;
-    while (performance.now() - start < duration || cycles < 1) {
+    while (performance.now() - start < duration || cycles < 4) {
       for (const destination of ['zone.z008', 'zone.z001']) {
         const state = fixture.store.states.get('synthetic-walking') as OriginalPlayerState;
         for (const next of zoneRoute(state.world.zone, destination).slice(1)) {
@@ -90,6 +98,7 @@ try {
         }
       }
       cycles++;
+      heapTrend.push(await retained());
     }
     const final = await sample();
     await page.waitForTimeout(1000);
@@ -178,7 +187,39 @@ try {
       ] !== 80
     )
       throw Error('Eight-piece quantity conservation failed');
+    await page.getByRole('button', { name: 'Laser mode', exact: true }).click();
+    await page
+      .getByRole('combobox', { name: 'Nearby signature' })
+      .selectOption('zone.z014.node.formation-stress-5');
+    await page.getByRole('button', { name: 'Target node', exact: true }).click();
+    const laser = page.getByRole('button', { name: 'Hold laser · release to cool', exact: true });
+    await laser.focus();
+    await page.keyboard.down('Space');
+    await page.waitForTimeout(1000);
+    await page.keyboard.up('Space');
+    await page.waitForTimeout(1000);
+    const laserEffects = await sample();
+    await page.getByRole('button', { name: 'Stop laser without yield', exact: true }).click();
+    const city = ORIGINAL_CONTENT.zones
+      .filter((z) => z.location === 'loc.l004')
+      .sort((a, b) => originalZoneMap(b.id).services.length - originalZoneMap(a.id).services.length)[0]!;
+    const cityState = structuredClone(fixture.store.states.get('synthetic-walking') as OriginalPlayerState);
+    cityState.location = 'loc.l004';
+    cityState.world.zone = city.id;
+    cityState.world.entry = 'arrival';
+    cityState.revision++;
+    fixture.store.states.set('synthetic-walking', cityState);
+    await page.reload();
+    await page.locator('canvas[data-player-x]').waitFor();
+    await page.waitForTimeout(15000);
+    const cityEffects = await sample();
+    const heapAfter = await retained();
     const result = {
+      heapTrend,
+      heapAfter,
+      laserEffects,
+      busiestCityZone: city.name,
+      cityEffects,
       vacuumEffects,
       initialVisibleFragments: 8,
       intactFormationStressCount: 8,
@@ -188,6 +229,8 @@ try {
       durationMs: performance.now() - start,
       cycles,
       transitions: transitions.length,
+      transitionAverageMs: transitions.reduce((a, b) => a + b, 0) / transitions.length,
+      transitionWorstMs: sorted.at(-1),
       transitionP95Ms: sorted[Math.floor(sorted.length * 0.95)],
       initial,
       final,
@@ -199,6 +242,7 @@ try {
       throw Error('Production performance integrity check failed');
     }
     results.push(result);
+    await cdpMetrics.detach();
     await page.close();
   }
   let assetBytes = 0,
@@ -214,7 +258,7 @@ try {
     gzipBytes,
     results,
     limitations:
-      'Local Chromium production build, actual API service with synthetic in-memory state. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap samples are observational, not proof against a leak.',
+      'Local Chromium production build, actual API service with synthetic in-memory state. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap trend uses forced-GC samples after repeated physical travel; frame worst includes instrumentation and GC. This is not proof against every leak.',
   };
   await writeFile(output, JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify({ assetBytes, gzipBytes, results }, null, 2));

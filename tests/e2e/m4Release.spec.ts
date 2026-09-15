@@ -245,7 +245,7 @@ for (const layout of [
     expect(current(fixture).quest?.status).toBe('COMPLETE');
     expect(current(fixture).wallet).toBe(5700);
     expect(fixture.errors).toEqual([]);
-    await page.screenshot({ path: `/tmp/dime-m41-vacuum/journey-${layout.name}.png` });
+    await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/journey-${layout.name}.png` });
   });
 }
 

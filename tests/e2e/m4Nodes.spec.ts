@@ -48,10 +48,17 @@ for (const [name, width, height, file] of [
         // Tap/click outside the rock silhouette but inside its padded formation bounds.
         const c = page.locator('canvas'),
           rect = (await c.boundingBox())!,
-          cam = await c.evaluate((c) => ({ x: Number(c.dataset.cameraX), y: Number(c.dataset.cameraY) }));
+          cam = await c.evaluate((c) => ({
+            x: Number(c.dataset.cameraX),
+            y: Number(c.dataset.cameraY),
+            scale: Number(c.dataset.cameraScale ?? 24),
+          }));
         const point = {
-          x: rect.x + (node.x + 0.5 - cam.x) * 24 + nodePixelWidth(node.size) / 2 + 3,
-          y: rect.y + (node.y + 0.5 - cam.y) * 24,
+          x:
+            rect.x +
+            (node.x + 0.5 - cam.x) * cam.scale +
+            ((nodePixelWidth(node.size) / 2 + 3) * cam.scale) / 24,
+          y: rect.y + (node.y + 0.5 - cam.y) * cam.scale,
         };
         if (name === 'Mobile') {
           const cdp = await page.context().newCDPSession(page);
@@ -69,6 +76,7 @@ for (const [name, width, height, file] of [
       expect(control!.y).toBeGreaterThanOrEqual(0);
       expect(control!.y + control!.height).toBeLessThanOrEqual(height);
       await page.screenshot({ path: '/tmp/dime-m41-nodes/formations-' + name + '.png' });
+      await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/formations-targeted-${name}.png` });
       const saved = structuredClone(f.current());
       await page.reload();
       await expect(page.locator('canvas')).toBeVisible();
@@ -91,13 +99,15 @@ for (const [name, width, height, file] of [
         await page.getByLabel('Nearby signature').selectOption(n.id);
         await page.getByRole('button', { name: 'Analyze selected signature' }).click();
       }
+      await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/nodes-analyzed-${name}.png` });
       const n = nodes[0]!;
       await walkTo(page, map, nodeInteractionTiles(map.id, n)[0]!, name === 'Mobile');
       await page.getByLabel('Nearby signature').selectOption(n.id);
       await page.getByRole('button', { name: 'Target node', exact: true }).click();
       const laser = page.getByRole('button', { name: 'Hold laser · release to cool' });
       await laser.focus();
-      let held = false;
+      let held = false,
+        capturedOptimal = false;
       for (let i = 0; i < 300; i++) {
         const charge = await page.locator('.charge').evaluateAll((es) => {
           const e = es[0];
@@ -117,11 +127,16 @@ for (const [name, width, height, file] of [
         } else if (held && charge.value > charge.low + (charge.high - charge.low) * 0.65) {
           await page.keyboard.up('Space');
           held = false;
+          if (!capturedOptimal) {
+            await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/optimal-hud-${name}.png` });
+            capturedOptimal = true;
+          }
         }
         await page.waitForTimeout(60);
       }
       await page.keyboard.up('Space');
       await expect.poll(() => f.current().world.nodes[n.id]!.status).toBe('FRACTURED');
+      await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/fracture-${name}.png` });
       const pieces = [...f.current().world.nodes[n.id]!.fragments];
       expect(pieces.length).toBeGreaterThanOrEqual(3);
       expect(pieces.length).toBeLessThanOrEqual(8);
@@ -149,6 +164,7 @@ for (const [name, width, height, file] of [
         .poll(() => f.current().world.nodes[other.id]!.status, { timeout: 15000 })
         .toBe('DESTROYED');
       await page.keyboard.up('Space');
+      await page.screenshot({ path: `/tmp/dime-m43-release/screenshots/overcharge-${name}.png` });
       const saved = structuredClone(f.current());
       await page.reload();
       await expect(page.locator('canvas')).toBeVisible();
@@ -177,7 +193,11 @@ for (const file of ['panel.html', 'mobile.html'])
     await expect(page.locator('canvas')).toHaveAttribute('data-node-target', '');
     const c = page.locator('canvas'),
       rect = (await c.boundingBox())!,
-      cam = await c.evaluate((c) => ({ x: Number(c.dataset.cameraX), y: Number(c.dataset.cameraY) }));
+      cam = await c.evaluate((c) => ({
+        x: Number(c.dataset.cameraX),
+        y: Number(c.dataset.cameraY),
+        scale: Number(c.dataset.cameraScale ?? 24),
+      }));
     await page.mouse.click(rect.x + (n.x + 0.5 - cam.x) * 24, rect.y + (n.y + 0.5 - cam.y) * 24);
     await expect(c).toHaveAttribute('data-node-target', '');
     expect(f.posts).toHaveLength(0);

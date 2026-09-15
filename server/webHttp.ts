@@ -1,3 +1,4 @@
+import { disabledConversionGate, type ConversionGate } from './conversionGate';
 import { WebAuth, WebAuthError } from './webAuth';
 import { createOriginalApi } from './originalApi';
 import { z } from 'zod';
@@ -18,6 +19,7 @@ export function createWebApi(
     origins: string[];
     linkingEnabled: boolean;
   },
+  conversionGate: ConversionGate = disabledConversionGate,
 ) {
   return async (request: Request): Promise<WebResponse> => {
     const headers = {
@@ -90,7 +92,13 @@ export function createWebApi(
       }
       if (path.startsWith('/api/v4/') && ['GET', 'POST'].includes(request.method)) {
         const session = await auth.authorize(sid, request.method === 'POST' ? mutation : undefined);
-        const game = createOriginalApi(auth.gameStore(session), async () => session.player, [auth.origin]);
+        const game = createOriginalApi(
+          auth.gameStore(session),
+          async () => session.player,
+          [auth.origin],
+          Date.now,
+          conversionGate,
+        );
         return game({
           ...request,
           path: path.slice(4),
