@@ -10,9 +10,9 @@ Prepared [privacy policy](privacy-m41.html), preserving verified contact and ope
 
 ## Evidence
 
-Local evidence directory: `/tmp/dime-m41-release`. Clean locked install: 245 packages, zero npm audit findings. Lint, strict typecheck, 266 Vitest tests across 42 files, default/Twitch/web/Lambda builds, formatting and Linux-native SAM build passed. SAM output is byte-identical to the reviewed Lambda bundle. Source/built/offline-processed cfn-lint and six source/four processed Guard rules passed. Actual CloudFormation processing is still blocked, so offline checks do not establish deployment safety.
+Local evidence directory: `/tmp/dime-m41-release`. Clean locked install: 245 packages, zero npm audit findings. Lint, strict typecheck, 266 Vitest tests across 42 files, default/Twitch/web/Lambda builds, formatting and Linux-native SAM build passed. SAM output is byte-identical to the reviewed Lambda bundle. Source/built/offline-processed cfn-lint and six source/four processed Guard rules passed. CloudFormation processing, cfn-lint and all processed Guard rules also passed. The processed candidate exactly matched the source transform, and the final deployed template exactly matched the candidate.
 
-The Chromium full suite and ten-minute production-preview performance run were started; final results will be recorded after completion. Privacy HTML text, structure, two verified mailto links, no horizontal overflow, and desktop/mobile screenshots passed.
+All 66 Chromium scenarios passed in 24.2 minutes. The ten-minute production-preview run completed 498 travel cycles with zero errors; average transition 74.13 ms, p95 92.80 ms, worst 128.42 ms. DOM nodes held at 41, canvas count at one, no document scrolling; post-idle heap 6,506,075 bytes. This is a local surrogate, not real Twitch webview performance. Privacy HTML text, structure, two verified mailto links, no horizontal overflow, and desktop/mobile screenshots passed.
 
 Artifacts:
 
@@ -25,10 +25,27 @@ Artifacts:
 
 Frontend archive contains three root HTML files and one JS/CSS pair, no images, maps, fixtures or wrapper. Scans checked protected legacy terms, local endpoints, synthetic fixture text, expected staging API, privacy URL and original universe. Lambda is bundled from the clean source, contains no frontend/maps/fixtures, and passed forbidden migration-module and common credential-pattern checks. Such pattern checks are not a mathematical proof that arbitrary secret strings cannot exist.
 
-## External blockers and prohibited actions
+## Completed publication and deployment
 
-AWS credentials expired after initial metadata checks: `CreateOAuth2Token` returned `INVALID_REQUEST` with an invalid/expired/revoked/malformed authorization grant. Renewed human AWS login is required. The signing-in-to-AWS skill identifies `aws login` as the remedy; no login or credential replacement was attempted. No authenticated Twitch Developer Console browser capability is exposed. No OAuth credentials or approved synthetic live authorization mechanism were found or invented.
+AWS login was renewed with owner authorization through a browser callback; no authorization code or credential was copied into chat. Account and Amplify exclusion were reverified.
 
-No privacy publication/invalidation, S3 artifact upload, change-set creation/execution, authenticated live regression, Twitch upload, Local Test, Hosted Test or website deployment occurred. Last verified staging status was UPDATE_COMPLETE with configuration revision `m3-world-mining-20260914-1`; Milestone 4 backend was not deployed. No S3 artifact version exists for this run.
+Privacy was published conditionally against the backed-up ETag with AES256 and preserved content metadata. New ETag: `"36b650808ecff4e13988e43a3159e62d"`. CloudFront invalidation `I6RMEIH55BIAGXQW1DD4YDTWFW` affected only `/privacy` and completed. Public HTTPS returned 200 and exact candidate bytes/hash, required headers, effective date and mailto links. Public desktop/mobile Chromium rendering passed.
 
-No secret values, tokens, cookies, real player identifiers or player fields were fetched, printed or changed. No player data was scanned, exported, converted, reset or deleted. No prohibited branch or AWS resource was modified. Conversion was never enabled. No claim is made that the current remote environment has the new v4 routes or configuration.
+Lambda create-only upload:
+
+- Bucket: `dime-v2-staging-artifacts-861738068626-us-east-2`
+- Key: `dime-v2/review/1fd284cc183b551b77fb7786f7c04f655c7cdf96/DIME-Lambda-4.1-original-universe.zip`
+- Version: `S3yh29eIbXGuWR7su4pVComz734DpTTo`
+- SHA-256 checksum (base64): `rxZnl9Z5emblaB6SLaAtIOzHYBtcrtCiSK5bj2H/HnA=`
+
+UPDATE change set `m41-original-universe-20260915-1` (`d4c9ab37-9d4d-4ff9-8ed1-76440b8b38fd`) was reviewed and executed once. It added exactly five route-scoped invoke permissions and modified only EbsFunction/StagingHttpApi without replacement. IAM, stateful resources, logs, alarms, stage, throttling, existing CORS and outputs were structurally identical. No correction was needed. Predeployment describe-events passed and postdeployment failed-event count was zero. Stack reached UPDATE_COMPLETE.
+
+Deployed function is Active/Successful; ZIP CodeSha256 matches the upload. Configuration revision `m41-original-universe-20260915-1`, conversion `DISABLED`, tester tags empty (verified as a boolean without displaying configuration secrets). Eight exact routes and eight route-scoped invoke permissions verified. All unauthenticated requests returned 401: GET /state and /v4/state; POST /actions, /profile/reset, /v4/actions, /v4/content/preview, /v4/content/convert and /v4/profile/reset. Approved-origin preflight returned 204 with the exact origin; an unapproved origin received no allow-origin header.
+
+## Remaining external gates
+
+No authenticated Twitch Developer Console session is exposed. Version creation/upload, Local Test, Hosted Test and real Twitch webview performance remain unverified. No approved live synthetic-authorization mechanism was available, so authenticated live legacy gameplay and conversion-preview regression were not performed. Local synthetic legacy tests passed; those are not a substitute for live authentication. The rollback ZIP is a locally verified v4-compatible candidate, not a Hosted Test verified rollback.
+
+No website application deployment occurred; only `/privacy` was replaced, with its verified backup retained. No DNS or unrelated website object changed. Milestone 4.2 continues on the isolated web-oauth branch; it was not included in this Lambda or Twitch ZIP.
+
+No secret values, real JWTs/cookies, real player identifiers or player fields were fetched, printed or changed. No player data was scanned, exported, converted, reset or deleted. No prohibited branch or AWS resource was modified. Conversion was never enabled. No production/public Twitch submission or release occurred.

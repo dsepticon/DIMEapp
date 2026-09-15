@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twitchConnection, type TwitchSession } from '../twitch';
 import { originalStateSchema, type OriginalPlayerState } from '../../shared/originalSchema';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
@@ -8,20 +8,26 @@ import { originalTravelService } from '../../shared/originalTravel';
 import './original.css';
 import { MiningConsole } from './MiningConsole';
 import { ServiceConsole } from './ServiceConsole';
+import { webSession } from '../webSession';
+import { AccountLink } from '../AccountLink';
 
 type Gateway = {
   token(): string | undefined;
   identity(): string | undefined;
   expired(token: string | undefined): void;
   stop(): void;
+  csrf?(): string;
 };
 const uuid = () => crypto.randomUUID();
-function App() {
+function App({ webReview = false }: { webReview?: boolean }) {
   const configuredApi = import.meta.env.VITE_DIME_API_URL as string | undefined;
-  const api = (
-    configuredApi || (import.meta.env.VITE_DIME_MODE === 'local' ? 'http://127.0.0.1:8787' : '')
-  ).replace(/\/$/, '');
-  const mode = import.meta.env.VITE_DIME_MODE || 'web';
+  const mode = import.meta.env.DEV && webReview ? 'web' : import.meta.env.VITE_DIME_MODE || 'web';
+  const api =
+    mode === 'web'
+      ? '/api'
+      : (
+          configuredApi || (import.meta.env.VITE_DIME_MODE === 'local' ? 'http://127.0.0.1:8787' : '')
+        ).replace(/\/$/, '');
   const [session, setSession] = useState<TwitchSession>({ status: 'connecting' });
   const [gateway, setGateway] = useState<Gateway | null>(null);
   const [state, setState] = useState<OriginalPlayerState | null>(null);
@@ -33,6 +39,8 @@ function App() {
   } | null>(null);
   const [message, setMessage] = useState('Connecting to Destroya Industries operations…');
   const [busy, setBusy] = useState(false);
+  const [canLink, setCanLink] = useState(false);
+  const requestEpoch = useRef(0);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetPhrase, setResetPhrase] = useState('');
   const [pendingBlocked, setPendingBlocked] = useState(false);
@@ -41,6 +49,33 @@ function App() {
     return identity ? `dime-pending-v2:${identity}` : '';
   };
   useEffect(() => {
+    if (mode === 'web') {
+      let active = true;
+      void webSession()
+        .then((value) => {
+          if (!active) return;
+          setGateway({
+            token: () => undefined,
+            identity: () => value.identity,
+            csrf: () => value.csrf,
+            expired: () => {
+              requestEpoch.current += 1;
+              setState(null);
+              setGateway(null);
+              setMessage('Sign in with Twitch to continue.');
+            },
+            stop: () => {},
+          });
+          setCanLink(value.linkingAvailable);
+          setSession({ status: 'authorized' });
+        })
+        .catch(() => {
+          if (active) setMessage('Sign in with Twitch to continue.');
+        });
+      return () => {
+        active = false;
+      };
+    }
     if (mode === 'local') {
       setGateway({
         token: () => undefined,
@@ -59,29 +94,30 @@ function App() {
   const request = async (path: string, body?: unknown) => {
     if (!api) throw Error('Backend URL is not configured.');
     const token = gateway?.token();
+    const epoch = requestEpoch.current;
     const response = await fetch(api + path, {
       method: body ? 'POST' : 'GET',
       headers: {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(body ? { 'Content-Type': 'application/json' } : {}),
+        ...(mode === 'web' && body ? { 'X-Dime-CSRF': gateway?.csrf?.() ?? '' } : {}),
       },
       body: body ? JSON.stringify(body) : undefined,
       cache: 'no-store',
+      credentials: mode === 'web' ? 'same-origin' : 'omit',
     });
     if (response.status === 401) gateway?.expired(token);
     const value = await response.json();
+    if (epoch !== requestEpoch.current) throw Error('Session changed. Sign in or refresh to continue.');
     if (!response.ok) throw Error(typeof value.message === 'string' ? value.message : 'Request failed.');
     return value as Record<string, unknown>;
   };
   const refresh = async () => {
-    if (mode === 'web') {
-      setMessage('Web sign-in is planned for Milestone 4.2. No OAuth credentials are configured.');
-      return;
-    }
     if (!gateway?.identity()) return;
     setBusy(true);
     try {
       const value = await request('/v4/state');
+      if (mode !== 'web') setCanLink(value.linkingAvailable === true);
       if (value.conversionRequired) {
         const key = pendingKey(),
           raw = key ? sessionStorage.getItem(key) : null;
@@ -263,18 +299,45 @@ function App() {
   const zoneInfo = ORIGINAL_CONTENT.zones.find((x) => x.id === state?.world.zone);
   const zoneKinds = zoneInfo?.objectKinds ?? [];
   return (
-    <main className="originalApp">
+    <main className={`originalApp${mode === 'web' ? ' standalone' : ''}`}>
       <header>
         <div>
           <strong>D.I.M.E.</strong>
           <small>DESTROYA INDUSTRIES MINING EXPERIENCE</small>
         </div>
         <span>{location?.name ?? 'Secure connection'}</span>
+        {mode === 'web' && gateway && (
+          <button
+            onClick={() =>
+              void fetch('/auth/logout', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', 'X-Dime-CSRF': gateway.csrf?.() ?? '' },
+                body: '{}',
+              })
+                .then((response) => {
+                  if (!response.ok) throw Error();
+                  gateway.expired(undefined);
+                })
+                .catch(() => setMessage('Sign out could not be confirmed. Retry.'))
+            }
+          >
+            Sign out
+          </button>
+        )}
       </header>
       {!state ? (
         <section className="gate">
           <h1>{conversion ? 'Equivalent content update' : 'Field operator access'}</h1>
           <p>{message}</p>
+          {mode === 'web' && !gateway && <a href="/auth/login">Sign in with Twitch</a>}
+          <a
+            href="https://destroyaindustriesminingextension.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
+          </a>
           {conversion &&
             (conversion.requestId ? (
               <button disabled={busy || !conversion.available} onClick={() => void convert()}>
@@ -285,7 +348,7 @@ function App() {
                 Preview equivalent update
               </button>
             ))}
-          <button disabled={busy || mode === 'web'} onClick={() => void refresh()}>
+          <button disabled={busy || !gateway} onClick={() => void refresh()}>
             Retry
           </button>
         </section>
@@ -485,6 +548,19 @@ function App() {
                   likeness, voice, private biography, or attributed dialogue.
                 </p>
                 <p>{ORIGINAL_CONTENT.materialDisclaimer}</p>
+                {canLink && !busy && !pendingBlocked && (
+                  <AccountLink
+                    web={mode === 'web'}
+                    api={api}
+                    csrf={gateway?.csrf?.()}
+                    token={gateway?.token()}
+                    onLinked={() => {
+                      requestEpoch.current += 1;
+                      setResetOpen(false);
+                      void refresh();
+                    }}
+                  />
+                )}
                 <h2>Reset Game Progress</h2>
                 <p>
                   Gameplay reset is different from content conversion and verified privacy deletion. Technical
