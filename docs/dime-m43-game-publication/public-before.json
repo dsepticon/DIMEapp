@@ -1,0 +1,59 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "sha256": "2bcc8de3c43b8ac7feef1f1e21d331f93a4f6a2d37e808ef2b64f006915dae1a",
+    "headers": {
+      "content-type": "text/html"
+    }
+  },
+  {
+    "path": "/privacy",
+    "status": 200,
+    "sha256": "6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c",
+    "headers": {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=300"
+    }
+  },
+  {
+    "path": "/auth/logout",
+    "status": 404,
+    "sha256": null,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  },
+  {
+    "path": "/auth/delete/resume",
+    "status": 404,
+    "sha256": null,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  },
+  {
+    "path": "/state",
+    "status": 404,
+    "sha256": null,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  },
+  {
+    "path": "/v4/state",
+    "status": 404,
+    "sha256": null,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  },
+  {
+    "path": "/assets/nonexistent-guest-review.js",
+    "status": 404,
+    "sha256": null,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    }
+  }
+]

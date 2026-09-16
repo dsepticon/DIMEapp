@@ -1,0 +1,89 @@
+[
+  {
+    "OperationStatus": "SUCCEEDED",
+    "EventType": "STACK_EVENT",
+    "Timestamp": "2026-09-16T18:06:51.496000+00:00"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "dime-guest-game-20260916",
+    "ResourceType": "AWS::CloudFormation::Stack",
+    "Timestamp": "2026-09-16T18:06:51.495000+00:00",
+    "ResourceStatus": "CREATE_COMPLETE"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestCapability",
+    "ResourceType": "AWS::CloudFront::Function",
+    "Timestamp": "2026-09-16T18:06:50.277000+00:00",
+    "ResourceStatus": "CREATE_COMPLETE"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestCapability",
+    "ResourceType": "AWS::CloudFront::Function",
+    "Timestamp": "2026-09-16T18:06:50.040000+00:00",
+    "ResourceStatus": "CREATE_IN_PROGRESS"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestHeaders",
+    "ResourceType": "AWS::CloudFront::ResponseHeadersPolicy",
+    "Timestamp": "2026-09-16T18:06:48.683000+00:00",
+    "ResourceStatus": "CREATE_COMPLETE"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestCache",
+    "ResourceType": "AWS::CloudFront::CachePolicy",
+    "Timestamp": "2026-09-16T18:06:48.482000+00:00",
+    "ResourceStatus": "CREATE_COMPLETE"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestHeaders",
+    "ResourceType": "AWS::CloudFront::ResponseHeadersPolicy",
+    "Timestamp": "2026-09-16T18:06:48.388000+00:00",
+    "ResourceStatus": "CREATE_IN_PROGRESS"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestCache",
+    "ResourceType": "AWS::CloudFront::CachePolicy",
+    "Timestamp": "2026-09-16T18:06:48.221000+00:00",
+    "ResourceStatus": "CREATE_IN_PROGRESS"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestCapability",
+    "ResourceType": "AWS::CloudFront::Function",
+    "Timestamp": "2026-09-16T18:06:47.405000+00:00",
+    "ResourceStatus": "CREATE_IN_PROGRESS"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestHeaders",
+    "ResourceType": "AWS::CloudFront::ResponseHeadersPolicy",
+    "Timestamp": "2026-09-16T18:06:47.399000+00:00",
+    "ResourceStatus": "CREATE_IN_PROGRESS"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "GuestCache",
+    "ResourceType": "AWS::CloudFront::CachePolicy",
+    "Timestamp": "2026-09-16T18:06:47.393000+00:00",
+    "ResourceStatus": "CREATE_IN_PROGRESS"
+  },
+  {
+    "EventType": "PROGRESS",
+    "LogicalResourceId": "dime-guest-game-20260916",
+    "ResourceType": "AWS::CloudFormation::Stack",
+    "Timestamp": "2026-09-16T18:06:45.827000+00:00",
+    "ResourceStatus": "CREATE_IN_PROGRESS"
+  },
+  {
+    "OperationStatus": "IN_PROGRESS",
+    "EventType": "STACK_EVENT",
+    "Timestamp": "2026-09-16T18:06:45.819000+00:00"
+  }
+]

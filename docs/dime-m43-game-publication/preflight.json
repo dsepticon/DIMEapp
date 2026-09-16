@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-16T18:03:55.314270+00:00",
+  "artifactSha256": "81fefdc80654ef0ab45d0665f2ad26482b09e1d29b9a311d8343deae4764e623",
+  "manifestSha256": "83b382fe7d5e73dc2f512ba9691d1944602a34fe2055b5a69adff5bf3f626fb7",
+  "account": "861738068626",
+  "allReviewedHashesMatch": true,
+  "allPublicationObjectsAbsent": true,
+  "distributionETag": "E2GYT0DANXUABP",
+  "expectedNewResources": {
+    "GuestCapability": "AWS::CloudFront::Function",
+    "GuestHeaders": "AWS::CloudFront::ResponseHeadersPolicy",
+    "GuestCache": "AWS::CloudFront::CachePolicy"
+  }
+}

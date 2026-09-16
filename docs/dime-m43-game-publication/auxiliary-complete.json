@@ -1,0 +1,17 @@
+{
+  "Status": "CREATE_COMPLETE",
+  "Outputs": [
+    {
+      "OutputKey": "HeadersPolicyId",
+      "OutputValue": "e8bc9f43-dd2c-4c3e-ad24-ec4419de3ab5"
+    },
+    {
+      "OutputKey": "CapabilityFunctionArn",
+      "OutputValue": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status"
+    },
+    {
+      "OutputKey": "CachePolicyId",
+      "OutputValue": "91f7529d-33fb-4f4b-9506-a3562dcede56"
+    }
+  ]
+}

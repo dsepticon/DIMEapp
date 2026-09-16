@@ -1,0 +1,14 @@
+{
+  "Invalidation": {
+    "Id": "I9JK3TC2W4ZPAALPVVJNI1PO7Q",
+    "Status": "Completed",
+    "CreateTime": "2026-09-16T18:15:41.840000+00:00",
+    "InvalidationBatch": {
+      "Paths": {
+        "Quantity": 2,
+        "Items": ["/game/", "/game/index.html"]
+      },
+      "CallerReference": "dime-game-7a3f5c3-20260916T181540Z"
+    }
+  }
+}

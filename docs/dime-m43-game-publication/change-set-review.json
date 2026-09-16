@@ -1,0 +1,59 @@
+{
+  "Changes": [
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "GuestCache",
+        "ResourceType": "AWS::CloudFront::CachePolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "GuestCapability",
+        "ResourceType": "AWS::CloudFront::Function",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "GuestHeaders",
+        "ResourceType": "AWS::CloudFront::ResponseHeadersPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    }
+  ],
+  "ChangeSetName": "guest-game-7a3f5c3-20260916",
+  "ChangeSetId": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/guest-game-7a3f5c3-20260916/a7e1d27c-1d25-4083-84c4-6a83f97e8e1e",
+  "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+  "StackName": "dime-guest-game-20260916",
+  "Description": "Owner-approved scoped game edge resources at 7a3f5c3; no gameplay or default routing changes",
+  "Parameters": null,
+  "CreationTime": "2026-09-16T18:05:01.222000+00:00",
+  "ExecutionStatus": "AVAILABLE",
+  "Status": "CREATE_COMPLETE",
+  "StatusReason": null,
+  "NotificationARNs": [],
+  "RollbackConfiguration": {},
+  "Capabilities": [],
+  "Tags": null,
+  "ParentChangeSetId": null,
+  "IncludeNestedStacks": false,
+  "RootChangeSetId": null,
+  "OnStackFailure": null,
+  "ImportExistingResources": null,
+  "StackDriftStatus": null,
+  "DeploymentMode": null,
+  "DeploymentConfig": {
+    "Mode": "STANDARD",
+    "DisableRollback": false
+  }
+}

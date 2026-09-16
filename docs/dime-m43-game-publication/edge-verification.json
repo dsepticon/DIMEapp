@@ -1,0 +1,131 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "unchanged": true
+  },
+  {
+    "path": "/privacy",
+    "status": 200,
+    "unchanged": true
+  },
+  {
+    "path": "/auth/logout",
+    "status": 404,
+    "unchanged": true
+  },
+  {
+    "path": "/auth/delete/resume",
+    "status": 404,
+    "unchanged": true
+  },
+  {
+    "path": "/state",
+    "status": 404,
+    "unchanged": true
+  },
+  {
+    "path": "/v4/state",
+    "status": 404,
+    "unchanged": true
+  },
+  {
+    "path": "/assets/nonexistent-guest-review.js",
+    "status": 404,
+    "unchanged": true
+  },
+  {
+    "path": "/api/v4/state",
+    "method": "GET",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/state",
+    "method": "POST",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/state",
+    "method": "OPTIONS",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/actions",
+    "method": "GET",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/actions",
+    "method": "POST",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/actions",
+    "method": "OPTIONS",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/profile/reset",
+    "method": "GET",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/profile/reset",
+    "method": "POST",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/profile/reset",
+    "method": "OPTIONS",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/content/convert",
+    "method": "GET",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/content/convert",
+    "method": "POST",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/api/v4/content/convert",
+    "method": "OPTIONS",
+    "status": 401,
+    "xCache": "FunctionGeneratedResponse from cloudfront",
+    "originForwarded": false
+  },
+  {
+    "path": "/game/status",
+    "status": 200,
+    "body": {
+      "signInAvailable": false,
+      "linkingAvailable": false,
+      "guestDemoAvailable": true,
+      "guestStorage": "memory"
+    }
+  }
+]

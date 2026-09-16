@@ -1,0 +1,101 @@
+[
+  {
+    "path": "/game/0.9.0/assets/index-BPyjZOOz.css",
+    "status": 200,
+    "sha256": "235789dd82f9c565f0ee1e9b27709bb2526dfc0aba3b5420ce18df009d1ed9b6",
+    "headers": {
+      "content-type": "text/css; charset=utf-8",
+      "content-length": "20842",
+      "connection": "close",
+      "date": "Wed, 16 Sep 2026 18:16:29 GMT",
+      "cache-control": "public, max-age=31536000, immutable",
+      "last-modified": "Wed, 16 Sep 2026 18:15:34 GMT",
+      "etag": "\"4c58ee4cd099e312c3b59222f7887293\"",
+      "server": "AmazonS3",
+      "x-cache": "Miss from cloudfront",
+      "via": "1.1 ae6baadaeda87f31eaf7ab20453cc55c.cloudfront.net (CloudFront)",
+      "x-amz-cf-pop": "YYC51-P1",
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "x-amz-cf-id": "30nmeR7pzRZtag1qdEZ6oUHdQNjN8mUNuaYFo36gbGyKkvhu1__Xdg==",
+      "x-frame-options": "DENY",
+      "referrer-policy": "no-referrer",
+      "content-security-policy": "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+      "x-content-type-options": "nosniff",
+      "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    }
+  },
+  {
+    "path": "/game/0.9.0/assets/index-DHu8VPJb.js",
+    "status": 200,
+    "sha256": "9f080626b4f0118a55685105554cf0c263feea15e8b02888a04487b711de11c5",
+    "headers": {
+      "content-type": "text/javascript; charset=utf-8",
+      "content-length": "364380",
+      "connection": "close",
+      "date": "Wed, 16 Sep 2026 18:16:30 GMT",
+      "cache-control": "public, max-age=31536000, immutable",
+      "last-modified": "Wed, 16 Sep 2026 18:15:37 GMT",
+      "etag": "\"21cd41a9b12d8b0a4e9851fe4e94d26b\"",
+      "server": "AmazonS3",
+      "x-cache": "Miss from cloudfront",
+      "via": "1.1 b660eb83f28267cf7a48a38e9bccb408.cloudfront.net (CloudFront)",
+      "x-amz-cf-pop": "YYC51-P1",
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "x-amz-cf-id": "Ri_ylwE9tZlSinLjMnbkpENeygGJUvE1NUYGEnrNp0LR7PeQRsWoAw==",
+      "x-frame-options": "DENY",
+      "referrer-policy": "no-referrer",
+      "content-security-policy": "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+      "x-content-type-options": "nosniff",
+      "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    }
+  },
+  {
+    "path": "/game/index.html",
+    "status": 200,
+    "sha256": "fa843fc409a4a940943e2c1d05810412b2a92794d7bbb81dc16a609cd4a07f68",
+    "headers": {
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "505",
+      "connection": "close",
+      "date": "Wed, 16 Sep 2026 18:16:30 GMT",
+      "cache-control": "no-cache, max-age=0, must-revalidate",
+      "last-modified": "Wed, 16 Sep 2026 18:15:40 GMT",
+      "etag": "\"c584fbc9b2606b42060c1bdf9b47582f\"",
+      "server": "AmazonS3",
+      "x-cache": "Miss from cloudfront",
+      "via": "1.1 c22717f97c56f69509dbf623ca90d398.cloudfront.net (CloudFront)",
+      "x-amz-cf-pop": "YYC51-P1",
+      "x-amz-cf-id": "nVH0SjQh0upc98bzOZJITPgO7yGAzcoRv1jJucE3gXfZOniHxSba-w==",
+      "x-frame-options": "DENY",
+      "referrer-policy": "no-referrer",
+      "content-security-policy": "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+      "x-content-type-options": "nosniff",
+      "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    }
+  },
+  {
+    "path": "/game/",
+    "status": 200,
+    "sha256": "fa843fc409a4a940943e2c1d05810412b2a92794d7bbb81dc16a609cd4a07f68",
+    "headers": {
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "505",
+      "connection": "close",
+      "date": "Wed, 16 Sep 2026 18:16:30 GMT",
+      "cache-control": "no-cache, max-age=0, must-revalidate",
+      "last-modified": "Wed, 16 Sep 2026 18:15:40 GMT",
+      "etag": "\"c584fbc9b2606b42060c1bdf9b47582f\"",
+      "server": "AmazonS3",
+      "x-cache": "Miss from cloudfront",
+      "via": "1.1 b2d7bb50f99706470273b81dc5f7b6bc.cloudfront.net (CloudFront)",
+      "x-amz-cf-pop": "YYC51-P1",
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "x-amz-cf-id": "wUGshbx4lMsqhXHWi4QItXfcaNVI3VY2WifYQgoUrcvt8mHL8_31mA==",
+      "x-frame-options": "DENY",
+      "referrer-policy": "no-referrer",
+      "content-security-policy": "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+      "x-content-type-options": "nosniff",
+      "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    }
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "unit": {
+    "files": 60,
+    "passed": 418,
+    "failed": 0,
+    "sandboxAttempt": "Two subprocess restrictions; complete unrestricted suite passed"
+  },
+  "publicChromium": {
+    "journeys": 3,
+    "journeyRunMinutes": 5.6,
+    "cycleCases": 2,
+    "cycleRunMinutes": 2.1,
+    "failedFinal": 0,
+    "harnessCorrections": [
+      "Find actual sub-tile scanner overlap in tunnel, not quest-zone tile centers",
+      "Wait for mounted canvas before first attribute read"
+    ]
+  },
+  "lint": "passed",
+  "strictTypecheck": "passed",
+  "formatting": "passed",
+  "diffCheck": "passed",
+  "priorApprovedReleaseChromium": 169,
+  "productionBytesRebuilt": false,
+  "rollbackRequired": false
+}

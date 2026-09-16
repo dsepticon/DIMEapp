@@ -1,0 +1,32 @@
+[
+  {
+    "key": "game/0.9.0/assets/index-BPyjZOOz.css",
+    "existed": false,
+    "versionId": null,
+    "etag": null,
+    "size": null,
+    "metadata": null,
+    "sha256": null,
+    "backupRequired": false
+  },
+  {
+    "key": "game/0.9.0/assets/index-DHu8VPJb.js",
+    "existed": false,
+    "versionId": null,
+    "etag": null,
+    "size": null,
+    "metadata": null,
+    "sha256": null,
+    "backupRequired": false
+  },
+  {
+    "key": "game/index.html",
+    "existed": false,
+    "versionId": null,
+    "etag": null,
+    "size": null,
+    "metadata": null,
+    "sha256": null,
+    "backupRequired": false
+  }
+]

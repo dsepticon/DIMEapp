@@ -1,0 +1,85 @@
+[
+  {
+    "path": "/auth/status",
+    "method": "GET",
+    "status": 200,
+    "redirect": false,
+    "capability": {
+      "signInAvailable": false,
+      "linkingAvailable": false
+    }
+  },
+  {
+    "path": "/auth/login",
+    "method": "GET",
+    "status": 503,
+    "redirect": false
+  },
+  {
+    "path": "/auth/callback",
+    "method": "GET",
+    "status": 503,
+    "redirect": false
+  },
+  {
+    "path": "/auth/logout",
+    "method": "POST",
+    "status": 200,
+    "redirect": false,
+    "cookieExpired": true
+  },
+  {
+    "path": "/auth/delete/resume",
+    "method": "POST",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/state",
+    "method": "GET",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/actions",
+    "method": "POST",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/profile/reset",
+    "method": "POST",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/v4/state",
+    "method": "GET",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/v4/actions",
+    "method": "POST",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/v4/content/preview",
+    "method": "POST",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/v4/content/convert",
+    "method": "POST",
+    "status": 401,
+    "redirect": false
+  },
+  {
+    "path": "/v4/profile/reset",
+    "method": "POST",
+    "status": 401,
+    "redirect": false
+  }
+]
