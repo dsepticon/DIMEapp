@@ -1,0 +1,12 @@
+[
+  {
+    "Id": "EbsFunction",
+    "Name": "dime-v2-staging-review01-dime-v2-review-20260912-ebs",
+    "CodeSha256": "4kbdkFYYfB2vTSanDcaKtcwObvYhNxqLqbbKD1OkKvY="
+  },
+  {
+    "Id": "WebAuthFunction",
+    "Name": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+    "CodeSha256": "fj71uQ9Eq6dF/Mg+i6oUf47Yev0lcT6sH3Ah7N1Eha0="
+  }
+]

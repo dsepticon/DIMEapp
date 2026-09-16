@@ -1,0 +1,12 @@
+{
+  "members": ["index.mjs"],
+  "sourceMaps": false,
+  "frontendFiles": false,
+  "fixtures": false,
+  "ownerProvisionerBundled": false,
+  "syntheticTestCredentials": false,
+  "realSecretValuesRetrieved": false,
+  "runtimeCredentials": "unchanged dynamic references",
+  "nodeBalanceChanges": false,
+  "gameplayBundleByteIdentical": true
+}

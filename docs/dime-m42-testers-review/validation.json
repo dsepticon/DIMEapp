@@ -1,0 +1,45 @@
+{
+  "npmCi": "PASS",
+  "lint": "PASS",
+  "strictTypecheck": "PASS",
+  "vitest": {
+    "passed": 440,
+    "files": 61
+  },
+  "pythonBridge": {
+    "passed": 3
+  },
+  "chromiumRelease": {
+    "passed": 167,
+    "failed": 0,
+    "retries": 0,
+    "minutes": 36.2,
+    "cleanCompleteRun": true
+  },
+  "chromiumGuest": {
+    "passed": 5,
+    "failed": 0
+  },
+  "browserTotal": 172,
+  "builds": ["default", "Twitch", "web", "guest", "gameplay Lambda", "web-auth Lambda"],
+  "nativeSamBuild": "PASS; web-auth bundle byte-identical",
+  "samValidation": "PASS",
+  "cfnLint": ["source PASS", "packaged PASS", "processed PASS"],
+  "guard": {
+    "currentSharedSource": 10,
+    "currentSharedPackaged": 10,
+    "currentSharedProcessed": 8,
+    "expandedLegacyStagingSource": 6,
+    "unchangedGuest": 4
+  },
+  "iam": {
+    "cases": 17,
+    "decisions": 49,
+    "allPassed": true,
+    "policiesApplied": false
+  },
+  "format": "PASS",
+  "gitDiffCheck": "PASS",
+  "performance": "PASS; limitations and retained-heap growth documented",
+  "liveOAuth": "NOT RUN; no real invitation or deployment authorized"
+}

@@ -1,0 +1,74 @@
+{
+  "reviewOnly": true,
+  "doNotExecute": true,
+  "Parameters": [
+    {
+      "ParameterKey": "TwitchSecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ConfigurationRevision",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "WebIdentityKeySecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ApiThrottleBurst",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ApiThrottleRate",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "WebSignInMode",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ContentConversionMode",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "AccountLinkingMode",
+      "ParameterValue": "TESTERS"
+    },
+    {
+      "ParameterKey": "StagingResourcePrefix",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "TwitchAllowedOrigins",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ContentConversionTesterTags",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "AuthEncryptionKeySecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "PlayerIdentityKeySecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "LogRetentionDays",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "OAuthClientSecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "OAuthClientId",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "StagingRegion",
+      "UsePreviousValue": true
+    }
+  ]
+}

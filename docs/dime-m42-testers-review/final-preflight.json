@@ -1,0 +1,16 @@
+{
+  "account": "861738068626",
+  "region": "us-east-2",
+  "stack": "dime-v2-review-20260912",
+  "stackStatus": "UPDATE_COMPLETE",
+  "deployedTemplateUnchanged": true,
+  "deployedLambdaHashesUnchanged": true,
+  "WebSignInMode": "DISABLED",
+  "AccountLinkingMode": "DISABLED",
+  "ContentConversionMode": "ENABLED",
+  "candidateExecuted": false,
+  "amplifyApp": "d90ik3712sg8e",
+  "amplifyAutoCreationPatterns": ["codex/react-extension-rebuild", "main"],
+  "amplifyConnectedBranches": ["codex/react-extension-rebuild", "main"],
+  "branchExcluded": true
+}

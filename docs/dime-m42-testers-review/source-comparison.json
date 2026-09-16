@@ -1,0 +1,21 @@
+[
+  {
+    "path": "/Parameters/WebSignInMode/Description",
+    "before": "Independent public sign-in gate. TESTERS fails closed until separately reviewed eligibility is implemented.",
+    "after": "Independent public sign-in gate. TESTERS requires a signed one-use owner invitation and matching validated Twitch subject."
+  },
+  {
+    "path": "/Parameters/AccountLinkingMode/AllowedValues",
+    "before": ["DISABLED", "ENABLED"],
+    "after": ["DISABLED", "TESTERS", "ENABLED"]
+  },
+  {
+    "path": "/Resources/WebAuthFunction/Properties/CodeUri",
+    "before": {
+      "Bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+      "Key": "dime-v2/review/6a89255d65b957159c8b2a5091512d6ee0ee7958/web-auth-emergency-6a89255.zip",
+      "Version": "Pa5iTi5B4j4foI1ACOOodpcjDvlxyNkW"
+    },
+    "after": "/tmp/dime-m43-integration/dist/web-server"
+  }
+]

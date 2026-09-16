@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "c8c211cb8643f4cb8e7c279e9335ae915759e1c8",
+  "key": "dime-v2/review/c8c211cb8643f4cb8e7c279e9335ae915759e1c8/web-auth-testers.zip",
+  "sha256": "89c65cce4d9b4b92e33cb281f2bf6880850dc55bedc366ed661e74befdb6b931",
+  "Expiration": "expiry-date=\"Wed, 16 Dec 2026 00:00:00 GMT\", rule-id=\"ExpireReviewArtifacts\"",
+  "ETag": "\"f8d3567ad6492e697e4e9296a57a8bb2\"",
+  "ChecksumSHA256": "icZczk2bS5LjPLKB8r9ogIUNxVvtw2btZh50vv22uTE=",
+  "ChecksumType": "FULL_OBJECT",
+  "ServerSideEncryption": "AES256",
+  "VersionId": "5O9XgdFAX2o3eHmDy2mcgdMGhkdACYKI"
+}

@@ -1,0 +1,16 @@
+{
+  "webAuthZip": {
+    "path": "/tmp/dime-m42-testers/DIME-WebAuth-testers-review-20260916.zip",
+    "bytes": 493519,
+    "sha256": "89c65cce4d9b4b92e33cb281f2bf6880850dc55bedc366ed661e74befdb6b931"
+  },
+  "webFrontendZip": {
+    "path": "/tmp/dime-m42-testers/DIME-Web-testers-review-20260916.zip",
+    "bytes": 108053,
+    "sha256": "06c5d0a434440dfec3d64bfea9e8645fe0cc933ed45e132d8bac5bd4a590c0d2"
+  },
+  "webAuthBundleSha256": "786f88d32c2fccdf37f6f1ccaa89bfc0e00cc54052ea429c24a43cdca659518a",
+  "gameplayBundleUnchanged": true,
+  "guestFilesUnchanged": true,
+  "guestZipSha256": "81fefdc80654ef0ab45d0665f2ad26482b09e1d29b9a311d8343deae4764e623"
+}

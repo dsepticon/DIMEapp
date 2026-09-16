@@ -1,0 +1,301 @@
+{
+  "canonicalization": "JSON sorted keys, compact separators, UTF-8",
+  "deployedProcessedSha256": "b76b569ea25b0aac7ff845d9088abf7c2113eed544a82e210a8c54434087b665",
+  "proposedProcessedSha256": "c064711f878a3a93189780ca9ab88b040ad96ce9376419ff72c636189dada9cf",
+  "resources": [
+    {
+      "resource": "ApiAccessLogGroup",
+      "type": "AWS::Logs::LogGroup",
+      "beforeSha256": "c9747f18ee2c4004d2457848984b965c617438a7bbb9d6c0dd3b360a6aa5aa63",
+      "afterSha256": "c9747f18ee2c4004d2457848984b965c617438a7bbb9d6c0dd3b360a6aa5aa63",
+      "identical": true
+    },
+    {
+      "resource": "ApiServerErrorAlarm",
+      "type": "AWS::CloudWatch::Alarm",
+      "beforeSha256": "46cc5f023a4b7536579695c75609243b992470fdb51129b6ad02981e25c0b44a",
+      "afterSha256": "46cc5f023a4b7536579695c75609243b992470fdb51129b6ad02981e25c0b44a",
+      "identical": true
+    },
+    {
+      "resource": "EbsErrorAlarm",
+      "type": "AWS::CloudWatch::Alarm",
+      "beforeSha256": "8a8882757a8b346c7d238cf5825557cbf813571e0a95995720b8a6998cded797",
+      "afterSha256": "8a8882757a8b346c7d238cf5825557cbf813571e0a95995720b8a6998cded797",
+      "identical": true
+    },
+    {
+      "resource": "EbsExecutionRole",
+      "type": "AWS::IAM::Role",
+      "beforeSha256": "45b247ec51fb762f4e49b9518839f1d45e4af8b6fedbb71ccbae400eeb12f8ba",
+      "afterSha256": "45b247ec51fb762f4e49b9518839f1d45e4af8b6fedbb71ccbae400eeb12f8ba",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunction",
+      "type": "AWS::Lambda::Function",
+      "beforeSha256": "bbec823f9bec944bec95ff07611c4eeda18f35d8e2c87512bb8c80fe5871135b",
+      "afterSha256": "bbec823f9bec944bec95ff07611c4eeda18f35d8e2c87512bb8c80fe5871135b",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionGetOriginalStatePermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "3b3f2f78a8bbb764cf2a3142e459b983fe6b59601a94fd80d419a32e553e70b1",
+      "afterSha256": "3b3f2f78a8bbb764cf2a3142e459b983fe6b59601a94fd80d419a32e553e70b1",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionGetStatePermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "3814af76eec5907a003ae3c63f3995f9733d5702cb9fd94a2833a0a9c2ad535f",
+      "afterSha256": "3814af76eec5907a003ae3c63f3995f9733d5702cb9fd94a2833a0a9c2ad535f",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionPostActionsPermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "804facd20dd117ffffeb0766346261ba2b570ddada16f4b8b38cdfbdea74dfc1",
+      "afterSha256": "804facd20dd117ffffeb0766346261ba2b570ddada16f4b8b38cdfbdea74dfc1",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionPostOriginalActionsPermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "14ae9529c9cafa1c28bcc9b85d9eec93680456907cfefa9ffd281cfcc5a34d23",
+      "afterSha256": "14ae9529c9cafa1c28bcc9b85d9eec93680456907cfefa9ffd281cfcc5a34d23",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionPostOriginalConvertPermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "ef7fa0708bd712116ab415aeef9491ff42568290cfe384927905cbf8b9db88f1",
+      "afterSha256": "ef7fa0708bd712116ab415aeef9491ff42568290cfe384927905cbf8b9db88f1",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionPostOriginalPreviewPermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "718447334ed706ee1c72c4ced2eb0b845a33dd65719f65958844843662b635be",
+      "afterSha256": "718447334ed706ee1c72c4ced2eb0b845a33dd65719f65958844843662b635be",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionPostOriginalResetPermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "7fa93d34c7b74dae7f2caa8241847397d6431b68455264c2f736903b9ad4f0f2",
+      "afterSha256": "7fa93d34c7b74dae7f2caa8241847397d6431b68455264c2f736903b9ad4f0f2",
+      "identical": true
+    },
+    {
+      "resource": "EbsFunctionPostProfileResetPermission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "b73000c40b489e44cb4e6be051a91b515bc80a8d47673e1b9a00502b1acb528f",
+      "afterSha256": "b73000c40b489e44cb4e6be051a91b515bc80a8d47673e1b9a00502b1acb528f",
+      "identical": true
+    },
+    {
+      "resource": "EbsLogGroup",
+      "type": "AWS::Logs::LogGroup",
+      "beforeSha256": "5023375f6c60d0492159deba6310a1d3604bfad57eb23fca5a3689e02a934d79",
+      "afterSha256": "5023375f6c60d0492159deba6310a1d3604bfad57eb23fca5a3689e02a934d79",
+      "identical": true
+    },
+    {
+      "resource": "EbsThrottleAlarm",
+      "type": "AWS::CloudWatch::Alarm",
+      "beforeSha256": "a8570071d82e2e7169943af42799d0642e65e17a45ebcbad5e7b94027f1f1ea5",
+      "afterSha256": "a8570071d82e2e7169943af42799d0642e65e17a45ebcbad5e7b94027f1f1ea5",
+      "identical": true
+    },
+    {
+      "resource": "PlayerStateTable",
+      "type": "AWS::DynamoDB::Table",
+      "beforeSha256": "f1cd3198106e9e703f2327435adbb488be118318bac236dca3d0561a375dccd4",
+      "afterSha256": "f1cd3198106e9e703f2327435adbb488be118318bac236dca3d0561a375dccd4",
+      "identical": true
+    },
+    {
+      "resource": "StagingHttpApi",
+      "type": "AWS::ApiGatewayV2::Api",
+      "beforeSha256": "ad6d6d6eb26bd5123875e20c5faf7c85bad475b8dafe73cc807f4b265fa19a40",
+      "afterSha256": "ad6d6d6eb26bd5123875e20c5faf7c85bad475b8dafe73cc807f4b265fa19a40",
+      "identical": true
+    },
+    {
+      "resource": "StagingHttpApistagingStage",
+      "type": "AWS::ApiGatewayV2::Stage",
+      "beforeSha256": "f0c743115590578492208f4b53a479b865ae27e04d906174fcc4f7856dd16fed",
+      "afterSha256": "f0c743115590578492208f4b53a479b865ae27e04d906174fcc4f7856dd16fed",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthExecutionRole",
+      "type": "AWS::IAM::Role",
+      "beforeSha256": "5948dca3f36d9de359c25056d0f92359a9ba4dd024f245e044e1b5c9e68003ac",
+      "afterSha256": "5948dca3f36d9de359c25056d0f92359a9ba4dd024f245e044e1b5c9e68003ac",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunction",
+      "type": "AWS::Lambda::Function",
+      "beforeSha256": "9f299f939027335c6e880c7d2f218712f975275aead23aa14f74f4e235c575cc",
+      "afterSha256": "a516c82542750e226f26397106933c1734fe2b57b139bec5260b0660c2430eed",
+      "identical": false
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute0Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "3fe0ac4046890f575c33a315a65d839836367cf9779e83555e0b6fa0037e502b",
+      "afterSha256": "3fe0ac4046890f575c33a315a65d839836367cf9779e83555e0b6fa0037e502b",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute10Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "2c009e5fdfd43ddc85de1a440e2a77254b1398ed081d337b792610e337171b52",
+      "afterSha256": "2c009e5fdfd43ddc85de1a440e2a77254b1398ed081d337b792610e337171b52",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute11Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "bb508da753e92f52b2a870786887298c08c457686387581c408ceacca208d40e",
+      "afterSha256": "bb508da753e92f52b2a870786887298c08c457686387581c408ceacca208d40e",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute12Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "677c75c27fd01f7c7af2c21bad2e960d8a0d4c053fcbf24c1fe2b2f4bfb31a22",
+      "afterSha256": "677c75c27fd01f7c7af2c21bad2e960d8a0d4c053fcbf24c1fe2b2f4bfb31a22",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute13Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "a537ae2115c006452b876614a9a142d6b7b6fb96d6fff57edb5086e7a1f65d10",
+      "afterSha256": "a537ae2115c006452b876614a9a142d6b7b6fb96d6fff57edb5086e7a1f65d10",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute14Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "aef2a74bd8b6f65b57536ba08efe07d3fbfa8cb99ecdfaffd0ff7e79237890d9",
+      "afterSha256": "aef2a74bd8b6f65b57536ba08efe07d3fbfa8cb99ecdfaffd0ff7e79237890d9",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute1Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "4565dab05e586ac407af1634cb49b67099bf8ac147a8513b9ffbf4855a09619c",
+      "afterSha256": "4565dab05e586ac407af1634cb49b67099bf8ac147a8513b9ffbf4855a09619c",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute2Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "f59631c0494ad4cd06f9ecef9bd01549180e4fbdf246acf83f4ff3b78aa86384",
+      "afterSha256": "f59631c0494ad4cd06f9ecef9bd01549180e4fbdf246acf83f4ff3b78aa86384",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute3Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "999cb4b4bafa7fdad2549065c25b7d5e0b51fb58b580ba61bedde67440882e74",
+      "afterSha256": "999cb4b4bafa7fdad2549065c25b7d5e0b51fb58b580ba61bedde67440882e74",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute4Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "94d738dd3c0d478df1d6fe48655e4af32ec2d8fab49577e47b7728676310530f",
+      "afterSha256": "94d738dd3c0d478df1d6fe48655e4af32ec2d8fab49577e47b7728676310530f",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute5Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "7c4eddd8794c7793ebccdb5cabc7ec9d7d9a2a5e064a0ddb4840b0b5b1947ce8",
+      "afterSha256": "7c4eddd8794c7793ebccdb5cabc7ec9d7d9a2a5e064a0ddb4840b0b5b1947ce8",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute6Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "53404725f5e595585825ab262665f5cec9e681ab230098883478cc66045a02a4",
+      "afterSha256": "53404725f5e595585825ab262665f5cec9e681ab230098883478cc66045a02a4",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute7Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "3beb298aa304825fb13c5bc767b9f45d80fe3ffc04836726c0d84fb1807ec161",
+      "afterSha256": "3beb298aa304825fb13c5bc767b9f45d80fe3ffc04836726c0d84fb1807ec161",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute8Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "bd2a60e0af1c5fecba14f2c9cc81b0b5781aee84ccb3f1946273644578581267",
+      "afterSha256": "bd2a60e0af1c5fecba14f2c9cc81b0b5781aee84ccb3f1946273644578581267",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthFunctionWebRoute9Permission",
+      "type": "AWS::Lambda::Permission",
+      "beforeSha256": "9fb9ed5707f614377d2d4c0d10550819fb4bc483fb1151e4f6a5e5496eb53ff4",
+      "afterSha256": "9fb9ed5707f614377d2d4c0d10550819fb4bc483fb1151e4f6a5e5496eb53ff4",
+      "identical": true
+    },
+    {
+      "resource": "WebAuthLogGroup",
+      "type": "AWS::Logs::LogGroup",
+      "beforeSha256": "c66256ceb412c85b37686ddaafbfc9981a31e6906ac33643b4caaadac9bdcfe1",
+      "afterSha256": "c66256ceb412c85b37686ddaafbfc9981a31e6906ac33643b4caaadac9bdcfe1",
+      "identical": true
+    }
+  ],
+  "parameterDeclarationDifferences": {
+    "AccountLinkingMode": {
+      "before": {
+        "Type": "String",
+        "AllowedValues": ["DISABLED", "ENABLED"],
+        "Default": "DISABLED",
+        "Description": "Enable only after binding-aware gameplay is deployed and old invocations have drained."
+      },
+      "after": {
+        "Type": "String",
+        "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"],
+        "Default": "DISABLED",
+        "Description": "Enable only after binding-aware gameplay is deployed and old invocations have drained."
+      }
+    },
+    "WebSignInMode": {
+      "before": {
+        "Type": "String",
+        "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"],
+        "Default": "DISABLED",
+        "Description": "Independent public sign-in gate. TESTERS fails closed until separately reviewed eligibility is implemented."
+      },
+      "after": {
+        "Type": "String",
+        "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"],
+        "Default": "DISABLED",
+        "Description": "Independent public sign-in gate. TESTERS requires a signed one-use owner invitation and matching validated Twitch subject."
+      }
+    }
+  },
+  "webAuthCode": {
+    "before": {
+      "S3Bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+      "S3Key": "dime-v2/review/6a89255d65b957159c8b2a5091512d6ee0ee7958/web-auth-emergency-6a89255.zip",
+      "S3ObjectVersion": "Pa5iTi5B4j4foI1ACOOodpcjDvlxyNkW"
+    },
+    "after": {
+      "S3Bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+      "S3Key": "dime-v2/review/c8c211cb8643f4cb8e7c279e9335ae915759e1c8/web-auth-testers.zip",
+      "S3ObjectVersion": "5O9XgdFAX2o3eHmDy2mcgdMGhkdACYKI"
+    }
+  }
+}
