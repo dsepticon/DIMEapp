@@ -111,6 +111,10 @@ No migration is performed. Existing Extension HMAC identity, partition keys, sta
 
 Before website publication, the privacy disclosure must cover separate OAuth credentials, encrypted grants and auth records, hashed state/session/link capabilities, random DIME account identifiers, canonical binding metadata, persistent mappings/link results, session/intent TTL eligibility, support conflict handling and account recovery. TTL eligibility does not promise immediate removal. Persistent link results do not contain full saves and cannot simply be described as the old gameplay-receipt TTL policy. Retain verified contact, processing, encryption, logs, PITR and deletion language; `/privacy` remains untouched in this task.
 
+### Deletion design limitation requiring resolution before activation
+
+Persistent `link-result:hash(intent)` items cannot currently be enumerated from an account through exact-key reads: old intent hashes are not retained in a per-account manifest. A support deletion procedure must not claim these records can all be removed using the current schema, and must not solve this by scanning the table. Before enabling linking, add a bounded, transactional per-account manifest of outcome hashes (with a defined limit and fail-closed behavior when full), or replace indefinite outcomes with a reviewed bounded retention/replay design. Verify removal/expiry and PITR restore tombstone behavior using synthetic identities. This is an unresolved privacy/deletion release gate; this disabled-linking preparation does not create those records.
+
 ## Rollback matrix
 
 | Rollback point                                                             | Safe behavior                                                                                                                                                                                 |
