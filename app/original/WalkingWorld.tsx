@@ -1,3 +1,5 @@
+import type { ScannerPulse } from './ScannerHUD';
+import { PING_RADIUS, scannerCandidates, scannerSignals } from '../../shared/originalScanner';
 import type { LaserVisual } from './MiningConsole';
 import { emitGameAudio } from './audioEvents';
 import {
@@ -42,8 +44,10 @@ export function WalkingWorld({
   laser,
   vacuum,
   fragmentTarget,
+  scannerPulse,
   mode,
 }: {
+  scannerPulse?: ScannerPulse | null;
   laser?: LaserVisual | null;
   mode: ToolMode;
   state: OriginalPlayerState;
@@ -68,6 +72,7 @@ export function WalkingWorld({
     laser,
     vacuum,
     fragmentTarget,
+    scannerPulse,
     mode,
   });
   latest.current = {
@@ -80,6 +85,7 @@ export function WalkingWorld({
     laser,
     vacuum,
     fragmentTarget,
+    scannerPulse,
     mode,
   };
   const map = useMemo(() => originalZoneMap(state.world.zone), [state.world.zone]);
@@ -111,7 +117,8 @@ export function WalkingWorld({
       lastFootstep = 0,
       lastTargetTime = 0,
       lastTargetPosition = { x: -1, y: -1 },
-      lastMode = latest.current.mode;
+      lastMode = latest.current.mode,
+      lastObservedTarget = latest.current.target;
     const down = (event: KeyboardEvent) => {
       if (
         !directions[event.code] ||
@@ -167,6 +174,12 @@ export function WalkingWorld({
         emitGameAudio('footstep');
         lastFootstep = now;
       }
+      if (lastObservedTarget !== latest.current.target) {
+        // A deliberate pointer/cycle selection wins over movement sampled before that selection.
+        lastObservedTarget = latest.current.target;
+        lastTargetPosition = { ...position.current };
+        lastTargetTime = now;
+      }
       if (now - lastTargetTime > 100) {
         lastTargetTime = now;
         const current = latest.current,
@@ -176,7 +189,10 @@ export function WalkingWorld({
           0.15;
         if (current.mode === 'laser' && !current.state.world.miningSession) {
           if (moved || lastMode !== current.mode || !selected || selected.status !== 'INTACT') {
-            const next = forwardNodeCandidates(current.state, position.current, facing)[0]?.node;
+            const signal = scannerCandidates(current.state, position.current, facing)[0];
+            const next = signal
+              ? current.state.world.nodes[signal.id]
+              : forwardNodeCandidates(current.state, position.current, facing)[0]?.node;
             if (next && next.id !== current.target) current.onTarget(next.id);
             else if (selected && (selected.status !== 'INTACT' || !nodeInZone(current.state, selected)))
               current.onTarget('');
@@ -210,6 +226,25 @@ export function WalkingWorld({
       for (let y = Math.max(0, Math.floor(cy)); y < Math.min(map.height, cy + height / scale + 1); y++)
         for (let x = Math.max(0, Math.floor(cx)); x < Math.min(map.width, cx + width / scale + 1); x++)
           at(x, y, () => drawTerrain(context, map, x, y));
+      const pulse = latest.current.scannerPulse;
+      const pulseAge = pulse ? Math.max(0, now - pulse.born) : Infinity;
+      const pingActive = !!pulse && pulse.zone === map.id && pulseAge < 3500;
+      const signals = pingActive ? scannerSignals(latest.current.state, pulse, facing) : [];
+      if (pingActive && pulseAge < 900) {
+        context.strokeStyle = '#9ee8d6aa';
+        context.lineWidth = 2;
+        context.beginPath();
+        context.arc(
+          (pulse.x - cx) * scale,
+          (pulse.y - cy) * scale,
+          (reduced.matches ? PING_RADIUS : (PING_RADIUS * pulseAge) / 900) * scale,
+          0,
+          Math.PI * 2,
+        );
+        context.stroke();
+      }
+      element.dataset.pingActive = String(pingActive);
+      element.dataset.pingSignals = String(signals.length);
       const accent = SCENE_PALETTES[map.palette].accent;
       for (const exit of map.exits)
         at(exit.x + 0.5, exit.y + 0.5, () => drawExit(context, exit.facing, accent));
@@ -306,20 +341,21 @@ export function WalkingWorld({
                   reduced.matches,
                   artHash(node.id),
                 );
-                if (
-                  latest.current.state.world.scanner.scannedZones?.includes(map.id) &&
-                  !latest.current.state.world.scanner.analyzed.includes(node.id)
-                ) {
-                  context.strokeStyle = '#b7d0c088';
+                const signal = signals.find((item) => item.id === node.id);
+                if (signal) {
+                  const w = 14 + node.size * 2;
+                  context.strokeStyle = '#b9ffeb';
                   context.lineWidth = 1;
-                  for (let i = -6; i <= 6; i += 6) {
-                    context.beginPath();
-                    context.moveTo(-9, i);
-                    context.lineTo(9, i);
-                    context.moveTo(i, -9);
-                    context.lineTo(i, 9);
-                    context.stroke();
-                  }
+                  context.strokeRect(-w, -w, w * 2, w * 2);
+                  context.fillStyle = '#071116';
+                  context.fillRect(-19, -w - 15, 38, 12);
+                  context.fillStyle = '#e6fff4';
+                  context.font = '10px monospace';
+                  context.textAlign = 'center';
+                  const dx = node.x + 0.5 - position.current.x,
+                    dy = node.y + 0.5 - position.current.y;
+                  const direction = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? '→' : '←') : dy > 0 ? '↓' : '↑';
+                  context.fillText(`${direction} ${Math.hypot(dx, dy).toFixed(1)}t`, 0, -w - 5);
                 }
               }),
           });

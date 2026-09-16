@@ -1067,3 +1067,111 @@ footer small {
     transition: opacity 0.18s;
   }
 }
+/* Scanner occupies the existing summary footprint; Analyze replaces Mine. */
+.originalApp .scannerHUD {
+  display: contents;
+}
+.originalApp .pingControl {
+  position: absolute;
+  left: var(--safe-left);
+  top: calc(var(--safe-top) + 26px);
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  background: #102c38e8;
+  line-height: 16px;
+}
+.originalApp .pingControl small {
+  display: block;
+  font-size: 10px;
+}
+.originalApp .hudToggle {
+  left: calc(var(--safe-left) + 44px);
+  width: 80px;
+  padding: 3px;
+  font-size: 10px;
+}
+.originalApp .analyzeControl {
+  position: absolute;
+  right: var(--safe-right);
+  bottom: var(--safe-bottom);
+  width: 120px;
+  height: 44px;
+  padding: 4px;
+  font-size: 11px;
+  background: #143b43ee;
+}
+.originalApp .cycleControl {
+  position: absolute;
+  right: var(--safe-right);
+  bottom: var(--safe-bottom);
+  width: 44px;
+  height: 44px;
+  padding: 2px;
+  background: #173746ed;
+}
+.originalApp:has(.cycleControl) .analyzeControl {
+  right: calc(var(--safe-right) + 44px);
+  width: 76px;
+}
+.originalApp:has(.cycleControl) .miningConsole .primaryMine {
+  width: 76px;
+  margin-right: 44px;
+}
+.originalApp .scannerFeedback {
+  position: absolute;
+  right: var(--safe-right);
+  bottom: calc(var(--safe-bottom) + 48px);
+  width: 120px;
+  padding: 3px;
+  background: #0b2029ef;
+  font-size: 11px;
+  pointer-events: none;
+}
+.originalApp .analysisCard {
+  position: absolute;
+  right: var(--safe-right);
+  bottom: calc(var(--safe-bottom) + 48px);
+  width: 180px;
+  display: grid;
+  gap: 3px;
+  padding: 6px;
+  background: #0b2029f5;
+  border: 1px solid #a7d6ca;
+  font-size: 11px;
+  z-index: 3;
+}
+.originalApp .analysisCard button {
+  min-height: 44px;
+  font-size: 11px;
+}
+.originalApp[data-menu='true'] .scannerHUD {
+  display: none;
+}
+.originalApp[data-idle='true'] .pingControl,
+.originalApp[data-idle='true'] .analyzeControl,
+.originalApp[data-idle='true'] .cycleControl {
+  opacity: 0.75;
+}
+@media (min-width: 800px) and (pointer: fine) {
+  .originalApp.standalone[data-touch-hidden='true'] .analyzeControl,
+  .originalApp.standalone[data-touch-hidden='true'] .cycleControl {
+    display: none;
+  }
+}
+.originalApp .pingControl,
+.originalApp .cycleControl,
+.originalApp .analyzeControl {
+  z-index: 4;
+}
+.originalApp:not([data-menu='true']) .miningConsole[data-analyzed='false'] .nodeTargetStatus {
+  display: none;
+}
+.originalApp:not([data-menu='true']) .nodeTargetStatus {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.originalApp .analysisCard {
+  overflow-y: auto;
+}

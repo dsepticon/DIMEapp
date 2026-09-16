@@ -1,3 +1,4 @@
+import { ScannerHUD, type ScannerPulse } from './ScannerHUD';
 import { originalZoneMap } from '../../shared/originalWorld';
 import { nearInteraction } from '../../shared/originalNavigation';
 import { emitGameAudio } from './audioEvents';
@@ -129,6 +130,8 @@ function App({ webReview = false }: { webReview?: boolean }) {
     if (hasFragments) setToolMode('extraction');
   }, [hasFragments, state?.world.zone, state?.saveGeneration]);
   const [targetNode, setTargetNode] = useState('');
+  const [scannerPulse, setScannerPulse] = useState<ScannerPulse | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetPhrase, setResetPhrase] = useState('');
   const [pendingBlocked, setPendingBlocked] = useState(false);
@@ -622,6 +625,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
               state={state}
               paused={
                 overlayOpen ||
+                analyzing ||
                 (!pendingBlocked && (!!state.world.miningSession || !!state.world.extractionSession))
               }
               onPosition={(position) => {
@@ -632,6 +636,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
               }}
               onTarget={setTargetNode}
               target={targetNode}
+              scannerPulse={scannerPulse}
               marker={marker}
               vacuum={vacuumVisual}
               laser={laserVisual}
@@ -662,6 +667,18 @@ function App({ webReview = false }: { webReview?: boolean }) {
               </small>
             </div>
           </section>
+          <ScannerHUD
+            state={state}
+            target={targetNode}
+            busy={busy || pendingBlocked || !!state.world.miningSession || !!state.world.extractionSession}
+            paused={overlayOpen}
+            laserMode={toolMode === 'laser'}
+            getPlayer={() => playerPosition.current}
+            onTarget={setTargetNode}
+            mutate={mutate}
+            onPulse={setScannerPulse}
+            onHolding={setAnalyzing}
+          />
           <button
             className="menuToggle"
             aria-label="Menu"
@@ -699,7 +716,10 @@ function App({ webReview = false }: { webReview?: boolean }) {
               Resume game
             </button>
             {identityHeader}
-            <p>Walk: WASD / arrows · Enter: E · Mine: hold Space · Vacuum: hold V. Release to stop.</p>
+            <p>
+              Walk: WASD / arrows · Enter: E · Ping: P · Analyze: hold F · Next target: Q · Mine: hold Space ·
+              Vacuum: hold V. Release to stop.
+            </p>
             <nav className="operationsNav" onClick={() => emitGameAudio('ui')}>
               <button
                 onClick={() => {

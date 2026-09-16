@@ -9,6 +9,7 @@ export default defineConfig({
     'm43Visual.spec.ts',
     'm43Travel.spec.ts',
     'm43WorldView.spec.ts',
+    'm43Scanner.spec.ts',
   ],
   workers: 1,
   use: { baseURL: 'http://127.0.0.1:4186', headless: true },

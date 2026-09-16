@@ -206,6 +206,15 @@ try {
     await page.evaluate(() => {
       (window as Window & { dimePerformance: { frames: number[] } }).dimePerformance.frames = [];
     });
+    const postsBeforePing = fixture.posts.length;
+    for (let ping = 0; ping < 5; ping++) {
+      await page.keyboard.press('p');
+      await page.waitForTimeout(200);
+    }
+    const scannerEffects = await sample();
+    if (fixture.posts.length !== postsBeforePing) throw Error('Local scanner pulse wrote state');
+    const analysisCardClose = page.getByRole('button', { name: 'Close analysis · Ping to recall' });
+    if (await analysisCardClose.isVisible()) await analysisCardClose.click();
     const control = page.getByRole('button', { name: 'Hold Vacuum', exact: true });
     await control.scrollIntoViewIfNeeded();
     await control.focus();
@@ -262,6 +271,7 @@ try {
     const result = {
       heapTrend,
       heapAfter,
+      scannerEffects,
       laserEffects,
       busiestCityZone: city.name,
       cityEffects,

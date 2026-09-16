@@ -188,6 +188,7 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
     <section
       className="miningConsole"
       data-near={rangeStatus === 'In range'}
+      data-analyzed={analyzed}
       data-active={!!state.world.miningSession}
     >
       <div className="scannerHeading">
@@ -224,34 +225,21 @@ export function MiningConsole({ state, busy, mode, mutate, getPlayer, target, on
         </select>
       )}
       {node && (
-        <div className="nodeTargetStatus" role="status">
+        <div
+          className="nodeTargetStatus"
+          role="status"
+          title={analyzed ? ORIGINAL_CONTENT.minerals.find((m) => m.id === node?.ore)?.name : undefined}
+        >
           {rangeStatus}
+          {analyzed && ` · ${ORIGINAL_CONTENT.minerals.find((m) => m.id === node?.ore)?.name}`}
           {!nodeToolRange(state, node) && ' · Requires occupied Crawl Rig'}
         </div>
       )}
       {node && !analyzed && (
         <button
-          className="primaryMine"
           disabled={busy}
-          onClick={async () => {
-            const scanned = state.world.scanner.scannedZones?.includes(state.world.zone)
-              ? state
-              : await mutate({ type: 'scan' });
-            if (!scanned || scanned.saveGeneration !== state.saveGeneration) return;
-            const next = await mutate({ type: 'analyze', nodeId: node.id });
-            if (!next || next.saveGeneration !== state.saveGeneration) return;
-            setOutcome('');
-            setSim(initialState());
-            runsRef.current = [];
-            setRuns([]);
-            await mutate({ type: 'startLaser', nodeId: node.id, player: getPlayer() });
-          }}
+          onClick={() => void mutate({ type: 'analyzeNearby', nodeId: node.id, player: getPlayer() })}
         >
-          Mine
-        </button>
-      )}
-      {node && !analyzed && (
-        <button disabled={busy} onClick={() => void mutate({ type: 'analyze', nodeId: node.id })}>
           Analyze selected signature
         </button>
       )}

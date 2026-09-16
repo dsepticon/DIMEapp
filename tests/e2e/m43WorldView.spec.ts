@@ -126,7 +126,11 @@ for (const layout of [
     await page.keyboard.down(key);
     await page.waitForTimeout(100);
     await page.keyboard.up(key);
-    await page.getByRole('button', { name: 'Mine', exact: true }).click();
+    await page.getByRole('button', { name: 'Hold Analyze (F)', exact: true }).focus();
+    await page.keyboard.down('f');
+    await expect(page.getByRole('button', { name: 'Target node', exact: true })).toBeVisible();
+    await page.keyboard.up('f');
+    await page.getByRole('button', { name: 'Target node', exact: true }).click();
     const laser = page.getByRole('button', { name: 'Hold laser · release to cool', exact: true });
     await expect(laser).toBeVisible();
     const a = (await laser.boundingBox())!,

@@ -1,3 +1,4 @@
+import { analysisStatus } from '../shared/originalScanner';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { GameError } from '../shared/schema';
@@ -40,6 +41,9 @@ const action = z.discriminatedUnion('type', [
   z.object({ type: z.literal('completeDeparture'), player: position }).strict(),
   z.object({ type: z.literal('moveZone'), player: position, destination: z.string() }).strict(),
   z.object({ type: z.literal('scan') }).strict(),
+  z
+    .object({ type: z.literal('analyzeNearby'), nodeId: z.string().min(1).max(80), player: position })
+    .strict(),
   z.object({ type: z.literal('analyze'), nodeId: z.string().min(1).max(80) }).strict(),
   z.object({ type: z.literal('retrieveGroundRig'), player: position }).strict(),
   z.object({ type: z.literal('setGroundRigOccupied'), occupied: z.boolean() }).strict(),
@@ -135,6 +139,16 @@ export class OriginalActionService {
         case 'scan':
           next = scanOriginalZone(state, this.clock());
           break;
+        case 'analyzeNearby': {
+          const status = analysisStatus(state, a.nodeId, a.player);
+          if (status !== 'Ready' && status !== 'Already analyzed') throw Error('ANALYSIS_UNAVAILABLE');
+          const scanned = structuredClone(state);
+          scanned.world.scanner.scannedZones ??= [];
+          if (!scanned.world.scanner.scannedZones.includes(scanned.world.zone))
+            scanned.world.scanner.scannedZones.push(scanned.world.zone);
+          next = analyzeOriginalNode(scanned, a.nodeId);
+          break;
+        }
         case 'analyze':
           next = analyzeOriginalNode(state, a.nodeId);
           break;
