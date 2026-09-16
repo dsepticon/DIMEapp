@@ -23,8 +23,9 @@ export function webSignInPreflight(
   if (request.method === 'GET' && path === '/auth/status')
     return { statusCode: 200, headers, body: JSON.stringify(capabilities) };
   if (capabilities.signInAvailable) return;
-  // Existing verified recovery capabilities remain usable; no new deletion may begin.
-  if (request.method === 'POST' && ['/auth/logout', '/auth/delete/resume'].includes(path ?? '')) return;
+  // Only authentication expansion is gated. Existing authorization and privacy checks remain mandatory.
+  if (!['/auth/login', '/auth/callback', '/auth/link/intent', '/auth/link/accept'].includes(path ?? ''))
+    return;
   return {
     statusCode: 503,
     headers,

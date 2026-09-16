@@ -143,25 +143,29 @@ export class TwitchOAuth implements IdentityProvider {
     }
   }
   async revoke(tokens: Tokens) {
-    const response = await this.request(issuer + '/revoke', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ client_id: this.clientId, token: tokens.access }),
-      signal: AbortSignal.timeout(10000),
-      redirect: 'error',
-    });
-    if (response.ok) return;
-    // A retry after successful revocation can return the documented already-invalid token response.
-    if (response.status === 400) {
-      const value: unknown = await response.json();
-      if (
-        typeof value === 'object' &&
-        value !== null &&
-        'message' in value &&
-        value.message === 'Invalid token'
-      )
-        return;
-    }
-    throw new WebAuthError();
+    return revokeTwitchToken(this.clientId, tokens, this.request);
   }
+}
+export async function revokeTwitchToken(clientId: string, tokens: Tokens, request: typeof fetch = fetch) {
+  if (!clientId || clientId === 'znaovl2j45idub9k81om1dkatwxnu2') throw new WebAuthError();
+  const response = await request(issuer + '/revoke', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: clientId, token: tokens.access }),
+    signal: AbortSignal.timeout(10000),
+    redirect: 'error',
+  });
+  if (response.ok) return;
+  // A retry after successful revocation can return the documented already-invalid token response.
+  if (response.status === 400) {
+    const value: unknown = await response.json();
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      'message' in value &&
+      value.message === 'Invalid token'
+    )
+      return;
+  }
+  throw new WebAuthError();
 }

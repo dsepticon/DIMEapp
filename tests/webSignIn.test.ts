@@ -22,13 +22,7 @@ for (const mode of [undefined, '', 'DISABLED', 'TESTERS', 'enabled', ' ENABLED '
     });
     const send = vi.spyOn(DynamoDBDocumentClient.prototype, 'send');
     const network = vi.spyOn(globalThis, 'fetch');
-    for (const path of [
-      '/auth/login',
-      '/auth/callback',
-      '/auth/session',
-      '/api/v4/state',
-      '/auth/link/accept',
-    ]) {
+    for (const path of ['/auth/login', '/auth/callback', '/auth/link/accept']) {
       const response = await handler({
         rawPath: path,
         rawQueryString: 'code=synthetic&state=synthetic',
@@ -75,15 +69,8 @@ it('HTTP gate prevents every repository and provider call, including invalid cal
     for (const path of [
       '/auth/login',
       '/auth/callback?code=synthetic',
-      '/auth/session',
       '/auth/link/intent',
       '/auth/link/accept',
-      '/auth/delete/intent',
-      '/auth/unlink',
-      '/api/v4/state',
-      '/api/v4/actions',
-      '/api/v4/profile/reset',
-      '/api/v4/content/convert',
     ]) {
       expect((await api({ method, path, headers: {}, body: 'invalid JSON' })).statusCode).toBe(503);
     }
@@ -146,7 +133,6 @@ it('shutdown preserves existing accounts and allows CSRF-protected logout withou
     'content-type': 'application/json',
     'x-dime-csrf': session.csrf,
   };
-  expect((await api({ method: 'GET', path: '/auth/session', headers })).statusCode).toBe(503);
   expect(
     (await api({ method: 'POST', path: '/auth/logout', headers: { ...headers, 'x-dime-csrf': 'wrong' } }))
       .statusCode,
@@ -162,6 +148,6 @@ it('shutdown preserves existing accounts and allows CSRF-protected logout withou
 it('only safe continuation methods bypass a disabled gate', () => {
   for (const path of ['/auth/logout', '/auth/delete/resume']) {
     expect(webSignInPreflight({ method: 'POST', path }, 'DISABLED', false)).toBeUndefined();
-    expect(webSignInPreflight({ method: 'GET', path }, 'DISABLED', false)?.statusCode).toBe(503);
+    expect(webSignInPreflight({ method: 'GET', path }, 'DISABLED', false)).toBeUndefined();
   }
 });

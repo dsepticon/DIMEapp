@@ -180,7 +180,11 @@ it('revocation failure is durable, blocks writes and permits retry without losin
     cap = opaque();
   await f.auth.beginDeletion(a.sid, a.mutation, 'DELETE_ACCOUNT', cap);
   f.fail(true);
-  await expect(f.auth.resumeDeletion(a.session.account, cap)).rejects.toThrow();
+  expect(await f.auth.resumeDeletion(a.session.account, cap)).toEqual({
+    status: 'DELETION_PENDING',
+    retryable: true,
+    code: 'PROVIDER_REVOCATION_PENDING',
+  });
   expect(await f.get('grant:' + a.session.subject)).toBeDefined();
   expect((await f.get<AccountManifest>(manifestKey(a.session.account)))?.status).toBe('DELETION_PENDING');
   f.fail(false);

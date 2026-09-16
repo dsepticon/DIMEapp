@@ -12,14 +12,20 @@ import {
   writeManifest,
   type AccountManifest,
 } from './accountManifest';
-type Job = { proof: string; phase: 'DELETION_PENDING' | 'REVOKED' | 'PURGED' };
+export class DeletionAuthorizationError extends Error {}
+type Job = { proof: string; expiresAt?: number; phase: 'DELETION_PENDING' | 'REVOKED' | 'PURGED' };
+// Legacy jobs predate the explicit proof deadline. Bound them to 35 days after the
+// first reviewed manifest deployment; never extend this deadline on retry.
+const legacyProofDeadline = Date.parse('2026-10-21T15:38:56Z');
+const proofExpired = (job: Job, now: number) =>
+  !Number.isFinite(job.expiresAt ?? legacyProofDeadline) || (job.expiresAt ?? legacyProofDeadline) <= now;
 const proof = (account: string, capability: string) =>
   createHash('sha256')
     .update(account + '\0' + capability)
     .digest('hex');
 function validate(account: string, capability: string) {
   if (!/^[a-f0-9-]{36}$/.test(account) || !/^[\w-]{43}$/.test(capability))
-    throw Error('Deletion unavailable.');
+    throw new DeletionAuthorizationError('Deletion unavailable.');
 }
 export class AccountDeletion {
   constructor(
@@ -42,6 +48,7 @@ export class AccountDeletion {
     if (grant) await tx.put('grant:' + m.oauth, grant);
     await tx.put<Job>('deletion:' + account, {
       proof: proof(account, capability),
+      expiresAt: this.clock() + AUTH_TTL.tombstone,
       phase: 'DELETION_PENDING',
     });
     return { status: 'DELETION_PENDING' };
@@ -54,9 +61,11 @@ export class AccountDeletion {
       const done = await tx.get<{ expiresAt: number }>('deletion-result:' + hash);
       if (done && done.expiresAt > this.clock()) return { complete: true } as const;
       const job = await tx.get<Job>(key);
-      if (!job || job.proof !== hash) throw Error('Deletion unavailable.');
+      if (!job || job.proof !== hash || proofExpired(job, this.clock()))
+        throw new DeletionAuthorizationError('Deletion unavailable.');
       const m = validateManifest(await tx.get(manifestKey(account)));
-      if (m.account !== account || m.status === 'ACTIVE') throw Error('Deletion unavailable.');
+      if (m.account !== account || m.status === 'ACTIVE')
+        throw new DeletionAuthorizationError('Deletion unavailable.');
       if (job.phase !== 'PURGED') {
         const owner = await tx.get<{ account: string; status: string }>(controlKey(m.player));
         const credential = await tx.get<{ account: string }>('oauth:' + m.oauth);
@@ -65,25 +74,31 @@ export class AccountDeletion {
           owner.status !== 'DELETION_PENDING' ||
           credential?.account !== account
         )
-          throw Error('Deletion ownership mismatch.');
+          throw new DeletionAuthorizationError('Deletion ownership mismatch.');
       }
       const grant =
         job.phase === 'DELETION_PENDING' ? await tx.get<{ tokens: Tokens }>('grant:' + m.oauth) : undefined;
       return { job, m, grant };
     });
     if ('complete' in initial) return { status: 'COMPLETE' };
-    if (initial.job.phase === 'DELETION_PENDING' && initial.grant)
-      await this.provider.revoke(initial.grant.tokens);
+    if (initial.job.phase === 'DELETION_PENDING' && initial.grant) {
+      try {
+        await this.provider.revoke(initial.grant.tokens);
+      } catch {
+        return { status: 'DELETION_PENDING', retryable: true, code: 'PROVIDER_REVOCATION_PENDING' };
+      }
+    }
     return this.repo.transaction(async (tx) => {
       const job = await tx.get<Job>(key);
-      if (!job || job.proof !== hash) {
+      if (!job || job.proof !== hash || proofExpired(job, this.clock())) {
         const done = await tx.get<{ expiresAt: number }>('deletion-result:' + hash);
         if (done && done.expiresAt > this.clock()) return { status: 'COMPLETE' };
-        throw Error('Deletion unavailable.');
+        throw new DeletionAuthorizationError('Deletion unavailable.');
       }
       if (job.phase !== initial.job.phase) return { status: job.phase };
       const m = validateManifest(await tx.get(manifestKey(account)));
-      if (m.account !== account || m.status === 'ACTIVE') throw Error('Deletion unavailable.');
+      if (m.account !== account || m.status === 'ACTIVE')
+        throw new DeletionAuthorizationError('Deletion unavailable.');
       if (job.phase === 'DELETION_PENDING') {
         await tx.delete('grant:' + m.oauth);
         await tx.put(key, { ...job, phase: 'REVOKED' });
@@ -115,14 +130,15 @@ export class AccountDeletion {
       a.oauth !== m.oauth ||
       credential?.account !== m.account
     )
-      throw Error('Deletion ownership mismatch.');
+      throw new DeletionAuthorizationError('Deletion ownership mismatch.');
     if (m.extension) {
       const mapped = await tx.get<string>('extension:' + m.extension);
       const binding = await tx.get<{ player: string }>('binding:' + m.extension);
-      if (mapped !== m.account || binding?.player !== m.player) throw Error('Deletion ownership mismatch.');
+      if (mapped !== m.account || binding?.player !== m.player)
+        throw new DeletionAuthorizationError('Deletion ownership mismatch.');
     }
     if (m.detached && (await tx.get<{ account: string }>(reservationKey(m.detached)))?.account !== m.account)
-      throw Error('Deletion ownership mismatch.');
+      throw new DeletionAuthorizationError('Deletion ownership mismatch.');
     const expiresAt = this.clock() + AUTH_TTL.tombstone;
     const tombstone = { deleted: true, expiresAt };
     await tx.delete('account:' + m.account);

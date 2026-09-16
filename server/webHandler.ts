@@ -3,7 +3,8 @@ import { webSignInPreflight } from './webSignIn';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { DynamoAuthRecords, TokenEnvelope } from './authRecords';
-import { TwitchOAuth } from './twitchOAuth';
+import { emergencyRoute } from './webEmergency';
+import { TwitchOAuth, revokeTwitchToken } from './twitchOAuth';
 import { WebAuth } from './webAuth';
 import { createConversionGate } from './conversionGate';
 import { createWebApi } from './webHttp';
@@ -64,6 +65,44 @@ function configure() {
     () => process.env.DIME_WEB_SIGN_IN_MODE,
   );
 }
+// Emergency routes have no Extension, conversion, OIDC/JWKS or OAuth-login dependency.
+function configureEmergency() {
+  const region = required('AWS_REGION'),
+    origin = required('DIME_WEB_ORIGIN');
+  const table = required('DIME_STATE_TABLE');
+  if (
+    region !== 'us-east-2' ||
+    origin !== 'https://destroyaindustriesminingextension.com' ||
+    table !== 'dime-v2-staging-review01-dime-v2-review-20260912-player-state'
+  )
+    throw Error('Unreviewed recovery environment.');
+  const encryption = decodeSecret(required('DIME_AUTH_ENCRYPTION_KEY_B64'));
+  const identity = decodeSecret(required('DIME_WEB_ID_KEY_B64'));
+  if (Buffer.from(encryption).equals(Buffer.from(identity)))
+    throw Error('Credential separation is required.');
+  const repo = new DynamoAuthRecords(
+    DynamoDBDocumentClient.from(new DynamoDBClient({ region, maxAttempts: 3 }), {
+      marshallOptions: { removeUndefinedValues: true },
+    }),
+    table,
+    new TokenEnvelope(new Map([['v1', encryption]]), 'v1'),
+  );
+  const forbidden = () => {
+    throw Error('Authentication expansion unavailable.');
+  };
+  return new WebAuth(
+    repo,
+    {
+      authorize: forbidden,
+      exchange: forbidden,
+      validate: forbidden,
+      // Twitch revocation uses only the public client ID and existing encrypted grant.
+      revoke: (tokens) => revokeTwitchToken(required('DIME_OAUTH_CLIENT_ID'), tokens),
+    },
+    identity,
+    origin,
+  );
+}
 export async function handler(event: {
   rawPath?: string;
   rawQueryString?: string;
@@ -84,8 +123,7 @@ export async function handler(event: {
       process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
     );
     if (preflight) return preflight;
-    api ??= configure();
-    return await api({
+    const request = {
       method: event.requestContext?.http?.method ?? '',
       path,
       headers: Object.fromEntries(
@@ -95,7 +133,11 @@ export async function handler(event: {
         }).map(([key, value]) => [key.toLowerCase(), value]),
       ),
       body: event.isBase64Encoded ? Buffer.from(event.body ?? '', 'base64').toString('utf8') : event.body,
-    });
+    };
+    const emergency = await emergencyRoute(request, configureEmergency);
+    if (emergency) return emergency;
+    api ??= configure();
+    return await api(request);
   } catch {
     return {
       statusCode: 503,

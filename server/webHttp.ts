@@ -1,3 +1,4 @@
+import { emergencyRoute } from './webEmergency';
 import { webSignInPreflight } from './webSignIn';
 import { disabledConversionGate, type ConversionGate } from './conversionGate';
 import { WebAuth, WebAuthError } from './webAuth';
@@ -26,6 +27,8 @@ export function createWebApi(
   return async (request: Request): Promise<WebResponse> => {
     const preflight = webSignInPreflight(request, signInMode(), extension?.linkingEnabled === true);
     if (preflight) return preflight;
+    const emergency = await emergencyRoute(request, () => auth);
+    if (emergency) return emergency;
     const headers = {
       'Content-Type': 'application/json',
       'Cache-Control': 'no-store',
@@ -82,8 +85,7 @@ export function createWebApi(
           profileExists: (await auth.gameStore(session).read(session.player)) !== undefined,
         });
       }
-      if (request.method === 'POST' && path === '/auth/logout')
-        return { ...result({ signedOut: true }), cookies: [await auth.logout(sid, mutation)] };
+
       if (extension?.linkingEnabled && path === '/auth/link/intent' && request.method === 'POST')
         return result({ intent: await auth.createLink(sid, mutation), expiresIn: 300 });
       if (extension?.linkingEnabled && path === '/auth/link/accept' && request.method === 'POST') {
@@ -111,20 +113,6 @@ export function createWebApi(
         return {
           ...result(started),
           cookies: [auth.cookie('deletion', started.account + '.' + input.capability, 35 * 86400)],
-        };
-      }
-      if (request.method === 'POST' && path === '/auth/delete/resume') {
-        if (request.headers.origin !== auth.origin) throw new WebAuthError(403);
-        const raw = JSON.parse(request.body ?? '{}');
-        const stored = cookie(request.headers.cookie, '__Host-dime-deletion').split('.');
-        const input = z
-          .object({ account: z.uuid(), capability: z.string().regex(/^[\w-]{43}$/) })
-          .strict()
-          .parse(Object.keys(raw).length ? raw : { account: stored[0], capability: stored[1] });
-        const resumed = await auth.resumeDeletion(input.account, input.capability);
-        return {
-          ...result(resumed),
-          ...(resumed.status === 'COMPLETE' ? { cookies: [auth.cookie('deletion', '', 0)] } : {}),
         };
       }
       if (path.startsWith('/api/v4/') && ['GET', 'POST'].includes(request.method)) {

@@ -286,20 +286,34 @@ export class WebAuth {
     });
   }
   async logout(sid: string, mutation: { origin?: string; csrf?: string }) {
-    if (!/^[\w-]{43}$/.test(sid)) throw new WebAuthError();
+    if (!/^[\w-]{43}$/.test(sid)) return this.cookie('session', '', 0);
     const key = digest(sid);
-    // Logout must not refresh tokens or extend a session during emergency shutdown.
+    // Never refresh a grant, extend a session or create a missing credential on logout.
     const tokens = await this.repo.transaction(async (tx) => {
-      const { s, c, tokens } = await this.checked(tx, key, mutation);
-      await tx.put('oauth:' + s.subject, { account: c.account, epoch: randomUUID() });
+      const s = await tx.get<Session>('session:' + key);
+      if (!s) return;
+      if (mutation.origin !== this.origin || !mutation.csrf || !equal(mutation.csrf, s.csrf))
+        throw new WebAuthError(403);
+      const c = await tx.get<Credential>('oauth:' + s.subject);
+      const grant = await tx.get<{ tokens: Tokens; epoch: string }>('grant:' + s.subject);
       await tx.delete('session:' + key);
-      await tx.delete('grant:' + s.subject);
-      return tokens;
+      if (c?.account !== s.account || c.epoch !== s.epoch) return;
+      await tx.put('oauth:' + s.subject, { account: c.account, epoch: randomUUID() });
+      // Retain the encrypted grant until revocation succeeds, including during deletion.
+      return grant?.epoch === s.epoch
+        ? { tokens: grant.tokens, subject: s.subject, epoch: s.epoch }
+        : undefined;
     });
-    try {
-      await this.provider.revoke(tokens);
-    } catch {
-      /* Local credential epoch already invalidated. */
+    if (tokens) {
+      try {
+        await this.provider.revoke(tokens.tokens);
+        await this.repo.transaction(async (tx) => {
+          const grant = await tx.get<{ epoch: string }>('grant:' + tokens.subject);
+          if (grant?.epoch === tokens.epoch) await tx.delete('grant:' + tokens.subject);
+        });
+      } catch {
+        /* Local sessions are revoked; preserved grant permits verified deletion to retry revocation. */
+      }
     }
     return this.cookie('session', '', 0);
   }
