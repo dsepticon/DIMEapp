@@ -92,5 +92,7 @@
     "WebSignInMode": "DISABLED",
     "AccountLinkingMode": "DISABLED",
     "ContentConversionMode": "ENABLED"
-  }
+  },
+  "sourceCommit": "523fc36b9aba4e3cb9785b6db94020958eb8ee32",
+  "sourceBaseCommit": "c79ef2e9bfa0bca995e100e9298a46ec1a749460"
 }
