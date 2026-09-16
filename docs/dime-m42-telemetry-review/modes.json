@@ -1,0 +1,17 @@
+{
+  "Status": "UPDATE_COMPLETE",
+  "Modes": [
+    {
+      "ParameterKey": "WebSignInMode",
+      "ParameterValue": "DISABLED"
+    },
+    {
+      "ParameterKey": "ContentConversionMode",
+      "ParameterValue": "ENABLED"
+    },
+    {
+      "ParameterKey": "AccountLinkingMode",
+      "ParameterValue": "DISABLED"
+    }
+  ]
+}

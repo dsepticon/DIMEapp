@@ -1,0 +1,11 @@
+[
+  {
+    "ResourceType": "AWS::WAFv2::WebACL",
+    "LogicalResourceId": "WebsiteWebAcl",
+    "ResourceIdentifier": {
+      "Id": "5209e705-d0b7-4259-8052-6254d1840fb7",
+      "Name": "CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690",
+      "Scope": "CLOUDFRONT"
+    }
+  }
+]

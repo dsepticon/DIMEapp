@@ -1,0 +1,40 @@
+{
+  "Changes": [
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Import",
+        "LogicalResourceId": "WebsiteWebAcl",
+        "PhysicalResourceId": "CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690|5209e705-d0b7-4259-8052-6254d1840fb7|CLOUDFRONT",
+        "ResourceType": "AWS::WAFv2::WebACL",
+        "Scope": [],
+        "Details": []
+      }
+    }
+  ],
+  "ChangeSetName": "m42-telemetry-import-0e849a5-review-1",
+  "ChangeSetId": "arn:aws:cloudformation:us-east-1:861738068626:changeSet/m42-telemetry-import-0e849a5-review-1/397852f5-915c-4fbc-9054-7ccbcc5c56c9",
+  "StackId": "arn:aws:cloudformation:us-east-1:861738068626:stack/dime-web-telemetry-review/0c252da0-b210-11f1-9c88-0ed690619ab5",
+  "StackName": "dime-web-telemetry-review",
+  "Description": "Review only: retain and adopt existing website ACL with unchanged sampling; separate sampling-only update required after import review. Do not execute.",
+  "Parameters": null,
+  "CreationTime": "2026-09-16T20:49:01.995000+00:00",
+  "ExecutionStatus": "AVAILABLE",
+  "Status": "CREATE_COMPLETE",
+  "StatusReason": "Verify that resources and their properties defined in the template match the intended configuration of the resource import to avoid unexpected changes.",
+  "NotificationARNs": [],
+  "RollbackConfiguration": {},
+  "Capabilities": [],
+  "Tags": null,
+  "ParentChangeSetId": null,
+  "IncludeNestedStacks": false,
+  "RootChangeSetId": null,
+  "OnStackFailure": null,
+  "ImportExistingResources": null,
+  "StackDriftStatus": null,
+  "DeploymentMode": null,
+  "DeploymentConfig": {
+    "Mode": "STANDARD",
+    "DisableRollback": false
+  }
+}

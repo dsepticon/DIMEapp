@@ -1,0 +1,28 @@
+{
+  "unit": {
+    "passed": 491,
+    "files": 63,
+    "newTelemetryCases": 8
+  },
+  "publicGuestChromium": {
+    "passed": 5,
+    "minutes": 7.7,
+    "retries": 0,
+    "workers": 1
+  },
+  "liveApiRegressionChecks": 20,
+  "syntheticSentinelRequests": 14,
+  "cloudWatchQueries": 60,
+  "cloudWatchSentinelMatches": 0,
+  "wafSentinelMatches": 26,
+  "samplingGatePassed": false,
+  "lint": "passed",
+  "strictTypecheck": "passed",
+  "formatting": "passed",
+  "cfnLint": "passed",
+  "guard": "passed",
+  "cloudFormationValidation": "passed",
+  "importStatus": "CREATE_COMPLETE / AVAILABLE; unexecuted",
+  "runtimeSourceChanged": false,
+  "runtimeBuildRequired": false
+}

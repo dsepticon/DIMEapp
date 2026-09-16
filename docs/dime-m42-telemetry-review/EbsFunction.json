@@ -1,0 +1,14 @@
+{
+  "CodeSha256": "4kbdkFYYfB2vTSanDcaKtcwObvYhNxqLqbbKD1OkKvY=",
+  "TracingConfig": {
+    "Mode": "PassThrough"
+  },
+  "LoggingConfig": {
+    "LogFormat": "JSON",
+    "ApplicationLogLevel": "INFO",
+    "SystemLogLevel": "WARN",
+    "LogGroup": "/aws/lambda/dime-v2-staging-review01-dime-v2-review-20260912-ebs"
+  },
+  "Layers": null,
+  "Runtime": "nodejs22.x"
+}

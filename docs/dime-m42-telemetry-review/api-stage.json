@@ -1,0 +1,27 @@
+{
+  "AccessLogSettings": {
+    "DestinationArn": "arn:aws:logs:us-east-2:861738068626:log-group:/aws/apigateway/dime-v2-staging-review01-dime-v2-review-20260912",
+    "Format": "{\"requestId\":\"$context.requestId\",\"routeKey\":\"$context.routeKey\",\"status\":\"$context.status\",\"responseLatency\":\"$context.responseLatency\"}"
+  },
+  "AutoDeploy": true,
+  "CreatedDate": "2026-09-12T23:21:28+00:00",
+  "DefaultRouteSettings": {
+    "DetailedMetricsEnabled": false,
+    "ThrottlingBurstLimit": 20,
+    "ThrottlingRateLimit": 10.0
+  },
+  "DeploymentId": "oucn16",
+  "LastDeploymentStatusMessage": "Successfully deployed stage with deployment ID 'oucn16'",
+  "LastUpdatedDate": "2026-09-16T15:38:53+00:00",
+  "RouteSettings": {},
+  "StageName": "staging",
+  "StageVariables": {},
+  "Tags": {
+    "aws:cloudformation:stack-name": "dime-v2-review-20260912",
+    "Environment": "staging",
+    "aws:cloudformation:logical-id": "StagingHttpApistagingStage",
+    "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+    "Application": "DIME-v2",
+    "httpapi:createdBy": "SAM"
+  }
+}

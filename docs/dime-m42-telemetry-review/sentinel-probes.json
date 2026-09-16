@@ -1,0 +1,136 @@
+{
+  "startEpoch": 1789591823.4689825,
+  "endEpoch": 1789591827.0380762,
+  "startUTC": "2026-09-16T20:50:23.468982+00:00",
+  "endUTC": "2026-09-16T20:50:27.038076+00:00",
+  "valuesAreSynthetic": true,
+  "mintedInvitation": false,
+  "rows": [
+    {
+      "endpoint": "edge",
+      "case": "invitation-start",
+      "path": "/auth/login",
+      "status": 404,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "edge",
+      "case": "callback",
+      "path": "/auth/callback",
+      "status": 404,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "edge",
+      "case": "invalid-state",
+      "path": "/auth/callback",
+      "status": 404,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "edge",
+      "case": "replayed-invalid-invitation",
+      "path": "/auth/login",
+      "status": 404,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "edge",
+      "case": "logout",
+      "path": "/auth/logout",
+      "status": 403,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "edge",
+      "case": "linking-rejection",
+      "path": "/auth/link/intent",
+      "status": 403,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "edge",
+      "case": "deletion-continuation",
+      "path": "/auth/delete/resume",
+      "status": 403,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "api",
+      "case": "invitation-start",
+      "path": "/auth/login",
+      "status": 503,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "api",
+      "case": "callback",
+      "path": "/auth/callback",
+      "status": 503,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 2
+    },
+    {
+      "endpoint": "api",
+      "case": "invalid-state",
+      "path": "/auth/callback",
+      "status": 503,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 2
+    },
+    {
+      "endpoint": "api",
+      "case": "replayed-invalid-invitation",
+      "path": "/auth/login",
+      "status": 503,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "api",
+      "case": "logout",
+      "path": "/auth/logout",
+      "status": 200,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 3
+    },
+    {
+      "endpoint": "api",
+      "case": "linking-rejection",
+      "path": "/auth/link/intent",
+      "status": 503,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    },
+    {
+      "endpoint": "api",
+      "case": "deletion-continuation",
+      "path": "/auth/delete/resume",
+      "status": 401,
+      "redirect": false,
+      "sentinelEcho": false,
+      "expiredCookies": 0
+    }
+  ]
+}

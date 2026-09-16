@@ -1,0 +1,40 @@
+{
+  "changes": [
+    {
+      "path": "VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "Rules/0/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "Rules/1/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "Rules/2/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "Rules/3/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "Rules/4/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    }
+  ],
+  "metricsUnchanged": true,
+  "rulesActionsPrioritiesUnchanged": true,
+  "customerRuleGroups": 0,
+  "managedRuleGroupReferences": 4,
+  "importChangesConfiguration": false,
+  "updateRequiresCompletedImport": true
+}

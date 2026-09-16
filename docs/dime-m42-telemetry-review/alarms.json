@@ -1,0 +1,48 @@
+{
+  "MetricAlarms": [
+    {
+      "Name": "dime-v2-review-20260912-ApiServerErrorAlarm-uapY2iiI1riV",
+      "MetricName": "5xx",
+      "Namespace": "AWS/ApiGateway",
+      "Dimensions": [
+        {
+          "Name": "ApiId",
+          "Value": "t2la0784p6"
+        },
+        {
+          "Name": "Stage",
+          "Value": "staging"
+        }
+      ],
+      "ActionsEnabled": true,
+      "AlarmActions": []
+    },
+    {
+      "Name": "dime-v2-review-20260912-EbsErrorAlarm-9NLkrcAsUdOK",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "dime-v2-staging-review01-dime-v2-review-20260912-ebs"
+        }
+      ],
+      "ActionsEnabled": true,
+      "AlarmActions": []
+    },
+    {
+      "Name": "dime-v2-review-20260912-EbsThrottleAlarm-pSDBH3grt9Ir",
+      "MetricName": "Throttles",
+      "Namespace": "AWS/Lambda",
+      "Dimensions": [
+        {
+          "Name": "FunctionName",
+          "Value": "dime-v2-staging-review01-dime-v2-review-20260912-ebs"
+        }
+      ],
+      "ActionsEnabled": true,
+      "AlarmActions": []
+    }
+  ],
+  "CompositeAlarms": []
+}

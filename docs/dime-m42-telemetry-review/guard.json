@@ -1,0 +1,8 @@
+{
+  "name": "/tmp/dime-m43-integration/docs/dime-m42-telemetry-review/sampling-disabled-template.json",
+  "metadata": {},
+  "status": "PASS",
+  "not_compliant": [],
+  "not_applicable": [],
+  "compliant": ["preserve_metrics_disable_samples"]
+}

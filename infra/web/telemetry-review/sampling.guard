@@ -1,0 +1,11 @@
+let acl = Resources.WebsiteWebAcl
+rule preserve_metrics_disable_samples {
+  %acl.Type == 'AWS::WAFv2::WebACL'
+  %acl.DeletionPolicy == 'Retain'
+  %acl.UpdateReplacePolicy == 'Retain'
+  %acl.Properties.Scope == 'CLOUDFRONT'
+  %acl.Properties.VisibilityConfig.SampledRequestsEnabled == false
+  %acl.Properties.VisibilityConfig.CloudWatchMetricsEnabled == true
+  %acl.Properties.Rules[*].VisibilityConfig.SampledRequestsEnabled == false
+  %acl.Properties.Rules[*].VisibilityConfig.CloudWatchMetricsEnabled == true
+}

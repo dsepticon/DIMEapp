@@ -1,0 +1,18 @@
+{
+  "WebSignInMode": "DISABLED",
+  "AccountLinkingMode": "DISABLED",
+  "ContentConversionMode": "ENABLED",
+  "existingActivationChangeSet": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-testers-activation-3546a09-review-1/dc47b822-bd22-4f43-b0db-0ec3207a3c5c",
+  "executeAllowedByThisReview": false,
+  "gateClosed": false,
+  "blockers": [
+    "WAF sampling still enabled; 26 synthetic matches measured",
+    "Review ownership/import path and sampling-only update",
+    "After deployment verify propagation and historical sample-window expiry",
+    "Repeat sentinel searches through reviewed auth routing with zero matches",
+    "Separate privacy publication review",
+    "Re-review parameter-only TESTERS activation; linking stays disabled"
+  ],
+  "callback": "owner-confirmed exact registered callback in previous review",
+  "realInvitationGenerated": false
+}

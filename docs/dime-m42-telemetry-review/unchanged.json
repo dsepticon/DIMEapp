@@ -1,0 +1,11 @@
+{
+  "wafIncludingLockTokenUnchanged": true,
+  "cloudfrontIncludingETagUnchanged": true,
+  "reviewStackStatus": "REVIEW_IN_PROGRESS",
+  "importExecuted": false,
+  "samplingDisabledDeployed": false,
+  "websiteWrites": 0,
+  "lambdaChanges": 0,
+  "playerDataAccess": false,
+  "secretValuesRetrieved": false
+}
