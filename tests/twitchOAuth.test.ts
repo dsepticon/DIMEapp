@@ -84,3 +84,18 @@ it('rejects Extension client credentials and unsafe callback URLs', () => {
   expect(() => new TwitchOAuth('znaovl2j45idub9k81om1dkatwxnu2', 'synthetic', redirect)).toThrow();
   expect(() => new TwitchOAuth(client, 'synthetic', 'http://example.com/auth/callback')).toThrow();
 });
+it('revocation retry accepts only the documented invalid-token response', async () => {
+  const tokens = { access: 'synthetic', refresh: 'synthetic', expiresAt: now };
+  for (const [status, message, accepted] of [
+    [400, 'Invalid token', true],
+    [400, 'Other failure', false],
+    [404, 'client does not exist', false],
+    [503, 'Unavailable', false],
+  ] as const) {
+    const provider = new TwitchOAuth(client, 'synthetic-secret', redirect, async () =>
+      Response.json({ message }, { status }),
+    );
+    if (accepted) await expect(provider.revoke(tokens)).resolves.toBeUndefined();
+    else await expect(provider.revoke(tokens)).rejects.toThrow();
+  }
+});

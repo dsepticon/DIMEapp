@@ -109,6 +109,6 @@ rule separate_auth_boundary {
   Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[2].Action == ['dynamodb:ConditionCheckItem']
   Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[2].Resource.'Fn::GetAtt' == ['PlayerStateTable', 'Arn']
   Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Action == ['dynamodb:DeleteItem']
-  Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.'ForAllValues:StringLike'.'dynamodb:LeadingKeys' == ['AUTH#v1#*']
+  Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.'ForAllValues:StringLike'.'dynamodb:LeadingKeys' == ['AUTH#v1#*', 'BINDING#v1#*', 'PLAYER#v1#*', 'ACCOUNT#v1#*', 'CONTROL#v1#*']
   Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.Null.'dynamodb:LeadingKeys' == 'false'
 }

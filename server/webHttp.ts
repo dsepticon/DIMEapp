@@ -91,6 +91,38 @@ export function createWebApi(
           .parse(JSON.parse(request.body ?? ''));
         return result(await auth.acceptLink(input.intent, player));
       }
+      if (extension?.linkingEnabled && request.method === 'POST' && path === '/auth/unlink') {
+        const input = z
+          .object({ confirmation: z.literal('UNLINK_EXTENSION') })
+          .strict()
+          .parse(JSON.parse(request.body ?? ''));
+        return result(await auth.unlink(sid, mutation, input.confirmation));
+      }
+      if (extension?.linkingEnabled && request.method === 'POST' && path === '/auth/delete/intent') {
+        const input = z
+          .object({ confirmation: z.literal('DELETE_ACCOUNT'), capability: z.string().regex(/^[\w-]{43}$/) })
+          .strict()
+          .parse(JSON.parse(request.body ?? ''));
+        const started = await auth.beginDeletion(sid, mutation, input.confirmation, input.capability);
+        return {
+          ...result(started),
+          cookies: [auth.cookie('deletion', started.account + '.' + input.capability, 35 * 86400)],
+        };
+      }
+      if (request.method === 'POST' && path === '/auth/delete/resume') {
+        if (request.headers.origin !== auth.origin) throw new WebAuthError(403);
+        const raw = JSON.parse(request.body ?? '{}');
+        const stored = cookie(request.headers.cookie, '__Host-dime-deletion').split('.');
+        const input = z
+          .object({ account: z.uuid(), capability: z.string().regex(/^[\w-]{43}$/) })
+          .strict()
+          .parse(Object.keys(raw).length ? raw : { account: stored[0], capability: stored[1] });
+        const resumed = await auth.resumeDeletion(input.account, input.capability);
+        return {
+          ...result(resumed),
+          ...(resumed.status === 'COMPLETE' ? { cookies: [auth.cookie('deletion', '', 0)] } : {}),
+        };
+      }
       if (path.startsWith('/api/v4/') && ['GET', 'POST'].includes(request.method)) {
         const session = await auth.authorize(sid, request.method === 'POST' ? mutation : undefined);
         const game = createOriginalApi(

@@ -143,6 +143,25 @@ export class TwitchOAuth implements IdentityProvider {
     }
   }
   async revoke(tokens: Tokens) {
-    await this.post('/revoke', { client_id: this.clientId, token: tokens.access });
+    const response = await this.request(issuer + '/revoke', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: this.clientId, token: tokens.access }),
+      signal: AbortSignal.timeout(10000),
+      redirect: 'error',
+    });
+    if (response.ok) return;
+    // A retry after successful revocation can return the documented already-invalid token response.
+    if (response.status === 400) {
+      const value: unknown = await response.json();
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        'message' in value &&
+        value.message === 'Invalid token'
+      )
+        return;
+    }
+    throw new WebAuthError();
   }
 }

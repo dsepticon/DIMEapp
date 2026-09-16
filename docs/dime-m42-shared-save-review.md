@@ -1,5 +1,7 @@
 # Shared-save identity review — PREPARATION ONLY
 
+> Historical review for source 5c1fad1. The manifest, unlink and deletion design is superseded by [the bounded account-manifest review](dime-m42-account-manifest-review.md). Its previous activation blocker is resolved in that candidate; neither change set has been executed.
+
 ## Scope and deployment gate
 
 Prepare a separate web-auth Lambda and the smallest canonical-routing integration in the existing gameplay Lambda. **Do not execute the change set, enable linking, publish website objects, or invalidate CloudFront during this review.** The separate change-set report records actual artifact identities and CloudFormation operations. Existing gameplay resources, eight routes, table configuration, conversion ENABLED and empty tester tags must be preserved.

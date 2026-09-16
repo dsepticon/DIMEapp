@@ -1,3 +1,4 @@
+import { controlKey, reservationKey, type AccountControl } from './accountManifest';
 /** Non-secret canonical routing only. OAuth/session credentials never enter this boundary. */
 import { randomUUID } from 'node:crypto';
 import type { RecordRepository } from './authRecords';
@@ -14,7 +15,18 @@ export async function canonicalExtensionStore(repo: RecordRepository, identity: 
   if (!/^PLAYER#v1#[a-f0-9]{64}$/.test(identity))
     throw new GameError('UNAUTHORIZED', 'Authorization unavailable.', 401);
   const key = 'binding:' + identity;
-  const binding = await repo.transaction((tx) => tx.get<PlayerBinding>(key));
+  const available = async (tx: import('./authRecords').RecordTransaction, player: string) => {
+    if (await tx.get(reservationKey(identity)))
+      throw new GameError('UNAUTHORIZED', 'Account unavailable.', 401);
+    const control = await tx.get<AccountControl>(controlKey(player));
+    if (control && control.status !== 'ACTIVE')
+      throw new GameError('UNAUTHORIZED', 'Account unavailable.', 401);
+  };
+  const binding = await repo.transaction(async (tx) => {
+    const b = await tx.get<PlayerBinding>(key);
+    await available(tx, b?.player ?? identity);
+    return b;
+  });
   if (
     binding &&
     (!/^(PLAYER#v1#[a-f0-9]{64}|ACCOUNT#v1#[a-f0-9-]{36})$/.test(binding.player) ||
@@ -26,8 +38,13 @@ export async function canonicalExtensionStore(repo: RecordRepository, identity: 
   const checked = async <T>(run: (tx: import('./authRecords').RecordTransaction) => Promise<T>) =>
     repo.transaction(async (tx) => {
       const current = await tx.get<PlayerBinding>(key);
-      if (JSON.stringify(current) !== JSON.stringify(binding))
+      if (
+        current?.epoch !== binding?.epoch ||
+        current?.player !== binding?.player ||
+        current?.status !== binding?.status
+      )
         throw new GameError('STALE_REVISION', 'Profile link changed. Refresh and retry.', 409);
+      await available(tx, player);
       return run(tx);
     });
   const assertPlayer = (requested: string) => {

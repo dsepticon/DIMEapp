@@ -39,6 +39,7 @@ export class MemoryRecords implements RecordRepository {
   }
 }
 function physical(key: string) {
+  if (key.startsWith('control:')) return { pk: 'CONTROL#v1#' + key.slice(8), sk: 'RECORD' };
   if (key.startsWith('binding:')) return { pk: 'BINDING#v1#' + key.slice(8), sk: 'RECORD' };
   if (key.startsWith('state:')) return { pk: key.slice(6), sk: 'STATE' };
   if (key.startsWith('receipt:')) {
@@ -109,11 +110,13 @@ export class DynamoAuthRecords implements RecordRepository {
         if (Item)
           value = key.startsWith('state:')
             ? Item.state
-            : key.startsWith('binding:')
-              ? Item.binding
-              : key.startsWith('receipt:')
-                ? { fingerprint: Item.fingerprint, expiresAt: Item.expiresAt }
-                : this.openAuth(Item.envelope, key);
+            : key.startsWith('control:')
+              ? Item.control
+              : key.startsWith('binding:')
+                ? Item.binding
+                : key.startsWith('receipt:')
+                  ? { fingerprint: Item.fingerprint, expiresAt: Item.expiresAt }
+                  : this.openAuth(Item.envelope, key);
         reads.set(
           key,
           Item
@@ -186,11 +189,13 @@ export class DynamoAuthRecords implements RecordRepository {
       const state = value.value as { revision?: number };
       const data = key.startsWith('state:')
         ? { state: value.value, revision: state.revision }
-        : key.startsWith('binding:')
-          ? { binding: value.value, revision: randomUUID() }
-          : key.startsWith('receipt:')
-            ? { ...(value.value as object), revision: randomUUID() }
-            : { envelope: this.sealAuth(value.value, key), revision: randomUUID() };
+        : key.startsWith('control:')
+          ? { control: value.value, revision: randomUUID() }
+          : key.startsWith('binding:')
+            ? { binding: value.value, revision: randomUUID() }
+            : key.startsWith('receipt:')
+              ? { ...(value.value as object), revision: randomUUID() }
+              : { envelope: this.sealAuth(value.value, key), revision: randomUUID() };
       items.push({
         Put: {
           ...common,
