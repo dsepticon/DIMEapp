@@ -1,0 +1,41 @@
+[
+  {
+    "Action": "Modify",
+    "LogicalResourceId": "StagingHttpApi",
+    "PhysicalResourceId": "t2la0784p6",
+    "ResourceType": "AWS::ApiGatewayV2::Api",
+    "Replacement": "False",
+    "Scope": ["Properties"],
+    "Details": [
+      {
+        "Target": {
+          "Attribute": "Properties",
+          "Name": "Body",
+          "RequiresRecreation": "Never"
+        },
+        "Evaluation": "Dynamic",
+        "ChangeSource": "ResourceAttribute",
+        "CausingEntity": "WebAuthFunction.Arn"
+      }
+    ]
+  },
+  {
+    "Action": "Modify",
+    "LogicalResourceId": "WebAuthFunction",
+    "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+    "ResourceType": "AWS::Lambda::Function",
+    "Replacement": "False",
+    "Scope": ["Properties"],
+    "Details": [
+      {
+        "Target": {
+          "Attribute": "Properties",
+          "Name": "Code",
+          "RequiresRecreation": "Never"
+        },
+        "Evaluation": "Static",
+        "ChangeSource": "DirectModification"
+      }
+    ]
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "VisibilityConfig": {
+    "SampledRequestsEnabled": true,
+    "CloudWatchMetricsEnabled": true,
+    "MetricName": "CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690"
+  },
+  "DataProtectionConfig": null,
+  "Rules": [
+    {
+      "Name": "AWS-RateBasedRule-IP-300-CreatedByCloudFront",
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "AWS-RateBasedRule-IP-300-CreatedByCloudFront"
+      }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesAmazonIpReputationList",
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "AWS-AWSManagedRulesAmazonIpReputationList"
+      }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesCommonRuleSet",
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "AWS-AWSManagedRulesCommonRuleSet"
+      }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "AWS-AWSManagedRulesKnownBadInputsRuleSet"
+      }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesSQLiRuleSet",
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "AWS-AWSManagedRulesSQLiRuleSet"
+      }
+    }
+  ]
+}

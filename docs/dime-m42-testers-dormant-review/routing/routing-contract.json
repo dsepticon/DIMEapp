@@ -1,0 +1,128 @@
+[
+  {
+    "name": "Login",
+    "path": "/auth/login",
+    "method": "GET",
+    "headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"],
+    "cookies": [],
+    "queryNames": ["invitation"],
+    "acceptedQueryNames": ["invitation"]
+  },
+  {
+    "name": "Callback",
+    "path": "/auth/callback",
+    "method": "GET",
+    "headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"],
+    "cookies": ["__Host-dime-login", "__Host-dime-session"],
+    "queryNames": ["code", "state", "error"],
+    "acceptedQueryNames": ["code", "state", "error", "scope", "error_description"]
+  },
+  {
+    "name": "Status",
+    "path": "/auth/status",
+    "method": "GET",
+    "headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"],
+    "cookies": [],
+    "queryNames": [],
+    "acceptedQueryNames": []
+  },
+  {
+    "name": "Session",
+    "path": "/auth/session",
+    "method": "GET",
+    "headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"],
+    "cookies": ["__Host-dime-session"],
+    "queryNames": ["view"],
+    "acceptedQueryNames": ["view"]
+  },
+  {
+    "name": "Logout",
+    "path": "/auth/logout",
+    "method": "POST",
+    "headers": [
+      "Origin",
+      "Content-Type",
+      "X-Dime-Csrf",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers"
+    ],
+    "cookies": ["__Host-dime-session"],
+    "queryNames": [],
+    "acceptedQueryNames": []
+  },
+  {
+    "name": "LinkIntent",
+    "path": "/auth/link/intent",
+    "method": "POST",
+    "headers": [
+      "Origin",
+      "Content-Type",
+      "X-Dime-Csrf",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers"
+    ],
+    "cookies": ["__Host-dime-session"],
+    "queryNames": [],
+    "acceptedQueryNames": []
+  },
+  {
+    "name": "LinkAccept",
+    "path": "/auth/link/accept",
+    "method": "POST",
+    "headers": [
+      "Origin",
+      "Content-Type",
+      "Authorization",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers"
+    ],
+    "cookies": [],
+    "queryNames": [],
+    "acceptedQueryNames": []
+  },
+  {
+    "name": "Unlink",
+    "path": "/auth/unlink",
+    "method": "POST",
+    "headers": [
+      "Origin",
+      "Content-Type",
+      "X-Dime-Csrf",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers"
+    ],
+    "cookies": ["__Host-dime-session"],
+    "queryNames": [],
+    "acceptedQueryNames": []
+  },
+  {
+    "name": "DeleteIntent",
+    "path": "/auth/delete/intent",
+    "method": "POST",
+    "headers": [
+      "Origin",
+      "Content-Type",
+      "X-Dime-Csrf",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers"
+    ],
+    "cookies": ["__Host-dime-session"],
+    "queryNames": [],
+    "acceptedQueryNames": []
+  },
+  {
+    "name": "DeleteResume",
+    "path": "/auth/delete/resume",
+    "method": "POST",
+    "headers": [
+      "Origin",
+      "Content-Type",
+      "X-Dime-Csrf",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers"
+    ],
+    "cookies": ["__Host-dime-session", "__Host-dime-deletion"],
+    "queryNames": [],
+    "acceptedQueryNames": []
+  }
+]

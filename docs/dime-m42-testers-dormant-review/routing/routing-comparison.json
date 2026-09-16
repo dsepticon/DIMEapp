@@ -1,0 +1,42 @@
+{
+  "reviewOnly": true,
+  "distribution": "EC269D02M2JLD",
+  "baselineETag": "E3GPEVCIK9UL3J",
+  "changedConfigFields": ["Origins", "CacheBehaviors"],
+  "existingOriginsUnchanged": true,
+  "existingBehaviorsUnchanged": true,
+  "defaultBehaviorUnchanged": true,
+  "rootPrivacyGameAndApiUnchanged": true,
+  "newOrigin": "dime-reviewed-web-auth-staging",
+  "newExactPatterns": [
+    "/auth/login",
+    "/auth/callback",
+    "/auth/status",
+    "/auth/session",
+    "/auth/logout",
+    "/auth/link/intent",
+    "/auth/link/accept",
+    "/auth/unlink",
+    "/auth/delete/intent",
+    "/auth/delete/resume"
+  ],
+  "newManagedResources": {
+    "LoginOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "CallbackOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "StatusOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "SessionOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "LogoutOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "LinkIntentOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "LinkAcceptOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "UnlinkOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "DeleteIntentOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "DeleteResumeOriginPolicy": "AWS::CloudFront::OriginRequestPolicy",
+    "AuthMethodGuard": "AWS::CloudFront::Function",
+    "AuthResponsePolicy": "AWS::CloudFront::ResponseHeadersPolicy"
+  },
+  "cachePolicy": "Managed-CachingDisabled (all TTLs zero)",
+  "unresolvedRefs": "Resolve only newly reviewed policy/function resource IDs after a separately approved auxiliary deployment; this JSON is not a deployable AWS request.",
+  "activationBlockers": ["WAF sampling has no data protection", "Privacy candidate not approved/published"],
+  "registeredCallback": "Owner-confirmed exact public client ID and URL, 2026-09-16",
+  "distributionSha256": "11352d5b63edc5b7cb6c051ac1659ffff0c20b8f28843095869bc063e4e37be1"
+}

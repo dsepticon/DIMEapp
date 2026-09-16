@@ -1,0 +1,20 @@
+{
+  "at": "2026-09-16T19:54:45.190584+00:00",
+  "account": "861738068626",
+  "stack": "dime-v2-review-20260912",
+  "stackStatus": "UPDATE_COMPLETE",
+  "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-testers-c8c211c-review-1/a32a3a58-aa9b-4014-a55e-18141c233463",
+  "changeSetStatus": "CREATE_COMPLETE",
+  "executionStatus": "AVAILABLE",
+  "modifications": 2,
+  "additions": 0,
+  "removals": 0,
+  "replacements": 0,
+  "allParametersUnchanged": true,
+  "WebSignInMode": "DISABLED",
+  "AccountLinkingMode": "DISABLED",
+  "ContentConversionMode": "ENABLED",
+  "artifactSha256": "89c65cce4d9b4b92e33cb281f2bf6880850dc55bedc366ed661e74befdb6b931",
+  "deployedLambdasUnchanged": true,
+  "testerAbsenceEvidence": "Tester support never deployed; previous exact reviewed bundle fails closed for TESTERS and has no invitation-use writer. No real invitation has been provisioned and no authenticated OAuth flow has been performed. No records enumerated; this is system/provisioning provenance, not a table scan or claim about hypothetical out-of-band writes."
+}

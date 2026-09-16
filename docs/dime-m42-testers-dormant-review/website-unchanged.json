@@ -1,0 +1,10 @@
+{
+  "distribution": "EC269D02M2JLD",
+  "beforeETag": "E3GPEVCIK9UL3J",
+  "afterETag": "E3GPEVCIK9UL3J",
+  "configurationIdentical": true,
+  "privacySha256": "6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c",
+  "s3Writes": 0,
+  "cloudfrontUpdates": 0,
+  "invalidations": 0
+}

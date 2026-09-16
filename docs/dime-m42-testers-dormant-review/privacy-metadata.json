@@ -1,0 +1,13 @@
+{
+  "AcceptRanges": "bytes",
+  "LastModified": "2026-09-15T12:48:00+00:00",
+  "ContentLength": 8502,
+  "ETag": "\"36b650808ecff4e13988e43a3159e62d\"",
+  "ChecksumCRC64NVME": "TP8+qt5AtAg=",
+  "ChecksumType": "FULL_OBJECT",
+  "CacheControl": "public, max-age=300",
+  "ContentDisposition": "inline",
+  "ContentType": "text/html; charset=utf-8",
+  "ServerSideEncryption": "AES256",
+  "Metadata": {}
+}

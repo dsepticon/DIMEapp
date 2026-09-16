@@ -1,0 +1,30 @@
+{
+  "unit": {
+    "passed": 483,
+    "files": 62
+  },
+  "extensionChromium": {
+    "passed": 167,
+    "durationMinutes": 36.2,
+    "workers": 1,
+    "retries": 0,
+    "authorization": "synthetic fixtures"
+  },
+  "publicGuestChromium": {
+    "passed": 5,
+    "durationMinutes": 7.6
+  },
+  "liveUnauthenticatedChecks": 20,
+  "supplementalWebCors": {
+    "status": 204,
+    "allowOrigin": false,
+    "expectedForUnchangedExtensionOnlyCors": true,
+    "initialIncorrectAssertionCorrected": true
+  },
+  "lint": "passed",
+  "strictTypecheck": "passed",
+  "formatting": "passed",
+  "cfnLint": "passed",
+  "guard": "passed",
+  "runtimeArtifacts": "unchanged reviewed bytes; prior build/SAM/IAM validation retained"
+}

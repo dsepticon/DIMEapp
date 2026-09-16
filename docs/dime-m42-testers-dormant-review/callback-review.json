@@ -1,0 +1,32 @@
+{
+  "expectedCallback": "https://destroyaindustriesminingextension.com/auth/callback",
+  "deployedCallbackConstruction": "DIME_WEB_ORIGIN + /auth/callback",
+  "deployedWebOrigin": "https://destroyaindustriesminingextension.com",
+  "deployedOAuthPublicClientId": "4228okut24ll35bisjmygbquaf6svm",
+  "extensionPublicClientId": "znaovl2j45idub9k81om1dkatwxnu2",
+  "clientIdsDifferent": true,
+  "secretMetadata": [
+    {
+      "ARN": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/web/oauth/client-secret-s5kwbq",
+      "DeletedDate": null,
+      "RotationEnabled": null
+    },
+    {
+      "ARN": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/web/identity-key-kL7iYK",
+      "DeletedDate": null,
+      "RotationEnabled": null
+    },
+    {
+      "ARN": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/web/auth-encryption-key-hAAuXq",
+      "DeletedDate": null,
+      "RotationEnabled": null
+    }
+  ],
+  "oauthSecretReferenceDifferentFromExtensionSigningReference": true,
+  "secretValuesRetrieved": false,
+  "registeredCallbackVerified": true,
+  "authenticatedTwitchConsoleAvailable": false,
+  "reason": "Owner attestation supplied; no authenticated browser-control tool available and no OAuth flow performed.",
+  "verificationMethod": "Owner inspected the separately registered Twitch Developer Console application and replied yes to the exact public client ID and redirect URL check on 2026-09-16.",
+  "independentAutomatedConsoleVerification": false
+}

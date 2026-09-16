@@ -1,0 +1,18 @@
+{
+  "account": "861738068626",
+  "stackStatus": "UPDATE_COMPLETE",
+  "WebSignInMode": "DISABLED",
+  "AccountLinkingMode": "DISABLED",
+  "ContentConversionMode": "ENABLED",
+  "activationStatus": "CREATE_COMPLETE",
+  "activationExecutionStatus": "AVAILABLE",
+  "amplifyAutomaticBranchPatterns": [
+    "codex/react-extension-rebuild",
+    "main"
+  ],
+  "amplifyConnectedBranches": [
+    "codex/react-extension-rebuild",
+    "main"
+  ],
+  "reportBranchExcluded": true
+}

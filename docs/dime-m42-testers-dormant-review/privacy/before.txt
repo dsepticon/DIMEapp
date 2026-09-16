@@ -1,0 +1,49 @@
+DIME Privacy Policy
+
+DIME Privacy Policy
+
+Effective date: September 15, 2026.
+
+DIME is a mining game for Twitch. DIME is operated by Dsepticon. This policy covers the DIME extension, including the Milestone 4 Destroya Industries original-universe gameplay prepared for Hosted Test. It does not describe Twitch's own privacy practices.
+
+Information we use
+
+Twitch supplies the extension with a signed authorization token, a persistent opaque player ID when you are signed in, and the channel ID where you opened it. Our backend verifies the token before using its claims. It derives one global save key for an authenticated player across Twitch channels. The channel ID provides request context; it does not create another save. Anonymous or nonpersistent identities cannot create a permanent save. DIME does not require your Twitch username, email address, or real name to play.
+
+We store your in-game wallet, ships, equipment, cargo, mining inventory, refinery orders, location, pending actions, and progression. Gameplay progression can include your current world, location and zone; travel and quest progress; mining-node status and collected or remaining ground pieces; mineral quantities represented in 0.01-cSCU units; ship and ROC ownership, assignments, cargo, stowage and service checkpoints; and mining equipment, scanner and tool progression. A random per-save generation marker helps prevent an action from an earlier save from changing a reset save. The original Destroya Industries universe uses content version 4 and save format 3. A non-mutating conversion preview lets you review a functional-equivalent conversion from earlier game content without changing your save. Conversion preserves gameplay quantities, ownership, fictional game values, capacities, processing orders, quests, and progression while replacing content identifiers and names. Permanent conversion begins disabled and is controlled by the server. If conversion is later enabled, an idempotent conversion receipt records the request ID, source revision, save generation, migration version, and a non-reversible source digest to support safe retries. The receipt stores no full pre-conversion save. Conversion is distinct from gameplay reset and verified privacy deletion. We create action request IDs and receipts to prevent duplicate transactions. The stored save key is derived on the server from your verified Twitch player ID using a separate secret key. The raw ID and authorization token are not stored in your save.
+
+The DIME wallet is fictional game currency, shown as shift marks. In the inspected DIME code, selling materials, ships, or equipment adds to the wallet; buying ships or equipment and placing refinery orders spend from it. These actions do not charge real money or use Twitch Bits. We found no DIME advertising or third-party analytics integration.
+
+The extension keeps an unfinished action in browser session storage so it can retry safely. It does not set DIME cookies or use browser local storage. Game-service logs contain limited request and diagnostic information, such as request ID, route, response status, timing, and fixed error codes; their configured formats do not include authorization tokens, player IDs, game state, or IP addresses. Twitch and AWS may process IP addresses and other connection information to deliver and secure their services. If you email us, we receive the information you include.
+
+Why we use it and who receives it
+
+We use this information to verify identity, maintain your global save, process game actions, prevent duplicate or unauthorized actions, provide support, and protect the service. Twitch supplies extension identity and hosts its assets. Amazon Web Services (AWS) provides the game API, computing, database, security, operational logging, and hosting for this policy page. AWS processes and stores DIME game-service data in the United States. We may disclose information when legally required or necessary to protect the service. We do not sell personal information or share it for third-party advertising.
+
+Retention and security
+
+Server-side game saves are retained while the service operates or until a verified deletion request is completed. Technical action receipts, including the separate request receipt for a conversion, become eligible for automatic deletion 30 days after the action; database TTL deletion may happen later. The conversion provenance receipt embedded in a converted save remains with that save until it is reset or deleted. An unfinished action remains in browser session storage only for the browser session or until it is cleared. Staging CloudWatch game and API logs have a 14-day retention setting. Support emails are kept as long as reasonably needed to handle the request and related obligations; no fixed email-retention schedule has been established.
+
+The staging database has point-in-time recovery enabled with a 35-day recovery window. Deleted live data may therefore remain recoverable for up to 35 days. The staging database uses AWS KMS server-side encryption, and access is restricted. The game API uses HTTPS. No online service is completely risk-free.
+
+The in-game “Reset Game Progress” control replaces your global gameplay save with a fresh save and generation marker. It is a gameplay reset, not a verified privacy-deletion request: technical action receipts can remain until they become eligible for TTL deletion after 30 days, and earlier data may remain in recoverable backups for the stated 35-day window. The reset does not claim to delete all personal information.
+
+Deletion requests and your choices
+
+Email
+
+dorathaadestroya@gmail.com
+
+to begin a verified privacy-deletion request for your DIME save or ask about your information. We must verify that you control the relevant Twitch account; this may require access to an authenticated DIME extension flow. Never email passwords, JWTs, Twitch tokens, signing keys, or opaque player IDs. An automated privacy-deletion endpoint does not currently exist. We are completing the deletion mechanism before public release. Using the gameplay reset or stopping use of the extension does not itself complete a verified privacy-deletion request.
+
+Children
+
+DIME is not directed to children under 13. Twitch does not permit users under 13, and minors who use Twitch must follow its parental-supervision rules. If you believe a child under 13 has used DIME, contact us so we can investigate and address any related information.
+
+Changes and contact
+
+We may update this policy as the service changes and will post a revised effective date here. For privacy questions, email
+
+dorathaadestroya@gmail.com
+
+.

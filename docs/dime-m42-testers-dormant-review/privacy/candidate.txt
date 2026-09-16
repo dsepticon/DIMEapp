@@ -1,0 +1,69 @@
+DIME Privacy Policy
+
+DIME Privacy Policy
+
+Effective date: September 16, 2026.
+
+DIME is a mining game operated by Dsepticon. This policy covers the DIME Twitch extension, the website Guest Demo, and controlled website authentication, including Milestone 4 Destroya Industries original-universe gameplay. Public website sign-in and account linking are currently disabled. Separately authorized invitation-only tests may be enabled before public sign-in. This policy does not describe Twitch's own privacy practices.
+
+Information we use
+
+Twitch supplies the extension with a signed authorization token, a persistent opaque player ID when you are signed in, and the channel ID where you opened it. Our backend verifies the token before using its claims. It derives one global save key for an authenticated player across Twitch channels. The channel ID provides request context; it does not create another save. Anonymous or nonpersistent identities cannot create a permanent save. DIME does not require your Twitch username, email address, or real name to play.
+
+We store your in-game wallet, ships, equipment, cargo, mining inventory, refinery orders, location, pending actions, and progression. Gameplay progression can include your current world, location and zone; travel and quest progress; mining-node status and collected or remaining ground pieces; mineral quantities represented in 0.01-cSCU units; ship and ROC ownership, assignments, cargo, stowage and service checkpoints; and mining equipment, scanner and tool progression. A random per-save generation marker helps prevent an action from an earlier save from changing a reset save. The original Destroya Industries universe uses content version 4 and save format 3. A non-mutating conversion preview lets you review a functional-equivalent conversion from earlier game content without changing your save. Conversion preserves gameplay quantities, ownership, fictional game values, capacities, processing orders, quests, and progression while replacing content identifiers and names. Conversion is controlled by the server. When a conversion is performed, an idempotent conversion receipt records the request ID, source revision, save generation, migration version, and a non-reversible source digest to support safe retries. The receipt stores no full pre-conversion save. Conversion is distinct from gameplay reset and verified privacy deletion. We create action request IDs and receipts to prevent duplicate transactions. The stored save key is derived on the server from your verified Twitch player ID using a separate secret key. The raw ID and authorization token are not stored in your save.
+
+The DIME wallet is fictional game currency, shown as shift marks. In the inspected DIME code, selling materials, ships, or equipment adds to the wallet; buying ships or equipment and placing refinery orders spend from it. These actions do not charge real money or use Twitch Bits. We found no DIME advertising or third-party analytics integration.
+
+The extension keeps an unfinished action in browser session storage so it can retry safely. It does not set DIME cookies or use browser local storage. Game-service logs contain limited request and diagnostic information, such as request ID, route, response status, timing, and fixed error codes; their configured formats do not include authorization tokens, player IDs, game state, or IP addresses. Twitch and AWS may process IP addresses and other connection information to deliver and secure their services. If you email us, we receive the information you include.
+
+Website Guest Demo
+
+The Guest Demo at /game/ is playable without an account. Demo gameplay remains only in the current page's memory: it creates no account, identity, authentication session, manifest, server save, action receipt, or pending server action. It does not save gameplay progress in cookies, local storage, session storage, or the game database. Reloading starts a fresh demo and separate tabs are independent. The current guest build does not retain display preferences. AWS still processes connection information needed to deliver and secure the public website.
+
+Controlled website sign-in and shared-save linking
+
+Website sign-in, when enabled for authorized testers or the public, uses a separately registered Twitch OAuth/OpenID Connect application. DIME requests only the openid scope for authentication, not email, profile-picture, chat, or channel-management access. The server validates Twitch's authorization and transiently uses the numeric Twitch account ID to derive a protected credential identifier. Website OAuth and the Extension's opaque identity use separate credentials. DIME assigns a random internal account ID and stores encrypted authentication and credential-association records. Provider access and refresh tokens stay encrypted on the server, not in browser storage or completed callback URLs.
+
+Invitation-only sign-in requires an owner-issued link intended for one Twitch account. Its signed contents are a version, expiry, random nonce and HMAC-protected tester identifier, not a raw Twitch ID, email address, DIME gameplay identity, or provider token. A link expires within 15 minutes and can start sign-in only once. The server stores a digest of the used nonce and its expiry to reject replay; short-lived encrypted login state carries the intended tester check until callback or expiry. A wrong Twitch account is rejected before creating a DIME identity, account, session, manifest or save, and DIME attempts to revoke rejected provider tokens. Revocation can temporarily fail at Twitch; no local access is granted by that failure. Keep invitation links private and do not email them to support.
+
+Website authentication uses Secure, HttpOnly, host-only cookies. Login and session cookies use SameSite=Lax; verified deletion recovery uses SameSite=Strict. The login cookie binds a short-lived authorization request to the browser. The session cookie represents authenticated access; a new sign-in rotates the active session, and logout invalidates it, expires cookies and requests provider-token revocation. Exact-origin and anti-CSRF checks protect changes. An in-memory CSRF value is not a gameplay save. The Guest Demo does not create or use these authentication cookies, and the Extension does not set DIME authentication cookies.
+
+Sign-in and linking are independently controlled. During sign-in-only testing, a web session may be created but no gameplay save is read, created or changed while linking is disabled. When separately enabled, linking requires deliberate confirmation, independent authentication on both sides, and a short-lived one-use intent. An existing Extension save remains canonical, including its generation, inventory, wallet, equipment, ships, quests, position, mining state and technical receipts. Two existing saves are not automatically merged or overwritten; conflicts require verified support resolution. Transactions, revisions and idempotent outcomes prevent duplicate linking. Unlinking removes the appropriate identity association without deleting gameplay data or silently creating a replacement save.
+
+A bounded deletion manifest records stable references to the account's persistent record classes, including gameplay state, identity mappings, linking, authentication and recovery records. It holds no provider tokens, secret values, gameplay snapshots or personal profile fields. Each account supports at most one Extension identity and one web OAuth identity. Temporary record classes are identified by their bounded partition or class, rather than accumulating every temporary record identifier.
+
+Why we use it and who receives it
+
+We use this information to verify identity, maintain your global save, process game actions, prevent duplicate or unauthorized actions, provide support, and protect the service. Twitch supplies extension identity and hosts its assets. Amazon Web Services (AWS) provides the game API, computing, database, security, operational logging, and hosting for this policy page. AWS processes and stores DIME game-service data in the United States. We may disclose information when legally required or necessary to protect the service. We do not sell personal information or share it for third-party advertising.
+
+Retention and security
+
+Server-side game saves are retained while the service operates or until a verified deletion request is completed. Technical action receipts, including the separate request receipt for a conversion, become eligible for automatic deletion 30 days after the action; database TTL deletion may happen later. The conversion provenance receipt embedded in a converted save remains with that save until it is reset or deleted. An unfinished action remains in browser session storage only for the browser session or until it is cleared. Staging CloudWatch game and API logs have a 14-day retention setting. Support emails are kept as long as reasonably needed to handle the request and related obligations; no fixed email-retention schedule has been established.
+
+The staging database has point-in-time recovery enabled with a 35-day recovery window. Deleted live data may therefore remain recoverable for up to 35 days. The staging database uses AWS KMS server-side encryption, and access is restricted. The game API uses HTTPS. No online service is completely risk-free.
+
+The in-game “Reset Game Progress” control replaces your global gameplay save with a fresh save and generation marker. It is a gameplay reset, not a verified privacy-deletion request: technical action receipts can remain until they become eligible for TTL deletion after 30 days, and earlier data may remain in recoverable backups for the stated 35-day window. The reset does not claim to delete all personal information.
+
+Invitation-use records expire within 15 minutes. OAuth login state expires after at most five minutes or at the earlier invitation expiry. Sessions and encrypted provider grants expire after at most eight hours; sessions stop authorizing requests after 30 minutes idle. Tester eligibility ends with the session's eight-hour limit and each new sign-in needs a new invitation. Link intents expire after five minutes; successful link outcomes expire after 24 hours. Rejected or conflicting links create no new identity mapping or manifest entry; any previously issued intent keeps its five-minute limit. Authentication uses expiry checks immediately; DynamoDB TTL removal is asynchronous and may happen later. Persistent account and credential associations remain until verified deletion or the applicable verified unlink.
+
+Verified account deletion first marks the account for deletion, blocks new actions, linking, resets, sessions and old request replays, and revokes active web sessions and provider tokens. If provider revocation is temporarily unavailable, deletion pauses without losing its reviewed recovery progress. A bounded, resumable job removes persistent mappings and authentication records and deletes gameplay state using the manifest; the manifest is removed last. Temporary records are deleted or made unusable until their stated expiry. Only the minimum non-identifying, replay-prevention deletion tombstone and bounded recovery protection remain for 35 days. Completion time depends on successful verification, retries and provider availability; it is not promised to be immediate. Expiry does not remove the separate 35-day backup recovery window described above. Gameplay reset leaves identity mappings and the deletion manifest in place. Unlinking, gameplay reset and verified account deletion are different operations.
+
+Deletion requests and your choices
+
+Email
+
+dorathaadestroya@gmail.com
+
+to begin a verified privacy-deletion request for your DIME save or ask about your information. We must verify that you control the relevant Twitch account; this may require access to an authenticated DIME extension flow. Never email passwords, JWTs, Twitch tokens, signing keys, invitation URLs, or opaque player IDs. An ownership-checked, resumable account-deletion workflow is available when the relevant authenticated interface is enabled. Otherwise, contact us to arrange verified deletion; an email alone is not proof of account ownership. Stopping use, logging out, unlinking, or resetting gameplay does not itself complete a verified privacy-deletion request.
+
+Children
+
+DIME is not directed to children under 13. Twitch does not permit users under 13, and minors who use Twitch must follow its parental-supervision rules. If you believe a child under 13 has used DIME, contact us so we can investigate and address any related information.
+
+Changes and contact
+
+We may update this policy as the service changes and will post a revised effective date here. For privacy questions, email
+
+dorathaadestroya@gmail.com
+
+.

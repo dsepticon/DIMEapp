@@ -1,0 +1,18 @@
+let resource_count = count(Resources.*)
+rule scoped_auth_auxiliary_resources {
+  %resource_count == 12
+  Resources.*.Type IN ['AWS::CloudFront::Function', 'AWS::CloudFront::OriginRequestPolicy', 'AWS::CloudFront::ResponseHeadersPolicy']
+  Resources.AuthMethodGuard.Type == 'AWS::CloudFront::Function'
+  Resources.AuthMethodGuard.Properties.FunctionConfig.Runtime == 'cloudfront-js-2.0'
+  Resources.AuthResponsePolicy.Properties.ResponseHeadersPolicyConfig.SecurityHeadersConfig.ReferrerPolicy.ReferrerPolicy == 'no-referrer'
+  Resources.AuthResponsePolicy.Properties.ResponseHeadersPolicyConfig.SecurityHeadersConfig.ContentSecurityPolicy !exists
+  Resources.AuthResponsePolicy.Properties.ResponseHeadersPolicyConfig.CorsConfig !exists
+}
+let policies = Resources.*[ Type == 'AWS::CloudFront::OriginRequestPolicy' ]
+let policy_count = count(%policies)
+rule bounded_auth_forwarding {
+  %policy_count == 10
+  %policies.Properties.OriginRequestPolicyConfig.HeadersConfig.HeaderBehavior == 'whitelist'
+  %policies.Properties.OriginRequestPolicyConfig.CookiesConfig.CookieBehavior IN ['none', 'whitelist']
+  %policies.Properties.OriginRequestPolicyConfig.QueryStringsConfig.QueryStringBehavior IN ['none', 'whitelist']
+}

@@ -1,0 +1,290 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "REVIEW ONLY. No deployment authorized. Requires separately reviewed WAF confidentiality protection.",
+  "Resources": {
+    "LoginOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-login-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "none"
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "whitelist",
+            "QueryStrings": ["invitation"]
+          }
+        }
+      }
+    },
+    "CallbackOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-callback-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "whitelist",
+            "Cookies": ["__Host-dime-login", "__Host-dime-session"]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "whitelist",
+            "QueryStrings": ["code", "state", "error"]
+          }
+        }
+      }
+    },
+    "StatusOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-status-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "none"
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "SessionOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-session-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "whitelist",
+            "Cookies": ["__Host-dime-session"]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "whitelist",
+            "QueryStrings": ["view"]
+          }
+        }
+      }
+    },
+    "LogoutOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-logout-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": [
+              "Origin",
+              "Content-Type",
+              "X-Dime-Csrf",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "whitelist",
+            "Cookies": ["__Host-dime-session"]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "LinkIntentOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-linkintent-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": [
+              "Origin",
+              "Content-Type",
+              "X-Dime-Csrf",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "whitelist",
+            "Cookies": ["__Host-dime-session"]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "LinkAcceptOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-linkaccept-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": [
+              "Origin",
+              "Content-Type",
+              "Authorization",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "none"
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "UnlinkOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-unlink-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": [
+              "Origin",
+              "Content-Type",
+              "X-Dime-Csrf",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "whitelist",
+            "Cookies": ["__Host-dime-session"]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "DeleteIntentOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-deleteintent-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": [
+              "Origin",
+              "Content-Type",
+              "X-Dime-Csrf",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "whitelist",
+            "Cookies": ["__Host-dime-session"]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "DeleteResumeOriginPolicy": {
+      "Type": "AWS::CloudFront::OriginRequestPolicy",
+      "Properties": {
+        "OriginRequestPolicyConfig": {
+          "Name": "dime-auth-deleteresume-20260916",
+          "Comment": "Review only; exact auth endpoint, no all-viewer forwarding",
+          "HeadersConfig": {
+            "HeaderBehavior": "whitelist",
+            "Headers": [
+              "Origin",
+              "Content-Type",
+              "X-Dime-Csrf",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "CookiesConfig": {
+            "CookieBehavior": "whitelist",
+            "Cookies": ["__Host-dime-session", "__Host-dime-deletion"]
+          },
+          "QueryStringsConfig": {
+            "QueryStringBehavior": "none"
+          }
+        }
+      }
+    },
+    "AuthMethodGuard": {
+      "Type": "AWS::CloudFront::Function",
+      "Properties": {
+        "Name": "dime-auth-exact-methods-20260916",
+        "AutoPublish": true,
+        "FunctionConfig": {
+          "Comment": "Exact auth paths/methods/query names only; does not inspect credential values",
+          "Runtime": "cloudfront-js-2.0"
+        },
+        "FunctionCode": "// Review only. No logging, credential validation, value inspection or origin mutation.\nvar routes = {\"/auth/login\":{\"method\":\"GET\",\"query\":[\"invitation\"]},\"/auth/callback\":{\"method\":\"GET\",\"query\":[\"code\",\"state\",\"error\",\"scope\",\"error_description\"]},\"/auth/status\":{\"method\":\"GET\",\"query\":[]},\"/auth/session\":{\"method\":\"GET\",\"query\":[\"view\"]},\"/auth/logout\":{\"method\":\"POST\",\"query\":[]},\"/auth/link/intent\":{\"method\":\"POST\",\"query\":[]},\"/auth/link/accept\":{\"method\":\"POST\",\"query\":[]},\"/auth/unlink\":{\"method\":\"POST\",\"query\":[]},\"/auth/delete/intent\":{\"method\":\"POST\",\"query\":[]},\"/auth/delete/resume\":{\"method\":\"POST\",\"query\":[]}};\nfunction denied(code) {\n  return {statusCode:code, headers:{'cache-control':{value:'no-store'},'referrer-policy':{value:'no-referrer'},'content-type':{value:'application/json'}},body:'{\"message\":\"Request unavailable.\"}'};\n}\nfunction handler(event) {\n  var request=event.request, rule=routes[request.uri];\n  if (!rule) return denied(404);\n  if (request.method!==rule.method && request.method!=='OPTIONS') return denied(405);\n  var names=Object.keys(request.querystring || {});\n  for (var i=0;i<names.length;i++) if (rule.query.indexOf(names[i])<0) return denied(400);\n  return request;\n}\n"
+      }
+    },
+    "AuthResponsePolicy": {
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "Name": "dime-auth-no-store-20260916",
+          "Comment": "Only exact auth paths. Preserve origin nonce CSP and CORS.",
+          "SecurityHeadersConfig": {
+            "ContentTypeOptions": {
+              "Override": true
+            },
+            "FrameOptions": {
+              "FrameOption": "DENY",
+              "Override": true
+            },
+            "ReferrerPolicy": {
+              "ReferrerPolicy": "no-referrer",
+              "Override": true
+            }
+          },
+          "CustomHeadersConfig": {
+            "Items": [
+              {
+                "Header": "Cache-Control",
+                "Value": "no-store, private, max-age=0",
+                "Override": true
+              },
+              {
+                "Header": "Pragma",
+                "Value": "no-cache",
+                "Override": true
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

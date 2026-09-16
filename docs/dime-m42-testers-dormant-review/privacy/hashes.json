@@ -1,0 +1,23 @@
+{
+  "before.html": {
+    "sha256": "6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c",
+    "bytes": 8502
+  },
+  "candidate.html": {
+    "sha256": "8d99be55d7b4d198d8918c9667d977e604214e184d598e6e99d7b6f1c5123d7e",
+    "bytes": 15372
+  },
+  "before.txt": {
+    "sha256": "85e7a3097e08fcf9ae8c9bbada4d42404ea43ce197d8e45c269103a9421c5062",
+    "bytes": 6659
+  },
+  "candidate.txt": {
+    "sha256": "e59b5cf82d2d661f0b09654c9dfeea7de62f623d9bdf0de9f6e4deb72da05f97",
+    "bytes": 12850
+  },
+  "published": false,
+  "proposedEffectiveDate": "2026-09-16",
+  "publicationDateRule": "If published later, update effective date and re-review the exact hash before conditional publication.",
+  "mailtoLinksUnchanged": true,
+  "unrelatedSectionsPreserved": true
+}

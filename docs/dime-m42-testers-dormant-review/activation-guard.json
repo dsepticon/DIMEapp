@@ -1,0 +1,17 @@
+{
+  "name": "/tmp/dime-m42-testers-deploy/activation-processed.json",
+  "metadata": {},
+  "status": "PASS",
+  "not_compliant": [],
+  "not_applicable": [],
+  "compliant": [
+    "api_integration_and_stage",
+    "configuration_revision_is_lambda_only",
+    "fail_closed_web_sign_in",
+    "generated_invoke_permissions_are_api_route_scoped",
+    "only_expected_processed_resources",
+    "public_capability_route",
+    "separate_auth_boundary",
+    "tester_linking_is_independently_controlled"
+  ]
+}

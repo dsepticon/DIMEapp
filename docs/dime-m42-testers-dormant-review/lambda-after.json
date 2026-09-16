@@ -1,0 +1,14 @@
+[
+  {
+    "resource": "EbsFunction",
+    "CodeSha256": "4kbdkFYYfB2vTSanDcaKtcwObvYhNxqLqbbKD1OkKvY=",
+    "State": "Active",
+    "LastUpdateStatus": "Successful"
+  },
+  {
+    "resource": "WebAuthFunction",
+    "CodeSha256": "icZczk2bS5LjPLKB8r9ogIUNxVvtw2btZh50vv22uTE=",
+    "State": "Active",
+    "LastUpdateStatus": "Successful"
+  }
+]

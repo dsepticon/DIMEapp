@@ -1,0 +1,54 @@
+{
+  "reviewOnly": true,
+  "applied": false,
+  "scope": "Separate WAF confidentiality prerequisite; NOT included in the CloudFront-only routing candidate. Requires owner review because protection applies across this WebACL.",
+  "before": {
+    "DataProtectionConfig": null,
+    "samplingEnabledAtAclAndAllRules": true
+  },
+  "proposedDataProtectionConfig": {
+    "DataProtections": [
+      {
+        "Field": {
+          "FieldType": "QUERY_STRING"
+        },
+        "Action": "SUBSTITUTION",
+        "ExcludeRateBasedDetails": false,
+        "ExcludeRuleMatchDetails": false
+      },
+      {
+        "Field": {
+          "FieldType": "BODY"
+        },
+        "Action": "SUBSTITUTION",
+        "ExcludeRateBasedDetails": false,
+        "ExcludeRuleMatchDetails": false
+      },
+      {
+        "Field": {
+          "FieldType": "SINGLE_HEADER",
+          "FieldKeys": ["authorization", "cookie", "x-dime-csrf", "referer"]
+        },
+        "Action": "SUBSTITUTION",
+        "ExcludeRateBasedDetails": false,
+        "ExcludeRuleMatchDetails": false
+      },
+      {
+        "Field": {
+          "FieldType": "SINGLE_COOKIE",
+          "FieldKeys": [
+            "__Host-dime-login",
+            "__Host-dime-session",
+            "__Host-dime-deletion",
+            "__Host-dime-invitation"
+          ]
+        },
+        "Action": "SUBSTITUTION",
+        "ExcludeRateBasedDetails": false,
+        "ExcludeRuleMatchDetails": false
+      }
+    ]
+  },
+  "routingAndAllowDenyRulesChanged": false,
+  "alternatively": "Separately review disabling request sampling at ACL and every rule. Do not bypass WAF or add an allow rule for authentication."
+}

@@ -1,0 +1,29 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "httpsVerified": true,
+    "redirect": false,
+    "sha256": "2bcc8de3c43b8ac7feef1f1e21d331f93a4f6a2d37e808ef2b64f006915dae1a",
+    "bytes": 748,
+    "cspPresent": false
+  },
+  {
+    "path": "/privacy",
+    "status": 200,
+    "httpsVerified": true,
+    "redirect": false,
+    "sha256": "6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c",
+    "bytes": 8502,
+    "cspPresent": false
+  },
+  {
+    "path": "/game/",
+    "status": 200,
+    "httpsVerified": true,
+    "redirect": false,
+    "sha256": "fa843fc409a4a940943e2c1d05810412b2a92794d7bbb81dc16a609cd4a07f68",
+    "bytes": 505,
+    "cspPresent": true
+  }
+]

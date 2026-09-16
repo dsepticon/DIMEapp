@@ -1,0 +1,73 @@
+{
+  "arn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-testers-activation-3546a09-review-1/dc47b822-bd22-4f43-b0db-0ec3207a3c5c",
+  "status": "CREATE_COMPLETE / AVAILABLE",
+  "executed": false,
+  "changes": [
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "StagingHttpApi",
+      "PhysicalResourceId": "t2la0784p6",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Body",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Dynamic",
+          "ChangeSource": "ResourceAttribute",
+          "CausingEntity": "WebAuthFunction.Arn"
+        }
+      ]
+    },
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "WebAuthFunction",
+      "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+      "ResourceType": "AWS::Lambda::Function",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Environment",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Static",
+          "ChangeSource": "ParameterReference",
+          "CausingEntity": "WebSignInMode"
+        },
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Environment",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Dynamic",
+          "ChangeSource": "DirectModification"
+        }
+      ]
+    }
+  ],
+  "onlyParameterChange": {
+    "WebSignInMode": {
+      "before": "DISABLED",
+      "proposed": "TESTERS"
+    }
+  },
+  "AccountLinkingMode": "DISABLED",
+  "ContentConversionMode": "ENABLED",
+  "processedTemplateStructurallyIdentical": true,
+  "newArtifact": false,
+  "failedEvents": 0,
+  "blockedUntil": [
+    "Reviewed WAF confidentiality protection",
+    "Reviewed exact auth routing",
+    "Privacy candidate approved and published"
+  ],
+  "registeredCallbackOwnerConfirmed": true
+}

@@ -1,0 +1,27 @@
+{
+  "width": 318,
+  "requests": [
+    "GET /game/",
+    "GET /game/0.9.0/assets/index-DHu8VPJb.js",
+    "GET /game/0.9.0/assets/index-BPyjZOOz.css",
+    "GET /game/status",
+    "GET /game/",
+    "GET /game/0.9.0/assets/index-DHu8VPJb.js",
+    "GET /game/0.9.0/assets/index-BPyjZOOz.css",
+    "GET /game/status",
+    "GET /game/",
+    "GET /game/0.9.0/assets/index-DHu8VPJb.js",
+    "GET /game/0.9.0/assets/index-BPyjZOOz.css",
+    "GET /game/status",
+    "GET /game/",
+    "GET /game/0.9.0/assets/index-DHu8VPJb.js",
+    "GET /game/0.9.0/assets/index-BPyjZOOz.css",
+    "GET /game/status"
+  ],
+  "errors": [],
+  "gameplay": "passed",
+  "independentTabs": true,
+  "reloadClearsProgress": true,
+  "browserStorageEmpty": true,
+  "noCookies": true
+}

@@ -1,0 +1,20 @@
+{
+  "Comment": "Policy with caching disabled",
+  "Name": "Managed-CachingDisabled",
+  "DefaultTTL": 0,
+  "MaxTTL": 0,
+  "MinTTL": 0,
+  "ParametersInCacheKeyAndForwardedToOrigin": {
+    "EnableAcceptEncodingGzip": false,
+    "EnableAcceptEncodingBrotli": false,
+    "HeadersConfig": {
+      "HeaderBehavior": "none"
+    },
+    "CookiesConfig": {
+      "CookieBehavior": "none"
+    },
+    "QueryStringsConfig": {
+      "QueryStringBehavior": "none"
+    }
+  }
+}

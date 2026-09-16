@@ -1,0 +1,8 @@
+{
+  "loggingConfigurationPresent": false,
+  "responseCode": "WAFNonexistentItemException",
+  "webAclMetadataReadSucceeded": true,
+  "requestSampling": true,
+  "requestSamplesRead": false,
+  "dataProtectionConfigured": false
+}

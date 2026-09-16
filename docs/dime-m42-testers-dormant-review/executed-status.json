@@ -1,0 +1,13 @@
+{
+  "executionRequestedOnce": true,
+  "clientRequestToken": "dime-testers-dormant-20260916-1",
+  "deploymentOperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+  "operationStatus": "SUCCEEDED",
+  "stackStatus": "UPDATE_COMPLETE",
+  "subsequentChangeSetNameLookup": "ChangeSetNotFound",
+  "evidence": "Preserved pre-execution exact comparison plus scoped successful resource events and deployed artifact/template hashes. No second execution attempted.",
+  "changeSetArnLookup": {
+    "Status": "CREATE_COMPLETE",
+    "ExecutionStatus": "EXECUTE_COMPLETE"
+  }
+}

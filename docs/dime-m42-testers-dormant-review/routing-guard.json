@@ -1,0 +1,8 @@
+{
+  "name": "/tmp/dime-m43-integration/docs/dime-m42-testers-dormant-review/routing/auxiliary-template.json",
+  "metadata": {},
+  "status": "PASS",
+  "not_compliant": [],
+  "not_applicable": [],
+  "compliant": ["bounded_auth_forwarding", "scoped_auth_auxiliary_resources"]
+}

@@ -1,0 +1,87 @@
+{
+  "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+  "OperationEvents": [
+    {
+      "EventId": "de392a9f-be0b-4132-b81f-229e68b1cd61",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT",
+      "Timestamp": "2026-09-16T19:55:27.401000+00:00",
+      "StartTime": "2026-09-16T19:55:12.091000+00:00",
+      "EndTime": "2026-09-16T19:55:27.401000+00:00"
+    },
+    {
+      "EventId": "8df37498-edad-4b51-a792-75ccd906778c",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-16T19:55:27.400000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "ClientRequestToken": "dime-testers-dormant-20260916-1"
+    },
+    {
+      "EventId": "ed5820a1-e9da-40e7-8a5a-de752de077df",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-16T19:55:26.627000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+      "ClientRequestToken": "dime-testers-dormant-20260916-1"
+    },
+    {
+      "EventId": "bb51c70e-c9f9-4a3c-8943-9ab6bf400068",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunction",
+      "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+      "ResourceType": "AWS::Lambda::Function",
+      "Timestamp": "2026-09-16T19:55:24.408000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "ClientRequestToken": "dime-testers-dormant-20260916-1"
+    },
+    {
+      "EventId": "ec0fec18-8f69-4c6b-b458-815dabcf619c",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunction",
+      "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+      "ResourceType": "AWS::Lambda::Function",
+      "Timestamp": "2026-09-16T19:55:16.732000+00:00",
+      "ResourceStatus": "UPDATE_IN_PROGRESS",
+      "ClientRequestToken": "dime-testers-dormant-20260916-1"
+    },
+    {
+      "EventId": "501a5ad8-47cf-4527-a236-f002ca069f0e",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-16T19:55:12.100000+00:00",
+      "ResourceStatus": "UPDATE_IN_PROGRESS",
+      "ResourceStatusReason": "User Initiated",
+      "ClientRequestToken": "dime-testers-dormant-20260916-1"
+    },
+    {
+      "EventId": "36c1d69d-5239-44cd-9de7-d75c006e63d5",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+      "OperationId": "1c5d086d-d6bd-4081-b664-b78bbcb727a0",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT",
+      "Timestamp": "2026-09-16T19:55:12.091000+00:00",
+      "StartTime": "2026-09-16T19:55:12.091000+00:00"
+    }
+  ]
+}
