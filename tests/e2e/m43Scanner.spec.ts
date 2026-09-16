@@ -197,8 +197,37 @@ for (const layout of [
     await canvas.focus();
     const approach = far.x < map.spawn.x ? 'a' : far.x > map.spawn.x ? 'd' : far.y < map.spawn.y ? 'w' : 's';
     await page.keyboard.down(approach);
-    await expect(page.getByRole('button', { name: 'Hold Analyze (F)' })).toBeVisible();
+    // Stop in the browser's animation loop; locator retry backoff must not keep walking.
+    // This releases the normal input only, without changing position or scanner state.
+    await page.evaluate(
+      async ({ far, approach }) => {
+        await new Promise<void>((resolve, reject) => {
+          const started = performance.now();
+          const step = () => {
+            const c = document.querySelector<HTMLCanvasElement>('canvas')!;
+            const distance = Math.hypot(
+              far.x + 0.5 - Number(c.dataset.playerX),
+              far.y + 0.5 - Number(c.dataset.playerY),
+            );
+            if (distance <= 2.1 || performance.now() - started > 5000) {
+              window.dispatchEvent(
+                new KeyboardEvent('keyup', {
+                  key: approach,
+                  code: 'Key' + approach.toUpperCase(),
+                  bubbles: true,
+                }),
+              );
+              if (distance <= 2.1) resolve();
+              else reject(Error('Physical scanner approach timed out'));
+            } else requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        });
+      },
+      { far, approach },
+    );
     await page.keyboard.up(approach);
+    await expect(page.getByRole('button', { name: 'Hold Analyze (F)' })).toBeVisible();
     const distance = Math.hypot(
       far.x + 0.5 - Number(await canvas.getAttribute('data-player-x')),
       far.y + 0.5 - Number(await canvas.getAttribute('data-player-y')),
