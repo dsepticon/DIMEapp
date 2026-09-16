@@ -2,6 +2,11 @@ import { openOperations } from './m4Harness';
 import { test, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { originalInitialState } from '../../shared/originalGame';
+test.beforeEach(async ({ page }) => {
+  await page.route('**/auth/status', (route) =>
+    route.fulfill({ json: { signInAvailable: true, linkingAvailable: true } }),
+  );
+});
 for (const viewport of [
   { width: 390, height: 844 },
   { width: 1280, height: 900 },
@@ -121,3 +126,29 @@ for (const width of [360, 1280])
     await expect(page.locator('canvas')).toBeVisible();
     expect(stateRequests).toBe(1);
   });
+
+for (const width of [318, 360, 1280]) {
+  test(`disabled sign-in is explicit and creates no session or save ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: width === 318 ? 500 : 640 });
+    await page.route('**/auth/status', (route) =>
+      route.fulfill({ json: { signInAvailable: false, linkingAvailable: false } }),
+    );
+    const requests: string[] = [];
+    page.on('request', (request) => {
+      if (/\/(auth\/(session|login)|api\/v4\/)/.test(request.url())) requests.push(request.url());
+    });
+    await page.goto('/web-review.html');
+    await expect(page.getByText('Web sign-in is not available yet', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign in with Twitch' })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Privacy Policy' })).toBeVisible();
+    expect(requests).toEqual([]);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `/tmp/dime-m42-signin-review/disabled-${width}.png` });
+  });
+}
+test('capability failure never infers sign-in availability', async ({ page }) => {
+  await page.route('**/auth/status', (route) => route.fulfill({ status: 503, json: {} }));
+  await page.goto('/web-review.html');
+  await expect(page.getByText('Web sign-in is not available yet', { exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Sign in with Twitch' })).toHaveCount(0);
+});

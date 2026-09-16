@@ -188,7 +188,7 @@ describe('synthetic link transactions', () => {
 it('web HTTP keeps callback tokens out of final URLs, enforces CSRF and isolates game requests', async () => {
   const f = fixture(),
     a = await f.login();
-  const api = createWebApi(f.auth);
+  const api = createWebApi(f.auth, undefined, undefined, () => 'ENABLED');
   const headers = { cookie: '__Host-dime-session=' + a.sid };
   const response = await api({ method: 'GET', path: '/api/v4/state', headers });
   expect(response.statusCode).toBe(200);
@@ -276,14 +276,19 @@ it('the combined API requires independent Extension auth and preserves shared sa
   const { createAccountApi } = await import('../server/accountApi');
   const extension = 'PLAYER#v1#' + 'd'.repeat(64),
     extensionOrigin = 'https://synthetic.ext-twitch.tv';
-  const api = createAccountApi(f.auth, {
-    linkingEnabled: true,
-    origins: [extensionOrigin],
-    authorize: async (header) => {
-      if (header !== 'Bearer synthetic-extension') throw new WebAuthError();
-      return extension;
+  const api = createAccountApi(
+    f.auth,
+    {
+      linkingEnabled: true,
+      origins: [extensionOrigin],
+      authorize: async (header) => {
+        if (header !== 'Bearer synthetic-extension') throw new WebAuthError();
+        return extension;
+      },
     },
-  });
+    undefined,
+    () => 'ENABLED',
+  );
   const created = await api({
     method: 'POST',
     path: '/auth/link/intent',
@@ -327,6 +332,7 @@ it('integrated web and Extension adapters preserve ENABLED conversion and canoni
       authorize: async () => 'PLAYER#v1#' + 'e'.repeat(64),
     },
     { mode: 'ENABLED', testerCount: 0, permits: () => true },
+    () => 'ENABLED',
   );
   for (const request of [
     { method: 'GET', path: '/api/v4/state', headers: { cookie: '__Host-dime-session=' + a.sid } },
@@ -366,6 +372,7 @@ it('both integrated adapters expose the configured conversion gate for synthetic
         authorize: async () => extension,
       },
       { mode: enabled ? 'ENABLED' : 'DISABLED', testerCount: 0, permits: () => enabled },
+      () => 'ENABLED',
     );
     for (const request of [
       { method: 'GET', path: '/api/v4/state', headers: { cookie: '__Host-dime-session=' + a.sid } },

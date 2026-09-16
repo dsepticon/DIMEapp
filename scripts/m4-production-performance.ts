@@ -48,7 +48,9 @@ try {
       await page.route(preview + '/**', async (route) => {
         const request = route.request(),
           path = new URL(request.url()).pathname;
-        if (path === '/auth/session') {
+        if (path === '/auth/status') {
+          await route.fulfill({ json: { signInAvailable: true, linkingAvailable: false } });
+        } else if (path === '/auth/session') {
           await route.fulfill({
             json: { identity: 'synthetic-walking', csrf: 'synthetic-csrf', linkingAvailable: false },
           });

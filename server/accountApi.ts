@@ -15,8 +15,9 @@ export function createAccountApi(
     linkingEnabled: boolean;
   },
   conversionGate: ConversionGate = disabledConversionGate,
+  signInMode: () => unknown = () => undefined,
 ) {
-  const web = createWebApi(auth, extension, conversionGate);
+  const web = createWebApi(auth, extension, conversionGate, signInMode);
   return async (request: Request): Promise<WebResponse> => {
     const path = request.path.split('?')[0]!,
       origin = request.headers.origin;

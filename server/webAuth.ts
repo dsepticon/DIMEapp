@@ -286,12 +286,14 @@ export class WebAuth {
     });
   }
   async logout(sid: string, mutation: { origin?: string; csrf?: string }) {
-    const a = await this.authorize(sid, mutation);
+    if (!/^[\w-]{43}$/.test(sid)) throw new WebAuthError();
+    const key = digest(sid);
+    // Logout must not refresh tokens or extend a session during emergency shutdown.
     const tokens = await this.repo.transaction(async (tx) => {
-      const { c, tokens } = await this.checked(tx, a.session, mutation);
-      await tx.put('oauth:' + a.subject, { account: c.account, epoch: randomUUID() });
-      await tx.delete('session:' + a.session);
-      await tx.delete('grant:' + a.subject);
+      const { s, c, tokens } = await this.checked(tx, key, mutation);
+      await tx.put('oauth:' + s.subject, { account: c.account, epoch: randomUUID() });
+      await tx.delete('session:' + key);
+      await tx.delete('grant:' + s.subject);
       return tokens;
     });
     try {

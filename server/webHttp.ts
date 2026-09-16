@@ -1,3 +1,4 @@
+import { webSignInPreflight } from './webSignIn';
 import { disabledConversionGate, type ConversionGate } from './conversionGate';
 import { WebAuth, WebAuthError } from './webAuth';
 import { createOriginalApi } from './originalApi';
@@ -20,8 +21,11 @@ export function createWebApi(
     linkingEnabled: boolean;
   },
   conversionGate: ConversionGate = disabledConversionGate,
+  signInMode: () => unknown = () => undefined,
 ) {
   return async (request: Request): Promise<WebResponse> => {
+    const preflight = webSignInPreflight(request, signInMode(), extension?.linkingEnabled === true);
+    if (preflight) return preflight;
     const headers = {
       'Content-Type': 'application/json',
       'Cache-Control': 'no-store',

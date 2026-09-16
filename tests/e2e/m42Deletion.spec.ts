@@ -40,13 +40,19 @@ for (const [layout, width, height] of [
         sameSite: 'Lax',
       },
     ]);
-    const api = createWebApi(auth, {
-      authorize: async () => {
-        throw Error('unused');
+    let signInMode = 'ENABLED';
+    const api = createWebApi(
+      auth,
+      {
+        authorize: async () => {
+          throw Error('unused');
+        },
+        origins: [],
+        linkingEnabled: true,
       },
-      origins: [],
-      linkingEnabled: true,
-    });
+      undefined,
+      () => signInMode,
+    );
     await page.route(origin + '/**', async (route) => {
       if (new URL(route.request().url()).pathname === '/')
         return route.fulfill({
@@ -91,6 +97,7 @@ for (const [layout, width, height] of [
       };
     }, cap);
     expect(await page.evaluate(() => document.cookie)).not.toContain('dime-deletion');
+    signInMode = 'DISABLED';
     await page.reload();
     const statuses = await page.evaluate(
       async ({ account, capability }) => {

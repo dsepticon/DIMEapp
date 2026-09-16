@@ -22,7 +22,7 @@ import { PhysicalNavigation } from './PhysicalNavigation';
 import { VacuumConsole, type VacuumVisual, type ToolMode } from './VacuumConsole';
 import { nodeInZone } from '../../shared/originalVacuum';
 import { ServiceConsole } from './ServiceConsole';
-import { webSession } from '../webSession';
+import { webSession, webCapabilities } from '../webSession';
 import { AccountLink } from '../AccountLink';
 
 type Gateway = {
@@ -52,6 +52,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const [message, setMessage] = useState('Connecting to Destroya Industries operations…');
   const [busy, setBusy] = useState(false);
   const [canLink, setCanLink] = useState(false);
+  const [canSignIn, setCanSignIn] = useState(false);
   const [profileChoice, setProfileChoice] = useState(false);
   const requestEpoch = useRef(0);
   const playerPosition = useRef<Position>({ x: 0, y: 0 });
@@ -187,28 +188,37 @@ function App({ webReview = false }: { webReview?: boolean }) {
   useEffect(() => {
     if (mode === 'web') {
       let active = true;
-      void webSession()
-        .then((value) => {
-          if (!active) return;
-          setGateway({
-            token: () => undefined,
-            identity: () => value.identity,
-            csrf: () => value.csrf,
-            expired: () => {
-              requestEpoch.current += 1;
-              setState(null);
-              setGateway(null);
-              setMessage('Sign in with Twitch to continue.');
-            },
-            stop: () => {},
+      void webCapabilities().then(async (capabilities) => {
+        if (!active) return;
+        setCanSignIn(capabilities.signInAvailable);
+        if (!capabilities.signInAvailable) {
+          setCanLink(false);
+          setMessage('Web sign-in is not available yet');
+          return;
+        }
+        await webSession()
+          .then((value) => {
+            if (!active) return;
+            setGateway({
+              token: () => undefined,
+              identity: () => value.identity,
+              csrf: () => value.csrf,
+              expired: () => {
+                requestEpoch.current += 1;
+                setState(null);
+                setGateway(null);
+                setMessage('Sign in with Twitch to continue.');
+              },
+              stop: () => {},
+            });
+            setCanLink(capabilities.linkingAvailable && value.linkingAvailable);
+            setProfileChoice(!value.profileExists);
+            setSession({ status: 'authorized' });
+          })
+          .catch(() => {
+            if (active) setMessage('Sign in with Twitch to continue.');
           });
-          setCanLink(value.linkingAvailable);
-          setProfileChoice(!value.profileExists);
-          setSession({ status: 'authorized' });
-        })
-        .catch(() => {
-          if (active) setMessage('Sign in with Twitch to continue.');
-        });
+      });
       return () => {
         active = false;
       };
@@ -600,7 +610,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
         <section className="gate">
           <h1>{conversion ? 'Equivalent content update' : 'Field operator access'}</h1>
           <p>{message}</p>
-          {mode === 'web' && !gateway && <a href="/auth/login">Sign in with Twitch</a>}
+          {mode === 'web' && canSignIn && !gateway && <a href="/auth/login">Sign in with Twitch</a>}
           {profileChoice && mode === 'web' && gateway && (
             <section aria-label="Choose your DIME profile">
               <h2>Keep your existing Extension save</h2>

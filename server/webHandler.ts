@@ -1,3 +1,4 @@
+import { webSignInPreflight } from './webSignIn';
 /** Separate opt-in build. This entry is not imported by the deployed Milestone 4.1 Lambda. */
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
@@ -60,6 +61,7 @@ function configure() {
       linkingEnabled: process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
     },
     conversion,
+    () => process.env.DIME_WEB_SIGN_IN_MODE,
   );
 }
 export async function handler(event: {
@@ -72,10 +74,17 @@ export async function handler(event: {
   requestContext?: { stage?: string; http?: { method?: string } };
 }) {
   try {
-    api ??= configure();
     const path =
       routePath(event.rawPath ?? '', event.requestContext?.stage) +
       (event.rawQueryString ? '?' + event.rawQueryString : '');
+    const method = event.requestContext?.http?.method ?? '';
+    const preflight = webSignInPreflight(
+      { method, path },
+      process.env.DIME_WEB_SIGN_IN_MODE,
+      process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
+    );
+    if (preflight) return preflight;
+    api ??= configure();
     return await api({
       method: event.requestContext?.http?.method ?? '',
       path,

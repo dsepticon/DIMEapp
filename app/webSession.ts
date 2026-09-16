@@ -17,3 +17,18 @@ export async function webSession() {
     profileExists: value.profileExists !== false,
   };
 }
+
+/** No inferred availability on errors or malformed capability responses. */
+export async function webCapabilities() {
+  try {
+    const response = await fetch('/auth/status', { credentials: 'omit', cache: 'no-store' });
+    if (!response.ok) throw Error('Unavailable');
+    const value = (await response.json()) as { signInAvailable?: unknown; linkingAvailable?: unknown };
+    return {
+      signInAvailable: value.signInAvailable === true,
+      linkingAvailable: value.signInAvailable === true && value.linkingAvailable === true,
+    };
+  } catch {
+    return { signInAvailable: false, linkingAvailable: false };
+  }
+}

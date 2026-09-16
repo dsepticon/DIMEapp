@@ -112,3 +112,16 @@ rule separate_auth_boundary {
   Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.'ForAllValues:StringLike'.'dynamodb:LeadingKeys' == ['AUTH#v1#*', 'BINDING#v1#*', 'PLAYER#v1#*', 'ACCOUNT#v1#*', 'CONTROL#v1#*']
   Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.Null.'dynamodb:LeadingKeys' == 'false'
 }
+
+rule fail_closed_web_sign_in {
+  Parameters.WebSignInMode.Default == 'DISABLED'
+  Parameters.WebSignInMode.AllowedValues == ['DISABLED', 'TESTERS', 'ENABLED']
+  Resources.WebAuthFunction.Properties.Environment.Variables.DIME_WEB_SIGN_IN_MODE.Ref == 'WebSignInMode'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_WEB_SIGN_IN_MODE !exists
+}
+
+rule public_capability_route {
+  Resources.WebAuthFunction.Properties.Events.WebRoute14.Properties.Path == '/auth/status'
+  Resources.WebAuthFunction.Properties.Events.WebRoute14.Properties.Method == 'GET'
+  Resources.WebAuthFunction.Properties.Events.WebRoute14.Properties.ApiId.Ref == 'StagingHttpApi'
+}

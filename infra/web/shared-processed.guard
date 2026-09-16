@@ -5,7 +5,7 @@
 let resource_count = count(Resources.*)
 
 rule only_expected_processed_resources {
-  %resource_count == 35
+  %resource_count == 36
   Resources.*.Type IN [
     'AWS::DynamoDB::Table',
     'AWS::Logs::LogGroup',
@@ -102,4 +102,19 @@ rule separate_auth_boundary {
   Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Action == ['dynamodb:DeleteItem']
   Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.'ForAllValues:StringLike'.'dynamodb:LeadingKeys' == ['AUTH#v1#*', 'BINDING#v1#*', 'PLAYER#v1#*', 'ACCOUNT#v1#*', 'CONTROL#v1#*']
   Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.Null.'dynamodb:LeadingKeys' == 'false'
+}
+
+rule fail_closed_web_sign_in {
+  Parameters.WebSignInMode.Default == 'DISABLED'
+  Parameters.WebSignInMode.AllowedValues == ['DISABLED', 'TESTERS', 'ENABLED']
+  Resources.WebAuthFunction.Properties.Environment.Variables.DIME_WEB_SIGN_IN_MODE.Ref == 'WebSignInMode'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_WEB_SIGN_IN_MODE !exists
+}
+
+rule public_capability_route {
+  Resources.WebAuthFunctionWebRoute14Permission.Properties.Action == 'lambda:InvokeFunction'
+  Resources.WebAuthFunctionWebRoute14Permission.Properties.Principal == 'apigateway.amazonaws.com'
+  Resources.WebAuthFunctionWebRoute14Permission.Properties.FunctionName.Ref == 'WebAuthFunction'
+  Resources.WebAuthFunctionWebRoute14Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/status'
+  Resources.WebAuthFunctionWebRoute14Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
 }

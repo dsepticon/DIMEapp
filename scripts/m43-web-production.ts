@@ -35,6 +35,7 @@ try {
       begin.cookie.split(';')[0]!.split('=')[1]!,
     );
     const sid = result.cookie.split(';')[0]!.split('=')[1]!;
+    let signInMode = 'DISABLED';
     const api = createAccountApi(
       auth,
       {
@@ -45,6 +46,7 @@ try {
         linkingEnabled: true,
       },
       { mode: 'ENABLED', testerCount: 0, permits: () => true },
+      () => signInMode,
     );
     const context = await browser.newContext({ viewport });
     await context.addCookies([
@@ -92,6 +94,14 @@ try {
       });
     });
     await page.goto(origin);
+    await page.getByText('Web sign-in is not available yet', { exact: true }).waitFor();
+    if (await page.getByRole('link', { name: 'Sign in with Twitch', exact: true }).count())
+      throw Error('Disabled production web exposed login');
+    if (mutations !== 0) throw Error('Disabled production web attempted a mutation');
+    await page.screenshot({ path: output.replace(/\.json$/, '') + '-disabled-' + viewport.width + '.png' });
+    signInMode = 'ENABLED';
+    await page.reload();
+    await page.getByRole('button', { name: 'Start a new web profile instead' }).click();
     await page.locator('canvas').waitFor();
     const canvas = page.locator('canvas');
     await canvas.waitFor();
@@ -147,6 +157,7 @@ try {
     results.push({
       viewport,
       moved,
+      disabledGateVerified: true,
       safety,
       linkIntentCreated: true,
       signedOut: true,
