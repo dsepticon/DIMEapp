@@ -142,7 +142,7 @@ it('guest admission fails closed unless the server explicitly advertises the mem
   ]) {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(value), { status: 200 }));
     expect(await guestCapability()).toBe('signInAvailable' in value && value.signInAvailable === false);
-    expect(fetch).toHaveBeenLastCalledWith('/auth/status', { credentials: 'omit', cache: 'no-store' });
+    expect(fetch).toHaveBeenLastCalledWith('/game/status', { credentials: 'omit', cache: 'no-store' });
   }
 });
 it('anonymous and forged guest markers cannot authenticate to persistent gameplay', async () => {

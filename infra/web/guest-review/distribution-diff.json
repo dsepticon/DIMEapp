@@ -1,82 +1,547 @@
 {
   "reviewOnly": true,
-  "distribution": "EC269D02M2JLD",
+  "executable": false,
   "baselineETag": "E2GYT0DANXUABP",
-  "auxiliaryAdditions": [
-    "AWS::CloudFront::Function GuestCapability",
-    "AWS::CloudFront::ResponseHeadersPolicy GuestHeaders"
-  ],
-  "distributionChanges": [
-    {
-      "path": "/DefaultRootObject",
-      "before": "",
-      "after": "index.html"
+  "distribution": "EC269D02M2JLD",
+  "before": {
+    "CallerReference": "5e2b4075-787a-402a-8868-4745c7bbe13f",
+    "Aliases": {
+      "Quantity": 1,
+      "Items": [
+        "destroyaindustriesminingextension.com"
+      ]
     },
-    {
-      "path": "/Origins",
-      "beforeCount": 1,
-      "afterCount": 3,
-      "added": [
-        "guest-static-https",
-        "existing-staging-api"
-      ],
-      "removed": []
-    },
-    {
-      "path": "/DefaultCacheBehavior/TargetOriginId",
-      "before": "destroyaindustriesminingextension.com",
-      "after": "guest-static-https"
-    },
-    {
-      "path": "/DefaultCacheBehavior/CachePolicyId",
-      "before": "2e54312d-136d-493c-8eb9-b001f22f67d2",
-      "after": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
-    },
-    {
-      "path": "/DefaultCacheBehavior/ResponseHeadersPolicyId",
-      "before": null,
-      "after": {
-        "reviewReference": "GuestHeaders.Ref"
-      }
-    },
-    {
-      "path": "/CacheBehaviors",
-      "beforeCount": 0,
-      "afterPatterns": [
-        "/privacy",
-        "/assets/*",
-        "/auth/*",
-        "/api/*"
-      ],
-      "capabilityAssociation": {
-        "behavior": [
-          "/auth/*",
-          "/api/*"
-        ],
-        "event": "viewer-request",
-        "function": {
-          "reviewReference": "GuestCapability.FunctionARN"
+    "DefaultRootObject": "",
+    "Origins": {
+      "Quantity": 1,
+      "Items": [
+        {
+          "Id": "destroyaindustriesminingextension.com",
+          "DomainName": "destroyaindustriesminingextension.com.s3-website-us-west-2.amazonaws.com",
+          "OriginPath": "",
+          "CustomHeaders": {
+            "Quantity": 0
+          },
+          "CustomOriginConfig": {
+            "HTTPPort": 80,
+            "HTTPSPort": 443,
+            "OriginProtocolPolicy": "http-only",
+            "OriginSslProtocols": {
+              "Quantity": 1,
+              "Items": [
+                "TLSv1.2"
+              ]
+            },
+            "OriginReadTimeout": 30,
+            "OriginKeepaliveTimeout": 5
+          },
+          "ConnectionAttempts": 3,
+          "ConnectionTimeout": 10,
+          "OriginShield": {
+            "Enabled": false
+          },
+          "OriginAccessControlId": ""
         }
+      ]
+    },
+    "OriginGroups": {
+      "Quantity": 0
+    },
+    "DefaultCacheBehavior": {
+      "TargetOriginId": "destroyaindustriesminingextension.com",
+      "TrustedSigners": {
+        "Enabled": false,
+        "Quantity": 0
+      },
+      "TrustedKeyGroups": {
+        "Enabled": false,
+        "Quantity": 0
+      },
+      "ViewerProtocolPolicy": "redirect-to-https",
+      "AllowedMethods": {
+        "Quantity": 2,
+        "Items": [
+          "HEAD",
+          "GET"
+        ],
+        "CachedMethods": {
+          "Quantity": 2,
+          "Items": [
+            "HEAD",
+            "GET"
+          ]
+        }
+      },
+      "SmoothStreaming": false,
+      "Compress": true,
+      "LambdaFunctionAssociations": {
+        "Quantity": 0
+      },
+      "FunctionAssociations": {
+        "Quantity": 0
+      },
+      "FieldLevelEncryptionId": "",
+      "CachePolicyId": "2e54312d-136d-493c-8eb9-b001f22f67d2",
+      "GrpcConfig": {
+        "Enabled": false
       }
-    }
+    },
+    "CacheBehaviors": {
+      "Quantity": 0
+    },
+    "CustomErrorResponses": {
+      "Quantity": 0
+    },
+    "Comment": "",
+    "Logging": {
+      "Enabled": false,
+      "IncludeCookies": false,
+      "Bucket": "",
+      "Prefix": ""
+    },
+    "PriceClass": "PriceClass_All",
+    "Enabled": true,
+    "ViewerCertificate": {
+      "CloudFrontDefaultCertificate": false,
+      "ACMCertificateArn": "arn:aws:acm:us-east-1:861738068626:certificate/6e9edb04-019c-4541-b0ae-aff483a2db73",
+      "SSLSupportMethod": "sni-only",
+      "MinimumProtocolVersion": "TLSv1.2_2021",
+      "Certificate": "arn:aws:acm:us-east-1:861738068626:certificate/6e9edb04-019c-4541-b0ae-aff483a2db73",
+      "CertificateSource": "acm"
+    },
+    "Restrictions": {
+      "GeoRestriction": {
+        "RestrictionType": "none",
+        "Quantity": 0
+      }
+    },
+    "WebACLId": "arn:aws:wafv2:us-east-1:861738068626:global/webacl/CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690/5209e705-d0b7-4259-8052-6254d1840fb7",
+    "HttpVersion": "http2and3",
+    "IsIPV6Enabled": true,
+    "ContinuousDeploymentPolicyId": "",
+    "Staging": false
+  },
+  "proposed": {
+    "CallerReference": "5e2b4075-787a-402a-8868-4745c7bbe13f",
+    "Aliases": {
+      "Quantity": 1,
+      "Items": [
+        "destroyaindustriesminingextension.com"
+      ]
+    },
+    "DefaultRootObject": "",
+    "Origins": {
+      "Quantity": 1,
+      "Items": [
+        {
+          "Id": "destroyaindustriesminingextension.com",
+          "DomainName": "destroyaindustriesminingextension.com.s3-website-us-west-2.amazonaws.com",
+          "OriginPath": "",
+          "CustomHeaders": {
+            "Quantity": 0
+          },
+          "CustomOriginConfig": {
+            "HTTPPort": 80,
+            "HTTPSPort": 443,
+            "OriginProtocolPolicy": "http-only",
+            "OriginSslProtocols": {
+              "Quantity": 1,
+              "Items": [
+                "TLSv1.2"
+              ]
+            },
+            "OriginReadTimeout": 30,
+            "OriginKeepaliveTimeout": 5
+          },
+          "ConnectionAttempts": 3,
+          "ConnectionTimeout": 10,
+          "OriginShield": {
+            "Enabled": false
+          },
+          "OriginAccessControlId": ""
+        }
+      ]
+    },
+    "OriginGroups": {
+      "Quantity": 0
+    },
+    "DefaultCacheBehavior": {
+      "TargetOriginId": "destroyaindustriesminingextension.com",
+      "TrustedSigners": {
+        "Enabled": false,
+        "Quantity": 0
+      },
+      "TrustedKeyGroups": {
+        "Enabled": false,
+        "Quantity": 0
+      },
+      "ViewerProtocolPolicy": "redirect-to-https",
+      "AllowedMethods": {
+        "Quantity": 2,
+        "Items": [
+          "HEAD",
+          "GET"
+        ],
+        "CachedMethods": {
+          "Quantity": 2,
+          "Items": [
+            "HEAD",
+            "GET"
+          ]
+        }
+      },
+      "SmoothStreaming": false,
+      "Compress": true,
+      "LambdaFunctionAssociations": {
+        "Quantity": 0
+      },
+      "FunctionAssociations": {
+        "Quantity": 0
+      },
+      "FieldLevelEncryptionId": "",
+      "CachePolicyId": "2e54312d-136d-493c-8eb9-b001f22f67d2",
+      "GrpcConfig": {
+        "Enabled": false
+      }
+    },
+    "CacheBehaviors": {
+      "Quantity": 5,
+      "Items": [
+        {
+          "TargetOriginId": "destroyaindustriesminingextension.com",
+          "TrustedSigners": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "TrustedKeyGroups": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "ViewerProtocolPolicy": "redirect-to-https",
+          "AllowedMethods": {
+            "Quantity": 2,
+            "Items": [
+              "GET",
+              "HEAD"
+            ],
+            "CachedMethods": {
+              "Quantity": 2,
+              "Items": [
+                "GET",
+                "HEAD"
+              ]
+            }
+          },
+          "SmoothStreaming": false,
+          "Compress": true,
+          "LambdaFunctionAssociations": {
+            "Quantity": 0
+          },
+          "FunctionAssociations": {
+            "Quantity": 1,
+            "Items": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "GuestCapability",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ]
+          },
+          "FieldLevelEncryptionId": "",
+          "CachePolicyId": {
+            "Ref": "GuestCache"
+          },
+          "GrpcConfig": {
+            "Enabled": false
+          },
+          "PathPattern": "/game/*",
+          "ResponseHeadersPolicyId": {
+            "Ref": "GuestHeaders"
+          }
+        },
+        {
+          "TargetOriginId": "destroyaindustriesminingextension.com",
+          "TrustedSigners": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "TrustedKeyGroups": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "ViewerProtocolPolicy": "redirect-to-https",
+          "AllowedMethods": {
+            "Quantity": 7,
+            "Items": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE"
+            ],
+            "CachedMethods": {
+              "Quantity": 2,
+              "Items": [
+                "GET",
+                "HEAD"
+              ]
+            }
+          },
+          "SmoothStreaming": false,
+          "Compress": true,
+          "LambdaFunctionAssociations": {
+            "Quantity": 0
+          },
+          "FunctionAssociations": {
+            "Quantity": 1,
+            "Items": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "GuestCapability",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ]
+          },
+          "FieldLevelEncryptionId": "",
+          "CachePolicyId": {
+            "Ref": "GuestCache"
+          },
+          "GrpcConfig": {
+            "Enabled": false
+          },
+          "PathPattern": "/api/v4/state"
+        },
+        {
+          "TargetOriginId": "destroyaindustriesminingextension.com",
+          "TrustedSigners": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "TrustedKeyGroups": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "ViewerProtocolPolicy": "redirect-to-https",
+          "AllowedMethods": {
+            "Quantity": 7,
+            "Items": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE"
+            ],
+            "CachedMethods": {
+              "Quantity": 2,
+              "Items": [
+                "GET",
+                "HEAD"
+              ]
+            }
+          },
+          "SmoothStreaming": false,
+          "Compress": true,
+          "LambdaFunctionAssociations": {
+            "Quantity": 0
+          },
+          "FunctionAssociations": {
+            "Quantity": 1,
+            "Items": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "GuestCapability",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ]
+          },
+          "FieldLevelEncryptionId": "",
+          "CachePolicyId": {
+            "Ref": "GuestCache"
+          },
+          "GrpcConfig": {
+            "Enabled": false
+          },
+          "PathPattern": "/api/v4/actions"
+        },
+        {
+          "TargetOriginId": "destroyaindustriesminingextension.com",
+          "TrustedSigners": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "TrustedKeyGroups": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "ViewerProtocolPolicy": "redirect-to-https",
+          "AllowedMethods": {
+            "Quantity": 7,
+            "Items": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE"
+            ],
+            "CachedMethods": {
+              "Quantity": 2,
+              "Items": [
+                "GET",
+                "HEAD"
+              ]
+            }
+          },
+          "SmoothStreaming": false,
+          "Compress": true,
+          "LambdaFunctionAssociations": {
+            "Quantity": 0
+          },
+          "FunctionAssociations": {
+            "Quantity": 1,
+            "Items": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "GuestCapability",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ]
+          },
+          "FieldLevelEncryptionId": "",
+          "CachePolicyId": {
+            "Ref": "GuestCache"
+          },
+          "GrpcConfig": {
+            "Enabled": false
+          },
+          "PathPattern": "/api/v4/profile/reset"
+        },
+        {
+          "TargetOriginId": "destroyaindustriesminingextension.com",
+          "TrustedSigners": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "TrustedKeyGroups": {
+            "Enabled": false,
+            "Quantity": 0
+          },
+          "ViewerProtocolPolicy": "redirect-to-https",
+          "AllowedMethods": {
+            "Quantity": 7,
+            "Items": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE"
+            ],
+            "CachedMethods": {
+              "Quantity": 2,
+              "Items": [
+                "GET",
+                "HEAD"
+              ]
+            }
+          },
+          "SmoothStreaming": false,
+          "Compress": true,
+          "LambdaFunctionAssociations": {
+            "Quantity": 0
+          },
+          "FunctionAssociations": {
+            "Quantity": 1,
+            "Items": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "GuestCapability",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ]
+          },
+          "FieldLevelEncryptionId": "",
+          "CachePolicyId": {
+            "Ref": "GuestCache"
+          },
+          "GrpcConfig": {
+            "Enabled": false
+          },
+          "PathPattern": "/api/v4/content/convert"
+        }
+      ]
+    },
+    "CustomErrorResponses": {
+      "Quantity": 0
+    },
+    "Comment": "",
+    "Logging": {
+      "Enabled": false,
+      "IncludeCookies": false,
+      "Bucket": "",
+      "Prefix": ""
+    },
+    "PriceClass": "PriceClass_All",
+    "Enabled": true,
+    "ViewerCertificate": {
+      "CloudFrontDefaultCertificate": false,
+      "ACMCertificateArn": "arn:aws:acm:us-east-1:861738068626:certificate/6e9edb04-019c-4541-b0ae-aff483a2db73",
+      "SSLSupportMethod": "sni-only",
+      "MinimumProtocolVersion": "TLSv1.2_2021",
+      "Certificate": "arn:aws:acm:us-east-1:861738068626:certificate/6e9edb04-019c-4541-b0ae-aff483a2db73",
+      "CertificateSource": "acm"
+    },
+    "Restrictions": {
+      "GeoRestriction": {
+        "RestrictionType": "none",
+        "Quantity": 0
+      }
+    },
+    "WebACLId": "arn:aws:wafv2:us-east-1:861738068626:global/webacl/CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690/5209e705-d0b7-4259-8052-6254d1840fb7",
+    "HttpVersion": "http2and3",
+    "IsIPV6Enabled": true,
+    "ContinuousDeploymentPolicyId": "",
+    "Staging": false
+  },
+  "changedTopLevelFields": [
+    "CacheBehaviors"
   ],
-  "unchanged": [
-    "Aliases",
-    "ViewerCertificate",
-    "WebACLId",
-    "Logging",
-    "Restrictions",
-    "PriceClass",
-    "Enabled",
-    "original origin",
-    "privacy bytes and original behavior"
-  ],
-  "IAMChanges": [],
-  "LambdaChanges": [],
-  "DynamoDBChanges": [],
-  "APIgatewayRouteChanges": [],
-  "OAuthConfigurationChanges": [],
+  "resourceAdditions": {
+    "GuestCapability": "AWS::CloudFront::Function",
+    "GuestHeaders": "AWS::CloudFront::ResponseHeadersPolicy",
+    "GuestCache": "AWS::CloudFront::CachePolicy"
+  },
   "removals": [],
   "replacements": [],
-  "execution": "None; concrete distribution candidate requires actual reviewed auxiliary outputs and fresh ETag."
+  "IAMChanges": [],
+  "LambdaChanges": [],
+  "APIgatewayChanges": [],
+  "DynamoDBChanges": [],
+  "note": "CloudFormation logical references must resolve to actual reviewed resource outputs only after separate execution approval. No AWS writes performed."
 }

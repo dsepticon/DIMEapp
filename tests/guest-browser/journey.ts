@@ -107,7 +107,7 @@ export async function journey(page: Page, touch: boolean, width: number) {
   await hold('Hold Analyze (F)', 'f', true);
   await expect(page.getByLabel('Confirmed rock analysis')).toBeVisible();
   await hold('Hold Analyze (F)', 'f', false);
-  await page.screenshot({ path: `/tmp/dime-m43-guest/screenshots/analyzed-${width}.png` });
+  await page.screenshot({ path: `/tmp/dime-m43-game-review/screenshots/analyzed-${width}.png` });
   await page.getByRole('button', { name: 'Close analysis · Ping to recall' }).click();
   player = { x: tile.x + 0.5, y: tile.y + 0.5 };
   model.mutate({ type: 'analyzeNearby', nodeId: node.id, player });
@@ -144,7 +144,7 @@ export async function journey(page: Page, touch: boolean, width: number) {
   }
   now += mining.tick * 50;
   model.mutate({ type: 'resolveLaser', runs });
-  await page.screenshot({ path: `/tmp/dime-m43-guest/screenshots/fracture-${width}.png` });
+  await page.screenshot({ path: `/tmp/dime-m43-game-review/screenshots/fracture-${width}.png` });
   for (const piece of model.snapshot().world.nodes[node.id]!.fragments) {
     const before = Number(await canvas.getAttribute('data-fragments'));
     if (!before) break;

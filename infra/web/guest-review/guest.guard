@@ -1,10 +1,17 @@
 let resources = Resources.*
 rule only_edge_resources {
-  %resources.Type IN ["AWS::CloudFront::Function", "AWS::CloudFront::ResponseHeadersPolicy"]
+  %resources.Type IN ["AWS::CloudFront::Function", "AWS::CloudFront::ResponseHeadersPolicy", "AWS::CloudFront::CachePolicy"]
 }
 rule edge_runtime {
   Resources.GuestCapability.Properties.FunctionConfig.Runtime == "cloudfront-js-2.0"
 }
 rule no_framing {
   Resources.GuestHeaders.Properties.ResponseHeadersPolicyConfig.SecurityHeadersConfig.FrameOptions.FrameOption == "DENY"
+}
+
+rule scoped_cache {
+ Resources.GuestCache.Properties.CachePolicyConfig.MinTTL == 0
+ Resources.GuestCache.Properties.CachePolicyConfig.ParametersInCacheKeyAndForwardedToOrigin.CookiesConfig.CookieBehavior == "none"
+ Resources.GuestCache.Properties.CachePolicyConfig.ParametersInCacheKeyAndForwardedToOrigin.HeadersConfig.HeaderBehavior == "none"
+ Resources.GuestCache.Properties.CachePolicyConfig.ParametersInCacheKeyAndForwardedToOrigin.QueryStringsConfig.QueryStringBehavior == "none"
 }

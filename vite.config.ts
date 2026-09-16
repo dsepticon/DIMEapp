@@ -44,7 +44,7 @@ export default defineConfig(({ command, mode }) => {
             ]
           : [],
     },
-    base: './',
+    base: guest ? '/game/0.9.0/' : './',
     server: { host: '127.0.0.1', port: 5173, strictPort: true },
     build: {
       outDir: guest ? 'dist/guest' : 'dist/frontend',

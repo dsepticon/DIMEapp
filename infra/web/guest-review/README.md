@@ -1,61 +1,58 @@
-# Guest web publication review — NOT DEPLOYED
+# Scoped guest-game routing review — NOT DEPLOYED
 
-Target: `https://destroyaindustriesminingextension.com`, bucket of the same name (us-west-2), distribution `EC269D02M2JLD`, AWS account `861738068626`.
+This replaces the broad root/default proposal rejected in `c79ef2e`. Target: `https://destroyaindustriesminingextension.com/game/`, bucket `destroyaindustriesminingextension.com` (us-west-2), distribution `EC269D02M2JLD`, account `861738068626`.
 
-## Runtime boundary
+## Exact boundary
 
-`VITE_DIME_MODE=guest` compiles an explicit in-memory simulator. The guest build rejects a configured persistent API URL and substitutes a throwing pending-storage adapter. Other production builds substitute an unavailable guest factory. No mock authentication, identity credential, receipt or request ID is created. The fixed generation in the simulation is a schema sentinel, not an account identifier or authentication proof. Nothing exports or transfers guest progress to a real account.
+The only changed distribution field is `CacheBehaviors`: zero ordered behaviors become five. The existing origin, default cache behavior, default document, custom errors, aliases, TLS certificate, logging, restrictions and every other distribution property remain structurally identical. No root entry, `/privacy`, `/assets/*`, `/auth/*` or unrelated object changes.
 
-The simulator shares geometry, charge, fracture, quantity, processing and economy functions with the game. Its only starting differences are labelled demo resources: 5,000 shift marks, a refinery loaner at Tessick Station, and four cSCU of refinery sample stock. Mineral balance is unchanged. No display preferences are persisted. Browser HTTP caching of versioned scripts/styles contains application code, not progress.
+| Order    | Exact pattern             | Result                                                 | Policy / origin                                      |
+| -------- | ------------------------- | ------------------------------------------------------ | ---------------------------------------------------- |
+| 1        | `/game/*`                 | Guest static files, exact capability, missing-file 404 | GuestCache + GuestHeaders, existing website origin   |
+| 2        | `/api/v4/state`           | Uncached 401 before cache/origin                       | GuestCache; existing website origin is never invoked |
+| 3        | `/api/v4/actions`         | Same                                                   | Same                                                 |
+| 4        | `/api/v4/profile/reset`   | Same                                                   | Same                                                 |
+| 5        | `/api/v4/content/convert` | Same                                                   | Same                                                 |
+| fallback | existing default          | Unchanged                                              | Original policy/origin/headers                       |
 
-The only runtime fetch is credential-less GET `/auth/status`. Missing, malformed, unavailable, or online-enabled capability fails closed. `status-function.js` proposes this exact non-identifying deployment contract:
+Only `/game/*` is a wildcard. The four API patterns are literal and disjoint from it and each other. No `/api/*` or `/auth/*` catch-all exists. `/game` (without slash), `/games/`, `/api/v4/actions/extra`, logout, deletion continuation, Extension `/state`, `/actions`, `/v4/*`, `/privacy`, images and unrelated paths use the original default. The guest makes **no persistent API call**; exact API denials are defense-in-depth for the four previously reviewed web paths. This is not a general WAF or authentication replacement. Unknown/encoded alternate paths are not newly intercepted across the website; all existing backend authentication remains required.
 
-```json
-{"signInAvailable":false,"linkingAvailable":false,"guestDemoAvailable":true,"guestStorage":"memory"}
-```
+The function never reads headers, cookies, query strings, identities, authorization codes or provider data. It only checks URI and method:
 
-This edge response enables a local demonstration; it never authorizes an API mutation. The two deployed Lambdas remain unchanged. The function returns the capability only for exact GET `/auth/status`; all `/api/*` requests receive a generic uncached 401 before the origin. Other requests, including logout and verified deletion recovery, pass to their configured origin. Before any later OAuth activation, separately remove/replace this static disabled-online capability and deploy a reviewed online frontend. Do not enable OAuth behind this guest contract.
+- GET `/game/status` returns the non-sensitive memory-only guest capability, sign-in/linking false, `no-store`.
+- `/game/` rewrites its origin URI to `/game/index.html` inside the already selected behavior. No default document is changed.
+- Only the three manifest files are forwarded; unknown `/game/*` files return a generated JSON 404 without an origin request. There is no SPA fallback, custom error rewrite or missing-asset redirect.
+- The four exact API paths return JSON 401, including POST/OPTIONS, without forwarding. No API Gateway origin is added.
+- Normal logout/deletion routes are untouched, not proxied through the game function. Their pre-existing delivery and authentication requirements remain unchanged.
 
-## Proposed resources and distribution changes
+The browser fetches only static files and `/game/status` with credentials omitted. It does not call `/auth/status`, login, callback, or persistent API routes. Compiled audit rejects storage implementations and persistent/auth endpoint strings.
 
-`auxiliary-template.json` proposes exactly TWO additions: one CloudFront Function and one response-headers policy. No IAM roles/policies, Lambda, table, index, DNS, certificate, secrets, OAuth settings or API Gateway routes change. No change set or resource has been created in this task.
+## Proposed resources
 
-The existing distribution is NOT owned/imported/replaced by that template. `scripts/prepare-guest-routing.mjs` produces an offline conditional-update candidate only when supplied actual reviewed auxiliary outputs and a fresh matching distribution snapshot. It never calls AWS. A later publication approval must review the concrete candidate and its ETag before applying it.
+Exactly **three** auxiliary additions: `GuestCapability` (CloudFront Function), `GuestHeaders` (ResponseHeadersPolicy), `GuestCache` (CachePolicy). The cache policy is new relative to the superseded review because a single `/game/*` behavior must respect both no-cache HTML and one-year immutable object metadata. MinTTL=0, DefaultTTL=0, MaxTTL=31536000. Cookies, viewer headers and query strings are not cache keys or forwarded. Normalized Accept-Encoding is the sole compression-related exception; no feature needs viewer credentials or query strings. No origin-request policy is attached.
 
-| Path | Proposed behavior |
-|---|---|
-| `/privacy` | Exact original default behavior and origin; unchanged object and headers |
-| `/assets/*` | HTTPS S3 REST origin, immutable object metadata, CachingOptimized |
-| `/auth/*` | Existing staging API over HTTPS, no cache, all viewer inputs except Host; exact GET status edge function |
-| `/api/*` | Guest edge gate: all requests return 401 before the existing API origin |
-| Default/root | HTTPS S3 REST origin, root `index.html`, caching disabled, reviewed application headers |
+`/game/*` allows GET/HEAD, caches GET/HEAD, compresses, and redirects HTTP to HTTPS. Exact denial behaviors allow CloudFront's seven-method group solely so the viewer function can reject mutation methods; all HTTPS requests on those paths terminate at the edge. There are no origin permission grants. Security headers/CSP apply only to `/game/*`, never default or API-denial behaviors. Generated JSON responses explicitly include no-store, nosniff and no-referrer. No cross-origin allowlist is introduced: guest resources are same-origin and do not use cross-origin API calls; existing Extension CORS is unchanged.
 
-The old origin stays for privacy. Two origins are added: `s3.us-west-2.amazonaws.com` with path `/destroyaindustriesminingextension.com`, and `t2la0784p6.execute-api.us-east-2.amazonaws.com` with path `/staging`. The S3 path form avoids the dotted-bucket TLS hostname problem. Public REST `index.html` bytes were verified against the current backup. No bucket-policy change is proposed. The API origin is existing staging only. CloudFront permits its seven-method group on auth/API behaviors because POST/OPTIONS are required, but the guest API gate rejects before forwarding; it grants no backend permission. Anonymous mutation routes remain authenticated.
+No IAM, Lambda, table/index, OAuth, DNS, certificate, API Gateway route, permission, log or alarm change. No resource removal/replacement. The existing distribution is updated conditionally through its native configuration API only after separate approval; it is not imported or replaced by the auxiliary template. No change set has been created, since this task must stop before AWS writes.
 
-Preserve alias, TLS certificate, TLS policy, WAF, logging, geographic controls and every unrelated distribution property. No SPA catch-all error rewrite: auth failures and missing paths must retain their status codes. Reject unreviewed behavior/origin drift. Existing unrelated objects are not deleted; their default delivery changes to HTTPS REST with security headers, which needs owner review before publication.
+[Full before/after comparison](distribution-diff.json) contains logical references for not-yet-created policy/function outputs and is deliberately **not executable**. `scripts/prepare-guest-routing.mjs` accepts only actual resource outputs and a verified snapshot for any future concrete candidate. Recompare the complete result and fresh ETag before execution. The current existing website origin remains HTTP to S3, as required by the owner's no-origin-change boundary; this review does not claim end-to-end HTTPS to that origin.
 
-## CSP and browser boundary
+## Files, caching and rollback
 
-`security-headers.json` is applied to the application and assets, not `/privacy`. Scripts and connections are same-origin only; no inline script, eval, third-party helper, external authentication page, iframe embedding or form submission. Existing game HUD animation uses inline style attributes, so only `style-src-attr 'unsafe-inline'` is permitted. Stylesheets remain same-origin. COOP/COEP are deliberately not introduced. Secure cookies remain solely a backend responsibility; guest does not set or send any.
+See [publication manifest](../../../docs/dime-m43-game-publication-manifest.json). Three new keys only: `game/index.html` (505-byte entry) plus two hashed files under `game/0.9.0/assets/`. No `/assets/*` reuse. Entry uses `no-cache, max-age=0, must-revalidate`; assets use `public, max-age=31536000, immutable`; AES256 preserved. All initial writes are create-only because read-only inventory found no game-prefix objects. Recheck absence immediately before publication and stop on drift. No existing object is scheduled for replacement, so no remote backup write is needed for this candidate. If a future review authorizes replacement, record and back up bytes, metadata, ETag, version and hash first.
 
-Managed policy references: [cache policies](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html), [API Gateway origin-request policy](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-origin-request-policies.html), [response headers](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/modifying-response-headers.html).
+Future single invalidation: `/game/`, `/game/index.html` only. Restore the exact original distribution snapshot conditionally for rollback; invalidate those same paths. The rollback manifest records that the entry did not previously exist: removal may target only the release-created entry, with its recorded publication ETag and separate rollback authorization; retain immutable assets and unrelated objects. Original root/privacy byte backups are local evidence, not planned overwrite targets. No live publication or rollback occurred.
 
-## Publication and rollback gate
+## Validation interpretation
 
-This is preparation only. Before any remote write, verify account, distribution ETag, secret-free mode parameters (`DISABLED`, `DISABLED`, conversion `ENABLED`), origin responses and exact guest artifact hash. Re-head and hash all replaced objects. Preserve `/privacy` SHA-256 `6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c`.
+Unit tests compare the full candidate after replacing only `CacheBehaviors` with its baseline; all other fields must equal exactly. Path tables prove disjoint behavior selection and zero credential forwarding. Compiled Chromium journeys run at production `/game/` paths in Panel, Mobile and desktop. Routing smoke tests emulate the reviewed edge plus an unchanged origin and verify 401 without origin invocation; these are local tests, not claims of an AWS edge deployment. Public root/privacy hashes and anonymous Extension rejection are separately checked read-only against live HTTPS. Actual CloudFront propagation/function runtime remains a mandatory future deployment verification gate.
 
-The current bucket reports no enabled versioning and the current index has no VersionId. Never invent version IDs. Create immutable, create-only backup objects under a versioned release prefix before replacement, verify their hashes, and record returned VersionIds/ETags (VersionId may remain null). Backups already available locally are not remote publication backups. Conditional index write must match its freshly verified ETag; new hashed assets use If-None-Match `*`. If an asset already exists, reuse only after exact byte/metadata verification; do not blindly replace it.
+References: [AWS cache behavior ordering](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesCacheBehavior.html), [cache-policy forwarding/TTL](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cache-key-understand-cache-policy.html), [viewer function responses](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/function-code-choose-purpose.html).
 
-Publish hashed assets first, verify hashes, then index last. HTML uses `no-cache, max-age=0, must-revalidate`; hashed assets use `public, max-age=31536000, immutable`; preserve encryption. One eventual invalidation: `/` and `/index.html`. Viewer-request status response is generated before cache lookup. No privacy invalidation.
+For a local preview: `node scripts/build-guest.mjs`, then `node scripts/preview-guest.mjs`, and open `http://127.0.0.1:4188/game/`. The preview server is not an artifact and cannot authenticate or persist guest progress. Online sign-in and linking remain disabled.
 
-Rollback: restore exact old index bytes and original metadata conditionally against the recorded new ETag; restore the original distribution snapshot against its current verified ETag; invalidate the same entry paths. Leave new content-addressed assets in place (harmless and no unrelated deletion). Detach the new edge function/headers before deleting auxiliary resources through a separately reviewed change set. The local rollback bundle hashes are verified; no remote rollback or publication has occurred.
+### Authorization forwarding refinement
 
-OAuth sign-in, account linking, guest progress transfer and public Twitch release remain outside this review. Both deployed Lambdas, player data and privacy must remain untouched.
+The game behavior allows GET/HEAD only. No guest feature needs OPTIONS; omitting it avoids CloudFront's documented Authorization forwarding on uncached OPTIONS. The four exact API-denial behaviors retain all methods solely for rejection; the associated function fails closed for any non-game URI spelling without reading credentials. This does not attach the function to unrelated paths. Normalized paths that leave `/game/` select the original default unless they match one of the four literal denials. [AWS custom-origin header behavior](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/RequestAndResponseBehaviorCustomOrigin.html).
 
-## Local reviewer preview
-
-With the locked Node 22 dependencies installed, run `node scripts/build-guest.mjs`, then `node scripts/preview-guest.mjs`. Open `http://127.0.0.1:4188`. This binds only loopback, serves the exact proposed status function, and has no authenticated API implementation. Its CSP omits only HTTPS upgrading for localhost HTTP. The production HTTPS browser fixtures use the full CSP. Do not upload this preview server with the static artifact.
-
-## Existing disabled-web API limitation
-
-Read-only verification found all eight anonymous/forged probes across four direct staging web gameplay paths return a generic 503 while online sign-in is disabled. Its backend root cause was not investigated in this frontend-only task. No request succeeds; the guest frontend never calls these paths. This task does not change either Lambda to alter that response. The proposed guest edge function therefore rejects every public-domain `/api/*` request with uncached 401, including forged credentials, and never forwards it to persistence. Tests exercise the exact function embedded in the reviewed template. Direct staging web responses remain an existing limitation for the later online rollout; guest gameplay does not call them. Extension API authentication remains 401. Remove/replace the edge API gate only in a separately reviewed online activation.
+The scoped policy deliberately omits HSTS: browsers apply HSTS to the entire host even when received on a single path. Omitting this new host-wide policy preserves unrelated-site browser behavior; existing viewer HTTPS redirection and the TLS certificate remain unchanged.

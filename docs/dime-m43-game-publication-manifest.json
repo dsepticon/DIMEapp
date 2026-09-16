@@ -1,0 +1,96 @@
+{
+  "reviewOnly": true,
+  "published": false,
+  "url": "https://destroyaindustriesminingextension.com/game/",
+  "bucket": "destroyaindustriesminingextension.com",
+  "region": "us-west-2",
+  "distribution": "EC269D02M2JLD",
+  "baselineETag": "E2GYT0DANXUABP",
+  "artifact": "/tmp/dime-m43-game-review/DIME-Web-0.9.0-game-scoped-review-20260916.zip",
+  "artifactSize": 111199,
+  "artifactSha256": "81fefdc80654ef0ab45d0665f2ad26482b09e1d29b9a311d8343deae4764e623",
+  "entries": [
+    {
+      "key": "game/0.9.0/assets/index-BPyjZOOz.css",
+      "size": 20842,
+      "sha256": "235789dd82f9c565f0ee1e9b27709bb2526dfc0aba3b5420ce18df009d1ed9b6",
+      "contentType": "text/css; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "serverSideEncryption": "AES256",
+      "action": "CREATE",
+      "condition": {
+        "IfNoneMatch": "*"
+      },
+      "before": null,
+      "beforeVersionId": null
+    },
+    {
+      "key": "game/0.9.0/assets/index-DHu8VPJb.js",
+      "size": 364380,
+      "sha256": "9f080626b4f0118a55685105554cf0c263feea15e8b02888a04487b711de11c5",
+      "contentType": "text/javascript; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "serverSideEncryption": "AES256",
+      "action": "CREATE",
+      "condition": {
+        "IfNoneMatch": "*"
+      },
+      "before": null,
+      "beforeVersionId": null
+    },
+    {
+      "key": "game/index.html",
+      "size": 505,
+      "sha256": "fa843fc409a4a940943e2c1d05810412b2a92794d7bbb81dc16a609cd4a07f68",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-cache, max-age=0, must-revalidate",
+      "serverSideEncryption": "AES256",
+      "action": "CREATE",
+      "condition": {
+        "IfNoneMatch": "*"
+      },
+      "before": null,
+      "beforeVersionId": null
+    }
+  ],
+  "preserve": {
+    "rootSha256": "2bcc8de3c43b8ac7feef1f1e21d331f93a4f6a2d37e808ef2b64f006915dae1a",
+    "privacySha256": "6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c",
+    "allUnrelatedObjects": true
+  },
+  "edgeReview": {
+    "auxiliary-template.json": "3bdb6454b12b56f195a3e861c6fbd364d5e89475930854e7916f90de3db22669",
+    "status-function.js": "2ce9863f1e3e3b54248291e5d241d7f6c5a20bdbd2676a046838851d43db5251",
+    "security-headers.json": "af6075785046b528ab7668759957cd38b754dd2092ab791ed2ecd643469d94e6",
+    "distribution-diff.json": "961fb0e0c0e65a7fff71e86af324e568b00be0f96e06e67e631306ac911663a3"
+  },
+  "futureInvalidationPaths": [
+    "/game/",
+    "/game/index.html"
+  ],
+  "beforePublication": [
+    "Recheck exact account, current distribution ETag/config, three object absence checks and unchanged root/privacy hashes.",
+    "Stop if any game object has appeared; capture metadata/bytes/version/ETag/hash and review replacement before writing.",
+    "Resolve auxiliary resource outputs; compare generated candidate with reviewed symbolic config.",
+    "After separate approval, deploy the reviewed auxiliary resources, conditionally associate only the five scoped behaviors, and verify edge capability/401 and unchanged default paths before application publication. Then upload hashed assets first and entry last using create-only writes; verify every byte. Do not change root/default behavior."
+  ],
+  "rollback": {
+    "manifestVersion": 1,
+    "distributionSnapshot": "infra/web/guest-review/distribution-diff.json#/before",
+    "restoreDistribution": "Use original full config with If-Match against freshly verified publication ETag; inspect difference before rollback.",
+    "objects": "Baseline has no game objects. Conditionally delete only game/index.html created by this release against its publication ETag if rollback is authorized. Retain immutable assets; do not remove unrelated objects. If future reviewed publication replaces an entry, restore its verified immutable backup bytes and metadata instead.",
+    "invalidationPaths": [
+      "/game/",
+      "/game/index.html"
+    ],
+    "resourceCleanup": "Detach scoped associations before any separately reviewed auxiliary resource cleanup.",
+    "testedLocally": "Symbolic config round trip and archive hash checks only; no live rollback performed.",
+    "archive": "/tmp/dime-m43-game-review/DIME-game-scoped-rollback-review.zip",
+    "archiveSha256": "c438fb064c606361a99bf318a18e827647ebb1d48165951763db0d823c4d6325"
+  },
+  "requiredModes": {
+    "WebSignInMode": "DISABLED",
+    "AccountLinkingMode": "DISABLED",
+    "ContentConversionMode": "ENABLED"
+  }
+}

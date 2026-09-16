@@ -31,10 +31,10 @@ for (const viewport of [
       expect(req.method()).toBe('GET');
       expect(req.headers()['authorization']).toBeUndefined();
       expect(req.headers()['cookie']).toBeUndefined();
-      if (url.pathname === '/auth/status') {
+      if (url.pathname === '/game/status') {
         const response = runInNewContext(
           readFileSync('infra/web/guest-review/status-function.js', 'utf8') +
-            '\nhandler({request:{method:"GET",uri:"/auth/status"}})',
+            '\nhandler({request:{method:"GET",uri:"/game/status"}})',
         ) as { statusCode: number; body: string };
         await route.fulfill({
           status: response.statusCode,
@@ -43,7 +43,7 @@ for (const viewport of [
         });
         return;
       }
-      const file = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
+      const file = url.pathname === '/game/' ? 'index.html' : url.pathname.replace('/game/0.9.0/', '');
       expect(file === 'index.html' || /^assets\/[a-zA-Z0-9_.-]+\.(js|css)$/.test(file)).toBeTruthy();
       await route.fulfill({
         headers: {
@@ -62,11 +62,11 @@ for (const viewport of [
     page.on('console', (m) => {
       if (m.type() === 'error') errors.push(m.text());
     });
-    await page.goto(origin);
+    await page.goto(origin + '/game/');
     const canvas = page.locator('canvas');
     await expect(canvas).toHaveAttribute('data-zone', 'zone.z001');
     await expect(page.getByText('Guest Demo — progress is not saved', { exact: true })).toBeVisible();
-    await page.screenshot({ path: `/tmp/dime-m43-guest/screenshots/guest-${viewport.width}.png` });
+    await page.screenshot({ path: `/tmp/dime-m43-game-review/screenshots/guest-${viewport.width}.png` });
     const performance = await page.evaluate(async () => {
       const frames: number[] = [];
       await new Promise<void>((done) => {
@@ -100,7 +100,7 @@ for (const viewport of [
     expect(performance.documentScroll).toBe(false);
     expect(performance.unobstructed).toBeGreaterThanOrEqual(80);
     writeFileSync(
-      `/tmp/dime-m43-guest/performance-${viewport.width}.json`,
+      `/tmp/dime-m43-game-review/performance-${viewport.width}.json`,
       JSON.stringify(performance, null, 2),
     );
     const map = originalZoneMap('zone.z001'),
@@ -115,7 +115,7 @@ for (const viewport of [
     await expect(canvas).toHaveAttribute('data-paused', 'true');
     await resumeGame(page);
     const second = await context.newPage();
-    await second.goto(origin);
+    await second.goto(origin + '/game/');
     await expect(second.locator('canvas')).toHaveAttribute('data-zone', 'zone.z001');
     await expect(canvas).toHaveAttribute('data-zone', exit.to);
     await second.close();
