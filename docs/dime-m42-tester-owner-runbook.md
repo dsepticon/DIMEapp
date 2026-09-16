@@ -12,7 +12,7 @@
 
 ## Local owner tool — never run inside a logged agent session
 
-Requires Node 22, locked dependencies, AWS owner credentials and the approved `asm-exec` wrapper. The wrapper resolves the existing web identity-key ARN only inside the process environment. No Lambda IAM change is needed for the local owner tool. Do not use shell tracing, `env`, debug output, terminal recording or CI. The tool performs no AWS/DynamoDB writes; a consumption digest is created only when the browser actually begins OAuth.
+Requires Node 22, Python 3, locked dependencies, AWS owner credentials and the approved `asm-exec` resolver. The owner-only Python bridge verifies the resolver SHA-256 before loading its bytes, resolves the existing web identity-key ARN in memory, and passes it only through the signing child’s environment (never command arguments). The installed resolver file is available at the pinned plugin path even though it is not executable/on PATH. `DIME_ASM_EXEC_PATH` can point to an identical reviewed copy on another owner machine; any hash mismatch fails closed. No Lambda IAM change is needed for the local owner tool. Do not use shell tracing, `env`, debug output, terminal recording or CI. The tool performs no AWS/DynamoDB writes; a consumption digest is created only when the browser actually begins OAuth.
 
 From the reviewed repository directory:
 
@@ -23,7 +23,7 @@ printf '%s' "$DIME_TESTER_SUBJECT" | bash scripts/provision-tester.sh
 unset DIME_TESTER_SUBJECT
 ```
 
-Type the designated tester's Twitch numeric user ID into the hidden `read` input. Do not put it in a command argument, file, chat or report. Successful output is only JSON containing a short-lived invitation URL and its UTC expiry. The web identity key must decode from Base64 to exactly 32 bytes; the script uses the existing `decodeSecret` validator. No secret value is printed or requested. The identifier inside the URL is HMAC protected, not a raw Twitch ID or DIME identity. Do not decode or print tags during testing.
+Type the designated tester's Twitch numeric user ID into the hidden `read` input. Do not put it in a command argument, file, chat or report. Successful output is only JSON containing a short-lived invitation URL and its UTC expiry. The web identity key must decode from Base64 to exactly 32 bytes; the script uses the existing `decodeSecret` validator. No secret value is printed or requested from the owner. The resolver is pinned to SHA-256 `38399ce2a9a2b5e69fc9179815d90669e80612ea1dfc4dc2d399db9608488035`; metadata-only `python3 scripts/provision-tester-runtime.py --check` validates those bytes without resolution or invitation generation. The identifier inside the URL is HMAC protected, not a raw Twitch ID or DIME identity. Do not decode or print tags during testing.
 
 Open the URL directly in the designated tester's browser within 15 minutes. The first valid OAuth start spends the invitation permanently. Sharing/reusing it, losing the redirect, provider denial or choosing a different Twitch account requires a new invitation. No real invitation or computed tag belongs in evidence artifacts.
 
