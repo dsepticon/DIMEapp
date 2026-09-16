@@ -1,0 +1,1999 @@
+{
+  "execution": {
+    "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-signin-289cadc-review-1/845e0974-41de-41a1-92ba-ad1dfd2de709",
+    "clientRequestToken": "m42-signin-289cadc-owner-execution-20260916",
+    "executeCalls": 1,
+    "accepted": true,
+    "observedInProgressUTC": "2026-09-16T15:38:19Z"
+  },
+  "stackStatus": "UPDATE_COMPLETE",
+  "modes": {
+    "WebSignInMode": "DISABLED",
+    "AccountLinkingMode": "DISABLED",
+    "ContentConversionMode": "ENABLED",
+    "ConfigurationRevision": "m42-signin-289cadc-review-1"
+  },
+  "testerTags": "Reviewed empty value retained using UsePreviousValue; no resolved environment retrieved",
+  "preflight": {
+    "passed": true,
+    "adds": [
+      "WebAuthExecutionRole",
+      "WebAuthFunctionWebRoute0Permission",
+      "WebAuthFunctionWebRoute10Permission",
+      "WebAuthFunctionWebRoute11Permission",
+      "WebAuthFunctionWebRoute12Permission",
+      "WebAuthFunctionWebRoute13Permission",
+      "WebAuthFunctionWebRoute14Permission",
+      "WebAuthFunctionWebRoute1Permission",
+      "WebAuthFunctionWebRoute2Permission",
+      "WebAuthFunctionWebRoute3Permission",
+      "WebAuthFunctionWebRoute4Permission",
+      "WebAuthFunctionWebRoute5Permission",
+      "WebAuthFunctionWebRoute6Permission",
+      "WebAuthFunctionWebRoute7Permission",
+      "WebAuthFunctionWebRoute8Permission",
+      "WebAuthFunctionWebRoute9Permission",
+      "WebAuthFunction",
+      "WebAuthLogGroup"
+    ],
+    "modifies": ["EbsExecutionRole", "EbsFunction", "StagingHttpApi"],
+    "removals": 0,
+    "replacements": 0,
+    "webSignIn": "DISABLED",
+    "linking": "DISABLED",
+    "conversion": "ENABLED",
+    "testerEligibility": "unavailable",
+    "secretMetadataVerified": true,
+    "artifactHashesVerified": true,
+    "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-signin-289cadc-review-1/845e0974-41de-41a1-92ba-ad1dfd2de709"
+  },
+  "lambdaHashes": {
+    "EbsFunction": {
+      "Hash": "4kbdkFYYfB2vTSanDcaKtcwObvYhNxqLqbbKD1OkKvY=",
+      "State": "Active",
+      "Update": "Successful",
+      "Revision": "f7ed7744-8722-47ae-8d25-7aea24e25321"
+    },
+    "WebAuthFunction": {
+      "Hash": "tGgPKaGg3evmBEM76XifJDRXYMLpuZeMdv/SFtwaDh0=",
+      "State": "Active",
+      "Update": "Successful",
+      "Revision": "38cecc76-efc1-448a-a466-9d7aa2b1a06a"
+    }
+  },
+  "resourceEvents": [
+    {
+      "Timestamp": "2026-09-16T15:38:56.836000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:56.835000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:56.034000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:55.003000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute9Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.858000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute2Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.712000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute13Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.603000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute10Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.571000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute9Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.530000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute3Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.458000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute2Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.339000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute4Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.249000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute7Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.248000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute13Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.094000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute3Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.075000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute12Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.071000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute10Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.070000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute6Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:54.039000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute0Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.964000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute14Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.893000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute8Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.889000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute4Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.819000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute7Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.755000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute1Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.651000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute12Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.636000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute11Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.626000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute5Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.597000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute6Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.549000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute0Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.534000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute14Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.495000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute8Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.340000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute1Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.202000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute5Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:53.145000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute11Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.510000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute4Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.499000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute0Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.494000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute8Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.477000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute13Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.463000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute7Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.451000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute9Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.451000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute1Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.446000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute12Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.445000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute10Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.432000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute5Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.430000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute11Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.430000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute3Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.425000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute2Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.424000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute14Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:52.406000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunctionWebRoute6Permission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:51.935000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:47.664000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:46.756000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:42.809000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:35.015000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:33.480000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:33.305000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:32.377000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:31.770000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:24.370000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:16.035000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:15.440000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:15.319000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:15.076000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:14.668000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:11.767000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T15:38:11.756000+00:00",
+      "OperationId": "c50a58fd-8eec-4f12-9345-066f9199d694",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-16T02:15:28.785000+00:00",
+      "OperationId": "f8aca204-9c5d-4db8-9062-39ba941755d2",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-16T02:15:28.784000+00:00",
+      "OperationId": "f8aca204-9c5d-4db8-9062-39ba941755d2",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T02:15:28.052000+00:00",
+      "OperationId": "f8aca204-9c5d-4db8-9062-39ba941755d2",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T02:15:26.339000+00:00",
+      "OperationId": "f8aca204-9c5d-4db8-9062-39ba941755d2",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T02:15:12.963000+00:00",
+      "OperationId": "f8aca204-9c5d-4db8-9062-39ba941755d2",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T02:15:09.235000+00:00",
+      "OperationId": "f8aca204-9c5d-4db8-9062-39ba941755d2",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T02:15:09.228000+00:00",
+      "OperationId": "f8aca204-9c5d-4db8-9062-39ba941755d2",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T17:48:19.712000+00:00",
+      "OperationId": "12ecb98e-192e-4171-8d73-78a32e4ba829",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T17:48:19.711000+00:00",
+      "OperationId": "12ecb98e-192e-4171-8d73-78a32e4ba829",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T17:48:18.874000+00:00",
+      "OperationId": "12ecb98e-192e-4171-8d73-78a32e4ba829",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T17:48:17.065000+00:00",
+      "OperationId": "12ecb98e-192e-4171-8d73-78a32e4ba829",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T17:48:03.273000+00:00",
+      "OperationId": "12ecb98e-192e-4171-8d73-78a32e4ba829",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T17:47:59.384000+00:00",
+      "OperationId": "12ecb98e-192e-4171-8d73-78a32e4ba829",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T17:47:59.375000+00:00",
+      "OperationId": "12ecb98e-192e-4171-8d73-78a32e4ba829",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T16:43:17.057000+00:00",
+      "OperationId": "6de9cc14-e0f9-4042-8559-48361e048afb",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T16:43:17.056000+00:00",
+      "OperationId": "6de9cc14-e0f9-4042-8559-48361e048afb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T16:43:16.348000+00:00",
+      "OperationId": "6de9cc14-e0f9-4042-8559-48361e048afb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T16:43:14.458000+00:00",
+      "OperationId": "6de9cc14-e0f9-4042-8559-48361e048afb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T16:43:01.035000+00:00",
+      "OperationId": "6de9cc14-e0f9-4042-8559-48361e048afb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T16:42:57.452000+00:00",
+      "OperationId": "6de9cc14-e0f9-4042-8559-48361e048afb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T16:42:57.443000+00:00",
+      "OperationId": "6de9cc14-e0f9-4042-8559-48361e048afb",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T15:51:41.935000+00:00",
+      "OperationId": "6057e27a-1f4b-42a8-b1ed-bb1c29a01850",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T15:51:41.934000+00:00",
+      "OperationId": "6057e27a-1f4b-42a8-b1ed-bb1c29a01850",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T15:51:41.212000+00:00",
+      "OperationId": "6057e27a-1f4b-42a8-b1ed-bb1c29a01850",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T15:51:39.309000+00:00",
+      "OperationId": "6057e27a-1f4b-42a8-b1ed-bb1c29a01850",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T15:51:26.053000+00:00",
+      "OperationId": "6057e27a-1f4b-42a8-b1ed-bb1c29a01850",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T15:51:22.481000+00:00",
+      "OperationId": "6057e27a-1f4b-42a8-b1ed-bb1c29a01850",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T15:51:22.474000+00:00",
+      "OperationId": "6057e27a-1f4b-42a8-b1ed-bb1c29a01850",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T14:26:48.989000+00:00",
+      "OperationId": "58532cbb-6c2a-4ac8-ab21-f007f1310470",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T14:26:48.988000+00:00",
+      "OperationId": "58532cbb-6c2a-4ac8-ab21-f007f1310470",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T14:26:48.373000+00:00",
+      "OperationId": "58532cbb-6c2a-4ac8-ab21-f007f1310470",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T14:26:46.409000+00:00",
+      "OperationId": "58532cbb-6c2a-4ac8-ab21-f007f1310470",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T14:26:39.024000+00:00",
+      "OperationId": "58532cbb-6c2a-4ac8-ab21-f007f1310470",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T14:26:35.384000+00:00",
+      "OperationId": "58532cbb-6c2a-4ac8-ab21-f007f1310470",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T14:26:35.377000+00:00",
+      "OperationId": "58532cbb-6c2a-4ac8-ab21-f007f1310470",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:26.261000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:26.260000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:25.672000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.729000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalConvertPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.676000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalActionsPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.525000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalResetPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.483000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionGetOriginalStatePermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.431000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalPreviewPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.294000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalActionsPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.288000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalConvertPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.110000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalResetPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:24.054000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionGetOriginalStatePermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:23.992000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalPreviewPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:23.372000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalConvertPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:23.322000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalResetPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:23.318000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionGetOriginalStatePermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:23.300000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalActionsPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:23.290000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostOriginalPreviewPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:22.980000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:19.824000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:19.181000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:05.997000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:02.526000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-15T12:56:02.517000+00:00",
+      "OperationId": "4328a565-0b1f-4f20-93ae-7a448e9012be",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:51.765000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:51.764000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:51.128000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:50.347000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostProfileResetPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:49.731000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostProfileResetPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:48.871000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostProfileResetPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:48.476000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:43.899000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:43.277000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:29.912000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:26.436000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-14T17:59:26.427000+00:00",
+      "OperationId": "c954bf75-bf9b-44af-8d5b-c7e0252b89ec",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T22:40:20.861000+00:00",
+      "OperationId": "5d474d9c-aa80-49df-a5fd-884910f2bd97",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T22:40:20.860000+00:00",
+      "OperationId": "5d474d9c-aa80-49df-a5fd-884910f2bd97",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T22:40:20.203000+00:00",
+      "OperationId": "5d474d9c-aa80-49df-a5fd-884910f2bd97",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T22:40:18.533000+00:00",
+      "OperationId": "5d474d9c-aa80-49df-a5fd-884910f2bd97",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T22:40:05.294000+00:00",
+      "OperationId": "5d474d9c-aa80-49df-a5fd-884910f2bd97",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T22:40:01.979000+00:00",
+      "OperationId": "5d474d9c-aa80-49df-a5fd-884910f2bd97",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T22:40:01.971000+00:00",
+      "OperationId": "5d474d9c-aa80-49df-a5fd-884910f2bd97",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T14:18:46.550000+00:00",
+      "OperationId": "c9a6661f-047b-4520-85e0-d38d54267a74",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T14:18:46.549000+00:00",
+      "OperationId": "c9a6661f-047b-4520-85e0-d38d54267a74",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T14:18:45.978000+00:00",
+      "OperationId": "c9a6661f-047b-4520-85e0-d38d54267a74",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T14:18:44.321000+00:00",
+      "OperationId": "c9a6661f-047b-4520-85e0-d38d54267a74",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T14:18:31.091000+00:00",
+      "OperationId": "c9a6661f-047b-4520-85e0-d38d54267a74",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T14:18:27.701000+00:00",
+      "OperationId": "c9a6661f-047b-4520-85e0-d38d54267a74",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T14:18:27.693000+00:00",
+      "OperationId": "c9a6661f-047b-4520-85e0-d38d54267a74",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:11.126000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:11.125000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:10.486000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:09.384000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiServerErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:08.827000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:08.813000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsThrottleAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:08.799000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:59:08.303000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:58:55.123000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T01:58:53.455000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:58:52.629000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:58:52.589000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "PlayerStateTable",
+      "ResourceType": "AWS::DynamoDB::Table",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:58:52.539000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiAccessLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T01:58:50.229000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T01:58:50.221000+00:00",
+      "OperationId": "0f70e58c-5b4f-43f1-92c0-69680db28864",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T00:05:12.623000+00:00",
+      "OperationId": "33c41911-515d-47f4-b8bf-419223ef1e43",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-13T00:05:12.622000+00:00",
+      "OperationId": "33c41911-515d-47f4-b8bf-419223ef1e43",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T00:05:11.931000+00:00",
+      "OperationId": "33c41911-515d-47f4-b8bf-419223ef1e43",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T00:05:10.068000+00:00",
+      "OperationId": "33c41911-515d-47f4-b8bf-419223ef1e43",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-13T00:04:56.709000+00:00",
+      "OperationId": "33c41911-515d-47f4-b8bf-419223ef1e43",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T00:04:53.267000+00:00",
+      "OperationId": "33c41911-515d-47f4-b8bf-419223ef1e43",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-13T00:04:53.260000+00:00",
+      "OperationId": "33c41911-515d-47f4-b8bf-419223ef1e43",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:30.939000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "OperationType": "CREATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:30.938000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:30.193000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiServerErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:29.458000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApistagingStage",
+      "ResourceType": "AWS::ApiGatewayV2::Stage",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:28.981000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostActionsPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:28.889000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionGetStatePermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:28.879000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApistagingStage",
+      "ResourceType": "AWS::ApiGatewayV2::Stage",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:28.530000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostActionsPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:28.436000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionGetStatePermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:28.357000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiServerErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:27.778000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApistagingStage",
+      "ResourceType": "AWS::ApiGatewayV2::Stage",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:27.715000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionPostActionsPermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:27.631000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunctionGetStatePermission",
+      "ResourceType": "AWS::Lambda::Permission",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:27.622000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiServerErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:27.288000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:26.724000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:26.409000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsThrottleAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:26.288000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:24.593000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsThrottleAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:24.494000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:23.957000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "StagingHttpApi",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:23.947000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsThrottleAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:23.913000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsErrorAlarm",
+      "ResourceType": "AWS::CloudWatch::Alarm",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:23.601000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:15.769000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:14.460000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:21:13.778000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:57.445000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:56.578000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsExecutionRole",
+      "ResourceType": "AWS::IAM::Role",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:55.878000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "PlayerStateTable",
+      "ResourceType": "AWS::DynamoDB::Table",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:51.698000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:51.637000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiAccessLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:51.397000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:51.315000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiAccessLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:43.156000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "PlayerStateTable",
+      "ResourceType": "AWS::DynamoDB::Table",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:42.799000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:42.744000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiAccessLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:42.088000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "ApiAccessLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:42.075000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "PlayerStateTable",
+      "ResourceType": "AWS::DynamoDB::Table",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:42.070000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "EbsLogGroup",
+      "ResourceType": "AWS::Logs::LogGroup",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:40.040000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "CREATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-12T23:20:40.034000+00:00",
+      "OperationId": "63333f62-0b7d-4a34-af10-da4893db16cf",
+      "OperationType": "CREATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    }
+  ],
+  "failedEvents": [],
+  "routeChecks": [
+    {
+      "route": "GET /state",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "GET /v4/state",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /actions",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /profile/reset",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /v4/actions",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /v4/content/convert",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /v4/content/preview",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /v4/profile/reset",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "GET /auth/status",
+      "status": 200,
+      "code": null,
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "GET /auth/login",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "GET /auth/callback",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "GET /auth/session",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "GET /api/v4/state",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /auth/link/intent",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /auth/link/accept",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /auth/unlink",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /auth/delete/intent",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /api/v4/actions",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /api/v4/content/preview",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /api/v4/content/convert",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /api/v4/profile/reset",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "POST /auth/logout",
+      "status": 503,
+      "code": null,
+      "redirect": false,
+      "setsCookie": false
+    }
+  ],
+  "emergencyFailure": [
+    {
+      "route": "/auth/logout",
+      "status": 503,
+      "outerConfigurationCatch": true,
+      "redirect": false,
+      "setsCookie": false
+    },
+    {
+      "route": "/auth/delete/resume",
+      "status": 503,
+      "outerConfigurationCatch": true,
+      "redirect": false,
+      "setsCookie": false
+    }
+  ],
+  "routes": [
+    "GET /api/v4/state",
+    "GET /auth/callback",
+    "GET /auth/login",
+    "GET /auth/session",
+    "GET /auth/status",
+    "GET /state",
+    "GET /v4/state",
+    "POST /actions",
+    "POST /api/v4/actions",
+    "POST /api/v4/content/convert",
+    "POST /api/v4/content/preview",
+    "POST /api/v4/profile/reset",
+    "POST /auth/delete/intent",
+    "POST /auth/delete/resume",
+    "POST /auth/link/accept",
+    "POST /auth/link/intent",
+    "POST /auth/logout",
+    "POST /auth/unlink",
+    "POST /profile/reset",
+    "POST /v4/actions",
+    "POST /v4/content/convert",
+    "POST /v4/content/preview",
+    "POST /v4/profile/reset"
+  ],
+  "tableConfigurationUnchanged": true,
+  "deployedPoliciesMatchReviewedPolicies": true,
+  "websitePublished": false,
+  "websiteObjectWrites": 0,
+  "cloudFrontInvalidations": [],
+  "cloudWatchAggregateChecks": {
+    "runtime-errors": {
+      "queryLanguage": "CWLI",
+      "results": [],
+      "statistics": {
+        "recordsMatched": 0.0,
+        "recordsScanned": 8.0,
+        "estimatedRecordsSkipped": 0.0,
+        "bytesScanned": 1584.0,
+        "estimatedBytesSkipped": 0.0,
+        "logGroupsScanned": 2.0,
+        "resultCount": 0.0
+      },
+      "status": "Complete"
+    },
+    "sensitive-patterns": {
+      "queryLanguage": "CWLI",
+      "results": [],
+      "statistics": {
+        "recordsMatched": 0.0,
+        "recordsScanned": 8.0,
+        "estimatedRecordsSkipped": 0.0,
+        "bytesScanned": 1584.0,
+        "estimatedBytesSkipped": 0.0,
+        "logGroupsScanned": 2.0,
+        "resultCount": 0.0
+      },
+      "status": "Complete"
+    },
+    "runtime-reports": {
+      "queryLanguage": "CWLI",
+      "results": [],
+      "statistics": {
+        "recordsMatched": 0.0,
+        "recordsScanned": 8.0,
+        "estimatedRecordsSkipped": 0.0,
+        "bytesScanned": 1584.0,
+        "estimatedBytesSkipped": 0.0,
+        "logGroupsScanned": 2.0,
+        "resultCount": 0.0
+      },
+      "status": "Complete"
+    }
+  }
+}
