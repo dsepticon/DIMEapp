@@ -1,0 +1,86 @@
+{
+  "reviewOnly": true,
+  "published": false,
+  "bucket": "destroyaindustriesminingextension.com",
+  "region": "us-west-2",
+  "distribution": "EC269D02M2JLD",
+  "expectedDistributionETag": "E2GYT0DANXUABP",
+  "artifact": "/tmp/dime-m43-guest/DIME-Web-0.9.0-guest-demo-review-20260916.zip",
+  "artifactSha256": "1a0f24ff06051e2df27565e606f9bd2f5870147c780a0724bbce37cf5501e920",
+  "artifactSize": 111138,
+  "entries": [
+    {
+      "key": "assets/index-BPyjZOOz.css",
+      "action": "CREATE",
+      "condition": {
+        "IfNoneMatch": "*"
+      },
+      "before": null,
+      "size": 20842,
+      "sha256": "235789dd82f9c565f0ee1e9b27709bb2526dfc0aba3b5420ce18df009d1ed9b6",
+      "contentType": "text/css; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "serverSideEncryption": "AES256"
+    },
+    {
+      "key": "assets/index-K9AnuJ1n.js",
+      "action": "CREATE",
+      "condition": {
+        "IfNoneMatch": "*"
+      },
+      "before": null,
+      "size": 364380,
+      "sha256": "f0c4c5b95080719a74d45efd7d65af3755ac45f97af1a006cc220663988554dd",
+      "contentType": "text/javascript; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "serverSideEncryption": "AES256"
+    },
+    {
+      "key": "index.html",
+      "existed": true,
+      "before": {
+        "AcceptRanges": "bytes",
+        "LastModified": "2024-10-01T03:28:02+00:00",
+        "ContentLength": 748,
+        "ETag": "\"a4c3c0e31f6f6aeaf91b0dacb9df1e88\"",
+        "ContentType": "text/html",
+        "ServerSideEncryption": "AES256",
+        "Metadata": {}
+      },
+      "beforeSha256": "2bcc8de3c43b8ac7feef1f1e21d331f93a4f6a2d37e808ef2b64f006915dae1a",
+      "localBackup": "/tmp/dime-m42-web-publication-c39b5b1/backups/index.html.before",
+      "action": "REPLACE",
+      "rollback": "Conditionally restore exact backup bytes and original metadata against the recorded publication ETag.",
+      "condition": {
+        "IfMatch": "\"a4c3c0e31f6f6aeaf91b0dacb9df1e88\""
+      },
+      "backupKey": "review-backups/guest-20260916/2bcc8de3c43b8ac7feef1f1e21d331f93a4f6a2d37e808ef2b64f006915dae1a/index.html",
+      "size": 485,
+      "sha256": "d854481cebcaa0e45ce6d727b166448108240c5a5b90a4cbf1971284f532fb9c",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-cache, max-age=0, must-revalidate",
+      "serverSideEncryption": "AES256"
+    }
+  ],
+  "privacy": {
+    "action": "PRESERVE",
+    "sha256": "6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c",
+    "ETag": "\"36b650808ecff4e13988e43a3159e62d\"",
+    "VersionId": null
+  },
+  "invalidationPaths": ["/", "/index.html"],
+  "requiredModes": {
+    "WebSignInMode": "DISABLED",
+    "AccountLinkingMode": "DISABLED",
+    "ContentConversionMode": "ENABLED"
+  },
+  "rollback": "Restore index backup bytes and metadata conditionally against recorded publication ETag; restore original distribution snapshot conditionally; invalidate only entry paths; retain newly created hashed assets.",
+  "requiredEdgeReview": {
+    "templateSha256": "0e2d03d9778b382d9ddd0254210349bb1afdf78518a4f121027d17309b8c7b33",
+    "functionSha256": "7bea0577c3673f486f24bea57d189c974b1f82357daa277da7fa85c45e590828",
+    "capability": "Exact GET /auth/status advertises memory-only guest; sign-in/linking false.",
+    "apiGate": "All public /api/* requests return 401 before origin; malformed alternate paths fail closed.",
+    "deploymentStatus": "NOT DEPLOYED; review and authorize before publication."
+  },
+  "sourceCommit": "853669a4885e61226c07f13ab2b71b61e6f4020f"
+}
