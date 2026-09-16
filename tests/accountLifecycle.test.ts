@@ -346,3 +346,49 @@ it('turning off new linking cannot strand a verified deletion job', async () => 
   expect(response.statusCode).toBe(200);
   expect(JSON.parse(response.body)).toEqual({ status: 'REVOKED' });
 });
+
+it('deletion after unlink removes the persistent reservation and never restores an Extension mapping', async () => {
+  const f = fixture(),
+    a = await f.login();
+  await f.auth.acceptLink(await f.auth.createLink(a.sid, a.mutation), extension);
+  const b = await f.login();
+  await f.auth.unlink(b.sid, b.mutation, 'UNLINK_EXTENSION');
+  const c = await f.login(),
+    cap = opaque();
+  await f.auth.beginDeletion(c.sid, c.mutation, 'DELETE_ACCOUNT', cap);
+  for (let i = 0; i < 3; i++) await f.auth.resumeDeletion(c.session.account, cap);
+  const reservation = await f.get<Record<string, unknown>>(reservationKey(extension));
+  expect(Object.keys(reservation!).sort()).toEqual(['deleted', 'expiresAt']);
+  expect(await f.get('binding:' + extension)).toBeUndefined();
+  expect(await f.get('extension:' + extension)).toBeUndefined();
+  expect(await f.get(manifestKey(c.session.account))).toBeUndefined();
+});
+it('successful provider revocation followed by a failed checkpoint can be retried', async () => {
+  const f = fixture(),
+    a = await f.login(),
+    cap = opaque();
+  await f.auth.beginDeletion(a.sid, a.mutation, 'DELETE_ACCOUNT', cap);
+  const original = f.repo.transaction.bind(f.repo);
+  let interrupt = true;
+  f.repo.transaction = (run) =>
+    original((tx) =>
+      run({
+        ...tx,
+        put: async (key, value, expiresAt) => {
+          await tx.put(key, value, expiresAt);
+          if (
+            interrupt &&
+            key === 'deletion:' + a.session.account &&
+            (value as { phase?: string }).phase === 'REVOKED'
+          ) {
+            interrupt = false;
+            throw Error('Synthetic checkpoint failure');
+          }
+        },
+      }),
+    );
+  await expect(f.auth.resumeDeletion(a.session.account, cap)).rejects.toThrow('Synthetic');
+  expect(await f.get('grant:' + a.session.subject)).toBeDefined();
+  expect((await f.auth.resumeDeletion(a.session.account, cap)).status).toBe('REVOKED');
+  expect(f.revoked()).toBe(2);
+});
