@@ -14,8 +14,14 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, { failed: b
     return this.state.failed ? (
       <main>
         <h1>D.I.M.E. could not open this view</h1>
-        <p>Your server state is preserved.</p>
-        <button onClick={() => location.reload()}>Reload extension</button>
+        <p>
+          {import.meta.env.VITE_DIME_MODE === 'guest'
+            ? 'Guest progress is not saved. Reload to start a fresh demo.'
+            : 'Your server state is preserved.'}
+        </p>
+        <button onClick={() => location.reload()}>
+          {import.meta.env.VITE_DIME_MODE === 'guest' ? 'Reload demo' : 'Reload extension'}
+        </button>
       </main>
     ) : (
       this.props.children

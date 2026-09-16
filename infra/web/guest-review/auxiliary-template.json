@@ -1,0 +1,76 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "REVIEW ONLY: guest edge capability and application security headers. No distribution association or data access.",
+  "Resources": {
+    "GuestCapability": {
+      "Type": "AWS::CloudFront::Function",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-guest-status"
+        },
+        "AutoPublish": true,
+        "FunctionConfig": {
+          "Comment": "Memory-only guest capability and fail-closed public gameplay gate",
+          "Runtime": "cloudfront-js-2.0"
+        },
+        "FunctionCode": "// REVIEW ONLY: no publication/association is performed by this file.\n// Exact-path, non-identifying guest capability. Never an authentication grant.\nfunction handler(event) {\n  var request = event.request;\n  // Guest-only deployment: no public web gameplay request reaches persistence.\n  // Does not read credentials or alter emergency logout/deletion routing.\n  if (request.uri.indexOf('/api/') === 0 || /%|\\/\\.\\.?\\/|\\/\\//.test(request.uri)) {\n    return {\n      statusCode: 401,\n      statusDescription: 'Unauthorized',\n      headers: {\n        'content-type': { value: 'application/json; charset=utf-8' },\n        'cache-control': { value: 'no-store' },\n        'x-content-type-options': { value: 'nosniff' }\n      },\n      body: JSON.stringify({ code: 'UNAUTHORIZED' })\n    };\n  }\n  if (request.method === 'GET' && request.uri === '/auth/status') {\n    return {\n      statusCode: 200,\n      statusDescription: 'OK',\n      headers: {\n        'content-type': { value: 'application/json; charset=utf-8' },\n        'cache-control': { value: 'no-store' },\n        'x-content-type-options': { value: 'nosniff' },\n        'referrer-policy': { value: 'no-referrer' }\n      },\n      body: JSON.stringify({\n        signInAvailable: false,\n        linkingAvailable: false,\n        guestDemoAvailable: true,\n        guestStorage: 'memory'\n      })\n    };\n  }\n  return request;\n}\n"
+      }
+    },
+    "GuestHeaders": {
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}-guest-headers"
+          },
+          "Comment": "Guest application only; privacy behavior preserved",
+          "SecurityHeadersConfig": {
+            "ContentSecurityPolicy": {
+              "ContentSecurityPolicy": "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+              "Override": true
+            },
+            "ContentTypeOptions": {
+              "Override": true
+            },
+            "FrameOptions": {
+              "FrameOption": "DENY",
+              "Override": true
+            },
+            "ReferrerPolicy": {
+              "ReferrerPolicy": "no-referrer",
+              "Override": true
+            },
+            "StrictTransportSecurity": {
+              "AccessControlMaxAgeSec": 31536000,
+              "Override": true
+            }
+          },
+          "CustomHeadersConfig": {
+            "Items": [
+              {
+                "Header": "Permissions-Policy",
+                "Value": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+                "Override": true
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "CapabilityFunctionArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "GuestCapability",
+          "FunctionARN"
+        ]
+      }
+    },
+    "HeadersPolicyId": {
+      "Value": {
+        "Ref": "GuestHeaders"
+      }
+    }
+  }
+}

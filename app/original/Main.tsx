@@ -24,6 +24,9 @@ import { nodeInZone } from '../../shared/originalVacuum';
 import { ServiceConsole } from './ServiceConsole';
 import { webSession, webCapabilities } from '../webSession';
 import { AccountLink } from '../AccountLink';
+import { createGuestRuntime } from './guestRuntime';
+import { guestCapability } from '../guestCapability';
+import { pendingStorage } from './pendingStorage';
 
 type Gateway = {
   token(): string | undefined;
@@ -36,6 +39,8 @@ const uuid = () => crypto.randomUUID();
 function App({ webReview = false }: { webReview?: boolean }) {
   const configuredApi = import.meta.env.VITE_DIME_API_URL as string | undefined;
   const mode = import.meta.env.DEV && webReview ? 'web' : import.meta.env.VITE_DIME_MODE || 'web';
+  const guest = mode === 'guest';
+  const demo = useRef<ReturnType<typeof createGuestRuntime> | null>(null);
   const api =
     mode === 'web'
       ? '/api'
@@ -182,10 +187,28 @@ function App({ webReview = false }: { webReview?: boolean }) {
     };
   }, [overlayOpen, menuOpen, mapOpen, resetOpen]);
   const pendingKey = () => {
+    if (guest) return '';
     const identity = gateway?.identity();
     return identity ? `dime-pending-v2:${identity}` : '';
   };
   useEffect(() => {
+    if (guest) {
+      let active = true;
+      void guestCapability().then((available) => {
+        if (!active) return;
+        if (!available) {
+          setMessage('Guest Demo is temporarily unavailable. Please try again later.');
+          return;
+        }
+        demo.current = createGuestRuntime();
+        setState(demo.current.snapshot());
+        setMessage('Local demo · walk to ship services to explore. Reloading starts fresh.');
+      });
+      return () => {
+        active = false;
+        demo.current = null;
+      };
+    }
     if (mode === 'web') {
       let active = true;
       void webCapabilities().then(async (capabilities) => {
@@ -237,12 +260,13 @@ function App({ webReview = false }: { webReview?: boolean }) {
     const connection = twitchConnection(setSession);
     setGateway(connection);
     return () => connection.stop();
-  }, [mode]);
+  }, [mode, guest]);
   const lock = useRef(false);
   const snapshotRef = useRef<ReturnType<typeof recoverySnapshot> | null>(null);
   const [discardOpen, setDiscardOpen] = useState(false);
   const [discardPhrase, setDiscardPhrase] = useState('');
   const request = async (path: string, body?: unknown) => {
+    if (guest) throw Error('Guest Demo cannot send authenticated requests.');
     if (!api) throw Error('Backend unavailable.');
     const identity = gateway?.identity();
     const epoch = requestEpoch.current;
@@ -294,8 +318,8 @@ function App({ webReview = false }: { webReview?: boolean }) {
     return snapshot;
   };
   const clearPending = (key: string, raw: string) => {
-    if (sessionStorage.getItem(key) !== raw) return false;
-    sessionStorage.removeItem(key);
+    if (pendingStorage.getItem(key) !== raw) return false;
+    pendingStorage.removeItem(key);
     setPendingBlocked(false);
     setDiscardOpen(false);
     setDiscardPhrase('');
@@ -341,13 +365,17 @@ function App({ webReview = false }: { webReview?: boolean }) {
     }
   };
   const refresh = async () => {
+    if (guest) {
+      if (demo.current) adopt({ state: demo.current.snapshot() });
+      return;
+    }
     if (!gateway?.identity() || lock.current) return;
     lock.current = true;
     setBusy(true);
     try {
       const key = pendingKey(),
         value = await request('/v4/state'),
-        raw = sessionStorage.getItem(key);
+        raw = pendingStorage.getItem(key);
       if (raw) await recover(value, key, raw);
       else {
         adopt(value);
@@ -366,6 +394,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
     }
   };
   useEffect(() => {
+    if (guest) return;
     if (mode !== 'local' && session.status !== 'authorized') {
       setState(null);
       snapshotRef.current = null;
@@ -379,10 +408,11 @@ function App({ webReview = false }: { webReview?: boolean }) {
     path: string,
     body: Record<string, unknown>,
   ): Promise<OriginalPlayerState | null> => {
+    if (guest) return null;
     if (lock.current || pendingBlocked || !snapshotRef.current) return null;
     const key = pendingKey();
     if (!key) return null;
-    if (sessionStorage.getItem(key)) {
+    if (pendingStorage.getItem(key)) {
       uncertain();
       return null;
     }
@@ -393,7 +423,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
       snapshot = snapshotRef.current;
     let stored = false;
     try {
-      sessionStorage.setItem(key, raw);
+      pendingStorage.setItem(key, raw);
       stored = true;
       const result = await request(path, body),
         next = recoverySnapshot(result);
@@ -427,6 +457,21 @@ function App({ webReview = false }: { webReview?: boolean }) {
     ...extra,
   });
   const mutate = async (action: Record<string, unknown>) => {
+    if (guest) {
+      if (lock.current || !demo.current) return null;
+      lock.current = true;
+      try {
+        const next = demo.current.mutate(action);
+        adopt({ state: next });
+        setMessage('Local demo action complete · progress is not saved.');
+        return next;
+      } catch {
+        setMessage('Demo action unavailable here. Check the local service, range or capacity.');
+        return null;
+      } finally {
+        lock.current = false;
+      }
+    }
     const result = snapshotRef.current?.state ? await execute('/v4/actions', bodyFor({ action })) : null;
     if (result)
       emitGameAudio(
@@ -497,7 +542,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const discard = async () => {
     if (discardPhrase !== 'DISCARD' || lock.current) return;
     const key = pendingKey(),
-      raw = sessionStorage.getItem(key);
+      raw = pendingStorage.getItem(key);
     if (!raw) return;
     lock.current = true;
     setBusy(true);
@@ -598,7 +643,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
   );
   return (
     <main
-      className={`originalApp${mode === 'web' ? ' standalone' : ''}`}
+      className={`originalApp${mode === 'web' || guest ? ' standalone' : ''}`}
       data-tool-mode={toolMode}
       data-playing={!!state}
       data-menu={menuOpen}
@@ -606,6 +651,11 @@ function App({ webReview = false }: { webReview?: boolean }) {
       data-touch-hidden={touchHidden}
     >
       {!state && identityHeader}
+      {guest && state && (
+        <div className="guestNotice" role="note" style={{ maxWidth: 126 }}>
+          Guest Demo — progress is not saved
+        </div>
+      )}
       {!state ? (
         <section className="gate">
           <h1>{conversion ? 'Equivalent content update' : 'Field operator access'}</h1>
@@ -742,6 +792,19 @@ function App({ webReview = false }: { webReview?: boolean }) {
               Resume game
             </button>
             {identityHeader}
+            {guest && (
+              <section className="guestInfo">
+                <b>Guest Demo · all services, cargo and quests run locally</b>
+                <p>
+                  Online saves and Twitch linking are coming after sign-in activation. No sign-in is available
+                  yet.
+                </p>
+                <p>
+                  Reload to start fresh. Demo allowance: 5,000 marks and refinery sample stock aboard the
+                  loaner at Tessick Station. Nothing is saved or transferred to an online profile.
+                </p>
+              </section>
+            )}
             <p>
               Walk: WASD / arrows · Enter: E · Ping: P · Analyze: hold F · Next target: Q · Mine: hold Space ·
               Vacuum: hold V. Release to stop.
@@ -768,6 +831,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
                 CARGO
               </button>
               <button
+                hidden={guest}
                 onClick={() => {
                   setMenuOpen(false);
                   setResetOpen(true);
@@ -831,6 +895,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
               onTarget={setTargetNode}
             />
             <ServiceConsole
+              guest={guest}
               state={state}
               busy={busy || pendingBlocked}
               mutate={mutate}
@@ -877,7 +942,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
             )}
             {legalFooter}
           </div>
-          {resetOpen && (
+          {!guest && resetOpen && (
             <div className="modal" role="dialog" aria-label="Reset game progress">
               <section>
                 <h2>About DIME</h2>

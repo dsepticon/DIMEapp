@@ -1175,3 +1175,27 @@ footer small {
 .originalApp .analysisCard {
   overflow-y: auto;
 }
+
+/* Noninteractive, persistent disclosure; no extra control or loss of touch target area. */
+.originalApp .guestNotice {
+  position: absolute;
+  z-index: 2;
+  top: calc(var(--safe-top) + 72px);
+  left: var(--safe-left);
+  max-width: calc(100% - var(--safe-left) - var(--safe-right));
+  padding: 2px 5px;
+  color: #f2f6eb;
+  background: #10252ddd;
+  border: 1px solid #91b9ba;
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 16px;
+  pointer-events: none;
+}
+.originalApp[data-menu='true'] .guestNotice {
+  visibility: hidden;
+}
+.guestInfo {
+  padding: 8px;
+  border: 1px solid #91b9ba;
+}

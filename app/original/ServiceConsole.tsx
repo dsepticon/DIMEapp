@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react';
 import type { OriginalPlayerState } from '../../shared/originalSchema';
 import { ORIGINAL_CONTENT } from '../../shared/originalCatalog';
 type Props = {
+  guest?: boolean;
   state: OriginalPlayerState;
   busy: boolean;
   mutate: (action: Record<string, unknown>) => Promise<OriginalPlayerState | null>;
   kinds: readonly string[];
 };
-export function ServiceConsole({ state, busy, mutate, kinds }: Props) {
+export function ServiceConsole({ state, busy, mutate, kinds, guest = false }: Props) {
   const [units, setUnits] = useState(100);
   const [process, setProcess] = useState('process.p001');
   const raw = useMemo(
@@ -50,7 +51,7 @@ export function ServiceConsole({ state, busy, mutate, kinds }: Props) {
   if (!kinds.some((kind) => ['cargo', 'refinery', 'market'].includes(kind))) return null;
   return (
     <section className="serviceConsole">
-      <b>INDUSTRIAL SERVICES</b>
+      <b>{guest ? 'LOCAL DEMO SERVICES' : 'INDUSTRIAL SERVICES'}</b>
       <label>
         Quantity (0.01 cSCU units)
         <input
@@ -105,6 +106,17 @@ export function ServiceConsole({ state, busy, mutate, kinds }: Props) {
           </button>
         </>
       )}
+      {guest &&
+        kinds.includes('refinery') &&
+        state.orders.map((order) => (
+          <button
+            key={order.id}
+            disabled={busy || !ship}
+            onClick={() => ship && void mutate({ type: 'collectOrder', orderId: order.id, ship })}
+          >
+            Collect demo processing order · ready {new Date(order.readyAt).toLocaleTimeString()}
+          </button>
+        ))}
       {kinds.includes('market') && (
         <button
           disabled={busy || !sale}
@@ -119,7 +131,7 @@ export function ServiceConsole({ state, busy, mutate, kinds }: Props) {
             })
           }
         >
-          Sell selected cargo at server quote
+          {guest ? 'Sell selected demo cargo' : 'Sell selected cargo at server quote'}
         </button>
       )}
     </section>
