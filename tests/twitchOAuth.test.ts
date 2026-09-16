@@ -99,3 +99,11 @@ it('revocation retry accepts only the documented invalid-token response', async 
     else await expect(provider.revoke(tokens)).rejects.toThrow();
   }
 });
+it('revokes an issued provider token if subsequent validation fails, without issuing local credentials', async () => {
+  const f = await fixture();
+  f.revoke();
+  await expect(f.provider.exchange('synthetic-code', 'nonce')).rejects.toThrow(
+    'Authentication could not be completed.',
+  );
+  expect(f.calls.some((c) => c.url.endsWith('/revoke'))).toBe(true);
+});

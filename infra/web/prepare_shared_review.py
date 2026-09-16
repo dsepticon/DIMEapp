@@ -9,8 +9,8 @@ resources=t['Resources'];params=t['Parameters'];table={'Fn::GetAtt':['PlayerStat
 for name in ['OAuthClientSecretArn','WebIdentityKeySecretArn','AuthEncryptionKeySecretArn']:
  params[name]={'Type':'String','AllowedPattern':'^arn:aws:secretsmanager:us-east-2:861738068626:secret:[A-Za-z0-9/_+=.@-]+$'}
 params['OAuthClientId']={'Type':'String','AllowedValues':['4228okut24ll35bisjmygbquaf6svm']}
-params['AccountLinkingMode']={'Type':'String','AllowedValues':['DISABLED','ENABLED'],'Default':'DISABLED','Description':'Enable only after binding-aware gameplay is deployed and old invocations have drained.'}
-params['WebSignInMode']={'Type':'String','AllowedValues':['DISABLED','TESTERS','ENABLED'],'Default':'DISABLED','Description':'Independent public sign-in gate. TESTERS fails closed until separately reviewed eligibility is implemented.'}
+params['AccountLinkingMode']={'Type':'String','AllowedValues':['DISABLED','TESTERS','ENABLED'],'Default':'DISABLED','Description':'Enable only after binding-aware gameplay is deployed and old invocations have drained.'}
+params['WebSignInMode']={'Type':'String','AllowedValues':['DISABLED','TESTERS','ENABLED'],'Default':'DISABLED','Description':'Independent public sign-in gate. TESTERS requires a signed one-use owner invitation and matching validated Twitch subject.'}
 # Baseline analyzer is reviewed rather than applied blindly. Transaction authorization is per action.
 b=json.loads((root/'iam-baseline.json').read_text());reported={a for p in b['Policies'] for s in p['Policy']['Statement'] for a in s['Action']}
 assert {'dynamodb:ConditionCheckItem','dynamodb:DeleteItem'} <= reported

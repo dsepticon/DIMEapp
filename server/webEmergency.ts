@@ -8,6 +8,7 @@ export const webOrigin = 'https://destroyaindustriesminingextension.com';
 export const expiredAuthCookies = [
   '__Host-dime-session=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0',
   '__Host-dime-login=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0',
+  '__Host-dime-invitation=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0',
 ];
 function cookie(header: string | undefined, name: string) {
   const values = (header ?? '')

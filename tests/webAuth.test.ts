@@ -188,7 +188,18 @@ describe('synthetic link transactions', () => {
 it('web HTTP keeps callback tokens out of final URLs, enforces CSRF and isolates game requests', async () => {
   const f = fixture(),
     a = await f.login();
-  const api = createWebApi(f.auth, undefined, undefined, () => 'ENABLED');
+  const api = createWebApi(
+    f.auth,
+    {
+      linkingEnabled: true,
+      origins: [],
+      authorize: async () => {
+        throw Error('Unused');
+      },
+    },
+    undefined,
+    () => 'ENABLED',
+  );
   const headers = { cookie: '__Host-dime-session=' + a.sid };
   const response = await api({ method: 'GET', path: '/api/v4/state', headers });
   expect(response.statusCode).toBe(200);
@@ -204,7 +215,7 @@ it('web HTTP keeps callback tokens out of final URLs, enforces CSRF and isolates
     headers: {},
   });
   expect(callback.statusCode).toBe(303);
-  expect(callback.headers.Location).toBe(origin + '/?auth=failed');
+  expect(callback.headers.Location).toBe(origin + '/game/?auth=failed');
   expect(callback.body).not.toContain('secret');
 });
 
@@ -320,14 +331,14 @@ it('the combined API requires independent Extension auth and preserves shared sa
   await expect(f.auth.authorize(a.sid)).rejects.toThrow();
 });
 
-it('integrated web and Extension adapters preserve ENABLED conversion and canonical fresh saves', async () => {
+it('integrated web and Extension adapters with linking enabled preserve ENABLED conversion and canonical fresh saves', async () => {
   const f = fixture(),
     a = await f.login();
   const { createAccountApi } = await import('../server/accountApi');
   const api = createAccountApi(
     f.auth,
     {
-      linkingEnabled: false,
+      linkingEnabled: true,
       origins: ['https://synthetic.ext-twitch.tv'],
       authorize: async () => 'PLAYER#v1#' + 'e'.repeat(64),
     },
@@ -367,7 +378,7 @@ it('both integrated adapters expose the configured conversion gate for synthetic
     const api = createAccountApi(
       f.auth,
       {
-        linkingEnabled: false,
+        linkingEnabled: true,
         origins: ['https://synthetic.ext-twitch.tv'],
         authorize: async () => extension,
       },

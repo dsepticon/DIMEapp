@@ -38,11 +38,21 @@ function configure() {
     table,
     new TokenEnvelope(new Map([['v1', encryption]]), 'v1'),
   );
-  const provider = new TwitchOAuth(
-    required('DIME_OAUTH_CLIENT_ID'),
-    required('DIME_OAUTH_CLIENT_SECRET'),
-    origin + '/auth/callback',
-  );
+  // Invalid invitations are rejected before OAuth-login credentials/JWKS initialize.
+  let oauth: TwitchOAuth | undefined;
+  const providerInstance = () =>
+    (oauth ??= new TwitchOAuth(
+      required('DIME_OAUTH_CLIENT_ID'),
+      required('DIME_OAUTH_CLIENT_SECRET'),
+      origin + '/auth/callback',
+    ));
+  const provider = {
+    authorize: (state: string, nonce: string) => providerInstance().authorize(state, nonce),
+    exchange: (code: string, nonce: string) => providerInstance().exchange(code, nonce),
+    validate: (tokens: import('./webAuth').Tokens) => providerInstance().validate(tokens),
+    revoke: (tokens: import('./webAuth').Tokens) =>
+      revokeTwitchToken(required('DIME_OAUTH_CLIENT_ID'), tokens),
+  };
   const auth = new WebAuth(repo, provider, identity, origin);
   const origins = required('DIME_ALLOWED_ORIGINS').split(',');
   if (origins.some((value) => !/^https:\/\/[a-z0-9-]+\.ext-twitch\.tv$/.test(value)))
@@ -60,6 +70,7 @@ function configure() {
       authorize: (header) => authenticate(header, [extensionKey], extensionIdentity),
       origins,
       linkingEnabled: process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
+      linkingMode: () => process.env.DIME_ACCOUNT_LINKING,
     },
     conversion,
     () => process.env.DIME_WEB_SIGN_IN_MODE,
@@ -118,9 +129,9 @@ export async function handler(event: {
       (event.rawQueryString ? '?' + event.rawQueryString : '');
     const method = event.requestContext?.http?.method ?? '';
     const preflight = webSignInPreflight(
-      { method, path },
+      { method, path, headers: { cookie: event.cookies?.join('; ') ?? event.headers?.cookie } },
       process.env.DIME_WEB_SIGN_IN_MODE,
-      process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
+      ['ENABLED', 'TESTERS'].includes(process.env.DIME_ACCOUNT_LINKING ?? ''),
     );
     if (preflight) return preflight;
     const request = {

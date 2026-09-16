@@ -1,3 +1,9 @@
+import {
+  verifyTesterInvitation,
+  testerIdentifier,
+  constantEqual,
+  invitationUseKey,
+} from './testerInvitation';
 import { AccountDeletion } from './accountDeletion';
 import {
   AUTH_TTL,
@@ -32,9 +38,15 @@ export interface IdentityProvider {
   validate(tokens: Tokens): Promise<{ subject: string; tokens: Tokens }>;
   revoke(tokens: Tokens): Promise<void>;
 }
-type Login = { browser: string; nonce: string; expiresAt: number };
+type Login = {
+  browser: string;
+  nonce: string;
+  expiresAt: number;
+  tester?: { identifier: string; expiresAt: number };
+};
 type Credential = { account: string; epoch: string; lease?: { id: string; until: number } };
 type Session = {
+  testerUntil?: number;
   createdAt: number;
   link?: string;
   account: string;
@@ -67,6 +79,7 @@ type LinkResult = {
   extension: string;
   player: string;
   outcome: 'LINKED' | 'CONFLICT';
+  testerUntil?: number;
   bindingEpoch?: string;
   webRevision?: number | null;
   webGeneration?: string | null;
@@ -74,6 +87,8 @@ type LinkResult = {
   extensionGeneration?: string | null;
 };
 export type Authorized = {
+  linked: boolean;
+  testerUntil?: number;
   account: string;
   player: string;
   csrf: string;
@@ -102,23 +117,47 @@ export class WebAuth {
   cookie(name: 'session' | 'login' | 'deletion', value: string, seconds: number) {
     return `__Host-dime-${name}=${value}; Path=/; Secure; HttpOnly; SameSite=${name === 'deletion' ? 'Strict' : 'Lax'}; Max-Age=${seconds}`;
   }
-  async begin() {
+  async begin(invitation?: string) {
+    const tester =
+      invitation === undefined
+        ? undefined
+        : verifyTesterInvitation(this.identityKey, invitation, this.clock());
     const state = opaque(),
       browser = opaque(),
       nonce = opaque(),
-      expiresAt = this.clock() + 300000;
+      expiresAt = Math.min(this.clock() + 300000, tester ? tester.exp * 1000 : Infinity);
     await this.repo.transaction(async (tx) => {
-      await tx.put('login:' + digest(state), { browser: digest(browser), nonce, expiresAt }, expiresAt);
+      if (tester) {
+        const key = invitationUseKey(tester.nonce);
+        if (await tx.get(key)) throw new WebAuthError();
+        // Consumption and OAuth state creation are one conditional transaction. Only nonce digest persists here.
+        await tx.put(key, { expiresAt: tester.exp * 1000 }, tester.exp * 1000);
+      }
+      await tx.put<Login>(
+        'login:' + digest(state),
+        {
+          browser: digest(browser),
+          nonce,
+          expiresAt,
+          ...(tester ? { tester: { identifier: tester.tester, expiresAt: tester.exp * 1000 } } : {}),
+        },
+        expiresAt,
+      );
     });
     return { location: this.provider.authorize(state, nonce), cookie: this.cookie('login', browser, 300) };
   }
-  async callback(code: string, state: string, browser: string, previous?: string) {
+  async callback(code: string, state: string, browser: string, previous?: string, testerRequired = false) {
     if (!code || code.length > 4096 || !/^[\w-]{43}$/.test(state) || !/^[\w-]{43}$/.test(browser))
       throw new WebAuthError();
     const login = await this.repo.transaction(async (tx) => {
       const key = 'login:' + digest(state),
         value = await tx.get<Login>(key);
-      if (!value || value.expiresAt <= this.clock() || !equal(value.browser, digest(browser)))
+      if (
+        !value ||
+        value.expiresAt <= this.clock() ||
+        !equal(value.browser, digest(browser)) ||
+        (testerRequired && !value.tester)
+      )
         throw new WebAuthError();
       await tx.delete(key);
       return value;
@@ -127,6 +166,21 @@ export class WebAuth {
     try {
       identity = await this.provider.exchange(code, login.nonce);
     } catch {
+      throw new WebAuthError();
+    }
+    try {
+      if (
+        login.tester &&
+        (login.tester.expiresAt <= this.clock() ||
+          !constantEqual(login.tester.identifier, testerIdentifier(this.identityKey, identity.subject)))
+      )
+        throw new WebAuthError();
+    } catch {
+      try {
+        await this.provider.revoke(identity.tokens);
+      } catch {
+        /* Fail closed; never retain rejected provider data. */
+      }
       throw new WebAuthError();
     }
     const subject = this.subject(identity.subject),
@@ -191,6 +245,7 @@ export class WebAuth {
           'session:' + digest(sid),
           {
             createdAt: now,
+            ...(login.tester ? { testerUntil: now + AUTH_TTL.session } : {}),
             account,
             subject,
             csrf,
@@ -212,8 +267,16 @@ export class WebAuth {
     return {
       cookie: this.cookie('session', sid, 8 * 3600),
       clearLogin: this.cookie('login', '', 0),
-      location: this.origin + '/',
+      location: this.origin + (login.tester ? '/auth/session?view=tester' : '/'),
     };
+  }
+  async cancelLogin(state: string, browser: string) {
+    if (!/^[\w-]{43}$/.test(state) || !/^[\w-]{43}$/.test(browser)) return;
+    await this.repo.transaction(async (tx) => {
+      const key = 'login:' + digest(state),
+        value = await tx.get<Login>(key);
+      if (value && equal(value.browser, digest(browser))) await tx.delete(key);
+    });
   }
   private async checked(tx: RecordTransaction, key: string, mutation?: { origin?: string; csrf?: string }) {
     const s = await tx.get<Session>('session:' + key),
@@ -276,6 +339,8 @@ export class WebAuth {
       );
       await tx.put('session:' + key, s, s.expiresAt);
       return {
+        ...(s.testerUntil ? { testerUntil: s.testerUntil } : {}),
+        linked: !!account.extension,
         account: account.id,
         player: account.player,
         csrf: s.csrf,
@@ -317,12 +382,13 @@ export class WebAuth {
     }
     return this.cookie('session', '', 0);
   }
-  async createLink(sid: string, mutation: { origin?: string; csrf?: string }) {
+  async createLink(sid: string, mutation: { origin?: string; csrf?: string }, testerRequired = false) {
     const a = await this.authorize(sid, mutation),
       intent = opaque(),
       expiresAt = this.clock() + 300000;
     await this.repo.transaction(async (tx) => {
       const { s } = await this.checked(tx, a.session, mutation);
+      if (testerRequired && (!s.testerUntil || s.testerUntil <= this.clock())) throw new WebAuthError(403);
       if (s.link) await tx.delete('link:' + s.link);
       s.link = digest(intent);
       await tx.put('session:' + a.session, s, s.expiresAt);
@@ -346,14 +412,18 @@ export class WebAuth {
     return intent;
   }
   /** Caller must independently verify the Extension JWT; progress is read only from authoritative records. */
-  async acceptLink(intent: string, extensionPlayer: string) {
+  async acceptLink(intent: string, extensionPlayer: string, testerRequired = false) {
     if (!/^[\w-]{43}$/.test(intent) || !/^PLAYER#v1#[a-f0-9]{64}$/.test(extensionPlayer))
       throw new WebAuthError();
     const result = await this.repo.transaction(async (tx) => {
       const resultKey = 'link-result:' + digest(intent);
       const prior = await tx.get<LinkResult>(resultKey);
       if (prior) {
-        if (prior.expiresAt <= this.clock()) throw new WebAuthError();
+        if (
+          prior.expiresAt <= this.clock() ||
+          (testerRequired && (!prior.testerUntil || prior.testerUntil <= this.clock()))
+        )
+          throw new WebAuthError();
         await activeManifest(tx, prior.account);
         if (prior.extension !== extensionPlayer) throw new WebAuthError();
         if (prior.outcome === 'CONFLICT') return false;
@@ -374,6 +444,7 @@ export class WebAuth {
         link = await tx.get<Link>(key);
       if (!link || link.expiresAt <= this.clock()) throw new WebAuthError();
       const { s, c } = await this.checked(tx, link.session);
+      if (testerRequired && (!s.testerUntil || s.testerUntil <= this.clock())) throw new WebAuthError(403);
       if (s.epoch !== link.epoch || s.account !== link.account) throw new WebAuthError();
       const web = await tx.get<Account>('account:' + link.account);
       if (!web || web.suspended) throw new WebAuthError();
@@ -394,6 +465,7 @@ export class WebAuth {
           : await tx.get<VersionedContentState>('state:' + extensionCanonical);
       const expiresAt = this.clock() + AUTH_TTL.outcome;
       const observed = {
+        ...(s.testerUntil ? { testerUntil: s.testerUntil } : {}),
         expiresAt,
         webRevision: webState?.revision ?? null,
         webGeneration: webState?.saveGeneration ?? null,

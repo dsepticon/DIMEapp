@@ -125,3 +125,9 @@ rule public_capability_route {
   Resources.WebAuthFunction.Properties.Events.WebRoute14.Properties.Method == 'GET'
   Resources.WebAuthFunction.Properties.Events.WebRoute14.Properties.ApiId.Ref == 'StagingHttpApi'
 }
+
+rule tester_linking_is_independently_controlled {
+  Parameters.AccountLinkingMode.AllowedValues == ['DISABLED', 'TESTERS', 'ENABLED']
+  Parameters.AccountLinkingMode.Default == 'DISABLED'
+  Parameters.WebSignInMode.Default == 'DISABLED'
+}

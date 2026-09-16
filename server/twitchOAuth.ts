@@ -68,6 +68,7 @@ export class TwitchOAuth implements IdentityProvider {
     };
   }
   async exchange(code: string, nonce: string) {
+    let issued: Tokens | undefined;
     try {
       const response = await this.post('/token', {
         client_id: this.clientId,
@@ -77,6 +78,7 @@ export class TwitchOAuth implements IdentityProvider {
         code,
       });
       const value = tokenSchema.parse(await response.json());
+      issued = this.tokens(value);
       if (!value.id_token) throw new WebAuthError();
       const { payload } = await jwtVerify(value.id_token, this.keys, {
         algorithms: ['RS256'],
@@ -105,6 +107,13 @@ export class TwitchOAuth implements IdentityProvider {
       if (checked.subject !== payload.sub) throw new WebAuthError();
       return checked;
     } catch {
+      if (issued) {
+        try {
+          await this.revoke(issued);
+        } catch {
+          /* Rejected grants never become local authentication records. */
+        }
+      }
       throw new WebAuthError();
     }
   }

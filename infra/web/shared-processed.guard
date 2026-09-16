@@ -118,3 +118,9 @@ rule public_capability_route {
   Resources.WebAuthFunctionWebRoute14Permission.Properties.SourceArn.'Fn::Sub'[0] == 'arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/status'
   Resources.WebAuthFunctionWebRoute14Permission.Properties.SourceArn.'Fn::Sub'[1].'__ApiId__'.Ref == 'StagingHttpApi'
 }
+
+rule tester_linking_is_independently_controlled {
+  Parameters.AccountLinkingMode.AllowedValues == ['DISABLED', 'TESTERS', 'ENABLED']
+  Parameters.AccountLinkingMode.Default == 'DISABLED'
+  Parameters.WebSignInMode.Default == 'DISABLED'
+}
