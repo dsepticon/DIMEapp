@@ -1,0 +1,332 @@
+{
+  "artifact": {
+    "commit": "6a89255d65b957159c8b2a5091512d6ee0ee7958",
+    "changeSetName": "m42-emergency-6a89255-1",
+    "path": "/tmp/dime-m42-emergency/web-auth-emergency-6a89255.zip",
+    "bytes": 491049,
+    "sha256": "7e3ef5b90f44aba745fcc83e8baa147f8ed87afd25713eac1f7021ecdd4485ad",
+    "moduleSha256": "63de7251010498e7bdef8cf6674709a03549a010baf31172fcc25e66a3b590e8",
+    "key": "dime-v2/review/6a89255d65b957159c8b2a5091512d6ee0ee7958/web-auth-emergency-6a89255.zip",
+    "gameplayModuleSha256": "161f0598d7d0b3bb3611c3b5e112cc4bb19cfd7a02b94f15ff6b6f1ff3dc26d4"
+  },
+  "s3Version": {
+    "Expiration": "expiry-date=\"Wed, 16 Dec 2026 00:00:00 GMT\", rule-id=\"ExpireReviewArtifacts\"",
+    "ETag": "\"e9f005aef97737c74dc886942008d399\"",
+    "ChecksumSHA256": "fj71uQ9Eq6dF/Mg+i6oUf47Yev0lcT6sH3Ah7N1Eha0=",
+    "ChecksumType": "FULL_OBJECT",
+    "ServerSideEncryption": "AES256",
+    "VersionId": "Pa5iTi5B4j4foI1ACOOodpcjDvlxyNkW"
+  },
+  "review": {
+    "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-emergency-6a89255-1/6ccdd27f-2848-42a8-a4d7-2465d69d27cd",
+    "onlyProcessedDelta": "WebAuthFunction.Properties.Code",
+    "parameterChanges": 0,
+    "changes": [
+      {
+        "Action": "Modify",
+        "LogicalResourceId": "StagingHttpApi",
+        "PhysicalResourceId": "t2la0784p6",
+        "ResourceType": "AWS::ApiGatewayV2::Api",
+        "Replacement": "False",
+        "Scope": ["Properties"],
+        "Details": [
+          {
+            "Target": {
+              "Attribute": "Properties",
+              "Name": "Body",
+              "RequiresRecreation": "Never"
+            },
+            "Evaluation": "Dynamic",
+            "ChangeSource": "ResourceAttribute",
+            "CausingEntity": "WebAuthFunction.Arn"
+          }
+        ]
+      },
+      {
+        "Action": "Modify",
+        "LogicalResourceId": "WebAuthFunction",
+        "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+        "ResourceType": "AWS::Lambda::Function",
+        "Replacement": "False",
+        "Scope": ["Properties"],
+        "Details": [
+          {
+            "Target": {
+              "Attribute": "Properties",
+              "Name": "Code",
+              "RequiresRecreation": "Never"
+            },
+            "Evaluation": "Static",
+            "ChangeSource": "DirectModification"
+          }
+        ]
+      }
+    ],
+    "allOtherDefinitionsIdentical": true,
+    "failedEvents": 0
+  },
+  "execution": {
+    "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-emergency-6a89255-1/6ccdd27f-2848-42a8-a4d7-2465d69d27cd",
+    "clientRequestToken": "m42-emergency-6a89255-owner-20260916",
+    "executeCalls": 1,
+    "accepted": true
+  },
+  "resourceEvents": [
+    {
+      "Timestamp": "2026-09-16T16:00:21.644000+00:00",
+      "OperationId": "96c97ee8-ddc6-4356-9b9a-7789e0b0793a",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT"
+    },
+    {
+      "Timestamp": "2026-09-16T16:00:21.643000+00:00",
+      "OperationId": "96c97ee8-ddc6-4356-9b9a-7789e0b0793a",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T16:00:20.910000+00:00",
+      "OperationId": "96c97ee8-ddc6-4356-9b9a-7789e0b0793a",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T16:00:18.607000+00:00",
+      "OperationId": "96c97ee8-ddc6-4356-9b9a-7789e0b0793a",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_COMPLETE"
+    },
+    {
+      "Timestamp": "2026-09-16T16:00:10.479000+00:00",
+      "OperationId": "96c97ee8-ddc6-4356-9b9a-7789e0b0793a",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "WebAuthFunction",
+      "ResourceType": "AWS::Lambda::Function",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T16:00:05.925000+00:00",
+      "OperationId": "96c97ee8-ddc6-4356-9b9a-7789e0b0793a",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-v2-review-20260912",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "ResourceStatus": "UPDATE_IN_PROGRESS"
+    },
+    {
+      "Timestamp": "2026-09-16T16:00:05.916000+00:00",
+      "OperationId": "96c97ee8-ddc6-4356-9b9a-7789e0b0793a",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT"
+    }
+  ],
+  "http": [
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "status": 200,
+      "code": null,
+      "redirect": false,
+      "cookieExpiryCount": 2
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "status": 200,
+      "code": null,
+      "redirect": false,
+      "cookieExpiryCount": 2
+    },
+    {
+      "method": "POST",
+      "path": "/auth/delete/resume",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/auth/delete/resume",
+      "status": 403,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "GET",
+      "path": "/auth/login",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "GET",
+      "path": "/auth/callback",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/auth/link/intent",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/auth/link/accept",
+      "status": 503,
+      "code": "WEB_SIGN_IN_UNAVAILABLE",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "GET",
+      "path": "/auth/status",
+      "status": 200,
+      "code": null,
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "GET",
+      "path": "/state",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "GET",
+      "path": "/v4/state",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/actions",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/profile/reset",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/v4/actions",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/v4/content/preview",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/v4/content/convert",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "POST",
+      "path": "/v4/profile/reset",
+      "status": 401,
+      "code": "UNAUTHORIZED",
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/v4/actions",
+      "status": 204,
+      "code": null,
+      "redirect": false,
+      "cookieExpiryCount": 0
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/v4/actions",
+      "status": 204,
+      "code": null,
+      "redirect": false,
+      "cookieExpiryCount": 0
+    }
+  ],
+  "lambdaWebAuth": {
+    "Hash": "fj71uQ9Eq6dF/Mg+i6oUf47Yev0lcT6sH3Ah7N1Eha0=",
+    "State": "Active",
+    "Update": "Successful"
+  },
+  "lambdaGameplay": {
+    "Hash": "4kbdkFYYfB2vTSanDcaKtcwObvYhNxqLqbbKD1OkKvY=",
+    "State": "Active",
+    "Update": "Successful"
+  },
+  "routes": [
+    "GET /api/v4/state",
+    "GET /auth/callback",
+    "GET /auth/login",
+    "GET /auth/session",
+    "GET /auth/status",
+    "GET /state",
+    "GET /v4/state",
+    "POST /actions",
+    "POST /api/v4/actions",
+    "POST /api/v4/content/convert",
+    "POST /api/v4/content/preview",
+    "POST /api/v4/profile/reset",
+    "POST /auth/delete/intent",
+    "POST /auth/delete/resume",
+    "POST /auth/link/accept",
+    "POST /auth/link/intent",
+    "POST /auth/logout",
+    "POST /auth/unlink",
+    "POST /profile/reset",
+    "POST /v4/actions",
+    "POST /v4/content/convert",
+    "POST /v4/content/preview",
+    "POST /v4/profile/reset"
+  ],
+  "stackStatus": "UPDATE_COMPLETE",
+  "modes": {
+    "ConfigurationRevision": "m42-signin-289cadc-review-1",
+    "WebSignInMode": "DISABLED",
+    "ContentConversionMode": "ENABLED",
+    "AccountLinkingMode": "DISABLED"
+  },
+  "failedEvents": [],
+  "unitTests": 410,
+  "chromiumProtocolTests": 6,
+  "websiteChanged": false,
+  "privacyChanged": false,
+  "authenticatedLivePlayerRequests": 0
+}
