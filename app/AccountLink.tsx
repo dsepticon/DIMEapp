@@ -53,8 +53,8 @@ export function AccountLink({
     <section aria-label="Link web and Extension accounts">
       <h2>Link your DIME accounts</h2>
       <p>
-        Sign in independently on the website and in the Twitch Extension. If both saves have progress, linking
-        stops and preserves both.
+        Sign in independently on the website and in the Twitch Extension. If both identities already have
+        saves, linking stops and preserves both for support resolution.
       </p>
       {web ? (
         intent && (

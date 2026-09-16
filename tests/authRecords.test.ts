@@ -11,13 +11,18 @@ function fixture() {
       const p = op.Put ?? op.Delete ?? op.ConditionCheck!,
         current = items.get(key('Item' in p ? p.Item! : p.Key!));
       const condition = p.ConditionExpression;
-      const valid =
-        condition === 'attribute_not_exists(pk)'
-          ? !current
-          : condition?.includes('attribute_not_exists(revision)')
-            ? current && !('revision' in current)
-            : current?.revision === p.ExpressionAttributeValues?.[':version'];
-      if (!valid) {
+      const valid = condition?.startsWith('attribute_not_exists(pk)')
+        ? !current
+        : condition?.includes('attribute_not_exists(revision)')
+          ? current && !('revision' in current)
+          : current?.revision === p.ExpressionAttributeValues?.[':version'];
+      const generationValid =
+        !condition?.includes('#state.#generation') ||
+        (condition.includes('attribute_not_exists(#state.#generation)')
+          ? !(current?.state as { saveGeneration?: string } | undefined)?.saveGeneration
+          : (current?.state as { saveGeneration?: string } | undefined)?.saveGeneration ===
+            p.ExpressionAttributeValues?.[':generation']);
+      if (!valid || !generationValid) {
         const error = new Error();
         error.name = 'TransactionCanceledException';
         throw error;
@@ -36,7 +41,7 @@ function fixture() {
       'dime-v2-staging-synthetic',
       envelope,
     );
-  return { repo, items, envelope };
+  return { repo, items, envelope, send };
 }
 it('encrypts auth values and binds ciphertext to its exact record context', async () => {
   const f = fixture(),
@@ -93,4 +98,48 @@ it('preserves the existing gameplay state and receipt physical formats', async (
     fingerprint: 'synthetic',
     expiresAt: 1800000000,
   });
+});
+it('blocks revision ABA across reset generation, including read-only transactions', async () => {
+  const f = fixture();
+  await f
+    .repo()
+    .transaction((tx) => tx.put('state:PLAYER#v1#synthetic', { revision: 0, saveGeneration: 'old' }));
+  let release!: () => void, ready!: () => void;
+  const wait = new Promise<void>((r) => {
+      release = r;
+    }),
+    started = new Promise<void>((r) => {
+      ready = r;
+    });
+  const read = f.repo().transaction(async (tx) => {
+    const state = await tx.get('state:PLAYER#v1#synthetic');
+    ready();
+    await wait;
+    return state;
+  });
+  await started;
+  await f
+    .repo()
+    .transaction((tx) => tx.put('state:PLAYER#v1#synthetic', { revision: 0, saveGeneration: 'new' }));
+  release();
+  await expect(read).rejects.toBeInstanceOf(RecordConflict);
+});
+it('gameplay reads non-secret binding without any encryption key and cannot decrypt auth records', async () => {
+  const f = fixture(),
+    identity = 'PLAYER#v1#' + 'a'.repeat(64);
+  await f.repo().transaction(async (tx) => {
+    await tx.put('binding:' + identity, { player: identity, epoch: 'synthetic', status: 'ACTIVE' });
+    await tx.put('account:synthetic', { token: 'synthetic-only' });
+  });
+  const repo = new DynamoAuthRecords(
+    { send: f.send } as unknown as Pick<DynamoDBDocumentClient, 'send'>,
+    'dime-v2-staging-synthetic',
+  );
+  expect(await repo.transaction((tx) => tx.get('binding:' + identity))).toMatchObject({ player: identity });
+  await expect(repo.transaction((tx) => tx.get('account:synthetic'))).rejects.toThrow(
+    'inaccessible to gameplay',
+  );
+  const record = f.items.get('BINDING#v1#' + identity + '|RECORD')!;
+  expect(record).not.toHaveProperty('envelope');
+  expect(record).not.toHaveProperty('expiresAt');
 });

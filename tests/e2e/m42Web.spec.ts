@@ -87,3 +87,37 @@ test('account-link capability stays in memory and requires explicit confirmation
     's'.repeat(43),
   );
 });
+
+for (const width of [360, 1280])
+  test(`first login offers linking before creating any save ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: width === 360 ? 640 : 900 });
+    let stateRequests = 0;
+    await page.route('**/auth/session', (route) =>
+      route.fulfill({
+        json: {
+          identity: 'synthetic-account',
+          csrf: 'synthetic-csrf',
+          linkingAvailable: true,
+          profileExists: false,
+        },
+      }),
+    );
+    await page.route('**/api/v4/state', (route) => {
+      stateRequests++;
+      return route.fulfill({
+        json: { state: originalInitialState(randomUUID(), () => 0.5), serverTime: Date.now() },
+      });
+    });
+    await page.route('**/auth/link/intent', (route) =>
+      route.fulfill({ json: { intent: 's'.repeat(43), expiresIn: 300 } }),
+    );
+    await page.goto('/web-review.html');
+    await expect(page.getByRole('region', { name: 'Choose your DIME profile' })).toBeVisible();
+    await page.getByRole('button', { name: 'Create link code' }).click();
+    await expect(page.getByLabel('One-use link code')).toHaveValue('s'.repeat(43));
+    expect(stateRequests).toBe(0);
+    await expect(page.getByRole('button', { name: 'Retry', exact: true })).toBeDisabled();
+    await page.getByRole('button', { name: 'Start a new web profile instead' }).click();
+    await expect(page.locator('canvas')).toBeVisible();
+    expect(stateRequests).toBe(1);
+  });

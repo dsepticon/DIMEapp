@@ -1,6 +1,8 @@
 import { authenticate, decodeSecret } from './auth';
-import { createDynamoStore } from './dynamo';
-import { parseVersionedContent } from './contentConversion';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+import { DynamoAuthRecords } from './authRecords';
+import { canonicalExtensionStore } from './canonicalPlayer';
 import { createOriginalApi } from './originalApi';
 import { createApi } from './http';
 import { GameService } from './service';
@@ -60,7 +62,12 @@ function configure() {
   const identityKey = secret('DIME_PLAYER_ID_KEY_B64', 'invalid_identity_key');
   if (process.env.TWITCH_PREVIOUS_SECRET_B64)
     keys.push(secret('TWITCH_PREVIOUS_SECRET_B64', 'invalid_previous_key'));
-  const store = createDynamoStore(required('AWS_REGION'), table, parseVersionedContent);
+  const records = new DynamoAuthRecords(
+    DynamoDBDocumentClient.from(new DynamoDBClient({ region: required('AWS_REGION'), maxAttempts: 3 }), {
+      marshallOptions: { removeUndefinedValues: true },
+    }),
+    table,
+  );
   const auth = (header: string | undefined) => authenticate(header, keys, identityKey);
   let conversionGate;
   try {
@@ -75,10 +82,31 @@ function configure() {
       throw new ConfigurationError(code);
     throw error;
   }
-  const original = createOriginalApi(store, auth, origins, Date.now, conversionGate);
-  const legacy = createApi(new GameService(store as unknown as Store<PlayerState>), auth, origins);
-  return (request: Parameters<typeof original>[0]) =>
-    request.path.startsWith('/v4/') ? original(request) : legacy(request);
+  return async (request: Parameters<ReturnType<typeof createOriginalApi>>[0]) => {
+    let bound: Awaited<ReturnType<typeof canonicalExtensionStore>>;
+    const authorize = async (header: string | undefined) => {
+      bound = await canonicalExtensionStore(records, await auth(header));
+      return bound.player;
+    };
+    const store: Awaited<ReturnType<typeof canonicalExtensionStore>>['store'] = {
+      read: (player) => bound.store.read(player),
+      receipt: (player, id) => bound.store.receipt(player, id),
+      commit: (player, revision, state, receipt, generation) =>
+        bound.store.commit(player, revision, state, receipt, generation),
+    };
+    const original = createOriginalApi(store, authorize, origins, Date.now, conversionGate);
+    const legacy = createApi(new GameService(store as unknown as Store<PlayerState>), authorize, origins);
+    const response = await (request.path.startsWith('/v4/') ? original(request) : legacy(request));
+    if (request.method === 'GET' && request.path === '/v4/state' && response.statusCode === 200)
+      return {
+        ...response,
+        body: JSON.stringify({
+          ...JSON.parse(response.body),
+          linkingAvailable: process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
+        }),
+      };
+    return response;
+  };
 }
 // Lazy initialization allows packaging/tests without production credentials; one client per warm container.
 let api: ReturnType<typeof configure> | undefined;

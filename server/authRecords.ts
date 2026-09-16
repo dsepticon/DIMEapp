@@ -14,7 +14,7 @@ export interface RecordTransaction {
 export interface RecordRepository {
   transaction<T>(run: (tx: RecordTransaction) => Promise<T>): Promise<T>;
 }
-type Cell = { version: string | number; value: unknown; expiresAt?: number };
+type Cell = { version: string | number; value: unknown; expiresAt?: number; generation?: string | null };
 export class MemoryRecords implements RecordRepository {
   private records = new Map<string, Cell>();
   private tail: Promise<unknown> = Promise.resolve();
@@ -39,6 +39,7 @@ export class MemoryRecords implements RecordRepository {
   }
 }
 function physical(key: string) {
+  if (key.startsWith('binding:')) return { pk: 'BINDING#v1#' + key.slice(8), sk: 'RECORD' };
   if (key.startsWith('state:')) return { pk: key.slice(6), sk: 'STATE' };
   if (key.startsWith('receipt:')) {
     const [id, ...player] = key.slice(8).split(':');
@@ -82,10 +83,18 @@ export class DynamoAuthRecords implements RecordRepository {
   constructor(
     private client: Pick<DynamoDBDocumentClient, 'send'>,
     private table: string,
-    private envelope: TokenEnvelope,
+    private envelope?: TokenEnvelope,
   ) {
     if (!table.startsWith('dime-v2-staging-'))
       throw Error('Only reviewed staging auth storage is supported.');
+  }
+  private openAuth(value: Parameters<TokenEnvelope['open']>[0], key: string) {
+    if (!this.envelope) throw Error('Authentication records are inaccessible to gameplay.');
+    return this.envelope.open(value, key);
+  }
+  private sealAuth(value: unknown, key: string) {
+    if (!this.envelope) throw Error('Authentication records are inaccessible to gameplay.');
+    return this.envelope.seal(value, key);
   }
   async transaction<T>(run: (tx: RecordTransaction) => Promise<T>): Promise<T> {
     const reads = new Map<string, Cell | undefined>(),
@@ -100,12 +109,21 @@ export class DynamoAuthRecords implements RecordRepository {
         if (Item)
           value = key.startsWith('state:')
             ? Item.state
-            : key.startsWith('receipt:')
-              ? { fingerprint: Item.fingerprint, expiresAt: Item.expiresAt }
-              : this.envelope.open(Item.envelope, key);
+            : key.startsWith('binding:')
+              ? Item.binding
+              : key.startsWith('receipt:')
+                ? { fingerprint: Item.fingerprint, expiresAt: Item.expiresAt }
+                : this.openAuth(Item.envelope, key);
         reads.set(
           key,
-          Item ? { version: Item.revision ?? 'legacy', value, expiresAt: Item.expiresAt } : undefined,
+          Item
+            ? {
+                version: Item.revision ?? 'legacy',
+                value,
+                expiresAt: Item.expiresAt,
+                ...(key.startsWith('state:') ? { generation: Item.state?.saveGeneration ?? null } : {}),
+              }
+            : undefined,
         );
       }
       return reads.get(key);
@@ -134,9 +152,28 @@ export class DynamoAuthRecords implements RecordRepository {
             ? 'attribute_exists(pk) AND attribute_not_exists(revision)'
             : 'revision = :version'
           : 'attribute_not_exists(pk)';
+      const generationCondition =
+        old?.generation === undefined
+          ? ''
+          : old.generation === null
+            ? ' AND attribute_not_exists(#state.#generation)'
+            : ' AND #state.#generation = :generation';
       const attributes =
         old && old.version !== 'legacy' ? { ExpressionAttributeValues: { ':version': old.version } } : {};
-      const common = { TableName: this.table, ConditionExpression: condition, ...attributes };
+      const common = {
+        TableName: this.table,
+        ConditionExpression: condition + generationCondition,
+        ...attributes,
+        ...(old?.generation === undefined
+          ? {}
+          : {
+              ExpressionAttributeNames: { '#state': 'state', '#generation': 'saveGeneration' },
+              ExpressionAttributeValues: {
+                ...attributes.ExpressionAttributeValues,
+                ...(old.generation === null ? {} : { ':generation': old.generation }),
+              },
+            }),
+      };
       if (!writes.has(key)) {
         items.push({ ConditionCheck: { ...common, Key } });
         continue;
@@ -149,9 +186,11 @@ export class DynamoAuthRecords implements RecordRepository {
       const state = value.value as { revision?: number };
       const data = key.startsWith('state:')
         ? { state: value.value, revision: state.revision }
-        : key.startsWith('receipt:')
-          ? { ...(value.value as object), revision: randomUUID() }
-          : { envelope: this.envelope.seal(value.value, key), revision: randomUUID() };
+        : key.startsWith('binding:')
+          ? { binding: value.value, revision: randomUUID() }
+          : key.startsWith('receipt:')
+            ? { ...(value.value as object), revision: randomUUID() }
+            : { envelope: this.sealAuth(value.value, key), revision: randomUUID() };
       items.push({
         Put: {
           ...common,

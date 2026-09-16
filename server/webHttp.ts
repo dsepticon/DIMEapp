@@ -75,6 +75,7 @@ export function createWebApi(
           identity: session.account,
           csrf: session.csrf,
           linkingAvailable: extension?.linkingEnabled === true,
+          profileExists: (await auth.gameStore(session).read(session.player)) !== undefined,
         });
       }
       if (request.method === 'POST' && path === '/auth/logout')
@@ -111,7 +112,13 @@ export function createWebApi(
       if (path === '/auth/callback')
         return redirect(auth.origin + '/?auth=failed', [auth.cookie('login', '', 0)]);
       return result(
-        { message: 'Authentication could not be completed.' },
+        {
+          message:
+            error instanceof WebAuthError && error.code === 'LINK_CONFLICT'
+              ? 'Both identities have existing profiles or a conflicting link. Contact support; no saves were changed.'
+              : 'Authentication could not be completed.',
+          ...(error instanceof WebAuthError && error.code ? { code: error.code } : {}),
+        },
         error instanceof WebAuthError ? error.status : 503,
       );
     }

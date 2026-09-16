@@ -52,6 +52,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
   const [message, setMessage] = useState('Connecting to Destroya Industries operations…');
   const [busy, setBusy] = useState(false);
   const [canLink, setCanLink] = useState(false);
+  const [profileChoice, setProfileChoice] = useState(false);
   const requestEpoch = useRef(0);
   const playerPosition = useRef<Position>({ x: 0, y: 0 });
   const [playerTile, setPlayerTile] = useState({ x: 0, y: 0 });
@@ -202,6 +203,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
             stop: () => {},
           });
           setCanLink(value.linkingAvailable);
+          setProfileChoice(!value.profileExists);
           setSession({ status: 'authorized' });
         })
         .catch(() => {
@@ -359,10 +361,10 @@ function App({ webReview = false }: { webReview?: boolean }) {
       snapshotRef.current = null;
       return;
     }
-    void refresh();
+    if (!profileChoice) void refresh();
     // Authentication changes are the synchronization boundary.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gateway, session.status]);
+  }, [gateway, session.status, profileChoice]);
   const execute = async (
     path: string,
     body: Record<string, unknown>,
@@ -599,6 +601,20 @@ function App({ webReview = false }: { webReview?: boolean }) {
           <h1>{conversion ? 'Equivalent content update' : 'Field operator access'}</h1>
           <p>{message}</p>
           {mode === 'web' && !gateway && <a href="/auth/login">Sign in with Twitch</a>}
+          {profileChoice && mode === 'web' && gateway && (
+            <section aria-label="Choose your DIME profile">
+              <h2>Keep your existing Extension save</h2>
+              <p>Link before starting a web profile. Two existing saves cannot be combined automatically.</p>
+              {canLink ? (
+                <AccountLink web api={api} csrf={gateway.csrf?.()} onLinked={() => {}} />
+              ) : (
+                <p>Account linking is not available yet.</p>
+              )}
+              <a href="/auth/login">Already linked? Sign in again</a>
+              <button onClick={() => setProfileChoice(false)}>Start a new web profile instead</button>
+              <p>This creates a separate save. Linking to another existing save will require support.</p>
+            </section>
+          )}
           {recoveryControls}
           {conversion &&
             (conversion.requestId ? (
@@ -613,7 +629,7 @@ function App({ webReview = false }: { webReview?: boolean }) {
                 Preview equivalent update
               </button>
             ))}
-          <button disabled={busy || !gateway} onClick={() => void refresh()}>
+          <button disabled={busy || !gateway || profileChoice} onClick={() => void refresh()}>
             Retry
           </button>
         </section>

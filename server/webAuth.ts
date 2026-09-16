@@ -1,10 +1,14 @@
+import { canonicalExtensionStore, newBinding, type PlayerBinding } from './canonicalPlayer';
 /** Server-only OAuth/session boundary. Never import this module into the frontend. */
 import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { MemoryRecords, type RecordRepository, type RecordTransaction } from './authRecords';
 import { parseVersionedContent, type VersionedContentState } from './contentConversion';
 import type { Store, Receipt } from './store';
 export class WebAuthError extends Error {
-  constructor(readonly status = 401) {
+  constructor(
+    readonly status = 401,
+    readonly code?: 'LINK_CONFLICT' | 'LINK_STALE' | 'ACCOUNT_SUSPENDED',
+  ) {
     super('Authentication could not be completed.');
   }
 }
@@ -30,8 +34,34 @@ type Session = {
   expiresAt: number;
   idleUntil: number;
 };
-export type Account = { id: string; player: string; established: boolean; extension?: string; oauth: string };
-type Link = { account: string; session: string; epoch: string; expiresAt: number };
+export type Account = {
+  id: string;
+  player: string;
+  established: boolean;
+  extension?: string;
+  oauth: string;
+  suspended?: boolean;
+};
+type Link = {
+  account: string;
+  session: string;
+  epoch: string;
+  expiresAt: number;
+  player: string;
+  revision: number | null;
+  generation: string | null;
+};
+type LinkResult = {
+  account: string;
+  extension: string;
+  player: string;
+  outcome: 'LINKED' | 'CONFLICT';
+  bindingEpoch?: string;
+  webRevision?: number | null;
+  webGeneration?: string | null;
+  extensionRevision?: number | null;
+  extensionGeneration?: string | null;
+};
 export type Authorized = {
   account: string;
   player: string;
@@ -104,6 +134,8 @@ export class WebAuth {
           established: false,
           oauth: subject,
         });
+      if (old && (await tx.get<Account>('account:' + old.account))?.suspended)
+        throw new WebAuthError(403, 'ACCOUNT_SUSPENDED');
       // A new login rotates the credential epoch, ending older sessions and refresh leases.
       await tx.put<Credential>(key, { account, epoch });
       await tx.put(
@@ -165,7 +197,7 @@ export class WebAuth {
       const { s, c } = await this.checked(tx, key, mutation);
       if (c.lease?.id !== lease || c.lease.until <= this.clock()) throw new WebAuthError(409);
       const account = await tx.get<Account>('account:' + s.account);
-      if (!account) throw new WebAuthError();
+      if (!account || account.suspended) throw new WebAuthError();
       delete c.lease;
       s.idleUntil = Math.min(s.expiresAt, this.clock() + 30 * 60000);
       await tx.put('oauth:' + s.subject, c);
@@ -210,9 +242,20 @@ export class WebAuth {
       if (s.link) await tx.delete('link:' + s.link);
       s.link = digest(intent);
       await tx.put('session:' + a.session, s, s.expiresAt);
+      const account = await tx.get<Account>('account:' + a.account);
+      if (!account || account.suspended) throw new WebAuthError();
+      const save = await tx.get<VersionedContentState>('state:' + account.player);
       await tx.put<Link>(
         'link:' + digest(intent),
-        { account: a.account, session: a.session, epoch: a.epoch, expiresAt },
+        {
+          account: a.account,
+          session: a.session,
+          epoch: a.epoch,
+          expiresAt,
+          player: account.player,
+          revision: save?.revision ?? null,
+          generation: save?.saveGeneration ?? null,
+        },
         expiresAt,
       );
     });
@@ -223,34 +266,89 @@ export class WebAuth {
     if (!/^[\w-]{43}$/.test(intent) || !/^PLAYER#v1#[a-f0-9]{64}$/.test(extensionPlayer))
       throw new WebAuthError();
     const result = await this.repo.transaction(async (tx) => {
+      const resultKey = 'link-result:' + digest(intent);
+      const prior = await tx.get<LinkResult>(resultKey);
+      if (prior) {
+        if (prior.extension !== extensionPlayer) throw new WebAuthError();
+        if (prior.outcome === 'CONFLICT') return false;
+        const binding = await tx.get<PlayerBinding>('binding:' + extensionPlayer);
+        const account = await tx.get<Account>('account:' + prior.account);
+        if (
+          !account ||
+          account.suspended ||
+          account.extension !== extensionPlayer ||
+          account.player !== prior.player ||
+          binding?.epoch !== prior.bindingEpoch ||
+          binding?.status !== 'ACTIVE'
+        )
+          throw new WebAuthError(409, 'LINK_STALE');
+        return true;
+      }
       const key = 'link:' + digest(intent),
         link = await tx.get<Link>(key);
       if (!link || link.expiresAt <= this.clock()) throw new WebAuthError();
       const { s, c } = await this.checked(tx, link.session);
       if (s.epoch !== link.epoch || s.account !== link.account) throw new WebAuthError();
       const web = await tx.get<Account>('account:' + link.account);
-      if (!web) throw new WebAuthError();
+      if (!web || web.suspended) throw new WebAuthError();
+      const webState = await tx.get<VersionedContentState>('state:' + web.player);
+      if (
+        web.player !== link.player ||
+        (webState?.revision ?? null) !== link.revision ||
+        (webState?.saveGeneration ?? null) !== link.generation
+      )
+        throw new WebAuthError(409, 'LINK_STALE');
       const existing = await tx.get<string>('extension:' + extensionPlayer);
-      const extensionState = await tx.get<VersionedContentState>('state:' + extensionPlayer);
-      await tx.delete(key); // Conflicts consume the one-use intent without modifying saves.
+      const binding = await tx.get<PlayerBinding>('binding:' + extensionPlayer);
+      const extensionCanonical = binding?.player ?? extensionPlayer;
+      const extensionState =
+        extensionCanonical === web.player
+          ? webState
+          : await tx.get<VersionedContentState>('state:' + extensionCanonical);
+      const observed = {
+        webRevision: webState?.revision ?? null,
+        webGeneration: webState?.saveGeneration ?? null,
+        extensionRevision: extensionState?.revision ?? null,
+        extensionGeneration: extensionState?.saveGeneration ?? null,
+      };
+      await tx.delete(key);
       if (
         (web.extension && web.extension !== extensionPlayer) ||
         (existing && existing !== web.id) ||
-        (web.established && extensionState && web.player !== extensionPlayer)
-      )
+        binding?.status === 'DETACHED' ||
+        ((webState || web.established) && extensionState && web.player !== extensionCanonical)
+      ) {
+        await tx.put<LinkResult>(resultKey, {
+          account: web.id,
+          extension: extensionPlayer,
+          player: web.player,
+          outcome: 'CONFLICT',
+          ...observed,
+        });
         return false;
-      if (extensionState && !web.established) {
-        web.player = extensionPlayer;
-        web.established = true;
       }
+      // Never copy or rewrite either save. An existing Extension save always keeps its physical key.
+      if (extensionState) web.player = extensionCanonical;
       web.extension = extensionPlayer;
+      web.established = !!(webState || extensionState);
+      const next =
+        binding?.status === 'ACTIVE' && binding.player === web.player ? binding : newBinding(web.player);
       await tx.put('account:' + web.id, web);
       await tx.put('extension:' + extensionPlayer, web.id);
+      await tx.put('binding:' + extensionPlayer, next);
+      await tx.put<LinkResult>(resultKey, {
+        account: web.id,
+        extension: extensionPlayer,
+        player: web.player,
+        outcome: 'LINKED',
+        bindingEpoch: next.epoch,
+        ...observed,
+      });
       await tx.put('oauth:' + s.subject, { account: c.account, epoch: randomUUID() });
       await tx.delete('grant:' + s.subject);
       return true;
     });
-    if (!result) throw new WebAuthError(409);
+    if (!result) throw new WebAuthError(409, 'LINK_CONFLICT');
     return { linked: true };
   }
   /** Atomic binding+progress guard. Both Extension and web handlers must use this store before enabling links. */
@@ -258,28 +356,19 @@ export class WebAuth {
     const guard = async (tx: RecordTransaction) => {
       const { s } = await this.checked(tx, authorization.session);
       const account = await tx.get<Account>('account:' + authorization.account);
-      if (s.epoch !== authorization.epoch || !account || account.player !== authorization.player)
+      if (
+        s.epoch !== authorization.epoch ||
+        !account ||
+        account.suspended ||
+        account.player !== authorization.player
+      )
         throw new WebAuthError();
       return account;
     };
     return this.boundStore(authorization.player, guard);
   }
   async extensionStore(extensionPlayer: string) {
-    if (!/^PLAYER#v1#[a-f0-9]{64}$/.test(extensionPlayer)) throw new WebAuthError();
-    const binding = await this.repo.transaction(async (tx) => {
-      const id = await tx.get<string>('extension:' + extensionPlayer);
-      const account = id ? await tx.get<Account>('account:' + id) : undefined;
-      if (id && !account) throw new WebAuthError();
-      return { id, player: account?.player ?? extensionPlayer };
-    });
-    const guard = async (tx: RecordTransaction) => {
-      const id = await tx.get<string>('extension:' + extensionPlayer);
-      if (id !== binding.id) throw new WebAuthError(409);
-      const account = id ? await tx.get<Account>('account:' + id) : undefined;
-      if (id && (!account || account.player !== binding.player)) throw new WebAuthError(409);
-      return account;
-    };
-    return { player: binding.player, store: this.boundStore(binding.player, guard) };
+    return canonicalExtensionStore(this.repo, extensionPlayer);
   }
   private boundStore(
     player: string,

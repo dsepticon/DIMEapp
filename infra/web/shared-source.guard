@@ -1,0 +1,114 @@
+# Validate the expanded, local .aws-sam/build/template.yaml. The SAM build
+# expands short-form CloudFormation intrinsics, which Guard cannot parse.
+
+let resource_count = count(Resources.*)
+
+rule only_reviewed_resource_types {
+  %resource_count == 12
+  Resources.*.Type IN [
+    'AWS::DynamoDB::Table',
+    'AWS::Logs::LogGroup',
+    'AWS::IAM::Role',
+    'AWS::Serverless::Function',
+    'AWS::Serverless::HttpApi',
+    'AWS::CloudWatch::Alarm'
+  ]
+}
+
+rule protected_staging_table {
+  Resources.PlayerStateTable.Type == 'AWS::DynamoDB::Table'
+  Resources.PlayerStateTable.DeletionPolicy == 'Retain'
+  Resources.PlayerStateTable.UpdateReplacePolicy == 'Retain'
+  Resources.PlayerStateTable.Properties.BillingMode == 'PAY_PER_REQUEST'
+  Resources.PlayerStateTable.Properties.DeletionProtectionEnabled == true
+  Resources.PlayerStateTable.Properties.SSESpecification.SSEEnabled == true
+  Resources.PlayerStateTable.Properties.SSESpecification.SSEType == 'KMS'
+  Resources.PlayerStateTable.Properties.PointInTimeRecoverySpecification.PointInTimeRecoveryEnabled == true
+  Resources.PlayerStateTable.Properties.TimeToLiveSpecification.AttributeName == 'expiresAt'
+  Resources.PlayerStateTable.Properties.TimeToLiveSpecification.Enabled == true
+  Resources.PlayerStateTable.Properties.KeySchema[*].AttributeName IN ['pk', 'sk']
+}
+
+rule exact_lambda_trust_and_permissions {
+  Resources.EbsExecutionRole.Type == 'AWS::IAM::Role'
+  Resources.EbsExecutionRole.Properties.AssumeRolePolicyDocument.Statement[0].Effect == 'Allow'
+  Resources.EbsExecutionRole.Properties.AssumeRolePolicyDocument.Statement[0].Principal.Service == 'lambda.amazonaws.com'
+  Resources.EbsExecutionRole.Properties.AssumeRolePolicyDocument.Statement[0].Action == 'sts:AssumeRole'
+  Resources.EbsExecutionRole.Properties.AssumeRolePolicyDocument.Statement[0].Condition !exists
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[0].Action == ['dynamodb:GetItem', 'dynamodb:PutItem']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[0].Resource.'Fn::GetAtt' == ['PlayerStateTable', 'Arn']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Action == ['logs:CreateLogStream', 'logs:PutLogEvents']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Resource.'Fn::Sub' == 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs:log-stream:*'
+}
+
+rule bounded_staging_lambda {
+  Parameters.ConfigurationRevision.Type == 'String'
+  Parameters.ConfigurationRevision.AllowedPattern == '^[a-z0-9][a-z0-9-]*$'
+  Parameters.ContentConversionMode.Type == 'String'
+  Parameters.ContentConversionMode.Default == 'DISABLED'
+  Parameters.ContentConversionMode.AllowedValues == ['DISABLED', 'TESTERS', 'ENABLED']
+  Parameters.ContentConversionTesterTags.Type == 'String'
+  Parameters.ContentConversionTesterTags.Default == ''
+  Parameters.ContentConversionTesterTags.NoEcho == true
+  Parameters.ContentConversionTesterTags.MaxLength == 2048
+  Resources.EbsFunction.Type == 'AWS::Serverless::Function'
+  Resources.EbsFunction.Properties.Runtime == 'nodejs22.x'
+  Resources.EbsFunction.Properties.Handler == 'index.handler'
+  Resources.EbsFunction.Properties.MemorySize == 256
+  Resources.EbsFunction.Properties.Timeout == 10
+  Resources.EbsFunction.Properties.ReservedConcurrentExecutions == 5
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_ENV == 'staging'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_STATE_TABLE.Ref == 'PlayerStateTable'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONFIG_REVISION.Ref == 'ConfigurationRevision'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONVERSION_MODE.Ref == 'ContentConversionMode'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_CONVERSION_TESTER_TAGS.Ref == 'ContentConversionTesterTags'
+  Resources.EbsFunction.Properties.Environment.Variables.TWITCH_EXTENSION_SECRET_B64.'Fn::Sub' == '{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_PLAYER_ID_KEY_B64.'Fn::Sub' == '{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}'
+  Resources.EbsFunction.Properties.Events.GetState.Properties.Path == '/state'
+  Resources.EbsFunction.Properties.Events.GetState.Properties.Method == 'GET'
+  Resources.EbsFunction.Properties.Events.PostActions.Properties.Path == '/actions'
+  Resources.EbsFunction.Properties.Events.PostActions.Properties.Method == 'POST'
+  Resources.EbsFunction.Properties.Events.PostProfileReset.Properties.Path == '/profile/reset'
+  Resources.EbsFunction.Properties.Events.PostProfileReset.Properties.Method == 'POST'
+}
+
+rule exact_origin_staging_api {
+  Resources.StagingHttpApi.Type == 'AWS::Serverless::HttpApi'
+  Resources.StagingHttpApi.Properties.StageName == 'staging'
+  Resources.StagingHttpApi.Properties.DefinitionBody.'x-amazon-apigateway-cors'.allowOrigins.Ref == 'TwitchAllowedOrigins'
+  Resources.StagingHttpApi.Properties.DefinitionBody.'x-amazon-apigateway-cors'.allowHeaders == ['Authorization', 'Content-Type']
+  Resources.StagingHttpApi.Properties.DefinitionBody.'x-amazon-apigateway-cors'.allowMethods == ['GET', 'POST', 'OPTIONS']
+  Resources.StagingHttpApi.Properties.DefinitionBody.'x-amazon-apigateway-cors'.allowCredentials == false
+  Resources.StagingHttpApi.Properties.DefinitionBody.'x-amazon-apigateway-cors'.maxAge == 300
+  Resources.StagingHttpApi.Properties.AccessLogSettings.DestinationArn.'Fn::GetAtt' == ['ApiAccessLogGroup', 'Arn']
+  Resources.StagingHttpApi.Properties.DefaultRouteSettings.ThrottlingRateLimit.Ref == 'ApiThrottleRate'
+  Resources.StagingHttpApi.Properties.DefaultRouteSettings.ThrottlingBurstLimit.Ref == 'ApiThrottleBurst'
+}
+
+rule retained_log_groups {
+  Resources.EbsLogGroup.Type == 'AWS::Logs::LogGroup'
+  Resources.ApiAccessLogGroup.Type == 'AWS::Logs::LogGroup'
+  Resources.EbsLogGroup.DeletionPolicy == 'Retain'
+  Resources.ApiAccessLogGroup.DeletionPolicy == 'Retain'
+  Resources.EbsLogGroup.Properties.RetentionInDays.Ref == 'LogRetentionDays'
+  Resources.ApiAccessLogGroup.Properties.RetentionInDays.Ref == 'LogRetentionDays'
+}
+
+rule separate_auth_boundary {
+  Resources.WebAuthExecutionRole.Type == 'AWS::IAM::Role'
+  Resources.WebAuthLogGroup.DeletionPolicy == 'Retain'
+  Resources.WebAuthLogGroup.UpdateReplacePolicy == 'Retain'
+  Resources.WebAuthFunction.Properties.Role.'Fn::GetAtt' == ['WebAuthExecutionRole', 'Arn']
+  Resources.WebAuthFunction.Properties.Environment.Variables.DIME_OAUTH_CLIENT_ID.Ref == 'OAuthClientId'
+  Resources.WebAuthFunction.Properties.Environment.Variables.DIME_ACCOUNT_LINKING.Ref == 'AccountLinkingMode'
+  Resources.WebAuthFunction.Properties.Environment.Variables.DIME_WEB_ORIGIN == 'https://destroyaindustriesminingextension.com'
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_OAUTH_CLIENT_SECRET !exists
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_AUTH_ENCRYPTION_KEY_B64 !exists
+  Resources.EbsFunction.Properties.Environment.Variables.DIME_WEB_ID_KEY_B64 !exists
+  Parameters.AccountLinkingMode.Default == 'DISABLED'
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[2].Action == ['dynamodb:ConditionCheckItem']
+  Resources.EbsExecutionRole.Properties.Policies[0].PolicyDocument.Statement[2].Resource.'Fn::GetAtt' == ['PlayerStateTable', 'Arn']
+  Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Action == ['dynamodb:DeleteItem']
+  Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.'ForAllValues:StringLike'.'dynamodb:LeadingKeys' == ['AUTH#v1#*']
+  Resources.WebAuthExecutionRole.Properties.Policies[0].PolicyDocument.Statement[1].Condition.Null.'dynamodb:LeadingKeys' == 'false'
+}

@@ -5,7 +5,7 @@ import { DynamoAuthRecords, TokenEnvelope } from './authRecords';
 import { TwitchOAuth } from './twitchOAuth';
 import { WebAuth } from './webAuth';
 import { createConversionGate } from './conversionGate';
-import { createAccountApi } from './accountApi';
+import { createWebApi } from './webHttp';
 import { authenticate, decodeSecret } from './auth';
 import { routePath } from './handler';
 function required(name: string) {
@@ -13,7 +13,7 @@ function required(name: string) {
   if (!value) throw Error('Authentication is not configured.');
   return value;
 }
-let api: ReturnType<typeof createAccountApi> | undefined;
+let api: ReturnType<typeof createWebApi> | undefined;
 function configure() {
   const region = required('AWS_REGION'),
     origin = required('DIME_WEB_ORIGIN');
@@ -52,7 +52,7 @@ function configure() {
   );
   if (conversion.mode !== 'ENABLED' || conversion.testerCount !== 0)
     throw Error('Unreviewed conversion configuration.');
-  return createAccountApi(
+  return createWebApi(
     auth,
     {
       authorize: (header) => authenticate(header, [extensionKey], extensionIdentity),

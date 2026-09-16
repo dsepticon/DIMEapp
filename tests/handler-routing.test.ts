@@ -5,7 +5,9 @@ import { MemoryStore } from '../server/store';
 import { RESET_CONFIRMATION } from '../shared/schema';
 
 const testState = vi.hoisted(() => ({ store: null as MemoryStore | null }));
-vi.mock('../server/dynamo', () => ({ createDynamoStore: () => testState.store }));
+vi.mock('../server/canonicalPlayer', () => ({
+  canonicalExtensionStore: async (_repo: unknown, player: string) => ({ player, store: testState.store }),
+}));
 
 const signingKey = Buffer.alloc(32, 7);
 const origin = 'https://test.ext-twitch.tv';

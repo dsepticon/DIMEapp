@@ -150,7 +150,7 @@ describe('synthetic link transactions', () => {
       f.auth.acceptLink(intent, extension),
       f.auth.acceptLink(intent, extension),
     ]);
-    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(1);
+    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(2);
     expect(
       await f.repo.transaction(async (d) => (await d.get<Account>('account:' + a.session.account))?.player),
     ).toBe(extension);
@@ -376,4 +376,125 @@ it('both integrated adapters expose the configured conversion gate for synthetic
       expect(JSON.parse(response.body).conversionAvailable).toBe(enabled);
     }
   }
+});
+
+it('preserves every Extension save field, generation and receipt when linking and replaying', async () => {
+  const f = fixture(),
+    a = await f.login(),
+    ext = 'PLAYER#v1#' + 'e'.repeat(64);
+  const { originalInitialState } = await import('../shared/originalGame');
+  const state = originalInitialState(crypto.randomUUID(), () => 0.5);
+  state.revision = 19;
+  const receipt = { fingerprint: 'synthetic-preserved-receipt', expiresAt: 1900000000 };
+  await f.repo.transaction(async (tx) => {
+    await tx.put('state:' + ext, state);
+    await tx.put('receipt:old:' + ext, receipt);
+  });
+  const intent = await f.auth.createLink(a.sid, { origin, csrf: a.session.csrf });
+  await f.auth.acceptLink(intent, ext);
+  await expect(f.auth.acceptLink(intent, ext)).resolves.toEqual({ linked: true });
+  const b = await f.login(),
+    bound = await f.auth.extensionStore(ext);
+  expect(b.session.player).toBe(ext);
+  expect(await f.auth.gameStore(b.session).read(ext)).toEqual(state);
+  expect(await bound.store.read(ext)).toEqual(state);
+  expect(await bound.store.receipt(ext, 'old')).toEqual(receipt);
+  expect(await f.repo.transaction((tx) => tx.get('state:' + a.session.player))).toBeUndefined();
+});
+it('even two pristine existing saves conflict; replay returns explicit conflict without changing either', async () => {
+  const f = fixture(),
+    a = await f.login(),
+    ext = 'PLAYER#v1#' + 'e'.repeat(64);
+  const { originalInitialState } = await import('../shared/originalGame');
+  const web = originalInitialState(crypto.randomUUID(), () => 0.5),
+    extension = originalInitialState(crypto.randomUUID(), () => 0.5);
+  await f.repo.transaction(async (tx) => {
+    await tx.put('state:' + a.session.player, web);
+    await tx.put('state:' + ext, extension);
+  });
+  const intent = await f.auth.createLink(a.sid, { origin, csrf: a.session.csrf });
+  for (let i = 0; i < 2; i++)
+    await expect(f.auth.acceptLink(intent, ext)).rejects.toMatchObject({
+      status: 409,
+      code: 'LINK_CONFLICT',
+    });
+  expect(await f.repo.transaction((tx) => tx.get('state:' + a.session.player))).toEqual(web);
+  expect(await f.repo.transaction((tx) => tx.get('state:' + ext))).toEqual(extension);
+  expect(await f.repo.transaction((tx) => tx.get('binding:' + ext))).toBeUndefined();
+});
+it('an intent cannot cross a web revision or reset generation change', async () => {
+  for (const field of ['revision', 'saveGeneration'] as const) {
+    const f = fixture(),
+      a = await f.login(),
+      ext = 'PLAYER#v1#' + 'e'.repeat(64);
+    const { originalInitialState } = await import('../shared/originalGame');
+    const state = originalInitialState(crypto.randomUUID(), () => 0.5);
+    await f.repo.transaction((tx) => tx.put('state:' + a.session.player, state));
+    const intent = await f.auth.createLink(a.sid, { origin, csrf: a.session.csrf });
+    if (field === 'revision') state.revision++;
+    else state.saveGeneration = crypto.randomUUID();
+    await f.repo.transaction((tx) => tx.put('state:' + a.session.player, state));
+    await expect(f.auth.acceptLink(intent, ext)).rejects.toMatchObject({ code: 'LINK_STALE' });
+    expect(await f.repo.transaction((tx) => tx.get('binding:' + ext))).toBeUndefined();
+  }
+});
+it('a web-only save becomes canonical for an Extension with no save, without copy or reward', async () => {
+  const f = fixture(),
+    a = await f.login(),
+    ext = 'PLAYER#v1#' + 'f'.repeat(64);
+  const { originalInitialState } = await import('../shared/originalGame');
+  const state = originalInitialState(crypto.randomUUID(), () => 0.5);
+  await f.repo.transaction((tx) => tx.put('state:' + a.session.player, state));
+  const intent = await f.auth.createLink(a.sid, { origin, csrf: a.session.csrf });
+  await f.auth.acceptLink(intent, ext);
+  const bound = await f.auth.extensionStore(ext);
+  expect(bound.player).toBe(a.session.player);
+  expect(await bound.store.read(bound.player)).toEqual(state);
+  expect(await f.repo.transaction((tx) => tx.get('state:' + ext))).toBeUndefined();
+});
+it('replay cannot relink after detachment, and detached routing never creates a replacement profile', async () => {
+  const f = fixture(),
+    a = await f.login(),
+    ext = 'PLAYER#v1#' + 'f'.repeat(64);
+  const intent = await f.auth.createLink(a.sid, { origin, csrf: a.session.csrf });
+  await f.auth.acceptLink(intent, ext);
+  const { originalInitialState } = await import('../shared/originalGame');
+  const state = originalInitialState(crypto.randomUUID(), () => 0.5);
+  await f.repo.transaction(async (tx) => {
+    await tx.put('state:' + a.session.player, state);
+    const binding = (await tx.get<import('../server/canonicalPlayer').PlayerBinding>('binding:' + ext))!;
+    await tx.put('binding:' + ext, { ...binding, epoch: crypto.randomUUID(), status: 'DETACHED' });
+  });
+  const bound = await f.auth.extensionStore(ext);
+  expect(bound.player).toBe(a.session.player);
+  expect(await bound.store.read(bound.player)).toEqual(state);
+  await expect(f.auth.acceptLink(intent, ext)).rejects.toMatchObject({ code: 'LINK_STALE' });
+});
+it('old-generation actions cannot commit after reset on the shared canonical save', async () => {
+  const f = fixture(),
+    a = await f.login(),
+    ext = 'PLAYER#v1#' + 'f'.repeat(64);
+  const intent = await f.auth.createLink(a.sid, { origin, csrf: a.session.csrf });
+  await f.auth.acceptLink(intent, ext);
+  const bound = await f.auth.extensionStore(ext);
+  const { originalInitialState } = await import('../shared/originalGame');
+  const old = originalInitialState(crypto.randomUUID(), () => 0.5),
+    fresh = originalInitialState(crypto.randomUUID(), () => 0.5);
+  await f.repo.transaction((tx) => tx.put('state:' + bound.player, fresh));
+  expect(await bound.store.commit(bound.player, fresh.revision, old, undefined, old.saveGeneration)).toBe(
+    false,
+  );
+  expect(await bound.store.read(bound.player)).toEqual(fresh);
+});
+it('link receipts reject another Extension identity and new login does not duplicate the account', async () => {
+  const f = fixture(),
+    a = await f.login(),
+    ext = 'PLAYER#v1#' + 'f'.repeat(64);
+  const intent = await f.auth.createLink(a.sid, { origin, csrf: a.session.csrf });
+  await f.auth.acceptLink(intent, ext);
+  await expect(f.auth.acceptLink(intent, 'PLAYER#v1#' + 'e'.repeat(64))).rejects.toThrow();
+  const b = await f.login(),
+    c = await f.login();
+  expect(b.session.account).toBe(a.session.account);
+  expect(c.session.account).toBe(a.session.account);
 });
