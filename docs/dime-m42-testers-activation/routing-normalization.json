@@ -1,0 +1,5 @@
+{
+  "differencesOnly": "HTTP method set ordering and explicit GrpcConfig.Enabled=false on ten new behaviors",
+  "existingBehaviorsUnchanged": true,
+  "normalizedEqual": true
+}

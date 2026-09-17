@@ -1,0 +1,30 @@
+{
+  "unit": {
+    "tests": 491,
+    "files": 63,
+    "passed": true,
+    "logSha256": "84571780c5af59b90878cd10bfd7d5face0b8c6e59733e79301c516a94cdfbfc"
+  },
+  "routing": {
+    "tests": 43,
+    "passed": true,
+    "includedInUnitTotal": true
+  },
+  "publicGuestChromium": {
+    "tests": 5,
+    "passed": true,
+    "durationMinutes": 7.7,
+    "logSha256": "ad66d3bca6903ab5d3379dc8f9480982be40eb6d22083e09a6039dc2ad1f2a59"
+  },
+  "http": {
+    "beforeActivation": 20,
+    "afterRollback": 20,
+    "passed": true
+  },
+  "syntheticSentinelProbes": 14,
+  "Amplify": {
+    "automaticPatterns": ["codex/react-extension-rebuild", "main"],
+    "connectedBranches": ["codex/react-extension-rebuild", "main"],
+    "reportBranchExcluded": true
+  }
+}

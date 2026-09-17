@@ -1,0 +1,726 @@
+{
+  "CallerReference": "5e2b4075-787a-402a-8868-4745c7bbe13f",
+  "Aliases": {
+    "Quantity": 1,
+    "Items": ["destroyaindustriesminingextension.com"]
+  },
+  "DefaultRootObject": "",
+  "Origins": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "Id": "destroyaindustriesminingextension.com",
+        "DomainName": "destroyaindustriesminingextension.com.s3-website-us-west-2.amazonaws.com",
+        "OriginPath": "",
+        "CustomHeaders": {
+          "Quantity": 0
+        },
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "http-only",
+          "OriginSslProtocols": {
+            "Quantity": 1,
+            "Items": ["TLSv1.2"]
+          },
+          "OriginReadTimeout": 30,
+          "OriginKeepaliveTimeout": 5
+        },
+        "ConnectionAttempts": 3,
+        "ConnectionTimeout": 10,
+        "OriginShield": {
+          "Enabled": false
+        },
+        "OriginAccessControlId": ""
+      },
+      {
+        "Id": "dime-reviewed-web-auth-staging",
+        "DomainName": "t2la0784p6.execute-api.us-east-2.amazonaws.com",
+        "OriginPath": "/staging",
+        "CustomHeaders": {
+          "Quantity": 0
+        },
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "https-only",
+          "OriginSslProtocols": {
+            "Quantity": 1,
+            "Items": ["TLSv1.2"]
+          },
+          "OriginReadTimeout": 30,
+          "OriginKeepaliveTimeout": 5
+        },
+        "ConnectionAttempts": 3,
+        "ConnectionTimeout": 10,
+        "OriginShield": {
+          "Enabled": false
+        },
+        "OriginAccessControlId": ""
+      }
+    ]
+  },
+  "OriginGroups": {
+    "Quantity": 0
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "destroyaindustriesminingextension.com",
+    "TrustedSigners": {
+      "Enabled": false,
+      "Quantity": 0
+    },
+    "TrustedKeyGroups": {
+      "Enabled": false,
+      "Quantity": 0
+    },
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 2,
+      "Items": ["HEAD", "GET"],
+      "CachedMethods": {
+        "Quantity": 2,
+        "Items": ["HEAD", "GET"]
+      }
+    },
+    "SmoothStreaming": false,
+    "Compress": true,
+    "LambdaFunctionAssociations": {
+      "Quantity": 0
+    },
+    "FunctionAssociations": {
+      "Quantity": 0
+    },
+    "FieldLevelEncryptionId": "",
+    "CachePolicyId": "2e54312d-136d-493c-8eb9-b001f22f67d2",
+    "GrpcConfig": {
+      "Enabled": false
+    }
+  },
+  "CacheBehaviors": {
+    "Quantity": 15,
+    "Items": [
+      {
+        "PathPattern": "/game/*",
+        "TargetOriginId": "destroyaindustriesminingextension.com",
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 2,
+          "Items": ["HEAD", "GET"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["HEAD", "GET"]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+              "EventType": "viewer-request"
+            }
+          ]
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "91f7529d-33fb-4f4b-9506-a3562dcede56",
+        "ResponseHeadersPolicyId": "e8bc9f43-dd2c-4c3e-ad24-ec4419de3ab5",
+        "GrpcConfig": {
+          "Enabled": false
+        }
+      },
+      {
+        "PathPattern": "/api/v4/state",
+        "TargetOriginId": "destroyaindustriesminingextension.com",
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["HEAD", "GET"]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+              "EventType": "viewer-request"
+            }
+          ]
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "91f7529d-33fb-4f4b-9506-a3562dcede56",
+        "GrpcConfig": {
+          "Enabled": false
+        }
+      },
+      {
+        "PathPattern": "/api/v4/actions",
+        "TargetOriginId": "destroyaindustriesminingextension.com",
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["HEAD", "GET"]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+              "EventType": "viewer-request"
+            }
+          ]
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "91f7529d-33fb-4f4b-9506-a3562dcede56",
+        "GrpcConfig": {
+          "Enabled": false
+        }
+      },
+      {
+        "PathPattern": "/api/v4/profile/reset",
+        "TargetOriginId": "destroyaindustriesminingextension.com",
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["HEAD", "GET"]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+              "EventType": "viewer-request"
+            }
+          ]
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "91f7529d-33fb-4f4b-9506-a3562dcede56",
+        "GrpcConfig": {
+          "Enabled": false
+        }
+      },
+      {
+        "PathPattern": "/api/v4/content/convert",
+        "TargetOriginId": "destroyaindustriesminingextension.com",
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["HEAD", "GET"]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+              "EventType": "viewer-request"
+            }
+          ]
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "91f7529d-33fb-4f4b-9506-a3562dcede56",
+        "GrpcConfig": {
+          "Enabled": false
+        }
+      },
+      {
+        "PathPattern": "/auth/login",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 3,
+          "Items": ["GET", "HEAD", "OPTIONS"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "0f4a1067-a7e2-4b29-a561-e0ae61f36eea",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/callback",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 3,
+          "Items": ["GET", "HEAD", "OPTIONS"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "1f02feaa-0bec-4882-bd1d-18a03d0dc49c",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/status",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 3,
+          "Items": ["GET", "HEAD", "OPTIONS"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "3a5ecac7-e9f5-40ea-9a81-c77d8675449e",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/session",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 3,
+          "Items": ["GET", "HEAD", "OPTIONS"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "26d7d03b-cc49-4c46-9914-ffebd244d4c9",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/logout",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "aef1331d-b778-4d89-ae61-894fc5635317",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/link/intent",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "a30c0a30-40b2-488f-b4fb-9cd77d9c3a1d",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/link/accept",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "e4911f99-0ad5-475d-83a7-539e5ab3771f",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/unlink",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "a9731615-2c9a-4764-8520-b409654d07f0",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/delete/intent",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "764638e2-4831-4b79-89f2-82e9ede152ee",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      },
+      {
+        "PathPattern": "/auth/delete/resume",
+        "TargetOriginId": "dime-reviewed-web-auth-staging",
+        "ViewerProtocolPolicy": "https-only",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"],
+          "CachedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"]
+          }
+        },
+        "Compress": false,
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "232acdd4-f72d-4171-904b-39b83f2aa887",
+        "ResponseHeadersPolicyId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+        "FunctionAssociations": {
+          "Quantity": 1,
+          "Items": [
+            {
+              "EventType": "viewer-request",
+              "FunctionARN": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916"
+            }
+          ]
+        },
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "TrustedSigners": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "TrustedKeyGroups": {
+          "Enabled": false,
+          "Quantity": 0
+        },
+        "SmoothStreaming": false,
+        "FieldLevelEncryptionId": ""
+      }
+    ]
+  },
+  "CustomErrorResponses": {
+    "Quantity": 0
+  },
+  "Comment": "",
+  "Logging": {
+    "Enabled": false,
+    "IncludeCookies": false,
+    "Bucket": "",
+    "Prefix": ""
+  },
+  "PriceClass": "PriceClass_All",
+  "Enabled": true,
+  "ViewerCertificate": {
+    "CloudFrontDefaultCertificate": false,
+    "ACMCertificateArn": "arn:aws:acm:us-east-1:861738068626:certificate/6e9edb04-019c-4541-b0ae-aff483a2db73",
+    "SSLSupportMethod": "sni-only",
+    "MinimumProtocolVersion": "TLSv1.2_2021",
+    "Certificate": "arn:aws:acm:us-east-1:861738068626:certificate/6e9edb04-019c-4541-b0ae-aff483a2db73",
+    "CertificateSource": "acm"
+  },
+  "Restrictions": {
+    "GeoRestriction": {
+      "RestrictionType": "none",
+      "Quantity": 0
+    }
+  },
+  "WebACLId": "arn:aws:wafv2:us-east-1:861738068626:global/webacl/CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690/5209e705-d0b7-4259-8052-6254d1840fb7",
+  "HttpVersion": "http2and3",
+  "IsIPV6Enabled": true,
+  "ContinuousDeploymentPolicyId": "",
+  "Staging": false
+}

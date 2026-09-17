@@ -1,0 +1,27 @@
+{
+  "ApiEndpoint": "https://t2la0784p6.execute-api.us-east-2.amazonaws.com",
+  "ApiId": "t2la0784p6",
+  "ApiKeySelectionExpression": "$request.header.x-api-key",
+  "CorsConfiguration": {
+    "AllowCredentials": false,
+    "AllowHeaders": ["authorization", "content-type"],
+    "AllowMethods": ["GET", "POST", "OPTIONS"],
+    "AllowOrigins": ["https://znaovl2j45idub9k81om1dkatwxnu2.ext-twitch.tv"],
+    "MaxAge": 300
+  },
+  "CreatedDate": "2026-09-12T23:21:25+00:00",
+  "DisableExecuteApiEndpoint": false,
+  "IpAddressType": "ipv4",
+  "Name": "dime-v2-staging-review01-dime-v2-review-20260912-api",
+  "ProtocolType": "HTTP",
+  "RouteSelectionExpression": "$request.method $request.path",
+  "Tags": {
+    "aws:cloudformation:stack-name": "dime-v2-review-20260912",
+    "Environment": "staging",
+    "aws:cloudformation:logical-id": "StagingHttpApi",
+    "aws:cloudformation:stack-id": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+    "Application": "DIME-v2",
+    "httpapi:createdBy": "SAM"
+  },
+  "Version": "1.0"
+}

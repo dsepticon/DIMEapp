@@ -1,0 +1,203 @@
+{
+  "Items": [
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "07uvyrh",
+      "RouteKey": "GET /auth/status",
+      "Target": "integrations/nwfc1k1"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "382jdb0",
+      "RouteKey": "GET /v4/state",
+      "Target": "integrations/jz5dejb"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "5djy0nl",
+      "RouteKey": "POST /api/v4/content/preview",
+      "Target": "integrations/g0kud7n"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "7d4moz6",
+      "RouteKey": "POST /api/v4/profile/reset",
+      "Target": "integrations/qn4tuj8"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "8mrq6c7",
+      "RouteKey": "POST /auth/link/intent",
+      "Target": "integrations/lkkgqwo"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "9r6qvci",
+      "RouteKey": "GET /auth/login",
+      "Target": "integrations/0ujawik"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "dxizj9d",
+      "RouteKey": "GET /state",
+      "Target": "integrations/2ehss1p"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "e8gu0yh",
+      "RouteKey": "POST /actions",
+      "Target": "integrations/yzvqa0m"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "f6xlw5e",
+      "RouteKey": "POST /v4/content/convert",
+      "Target": "integrations/9a53cn3"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "i5skpv4",
+      "RouteKey": "GET /auth/session",
+      "Target": "integrations/734180i"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "igj1wmn",
+      "RouteKey": "GET /api/v4/state",
+      "Target": "integrations/8q8j1zj"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "jv0wd3u",
+      "RouteKey": "POST /auth/link/accept",
+      "Target": "integrations/l9aelg9"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "md2qz67",
+      "RouteKey": "POST /auth/delete/resume",
+      "Target": "integrations/nski7cd"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "mqt2u5n",
+      "RouteKey": "POST /api/v4/content/convert",
+      "Target": "integrations/f8zsgsk"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "n1dncii",
+      "RouteKey": "POST /v4/profile/reset",
+      "Target": "integrations/oasa27v"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "np2wsge",
+      "RouteKey": "POST /auth/delete/intent",
+      "Target": "integrations/9xivw5q"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "ods2l4a",
+      "RouteKey": "POST /api/v4/actions",
+      "Target": "integrations/00w1zlq"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "t0hsl2i",
+      "RouteKey": "POST /auth/logout",
+      "Target": "integrations/u02i0a4"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "tfayjhn",
+      "RouteKey": "POST /auth/unlink",
+      "Target": "integrations/3av0nb5"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "tjiycdk",
+      "RouteKey": "POST /v4/actions",
+      "Target": "integrations/o4iwgo4"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationScopes": [],
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "u1hggym",
+      "RouteKey": "GET /auth/callback",
+      "Target": "integrations/rtx0xcf"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "wfccsd9",
+      "RouteKey": "POST /profile/reset",
+      "Target": "integrations/wg7rnbm"
+    },
+    {
+      "ApiKeyRequired": false,
+      "AuthorizationType": "NONE",
+      "RequestParameters": {},
+      "RouteId": "yo5qltt",
+      "RouteKey": "POST /v4/content/preview",
+      "Target": "integrations/5fhvbbp"
+    }
+  ]
+}

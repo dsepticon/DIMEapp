@@ -1,0 +1,20 @@
+{
+  "bucket": "destroyaindustriesminingextension.com",
+  "key": "privacy",
+  "backup": "/tmp/dime-m42-testers-activation/privacy-before.html",
+  "sha256": "6887c3553816e44e701f4965554b5b85bedc584acd13665727050714f216dc6c",
+  "metadata": {
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-09-15T12:48:00+00:00",
+    "ContentLength": 8502,
+    "ETag": "\"36b650808ecff4e13988e43a3159e62d\"",
+    "ChecksumCRC64NVME": "TP8+qt5AtAg=",
+    "ChecksumType": "FULL_OBJECT",
+    "CacheControl": "public, max-age=300",
+    "ContentDisposition": "inline",
+    "ContentType": "text/html; charset=utf-8",
+    "ServerSideEncryption": "AES256",
+    "Metadata": {}
+  },
+  "restore": "conditional put-object against then-current ETag, preserve original metadata; invalidate /privacy only"
+}

@@ -1,0 +1,149 @@
+{
+  "Changes": [
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "AuthMethodGuard",
+        "ResourceType": "AWS::CloudFront::Function",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "AuthResponsePolicy",
+        "ResourceType": "AWS::CloudFront::ResponseHeadersPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "CallbackOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "DeleteIntentOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "DeleteResumeOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "LinkAcceptOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "LinkIntentOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "LoginOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "LogoutOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "SessionOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "StatusOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Add",
+        "LogicalResourceId": "UnlinkOriginPolicy",
+        "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+        "Scope": [],
+        "Details": []
+      }
+    }
+  ],
+  "ChangeSetName": "m42-auth-routing-b3511e7-1",
+  "ChangeSetId": "arn:aws:cloudformation:us-east-1:861738068626:changeSet/m42-auth-routing-b3511e7-1/975a2fb1-43f8-40c6-8ef3-40cb2ec17cdb",
+  "StackId": "arn:aws:cloudformation:us-east-1:861738068626:stack/dime-web-auth-routing-review/b94dae50-b236-11f1-8557-0affed7a444d",
+  "StackName": "dime-web-auth-routing-review",
+  "Description": null,
+  "Parameters": null,
+  "CreationTime": "2026-09-17T01:25:53.266000+00:00",
+  "ExecutionStatus": "AVAILABLE",
+  "Status": "CREATE_COMPLETE",
+  "StatusReason": null,
+  "NotificationARNs": [],
+  "RollbackConfiguration": {},
+  "Capabilities": [],
+  "Tags": null,
+  "ParentChangeSetId": null,
+  "IncludeNestedStacks": false,
+  "RootChangeSetId": null,
+  "OnStackFailure": null,
+  "ImportExistingResources": null,
+  "StackDriftStatus": null,
+  "DeploymentMode": null,
+  "DeploymentConfig": {
+    "Mode": "STANDARD",
+    "DisableRollback": false
+  }
+}

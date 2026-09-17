@@ -1,0 +1,40 @@
+[
+  {
+    "origin": "edge",
+    "path": "/auth/status",
+    "status": 200,
+    "body": {
+      "signInAvailable": false,
+      "linkingAvailable": false
+    },
+    "cache": "no-store, private, max-age=0"
+  },
+  {
+    "origin": "edge",
+    "path": "/auth/login",
+    "status": 503,
+    "body": {
+      "message": "Authentication is unavailable."
+    },
+    "cache": "no-store, private, max-age=0"
+  },
+  {
+    "origin": "direct",
+    "path": "/auth/status",
+    "status": 200,
+    "body": {
+      "signInAvailable": false,
+      "linkingAvailable": false
+    },
+    "cache": "no-store"
+  },
+  {
+    "origin": "direct",
+    "path": "/auth/login",
+    "status": 503,
+    "body": {
+      "message": "Authentication is unavailable."
+    },
+    "cache": "no-store"
+  }
+]

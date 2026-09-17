@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/",
+    "sha256": "2bcc8de3c43b8ac7feef1f1e21d331f93a4f6a2d37e808ef2b64f006915dae1a",
+    "status": 200
+  },
+  {
+    "path": "/game/",
+    "sha256": "fa843fc409a4a940943e2c1d05810412b2a92794d7bbb81dc16a609cd4a07f68",
+    "status": 200
+  },
+  {
+    "path": "/privacy",
+    "sha256": "8d99be55d7b4d198d8918c9667d977e604214e184d598e6e99d7b6f1c5123d7e",
+    "status": 200
+  }
+]

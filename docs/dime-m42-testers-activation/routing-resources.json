@@ -1,0 +1,124 @@
+{
+  "StackResourceSummaries": [
+    {
+      "LogicalResourceId": "AuthMethodGuard",
+      "PhysicalResourceId": "arn:aws:cloudfront::861738068626:function/dime-auth-exact-methods-20260916",
+      "ResourceType": "AWS::CloudFront::Function",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:52.578000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "AuthResponsePolicy",
+      "PhysicalResourceId": "b2d419c9-0564-4199-a503-5fa2cd7f2063",
+      "ResourceType": "AWS::CloudFront::ResponseHeadersPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:50.669000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "CallbackOriginPolicy",
+      "PhysicalResourceId": "1f02feaa-0bec-4882-bd1d-18a03d0dc49c",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:55.910000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DeleteIntentOriginPolicy",
+      "PhysicalResourceId": "764638e2-4831-4b79-89f2-82e9ede152ee",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:50.160000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "DeleteResumeOriginPolicy",
+      "PhysicalResourceId": "232acdd4-f72d-4171-904b-39b83f2aa887",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:55.734000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "LinkAcceptOriginPolicy",
+      "PhysicalResourceId": "e4911f99-0ad5-475d-83a7-539e5ab3771f",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:55.559000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "LinkIntentOriginPolicy",
+      "PhysicalResourceId": "a30c0a30-40b2-488f-b4fb-9cd77d9c3a1d",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:50.456000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "LoginOriginPolicy",
+      "PhysicalResourceId": "0f4a1067-a7e2-4b29-a561-e0ae61f36eea",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:50.505000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "LogoutOriginPolicy",
+      "PhysicalResourceId": "aef1331d-b778-4d89-ae61-894fc5635317",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:50.388000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "SessionOriginPolicy",
+      "PhysicalResourceId": "26d7d03b-cc49-4c46-9914-ffebd244d4c9",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:55.630000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "StatusOriginPolicy",
+      "PhysicalResourceId": "3a5ecac7-e9f5-40ea-9a81-c77d8675449e",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:50.248000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    },
+    {
+      "LogicalResourceId": "UnlinkOriginPolicy",
+      "PhysicalResourceId": "a9731615-2c9a-4764-8520-b409654d07f0",
+      "ResourceType": "AWS::CloudFront::OriginRequestPolicy",
+      "LastUpdatedTimestamp": "2026-09-17T01:26:50.508000+00:00",
+      "ResourceStatus": "CREATE_COMPLETE",
+      "DriftInformation": {
+        "StackResourceDriftStatus": "NOT_CHECKED"
+      }
+    }
+  ]
+}

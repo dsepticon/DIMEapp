@@ -1,0 +1,153 @@
+{
+  "Changes": [
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Modify",
+        "LogicalResourceId": "StagingHttpApi",
+        "PhysicalResourceId": "t2la0784p6",
+        "ResourceType": "AWS::ApiGatewayV2::Api",
+        "Replacement": "False",
+        "Scope": ["Properties"],
+        "Details": [
+          {
+            "Target": {
+              "Attribute": "Properties",
+              "Name": "Body",
+              "RequiresRecreation": "Never"
+            },
+            "Evaluation": "Dynamic",
+            "ChangeSource": "ResourceAttribute",
+            "CausingEntity": "WebAuthFunction.Arn"
+          }
+        ]
+      }
+    },
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Modify",
+        "LogicalResourceId": "WebAuthFunction",
+        "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+        "ResourceType": "AWS::Lambda::Function",
+        "Replacement": "False",
+        "Scope": ["Properties"],
+        "Details": [
+          {
+            "Target": {
+              "Attribute": "Properties",
+              "Name": "Environment",
+              "RequiresRecreation": "Never"
+            },
+            "Evaluation": "Static",
+            "ChangeSource": "ParameterReference",
+            "CausingEntity": "WebSignInMode"
+          },
+          {
+            "Target": {
+              "Attribute": "Properties",
+              "Name": "Environment",
+              "RequiresRecreation": "Never"
+            },
+            "Evaluation": "Dynamic",
+            "ChangeSource": "DirectModification"
+          }
+        ]
+      }
+    }
+  ],
+  "ChangeSetName": "m42-testers-activation-3546a09-review-1",
+  "ChangeSetId": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-testers-activation-3546a09-review-1/dc47b822-bd22-4f43-b0db-0ec3207a3c5c",
+  "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-v2-review-20260912/4eb75fd0-aeff-11f1-be22-065080bc241f",
+  "StackName": "dime-v2-review-20260912",
+  "Description": "Review only: WebSignInMode TESTERS; linking DISABLED. Blocked until routing confidentiality, privacy and registered Twitch callback are reviewed. Do not execute.",
+  "Parameters": [
+    {
+      "ParameterKey": "TwitchSecretArn",
+      "ParameterValue": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/v2/staging/review01/twitch-signing-key-bQrqy7"
+    },
+    {
+      "ParameterKey": "ConfigurationRevision",
+      "ParameterValue": "m42-signin-289cadc-review-1"
+    },
+    {
+      "ParameterKey": "WebIdentityKeySecretArn",
+      "ParameterValue": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/web/identity-key-kL7iYK"
+    },
+    {
+      "ParameterKey": "ApiThrottleBurst",
+      "ParameterValue": "20"
+    },
+    {
+      "ParameterKey": "ApiThrottleRate",
+      "ParameterValue": "10"
+    },
+    {
+      "ParameterKey": "WebSignInMode",
+      "ParameterValue": "TESTERS"
+    },
+    {
+      "ParameterKey": "ContentConversionMode",
+      "ParameterValue": "ENABLED"
+    },
+    {
+      "ParameterKey": "AccountLinkingMode",
+      "ParameterValue": "DISABLED"
+    },
+    {
+      "ParameterKey": "StagingResourcePrefix",
+      "ParameterValue": "review01"
+    },
+    {
+      "ParameterKey": "TwitchAllowedOrigins",
+      "ParameterValue": "https://znaovl2j45idub9k81om1dkatwxnu2.ext-twitch.tv"
+    },
+    {
+      "ParameterKey": "ContentConversionTesterTags",
+      "ParameterValue": "****"
+    },
+    {
+      "ParameterKey": "AuthEncryptionKeySecretArn",
+      "ParameterValue": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/web/auth-encryption-key-hAAuXq"
+    },
+    {
+      "ParameterKey": "PlayerIdentityKeySecretArn",
+      "ParameterValue": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/v2/staging/review01/player-identity-key-xQSjLV"
+    },
+    {
+      "ParameterKey": "LogRetentionDays",
+      "ParameterValue": "14"
+    },
+    {
+      "ParameterKey": "OAuthClientSecretArn",
+      "ParameterValue": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/web/oauth/client-secret-s5kwbq"
+    },
+    {
+      "ParameterKey": "OAuthClientId",
+      "ParameterValue": "4228okut24ll35bisjmygbquaf6svm"
+    },
+    {
+      "ParameterKey": "StagingRegion",
+      "ParameterValue": "us-east-2"
+    }
+  ],
+  "CreationTime": "2026-09-16T19:59:53.885000+00:00",
+  "ExecutionStatus": "AVAILABLE",
+  "Status": "CREATE_COMPLETE",
+  "StatusReason": null,
+  "NotificationARNs": [],
+  "RollbackConfiguration": {},
+  "Capabilities": ["CAPABILITY_NAMED_IAM", "CAPABILITY_AUTO_EXPAND"],
+  "Tags": null,
+  "ParentChangeSetId": null,
+  "IncludeNestedStacks": false,
+  "RootChangeSetId": null,
+  "OnStackFailure": null,
+  "ImportExistingResources": null,
+  "StackDriftStatus": null,
+  "DeploymentMode": null,
+  "DeploymentConfig": {
+    "Mode": "STANDARD",
+    "DisableRollback": false
+  }
+}
