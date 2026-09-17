@@ -1,0 +1,7 @@
+{
+    "patterns": [
+        "codex/react-extension-rebuild",
+        "main"
+    ],
+    "auto": true
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "case": "guest",
+    "status": 200
+  },
+  {
+    "case": "blocked-xss",
+    "status": 403
+  },
+  {
+    "case": "persistent-gate",
+    "status": 401
+  }
+]

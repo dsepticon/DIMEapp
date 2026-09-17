@@ -1,0 +1,48 @@
+{
+  "account": "861738068626",
+  "scope": "CLOUDFRONT",
+  "region": "us-east-1",
+  "arn": "arn:aws:wafv2:us-east-1:861738068626:global/webacl/CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690/5209e705-d0b7-4259-8052-6254d1840fb7",
+  "id": "5209e705-d0b7-4259-8052-6254d1840fb7",
+  "beforeLockToken": "299f0cb7-8c51-47e2-8bfb-e25fd1ec0695",
+  "exactlySixChanges": [
+    {
+      "path": "/Rules/0/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "/Rules/1/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "/Rules/2/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "/Rules/3/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "/Rules/4/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    },
+    {
+      "path": "/VisibilityConfig/SampledRequestsEnabled",
+      "before": true,
+      "after": false
+    }
+  ],
+  "allOtherFieldsIdentical": true,
+  "cloudfrontIncludingAssociationUnchanged": true,
+  "hashes": {
+    "before.json": "4fa82bb2281330211ad024c728a53b09121801e795a2f488ba39206744226fe7",
+    "update.json": "7847ea1608a7d2f88331c4aa88ce500aa2cd786f807487ad86f94efbaab51288",
+    "expected-after.json": "ef478a25a21f0e8db9785541cd9bf3042b05b1228c1f00e1482e35317e42c2e0",
+    "rollback-original-token.json": "075299e948a3d9ddb6e08fc88a81f5ef2a8cfa50d9329963cacd8f446842c67a"
+  }
+}

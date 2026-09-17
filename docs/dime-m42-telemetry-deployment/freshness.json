@@ -1,0 +1,18 @@
+{
+  "startUTC": "2026-09-17T00:32:44.949519+00:00",
+  "endUTC": "2026-09-17T00:32:47.810358+00:00",
+  "secondsAfterThreshold": 1075.857,
+  "distinctFromPreDeploymentSentinels": true,
+  "syntheticValueDigests": {
+    "invitation": "83e216ddff5b8cdfedd14c2c4472806a04b49172a9935dd84dab8e9057b5bb5d",
+    "code": "b7f47944aa409017bdb9d69feffe94375dc95198d6b21f44f817bec25c590890",
+    "state": "8efccbd36388aee5e5e271ffe8f8ecda328d41cf1b1eea51c959a233d1af6249",
+    "nonce": "f0214e9a4f9b783802dd1071ed58a4366088168d6dbcd6a3c6b146fd47506034",
+    "csrf": "e040f6dba7cc6a9436aee3969ecdc985f3744fb7d5a08e427cac571d5668cece",
+    "session": "17cbb749337bafa28239fb4db651af3f1c3ed68ebc308a093ba583f466a98f9a",
+    "access": "99a667d51452a805d1b0c13432f49ad72a7c8a276823dabba2996b4a5458b2ce",
+    "refresh": "b9189a3a0f6b6f51a1d49b117dd20eb31a0b7cdbaf44ba58df998e43fc73417b",
+    "authorization": "810ed0a9cfd9b5560deba784532ea9ee5fd944636bbb5c930ddbe8d21837b33e",
+    "response_cookie": "be9c693698e216296629e680f5629dedd4890a6841f71db69f3473752c4b4765"
+  }
+}

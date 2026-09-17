@@ -1,0 +1,5 @@
+{
+    "ARN": "arn:aws:cloudformation:us-east-1:861738068626:changeSet/m42-telemetry-import-0e849a5-review-1/397852f5-915c-4fbc-9054-7ccbcc5c56c9",
+    "Status": "CREATE_COMPLETE",
+    "ExecutionStatus": "AVAILABLE"
+}

@@ -1,0 +1,22 @@
+{
+  "verifiedUTC": "2026-09-17T01:14:27.594626+00:00",
+  "samplingConfidentialityGatePassed": true,
+  "freshSentinelRequests": 14,
+  "cloudWatchQueries": 60,
+  "wafSampleQueries": 12,
+  "sensitiveMatches": 0,
+  "postWindowSampledRequests": 0,
+  "delayedRecordsScannedByGroup": {
+    "ApiAccessLogGroup": [
+      10.0
+    ],
+    "EbsLogGroup": [
+      0.0
+    ],
+    "WebAuthLogGroup": [
+      0.0
+    ]
+  },
+  "rollbackRequired": false,
+  "oauthActivationAuthorized": false
+}

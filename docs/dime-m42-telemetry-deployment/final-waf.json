@@ -1,0 +1,35 @@
+{
+    "LockToken": "768bed38-8d9c-4b17-bdff-ce0043bc81a8",
+    "ACL": {
+        "SampledRequestsEnabled": false,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690"
+    },
+    "Rules": [
+        {
+            "SampledRequestsEnabled": false,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "AWS-RateBasedRule-IP-300-CreatedByCloudFront"
+        },
+        {
+            "SampledRequestsEnabled": false,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "AWS-AWSManagedRulesAmazonIpReputationList"
+        },
+        {
+            "SampledRequestsEnabled": false,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "AWS-AWSManagedRulesCommonRuleSet"
+        },
+        {
+            "SampledRequestsEnabled": false,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "AWS-AWSManagedRulesKnownBadInputsRuleSet"
+        },
+        {
+            "SampledRequestsEnabled": false,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "AWS-AWSManagedRulesSQLiRuleSet"
+        }
+    ]
+}

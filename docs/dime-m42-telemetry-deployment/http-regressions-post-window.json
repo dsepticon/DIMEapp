@@ -1,0 +1,162 @@
+[
+  {
+    "method": "GET",
+    "path": "/auth/login",
+    "status": 503,
+    "redirect": false,
+    "code": "WEB_SIGN_IN_UNAVAILABLE",
+    "expiredCookies": 0
+  },
+  {
+    "method": "GET",
+    "path": "/auth/login",
+    "status": 503,
+    "redirect": false,
+    "code": "WEB_SIGN_IN_UNAVAILABLE",
+    "expiredCookies": 0
+  },
+  {
+    "method": "GET",
+    "path": "/auth/callback",
+    "status": 503,
+    "redirect": false,
+    "code": "WEB_SIGN_IN_UNAVAILABLE",
+    "expiredCookies": 2
+  },
+  {
+    "method": "POST",
+    "path": "/auth/link/intent",
+    "status": 503,
+    "redirect": false,
+    "code": "WEB_SIGN_IN_UNAVAILABLE",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/auth/link/accept",
+    "status": 503,
+    "redirect": false,
+    "code": "WEB_SIGN_IN_UNAVAILABLE",
+    "expiredCookies": 0
+  },
+  {
+    "method": "GET",
+    "path": "/auth/status",
+    "status": 200,
+    "redirect": false,
+    "code": null,
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/auth/logout",
+    "status": 200,
+    "redirect": false,
+    "code": null,
+    "expiredCookies": 3
+  },
+  {
+    "method": "POST",
+    "path": "/auth/logout",
+    "status": 200,
+    "redirect": false,
+    "code": null,
+    "expiredCookies": 3
+  },
+  {
+    "method": "POST",
+    "path": "/auth/delete/resume",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/auth/delete/resume",
+    "status": 403,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "GET",
+    "path": "/state",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "GET",
+    "path": "/v4/state",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/actions",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/profile/reset",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/v4/actions",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/v4/content/preview",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/v4/content/convert",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "POST",
+    "path": "/v4/profile/reset",
+    "status": 401,
+    "redirect": false,
+    "code": "UNAUTHORIZED",
+    "expiredCookies": 0
+  },
+  {
+    "method": "OPTIONS",
+    "path": "/v4/actions",
+    "status": 204,
+    "redirect": false,
+    "code": null,
+    "expiredCookies": 0
+  },
+  {
+    "method": "OPTIONS",
+    "path": "/v4/actions",
+    "status": 204,
+    "redirect": false,
+    "code": null,
+    "expiredCookies": 0
+  }
+]

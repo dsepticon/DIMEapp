@@ -1,0 +1,14 @@
+{
+  "before.json": {
+    "fileSha256": "4fa82bb2281330211ad024c728a53b09121801e795a2f488ba39206744226fe7",
+    "canonicalWebAclSha256": "c886f1464e9b9cdf579b5fc399cb598e47d9ebd7917eee634acd6053d9cf377e"
+  },
+  "after.json": {
+    "fileSha256": "d333141b1b72f0f6ef10f295277deb16cc8348ff224334d15daac2297567514b",
+    "canonicalWebAclSha256": "4ee860a46b23ee1396bc7c3fb3b2fc82f0e3f9fcc5958435e9ace49d43a6347b"
+  },
+  "post-window-waf.json": {
+    "fileSha256": "7ebabaf950b1c255adf81d9a863aebc3a5d1205685b1cfda3e06f9365e122085",
+    "canonicalWebAclSha256": "4ee860a46b23ee1396bc7c3fb3b2fc82f0e3f9fcc5958435e9ace49d43a6347b"
+  }
+}

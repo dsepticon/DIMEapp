@@ -1,0 +1,14 @@
+{
+  "recordedUTC": "2026-09-17T00:32:35.375316+00:00",
+  "windowExpired": true,
+  "postWindowConfigurationVerified": true,
+  "freshSentinelRequestsSent": false,
+  "awsAuthenticationBlocker": "CreateOAuth2Token INVALID_REQUEST; browser renewal opened",
+  "sensitiveMatchDetected": false,
+  "confidentialityGateClosed": false,
+  "rollbackExecuted": false,
+  "importExecuted": false,
+  "importCleanupPerformed": false,
+  "resolved": true,
+  "freshProbesResumedUTC": "2026-09-17T00:32:44.949519+00:00"
+}

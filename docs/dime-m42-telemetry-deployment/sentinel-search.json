@@ -1,0 +1,353 @@
+{
+  "startEpoch": 1789605162,
+  "endEpoch": 1789607574,
+  "cloudWatch": [
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "invitation",
+      "queryId": "26cca9b3-8daa-407c-995f-b028dba7cc1a",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "code",
+      "queryId": "d2aad6d3-9094-4d3a-b2d8-85da95546c6e",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "state",
+      "queryId": "6adc596d-68b9-434f-9666-b9cebdc1805a",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "nonce",
+      "queryId": "25f8cf2c-e775-4ede-ada1-a6ca6af8dd80",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "csrf",
+      "queryId": "566d923d-12b7-4a14-a120-9ca2bf63ec1f",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "session",
+      "queryId": "8c752a81-f783-413d-b603-99e388f0a93b",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "access",
+      "queryId": "b81c315f-fa00-4959-ad1b-2a90fc858555",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "refresh",
+      "queryId": "0504d0bb-4a36-4f68-a815-0fc88a429cb2",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "authorization",
+      "queryId": "853b3bcf-3bc5-4b66-a8c3-22d7fb001c8a",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "sentinelClass": "response_cookie",
+      "queryId": "577f3de2-1378-4755-8676-490c0f3c574b",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 10.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "invitation",
+      "queryId": "9411e389-b83e-4248-8b59-912aa77baed8",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "code",
+      "queryId": "b95e4e66-3e8e-42c5-bf87-8d22ca866399",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "state",
+      "queryId": "628e9c1c-68bd-4b91-a18f-3f1326866980",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "nonce",
+      "queryId": "f98db6fb-2b2f-4b41-8ce4-e418a8b32098",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "csrf",
+      "queryId": "503b086f-804f-41c6-8c28-64f38b8a2507",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "session",
+      "queryId": "cdb574bc-24a0-4cde-a648-84d4422b3054",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "access",
+      "queryId": "876d73a1-7713-4108-87ef-995d51df0d33",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "refresh",
+      "queryId": "b8cb25d5-c733-4de5-8dd0-8dd17dd43912",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "authorization",
+      "queryId": "6053a6e0-9ba8-4988-9b6f-2f2746368653",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "EbsLogGroup",
+      "sentinelClass": "response_cookie",
+      "queryId": "49d2e660-3d16-40e9-a658-71e89f6e0adc",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "invitation",
+      "queryId": "59b3fb10-114a-4b8c-b0d1-287da46a20cc",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "code",
+      "queryId": "85123e15-91a6-498f-b725-bc04169bf149",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "state",
+      "queryId": "da8f81f2-1d58-4735-9cd9-410c33af3e51",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "nonce",
+      "queryId": "b15abfa4-e3b4-4eb9-b884-1959d7db02b9",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "csrf",
+      "queryId": "7d7ebaad-27aa-4e70-a548-7b015383bf6c",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "session",
+      "queryId": "96619163-2565-4477-be30-460ec60bc33a",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "access",
+      "queryId": "63bc6bf3-d935-403e-ad36-6a8356724b20",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "refresh",
+      "queryId": "ca1278fe-7fe8-4b29-bb92-3ff987a97879",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "authorization",
+      "queryId": "f339d9a9-2233-4f4a-b0fb-607970a350e5",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "sentinelClass": "response_cookie",
+      "queryId": "bebe2571-7d9c-45f7-84c7-0d3befcd25ac",
+      "status": "Complete",
+      "matches": 0,
+      "recordsScanned": 0.0
+    }
+  ],
+  "wafSamples": [
+    {
+      "metric": "CreatedByCloudFront-507f6793-f541-4211-a1ea-2105c3a73690",
+      "population": 0,
+      "returned": 0,
+      "matches": {
+        "invitation": 0,
+        "code": 0,
+        "state": 0,
+        "nonce": 0,
+        "csrf": 0,
+        "session": 0,
+        "access": 0,
+        "refresh": 0,
+        "authorization": 0,
+        "response_cookie": 0
+      }
+    },
+    {
+      "metric": "AWS-RateBasedRule-IP-300-CreatedByCloudFront",
+      "population": 0,
+      "returned": 0,
+      "matches": {
+        "invitation": 0,
+        "code": 0,
+        "state": 0,
+        "nonce": 0,
+        "csrf": 0,
+        "session": 0,
+        "access": 0,
+        "refresh": 0,
+        "authorization": 0,
+        "response_cookie": 0
+      }
+    },
+    {
+      "metric": "AWS-AWSManagedRulesAmazonIpReputationList",
+      "population": 0,
+      "returned": 0,
+      "matches": {
+        "invitation": 0,
+        "code": 0,
+        "state": 0,
+        "nonce": 0,
+        "csrf": 0,
+        "session": 0,
+        "access": 0,
+        "refresh": 0,
+        "authorization": 0,
+        "response_cookie": 0
+      }
+    },
+    {
+      "metric": "AWS-AWSManagedRulesCommonRuleSet",
+      "population": 0,
+      "returned": 0,
+      "matches": {
+        "invitation": 0,
+        "code": 0,
+        "state": 0,
+        "nonce": 0,
+        "csrf": 0,
+        "session": 0,
+        "access": 0,
+        "refresh": 0,
+        "authorization": 0,
+        "response_cookie": 0
+      }
+    },
+    {
+      "metric": "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+      "population": 0,
+      "returned": 0,
+      "matches": {
+        "invitation": 0,
+        "code": 0,
+        "state": 0,
+        "nonce": 0,
+        "csrf": 0,
+        "session": 0,
+        "access": 0,
+        "refresh": 0,
+        "authorization": 0,
+        "response_cookie": 0
+      }
+    },
+    {
+      "metric": "AWS-AWSManagedRulesSQLiRuleSet",
+      "population": 0,
+      "returned": 0,
+      "matches": {
+        "invitation": 0,
+        "code": 0,
+        "state": 0,
+        "nonce": 0,
+        "csrf": 0,
+        "session": 0,
+        "access": 0,
+        "refresh": 0,
+        "authorization": 0,
+        "response_cookie": 0
+      }
+    }
+  ],
+  "samplingStillEnabled": false,
+  "postDeploymentProof": true,
+  "rawMessagesOrSamplesStored": false
+}

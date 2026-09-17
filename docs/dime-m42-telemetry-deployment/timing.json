@@ -1,0 +1,12 @@
+{
+  "updateStartedUTC": "2026-09-16T21:14:47.215794+00:00",
+  "updateAcknowledgedUTC": "2026-09-16T21:14:48.252161+00:00",
+  "verifiedUTC": "2026-09-16T21:14:49.092297+00:00",
+  "activationNotBeforeUTC": "2026-09-17T00:14:49.092297+00:00",
+  "activationNotBeforeEpoch": 1789604089.0922966,
+  "waitBasis": "Three hours after read-back confirmation, later than update acknowledgement",
+  "updateCalls": 1,
+  "beforeLockToken": "299f0cb7-8c51-47e2-8bfb-e25fd1ec0695",
+  "afterLockToken": "768bed38-8d9c-4b17-bdff-ce0043bc81a8",
+  "nextLockToken": "768bed38-8d9c-4b17-bdff-ce0043bc81a8"
+}

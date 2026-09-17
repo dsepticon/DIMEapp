@@ -1,0 +1,8 @@
+{
+  "error": "ParamValidation: empty Description has minimum length 1",
+  "requestSentToAws": false,
+  "aclAndLockTokenUnchanged": true,
+  "resolution": "Omit optional empty Description; no effective configuration difference",
+  "attemptedCliInvocations": 1,
+  "updateApiCalls": 0
+}

@@ -1,0 +1,14 @@
+{
+  "step": "Separate cleanup after successful post-window verification",
+  "changeSetArn": "arn:aws:cloudformation:us-east-1:861738068626:changeSet/m42-telemetry-import-0e849a5-review-1/397852f5-915c-4fbc-9054-7ccbcc5c56c9",
+  "exitCode": 0,
+  "time": {
+    "current_time": "2026-09-17 01:14:48 UTC"
+  },
+  "deleteSucceeded": true,
+  "verification": "ChangeSetNotFound",
+  "executed": false,
+  "reviewStackStatus": "REVIEW_IN_PROGRESS",
+  "reviewStackDeleted": false,
+  "webAclAdopted": false
+}
