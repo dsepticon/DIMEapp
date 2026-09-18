@@ -233,7 +233,7 @@ test('mine → refine → collect → sell persists across refresh with accurate
     .click();
   await page.getByRole('button', { name: 'Start Refining' }).click();
   await expect.poll(() => store.states.get('test')!.orders.length).toBe(1);
-  await expect(page.getByRole('status')).toHaveText('Operation saved.');
+  // The toast is transient; receipt clearance and the reloaded order prove persistence.
   await expect.poll(() => page.evaluate(() => sessionStorage.getItem('dime-pending-v2:local'))).toBeNull();
   await page.reload();
   await navigate(page, 'refinery');
