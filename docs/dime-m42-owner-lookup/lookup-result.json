@@ -1,0 +1,16 @@
+{
+  "stage": "before Twitch app token request",
+  "failureCategory": "SECRET_WHITESPACE",
+  "canonicalOAuthSecretFormatAccepted": false,
+  "secretVersionChanged": false,
+  "twitchApiRequests": 0,
+  "numericIdsResolved": 0,
+  "invitationsGenerated": 0,
+  "liveOAuthStarted": false,
+  "exactLoginTests": 8,
+  "runtimeAdapterBoundaryTests": 8,
+  "signIn": "DISABLED",
+  "linking": "DISABLED",
+  "conversion": "ENABLED",
+  "authenticatedBrowserControlAvailable": false
+}
