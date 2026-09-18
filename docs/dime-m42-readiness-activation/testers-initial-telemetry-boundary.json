@@ -1,0 +1,7 @@
+{
+  "samplingDisabledCount": 6,
+  "aggregateMetricsEnabled": true,
+  "cloudfrontStandardLogging": false,
+  "cloudfrontRealtimeLogging": false,
+  "associationMatches": true
+}

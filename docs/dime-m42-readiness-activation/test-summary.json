@@ -1,0 +1,26 @@
+{
+  "unit": {
+    "passed": 592,
+    "files": 66,
+    "completeRerun": true
+  },
+  "priorCleanCompleteChromium": {
+    "passed": 170,
+    "sourceUnchanged": true,
+    "rerunThisDeployment": false
+  },
+  "publicGuestChromium": {
+    "passed": 5,
+    "duringMode": "TESTERS",
+    "attempt": 2,
+    "durationMinutes": 7.6
+  },
+  "compatibilityChromium": {
+    "passed": 5,
+    "legacyPanelMobile": 2,
+    "syntheticTesterSessionLogoutLayouts": 3,
+    "duringMode": "DISABLED",
+    "durationMinutes": 1.5
+  },
+  "applicationCodeChangesThisRun": 0
+}

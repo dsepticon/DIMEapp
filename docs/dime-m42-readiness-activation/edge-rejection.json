@@ -1,0 +1,9 @@
+{
+  "status": 400,
+  "reviewedQueryAllowlistRejects": true,
+  "sensitiveResponseFields": false,
+  "cloudFrontGenerated": true,
+  "noInvocationRequested": true,
+  "initialVerifierExpectedStatus": 200,
+  "correctExpectedStatus": 400
+}

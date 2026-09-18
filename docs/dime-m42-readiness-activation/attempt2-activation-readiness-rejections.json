@@ -1,0 +1,22 @@
+[
+  {
+    "case": "alternate-stage-AWSPENDING",
+    "rejected": true
+  },
+  {
+    "case": "alternate-stage-AWSPREVIOUS",
+    "rejected": true
+  },
+  {
+    "case": "alternate-stage-arbitrary-version",
+    "rejected": true
+  },
+  {
+    "case": "HTTP-wrapper",
+    "rejected": true
+  },
+  {
+    "case": "HTTP-wrapper",
+    "rejected": true
+  }
+]

@@ -1,0 +1,380 @@
+[
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "f83d02b8-724a-4c8d-ba2b-bb588212ff54",
+    "Status": null,
+    "OperationStatus": "SUCCEEDED",
+    "Time": "2026-09-18T20:46:39.921000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "f83d02b8-724a-4c8d-ba2b-bb588212ff54",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:46:39.920000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-3"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "f83d02b8-724a-4c8d-ba2b-bb588212ff54",
+    "Status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:46:39.195000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-3"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "f83d02b8-724a-4c8d-ba2b-bb588212ff54",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:46:36.941000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-activation-3"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "f83d02b8-724a-4c8d-ba2b-bb588212ff54",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:46:29.403000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-activation-3"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "f83d02b8-724a-4c8d-ba2b-bb588212ff54",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:46:25.399000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-3"
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "f83d02b8-724a-4c8d-ba2b-bb588212ff54",
+    "Status": null,
+    "OperationStatus": "IN_PROGRESS",
+    "Time": "2026-09-18T20:46:25.391000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "5c036644-ea24-4395-a8cb-8c4572f3daf4",
+    "Status": null,
+    "OperationStatus": "SUCCEEDED",
+    "Time": "2026-09-18T20:40:32.781000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "5c036644-ea24-4395-a8cb-8c4572f3daf4",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:40:32.780000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-rollback-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "5c036644-ea24-4395-a8cb-8c4572f3daf4",
+    "Status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:40:31.988000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-rollback-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "5c036644-ea24-4395-a8cb-8c4572f3daf4",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:40:29.684000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-rollback-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "5c036644-ea24-4395-a8cb-8c4572f3daf4",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:40:22.365000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-rollback-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "5c036644-ea24-4395-a8cb-8c4572f3daf4",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:40:18.342000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-rollback-2"
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "5c036644-ea24-4395-a8cb-8c4572f3daf4",
+    "Status": null,
+    "OperationStatus": "IN_PROGRESS",
+    "Time": "2026-09-18T20:40:18.335000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "6a8cca4b-736f-4b0a-8414-12cd85b3a861",
+    "Status": null,
+    "OperationStatus": "SUCCEEDED",
+    "Time": "2026-09-18T20:29:39.970000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "6a8cca4b-736f-4b0a-8414-12cd85b3a861",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:29:39.969000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "6a8cca4b-736f-4b0a-8414-12cd85b3a861",
+    "Status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:29:39.197000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "6a8cca4b-736f-4b0a-8414-12cd85b3a861",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:29:36.974000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-activation-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "6a8cca4b-736f-4b0a-8414-12cd85b3a861",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:29:29.529000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-activation-2"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "6a8cca4b-736f-4b0a-8414-12cd85b3a861",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:29:25.516000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-2"
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "6a8cca4b-736f-4b0a-8414-12cd85b3a861",
+    "Status": null,
+    "OperationStatus": "IN_PROGRESS",
+    "Time": "2026-09-18T20:29:25.506000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "35c573c2-a4ac-49ce-bade-7732f4801e25",
+    "Status": null,
+    "OperationStatus": "SUCCEEDED",
+    "Time": "2026-09-18T20:26:44.525000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "35c573c2-a4ac-49ce-bade-7732f4801e25",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:26:44.524000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-rollback-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "35c573c2-a4ac-49ce-bade-7732f4801e25",
+    "Status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:26:43.759000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-rollback-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "35c573c2-a4ac-49ce-bade-7732f4801e25",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:26:41.438000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-rollback-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "35c573c2-a4ac-49ce-bade-7732f4801e25",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:26:34.118000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-rollback-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "35c573c2-a4ac-49ce-bade-7732f4801e25",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:26:29.680000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-rollback-1"
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "35c573c2-a4ac-49ce-bade-7732f4801e25",
+    "Status": null,
+    "OperationStatus": "IN_PROGRESS",
+    "Time": "2026-09-18T20:26:29.673000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "619d5e8b-9436-4fbd-b59e-75646e2ec5ce",
+    "Status": null,
+    "OperationStatus": "SUCCEEDED",
+    "Time": "2026-09-18T20:25:10.121000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "619d5e8b-9436-4fbd-b59e-75646e2ec5ce",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:25:10.120000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "619d5e8b-9436-4fbd-b59e-75646e2ec5ce",
+    "Status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:25:09.295000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "619d5e8b-9436-4fbd-b59e-75646e2ec5ce",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:25:06.885000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-activation-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "619d5e8b-9436-4fbd-b59e-75646e2ec5ce",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:24:59.500000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-activation-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "619d5e8b-9436-4fbd-b59e-75646e2ec5ce",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:24:55.450000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-activation-1"
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "619d5e8b-9436-4fbd-b59e-75646e2ec5ce",
+    "Status": null,
+    "OperationStatus": "IN_PROGRESS",
+    "Time": "2026-09-18T20:24:55.442000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "481c6cc5-524a-4c3d-bed3-8deb8c4a4703",
+    "Status": null,
+    "OperationStatus": "SUCCEEDED",
+    "Time": "2026-09-18T20:19:15.709000+00:00",
+    "Logical": null,
+    "Token": null
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "481c6cc5-524a-4c3d-bed3-8deb8c4a4703",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:19:15.708000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-dormant-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "481c6cc5-524a-4c3d-bed3-8deb8c4a4703",
+    "Status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:19:14.873000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-dormant-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "481c6cc5-524a-4c3d-bed3-8deb8c4a4703",
+    "Status": "UPDATE_COMPLETE",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:19:12.369000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-dormant-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "481c6cc5-524a-4c3d-bed3-8deb8c4a4703",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:19:04.790000+00:00",
+    "Logical": "WebAuthFunction",
+    "Token": "dime-readiness-a51c774-dormant-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "481c6cc5-524a-4c3d-bed3-8deb8c4a4703",
+    "Status": "UPDATE_IN_PROGRESS",
+    "OperationStatus": null,
+    "Time": "2026-09-18T20:19:00.539000+00:00",
+    "Logical": "dime-v2-review-20260912",
+    "Token": "dime-readiness-a51c774-dormant-1"
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "481c6cc5-524a-4c3d-bed3-8deb8c4a4703",
+    "Status": null,
+    "OperationStatus": "IN_PROGRESS",
+    "Time": "2026-09-18T20:19:00.531000+00:00",
+    "Logical": null,
+    "Token": null
+  }
+]

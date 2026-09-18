@@ -1,0 +1,29 @@
+[
+  {
+    "width": 318,
+    "height": 500,
+    "canvas": true,
+    "notice": true,
+    "walking": true,
+    "storageEmpty": true,
+    "errors": 0
+  },
+  {
+    "width": 360,
+    "height": 640,
+    "canvas": true,
+    "notice": true,
+    "walking": true,
+    "storageEmpty": true,
+    "errors": 0
+  },
+  {
+    "width": 1280,
+    "height": 900,
+    "canvas": true,
+    "notice": true,
+    "walking": true,
+    "storageEmpty": true,
+    "errors": 0
+  }
+]

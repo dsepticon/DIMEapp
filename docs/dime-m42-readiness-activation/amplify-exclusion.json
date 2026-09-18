@@ -1,0 +1,9 @@
+{
+  "appId": "d90ik3712sg8e",
+  "region": "us-east-2",
+  "automaticBranchCreation": true,
+  "patterns": ["codex/react-extension-rebuild", "main"],
+  "connectedBranches": ["codex/react-extension-rebuild", "main"],
+  "integrationBranchExcluded": true,
+  "remoteStartingHead": "b0d926768d4a9035c7a4726854bec6ae1b3d62e1"
+}
