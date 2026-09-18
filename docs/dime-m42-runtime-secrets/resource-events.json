@@ -1,0 +1,93 @@
+[
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "7bb7f0b8-1dbd-4214-8f26-08bf51bcb36f",
+    "OperationType": "UPDATE_STACK",
+    "OperationStatus": "SUCCEEDED",
+    "Timestamp": "2026-09-18T19:14:19.134000+00:00",
+    "Start": "2026-09-18T19:14:04.093000+00:00",
+    "End": "2026-09-18T19:14:19.134000+00:00",
+    "Logical": null,
+    "ResourceType": null,
+    "Status": null,
+    "ClientRequestToken": null
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "7bb7f0b8-1dbd-4214-8f26-08bf51bcb36f",
+    "OperationType": null,
+    "OperationStatus": null,
+    "Timestamp": "2026-09-18T19:14:19.133000+00:00",
+    "Start": null,
+    "End": null,
+    "Logical": "dime-v2-review-20260912",
+    "ResourceType": "AWS::CloudFormation::Stack",
+    "Status": "UPDATE_COMPLETE",
+    "ClientRequestToken": "dime-runtime-83bbdff-refresh-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "7bb7f0b8-1dbd-4214-8f26-08bf51bcb36f",
+    "OperationType": null,
+    "OperationStatus": null,
+    "Timestamp": "2026-09-18T19:14:18.307000+00:00",
+    "Start": null,
+    "End": null,
+    "Logical": "dime-v2-review-20260912",
+    "ResourceType": "AWS::CloudFormation::Stack",
+    "Status": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+    "ClientRequestToken": "dime-runtime-83bbdff-refresh-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "7bb7f0b8-1dbd-4214-8f26-08bf51bcb36f",
+    "OperationType": null,
+    "OperationStatus": null,
+    "Timestamp": "2026-09-18T19:14:15.694000+00:00",
+    "Start": null,
+    "End": null,
+    "Logical": "WebAuthFunction",
+    "ResourceType": "AWS::Lambda::Function",
+    "Status": "UPDATE_COMPLETE",
+    "ClientRequestToken": "dime-runtime-83bbdff-refresh-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "7bb7f0b8-1dbd-4214-8f26-08bf51bcb36f",
+    "OperationType": null,
+    "OperationStatus": null,
+    "Timestamp": "2026-09-18T19:14:08.274000+00:00",
+    "Start": null,
+    "End": null,
+    "Logical": "WebAuthFunction",
+    "ResourceType": "AWS::Lambda::Function",
+    "Status": "UPDATE_IN_PROGRESS",
+    "ClientRequestToken": "dime-runtime-83bbdff-refresh-1"
+  },
+  {
+    "Type": "PROGRESS",
+    "OperationId": "7bb7f0b8-1dbd-4214-8f26-08bf51bcb36f",
+    "OperationType": null,
+    "OperationStatus": null,
+    "Timestamp": "2026-09-18T19:14:04.104000+00:00",
+    "Start": null,
+    "End": null,
+    "Logical": "dime-v2-review-20260912",
+    "ResourceType": "AWS::CloudFormation::Stack",
+    "Status": "UPDATE_IN_PROGRESS",
+    "ClientRequestToken": "dime-runtime-83bbdff-refresh-1"
+  },
+  {
+    "Type": "STACK_EVENT",
+    "OperationId": "7bb7f0b8-1dbd-4214-8f26-08bf51bcb36f",
+    "OperationType": "UPDATE_STACK",
+    "OperationStatus": "IN_PROGRESS",
+    "Timestamp": "2026-09-18T19:14:04.093000+00:00",
+    "Start": "2026-09-18T19:14:04.093000+00:00",
+    "End": null,
+    "Logical": null,
+    "ResourceType": null,
+    "Status": null,
+    "ClientRequestToken": null
+  }
+]

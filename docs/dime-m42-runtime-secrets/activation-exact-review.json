@@ -1,0 +1,69 @@
+{
+  "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-runtime-83bbdff-testers-review-1/88d00bb7-aa8c-40e3-9b5b-9859d72996b8",
+  "executed": false,
+  "status": "CREATE_COMPLETE / AVAILABLE",
+  "changes": [
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "StagingHttpApi",
+      "PhysicalResourceId": "t2la0784p6",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Body",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Dynamic",
+          "ChangeSource": "ResourceAttribute",
+          "CausingEntity": "WebAuthFunction.Arn"
+        }
+      ]
+    },
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "WebAuthFunction",
+      "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+      "ResourceType": "AWS::Lambda::Function",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Environment",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Static",
+          "ChangeSource": "ParameterReference",
+          "CausingEntity": "WebSignInMode"
+        },
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Environment",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Dynamic",
+          "ChangeSource": "DirectModification"
+        }
+      ]
+    }
+  ],
+  "parameterDiff": {
+    "WebSignInMode": {
+      "before": "DISABLED",
+      "proposed": "TESTERS"
+    }
+  },
+  "processedTemplateIdentical": true,
+  "artifactChanges": 0,
+  "iamChanges": 0,
+  "routesChanged": 0,
+  "linking": "DISABLED",
+  "conversion": "ENABLED",
+  "liveSignIn": "DISABLED"
+}

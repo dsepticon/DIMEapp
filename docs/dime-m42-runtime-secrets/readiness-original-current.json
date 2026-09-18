@@ -1,0 +1,13 @@
+{
+  "identity_source_valid": true,
+  "identity_envelope_valid": false,
+  "identity_encoding_valid": false,
+  "identity_length_valid": false,
+  "encryption_source_valid": true,
+  "encryption_envelope_valid": false,
+  "encryption_encoding_valid": false,
+  "encryption_length_valid": false,
+  "keys_distinct": false,
+  "derived_invitation_ready": false,
+  "encryption_round_trip_ready": false
+}

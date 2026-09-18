@@ -1,0 +1,10 @@
+{
+  "identity_is_string": true,
+  "identity_is_arn": false,
+  "identity_encoded_contract_length": false,
+  "encryption_is_string": true,
+  "encryption_is_arn": false,
+  "encryption_encoded_contract_length": false,
+  "oauth_is_string": true,
+  "oauth_is_arn": false
+}
