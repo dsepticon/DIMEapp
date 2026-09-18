@@ -1,0 +1,59 @@
+{
+  "timestampUTC": "2026-09-18T20:15:24.115085+00:00",
+  "changeSetArn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-readiness-a51c774-review-1/1d05d2ac-82ef-4e1c-b9e4-3255daca82b1",
+  "status": "CREATE_COMPLETE",
+  "executionStatus": "AVAILABLE",
+  "executed": false,
+  "changes": [
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "StagingHttpApi",
+      "PhysicalResourceId": "t2la0784p6",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Body",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Dynamic",
+          "ChangeSource": "ResourceAttribute",
+          "CausingEntity": "WebAuthFunction.Arn"
+        }
+      ]
+    },
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "WebAuthFunction",
+      "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+      "ResourceType": "AWS::Lambda::Function",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Code",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Static",
+          "ChangeSource": "DirectModification"
+        }
+      ]
+    }
+  ],
+  "structuralDifferences": ["Resources.WebAuthFunction.Properties.Code"],
+  "parameterChanges": 0,
+  "iamChanges": 0,
+  "routeChanges": 0,
+  "environmentChanges": 0,
+  "secretReferenceChanges": 0,
+  "tableChanges": 0,
+  "signIn": "DISABLED",
+  "linking": "DISABLED",
+  "conversion": "ENABLED",
+  "testerTagsEmpty": true
+}

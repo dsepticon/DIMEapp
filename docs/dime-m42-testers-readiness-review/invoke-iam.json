@@ -1,0 +1,6 @@
+{
+  "existingRoleWithoutInvokeGrant": "implicitDeny",
+  "functionInvoked": false,
+  "iamChanged": false,
+  "writes": false
+}

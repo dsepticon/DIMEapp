@@ -1,0 +1,68 @@
+[
+  {
+    "check": "cfn-lint-sam-source",
+    "passed": true
+  },
+  {
+    "check": "cfn-lint-packaged",
+    "passed": true
+  },
+  {
+    "check": "cfn-lint-processed",
+    "passed": true
+  },
+  {
+    "check": "guard-source",
+    "passed": true,
+    "data": "/tmp/dime-m42-readiness-testers/sam-source.json",
+    "rules": "infra/web/shared-source.guard"
+  },
+  {
+    "check": "guard-processed",
+    "passed": true,
+    "data": "/tmp/dime-m42-readiness-testers/processed.json",
+    "rules": "infra/web/shared-processed.guard"
+  },
+  {
+    "check": "guard-runtime-source",
+    "passed": true,
+    "data": "/tmp/dime-m42-readiness-testers/sam-source.json",
+    "rules": "infra/web/runtime-secrets.guard"
+  },
+  {
+    "check": "guard-runtime-processed",
+    "passed": true,
+    "data": "/tmp/dime-m42-readiness-testers/processed.json",
+    "rules": "infra/web/runtime-secrets.guard"
+  },
+  {
+    "check": "guard-staging-source",
+    "passed": true,
+    "data": "/tmp/dime-m42-init-review/staging-expanded.json",
+    "rules": "infra/staging/staging.guard"
+  },
+  {
+    "check": "guard-staging-processed",
+    "passed": true,
+    "data": "/tmp/dime-m42-init-review/staging-processed.json",
+    "rules": "infra/staging/processed.guard"
+  },
+  {
+    "check": "guard-routing",
+    "passed": true,
+    "data": "/tmp/dime-m43-integration/docs/dime-m42-testers-dormant-review/routing/auxiliary-template.json",
+    "rules": "infra/web/auth-routing-review/routing.guard"
+  },
+  {
+    "check": "guard-guest",
+    "passed": true,
+    "data": "/tmp/dime-m43-integration/infra/web/guest-review/auxiliary-template.json",
+    "rules": "infra/web/guest-review/guest.guard"
+  },
+  {
+    "check": "guard-waf",
+    "passed": true,
+    "data": "/tmp/dime-m43-integration/docs/dime-m42-telemetry-review/sampling-disabled-template.json",
+    "rules": "infra/web/telemetry-review/sampling.guard"
+  }
+]

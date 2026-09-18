@@ -1,0 +1,14 @@
+[
+  {
+    "role": "WebAuthExecutionRole",
+    "policyMatches": true,
+    "permissionBoundaryAbsent": true,
+    "attachedPoliciesAbsent": true
+  },
+  {
+    "role": "EbsExecutionRole",
+    "policyMatches": true,
+    "permissionBoundaryAbsent": true,
+    "attachedPoliciesAbsent": true
+  }
+]

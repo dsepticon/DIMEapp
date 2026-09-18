@@ -1,0 +1,1521 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Isolated DIME v2 synthetic-player staging API. No migration route or legacy resource access.",
+  "Parameters": {
+    "StagingResourcePrefix": {
+      "Type": "String",
+      "Description": "Unique lowercase staging identifier; never use a production or legacy name.",
+      "MinLength": 3,
+      "MaxLength": 20,
+      "AllowedPattern": "^[a-z][a-z0-9-]*[a-z0-9]$"
+    },
+    "StagingRegion": {
+      "Type": "String",
+      "Description": "Must equal the CloudFormation deployment Region.",
+      "AllowedPattern": "^[a-z]{2}(-gov)?-[a-z]+-[0-9]+$"
+    },
+    "TwitchAllowedOrigins": {
+      "Type": "CommaDelimitedList",
+      "Description": "Exact HTTPS Twitch extension asset origins; no wildcard or trailing slash.",
+      "AllowedPattern": "^https://[a-z0-9-]+\\.ext-twitch\\.tv$"
+    },
+    "TwitchSecretArn": {
+      "Type": "String",
+      "Description": "ARN of an existing approved same-Region Secrets Manager SecretString containing the base64 Twitch extension signing key.",
+      "AllowedPattern": "^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "PlayerIdentityKeySecretArn": {
+      "Type": "String",
+      "Description": "ARN of a different existing stable same-Region SecretString containing the base64 global player HMAC key.",
+      "AllowedPattern": "^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "ConfigurationRevision": {
+      "Type": "String",
+      "Description": "Non-secret reviewed revision that forces a Lambda configuration update to refresh dynamic secret references.",
+      "MinLength": 1,
+      "MaxLength": 64,
+      "AllowedPattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "ContentConversionMode": {
+      "Type": "String",
+      "Description": "Server-enforced original-content conversion rollout mode.",
+      "Default": "DISABLED",
+      "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"]
+    },
+    "ContentConversionTesterTags": {
+      "Type": "String",
+      "Description": "Optional comma-separated keyed tester tags; never player identifiers or keys.",
+      "Default": "",
+      "NoEcho": true,
+      "MaxLength": 2048,
+      "AllowedPattern": "^$|^[a-f0-9,]+$"
+    },
+    "LogRetentionDays": {
+      "Type": "Number",
+      "Description": "Retention for the staging Lambda and API access log groups.",
+      "Default": 14,
+      "AllowedValues": [7, 14, 30, 60, 90]
+    },
+    "ApiThrottleRate": {
+      "Type": "Number",
+      "Description": "HTTP API steady-state requests per second.",
+      "Default": 10,
+      "MinValue": 1,
+      "MaxValue": 100
+    },
+    "ApiThrottleBurst": {
+      "Type": "Number",
+      "Description": "HTTP API burst request count.",
+      "Default": 20,
+      "MinValue": 1,
+      "MaxValue": 200
+    },
+    "OAuthClientSecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:us-east-2:861738068626:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "WebIdentityKeySecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:us-east-2:861738068626:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "AuthEncryptionKeySecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:us-east-2:861738068626:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "OAuthClientId": {
+      "Type": "String",
+      "AllowedValues": ["4228okut24ll35bisjmygbquaf6svm"]
+    },
+    "AccountLinkingMode": {
+      "Type": "String",
+      "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"],
+      "Default": "DISABLED",
+      "Description": "Enable only after binding-aware gameplay is deployed and old invocations have drained."
+    },
+    "WebSignInMode": {
+      "Type": "String",
+      "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"],
+      "Default": "DISABLED",
+      "Description": "Independent public sign-in gate. TESTERS requires a signed one-use owner invitation and matching validated Twitch subject."
+    }
+  },
+  "Outputs": {
+    "StagingApiUrl": {
+      "Description": "HTTPS base URL for the isolated staging API; use only with a Twitch hosted-test build.",
+      "Value": {
+        "Fn::Sub": "https://${StagingHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/staging"
+      }
+    },
+    "StagingTableName": {
+      "Description": "New synthetic-player-only staging table name.",
+      "Value": {
+        "Ref": "PlayerStateTable"
+      }
+    },
+    "StagingFunctionArn": {
+      "Description": "Isolated staging Lambda ARN.",
+      "Value": {
+        "Fn::GetAtt": ["EbsFunction", "Arn"]
+      }
+    },
+    "LambdaLogGroupName": {
+      "Description": "Staging Lambda structured log group name.",
+      "Value": {
+        "Ref": "EbsLogGroup"
+      }
+    },
+    "ApiLogGroupName": {
+      "Description": "Staging API access log group name.",
+      "Value": {
+        "Ref": "ApiAccessLogGroup"
+      }
+    }
+  },
+  "Resources": {
+    "PlayerStateTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": {
+          "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-player-state"
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true,
+          "SSEType": "KMS"
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "TimeToLiveSpecification": {
+          "AttributeName": "expiresAt",
+          "Enabled": true
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "DIME-v2"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "EbsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs"
+        },
+        "RetentionInDays": {
+          "Ref": "LogRetentionDays"
+        }
+      }
+    },
+    "ApiAccessLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/apigateway/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}"
+        },
+        "RetentionInDays": {
+          "Ref": "LogRetentionDays"
+        }
+      }
+    },
+    "EbsExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "StagingPlayerStateAndOwnLogs",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "ReadAndConditionallyPutStagingPlayerItems",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:GetItem", "dynamodb:PutItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  }
+                },
+                {
+                  "Sid": "WriteOnlyOwnLogStreams",
+                  "Effect": "Allow",
+                  "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs:log-stream:*"
+                  }
+                },
+                {
+                  "Sid": "CheckCanonicalBindingAndSave",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:ConditionCheckItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": ["BINDING#v1#*", "PLAYER#v1#*", "ACCOUNT#v1#*", "CONTROL#v1#*"]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "EbsErrorAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Staging EBS Lambda errors; inspect sanitized logs before retrying.",
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Errors",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": {
+              "Ref": "EbsFunction"
+            }
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "EbsThrottleAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Staging EBS reserved-concurrency throttling.",
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Throttles",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": {
+              "Ref": "EbsFunction"
+            }
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "ApiServerErrorAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Staging HTTP API 5xx responses.",
+        "Namespace": "AWS/ApiGateway",
+        "MetricName": "5xx",
+        "Dimensions": [
+          {
+            "Name": "ApiId",
+            "Value": {
+              "Ref": "StagingHttpApi"
+            }
+          },
+          {
+            "Name": "Stage",
+            "Value": "staging"
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "WebAuthLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-web-auth"
+        },
+        "RetentionInDays": {
+          "Ref": "LogRetentionDays"
+        }
+      }
+    },
+    "WebAuthExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "ScopedWebAuthenticationAndCanonicalState",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "WebAuthAndCanonicalTransactions",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": [
+                        "AUTH#v1#*",
+                        "BINDING#v1#*",
+                        "PLAYER#v1#*",
+                        "ACCOUNT#v1#*",
+                        "CONTROL#v1#*"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Sid": "DeleteManifestOwnedRecords",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:DeleteItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": [
+                        "AUTH#v1#*",
+                        "BINDING#v1#*",
+                        "PLAYER#v1#*",
+                        "ACCOUNT#v1#*",
+                        "CONTROL#v1#*"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Sid": "WriteOwnLogs",
+                  "Effect": "Allow",
+                  "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-web-auth:log-stream:*"
+                  }
+                },
+                {
+                  "Sid": "ReadWebKeysAtExplicitStages",
+                  "Effect": "Allow",
+                  "Action": ["secretsmanager:GetSecretValue"],
+                  "Resource": [
+                    {
+                      "Ref": "WebIdentityKeySecretArn"
+                    },
+                    {
+                      "Ref": "AuthEncryptionKeySecretArn"
+                    }
+                  ],
+                  "Condition": {
+                    "StringEquals": {
+                      "secretsmanager:VersionStage": ["AWSCURRENT", "AWSPENDING"]
+                    }
+                  }
+                },
+                {
+                  "Sid": "ReadCurrentWebOAuthSecret",
+                  "Effect": "Allow",
+                  "Action": ["secretsmanager:GetSecretValue"],
+                  "Resource": [
+                    {
+                      "Ref": "OAuthClientSecretArn"
+                    }
+                  ],
+                  "Condition": {
+                    "StringEquals": {
+                      "secretsmanager:VersionStage": "AWSCURRENT"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "EbsFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Metadata": {
+        "SamResourceId": "EbsFunction"
+      },
+      "Properties": {
+        "Code": {
+          "S3Bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+          "S3Key": "dime-v2/review/6bec1b223a1fc12e77765268cca7996cbc3972fb/gameplay-manifest-6bec1b2.zip",
+          "S3ObjectVersion": "lxI5GaSEt4Tj16..CRrK9si7.egWtlkY"
+        },
+        "Description": "Synthetic-player-only DIME v2 staging EBS; no migration execution.",
+        "FunctionName": {
+          "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs"
+        },
+        "Handler": "index.handler",
+        "MemorySize": 256,
+        "Role": {
+          "Fn::GetAtt": ["EbsExecutionRole", "Arn"]
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 10,
+        "Environment": {
+          "Variables": {
+            "DIME_ENV": "staging",
+            "DIME_STATE_TABLE": {
+              "Ref": "PlayerStateTable"
+            },
+            "DIME_ALLOWED_ORIGINS": {
+              "Fn::Join": [
+                ",",
+                {
+                  "Ref": "TwitchAllowedOrigins"
+                }
+              ]
+            },
+            "DIME_CONFIG_REVISION": {
+              "Ref": "ConfigurationRevision"
+            },
+            "DIME_CONVERSION_MODE": {
+              "Ref": "ContentConversionMode"
+            },
+            "DIME_CONVERSION_TESTER_TAGS": {
+              "Ref": "ContentConversionTesterTags"
+            },
+            "TWITCH_EXTENSION_SECRET_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}"
+            },
+            "DIME_PLAYER_ID_KEY_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}"
+            },
+            "DIME_ACCOUNT_LINKING": {
+              "Ref": "AccountLinkingMode"
+            }
+          }
+        },
+        "Tags": [
+          {
+            "Key": "lambda:createdBy",
+            "Value": "SAM"
+          }
+        ],
+        "ReservedConcurrentExecutions": 5,
+        "Architectures": ["x86_64"],
+        "LoggingConfig": {
+          "LogFormat": "JSON",
+          "ApplicationLogLevel": "INFO",
+          "SystemLogLevel": "WARN",
+          "LogGroup": {
+            "Ref": "EbsLogGroup"
+          }
+        }
+      }
+    },
+    "EbsFunctionPostActionsPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/actions",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "EbsFunctionPostProfileResetPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/profile/reset",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "EbsFunctionGetStatePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/state",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "EbsFunctionPostOriginalActionsPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/actions",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "EbsFunctionPostOriginalConvertPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/content/convert",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "EbsFunctionPostOriginalPreviewPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/content/preview",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "EbsFunctionPostOriginalResetPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/v4/profile/reset",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "EbsFunctionGetOriginalStatePermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "EbsFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/v4/state",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+          "S3Key": "dime-v2/review/a51c774340a6d47cb148dfbaa838a905e876cc7f/web-auth-testers-readiness.zip",
+          "S3ObjectVersion": "QlkT8PKgd6eHt1Bmr6e_bQW0nohZfz4o"
+        },
+        "Description": "Separate DIME OAuth/session and web API boundary. Linking requires verified rollout.",
+        "FunctionName": {
+          "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-web-auth"
+        },
+        "Handler": "index.handler",
+        "MemorySize": 256,
+        "Role": {
+          "Fn::GetAtt": ["WebAuthExecutionRole", "Arn"]
+        },
+        "Runtime": "nodejs22.x",
+        "Timeout": 20,
+        "Environment": {
+          "Variables": {
+            "DIME_ENV": "staging",
+            "DIME_STATE_TABLE": {
+              "Ref": "PlayerStateTable"
+            },
+            "DIME_ALLOWED_ORIGINS": {
+              "Fn::Join": [
+                ",",
+                {
+                  "Ref": "TwitchAllowedOrigins"
+                }
+              ]
+            },
+            "DIME_CONFIG_REVISION": {
+              "Ref": "ConfigurationRevision"
+            },
+            "DIME_CONVERSION_MODE": {
+              "Ref": "ContentConversionMode"
+            },
+            "DIME_CONVERSION_TESTER_TAGS": {
+              "Ref": "ContentConversionTesterTags"
+            },
+            "TWITCH_EXTENSION_SECRET_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}"
+            },
+            "DIME_PLAYER_ID_KEY_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}"
+            },
+            "DIME_WEB_ORIGIN": "https://destroyaindustriesminingextension.com",
+            "DIME_OAUTH_CLIENT_ID": {
+              "Ref": "OAuthClientId"
+            },
+            "DIME_ACCOUNT_LINKING": {
+              "Ref": "AccountLinkingMode"
+            },
+            "DIME_WEB_SIGN_IN_MODE": {
+              "Ref": "WebSignInMode"
+            },
+            "DIME_AUTH_KEY_REVISION": "web-runtime-current-20260918-1",
+            "DIME_WEB_ID_SECRET_ARN": {
+              "Ref": "WebIdentityKeySecretArn"
+            },
+            "DIME_AUTH_ENCRYPTION_SECRET_ARN": {
+              "Ref": "AuthEncryptionKeySecretArn"
+            },
+            "DIME_OAUTH_CLIENT_SECRET_ARN": {
+              "Ref": "OAuthClientSecretArn"
+            }
+          }
+        },
+        "Tags": [
+          {
+            "Key": "lambda:createdBy",
+            "Value": "SAM"
+          }
+        ],
+        "ReservedConcurrentExecutions": 5,
+        "Architectures": ["x86_64"],
+        "LoggingConfig": {
+          "LogFormat": "JSON",
+          "ApplicationLogLevel": "INFO",
+          "SystemLogLevel": "WARN",
+          "LogGroup": {
+            "Ref": "WebAuthLogGroup"
+          }
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute7Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/actions",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute9Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/content/convert",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute8Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/content/preview",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute10Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/api/v4/profile/reset",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute6Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/api/v4/state",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute1Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/callback",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute12Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/delete/intent",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute13Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/delete/resume",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute5Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/link/accept",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute4Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/link/intent",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute0Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/login",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute3Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/logout",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute2Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/session",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute14Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/GET/auth/status",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "WebAuthFunctionWebRoute11Permission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "WebAuthFunction"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${__ApiId__}/${__Stage__}/POST/auth/unlink",
+            {
+              "__ApiId__": {
+                "Ref": "StagingHttpApi"
+              },
+              "__Stage__": "*"
+            }
+          ]
+        }
+      }
+    },
+    "StagingHttpApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Body": {
+          "openapi": "3.0.1",
+          "info": {
+            "title": {
+              "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-api"
+            },
+            "version": "1.0"
+          },
+          "paths": {
+            "/actions": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/profile/reset": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/state": {
+              "get": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/v4/actions": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/v4/content/convert": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/v4/content/preview": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/v4/profile/reset": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/v4/state": {
+              "get": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EbsFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/api/v4/actions": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/api/v4/content/convert": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/api/v4/content/preview": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/api/v4/profile/reset": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/api/v4/state": {
+              "get": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/callback": {
+              "get": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/delete/intent": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/delete/resume": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/link/accept": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/link/intent": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/login": {
+              "get": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/logout": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/session": {
+              "get": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/status": {
+              "get": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            },
+            "/auth/unlink": {
+              "post": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebAuthFunction.Arn}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {}
+              }
+            }
+          },
+          "x-amazon-apigateway-cors": {
+            "allowOrigins": {
+              "Ref": "TwitchAllowedOrigins"
+            },
+            "allowHeaders": ["Authorization", "Content-Type"],
+            "allowMethods": ["GET", "POST", "OPTIONS"],
+            "allowCredentials": false,
+            "maxAge": 300
+          },
+          "tags": [
+            {
+              "name": "Application",
+              "x-amazon-apigateway-tag-value": "DIME-v2"
+            },
+            {
+              "name": "Environment",
+              "x-amazon-apigateway-tag-value": "staging"
+            },
+            {
+              "name": "httpapi:createdBy",
+              "x-amazon-apigateway-tag-value": "SAM"
+            }
+          ]
+        }
+      }
+    },
+    "StagingHttpApistagingStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::GetAtt": ["ApiAccessLogGroup", "Arn"]
+          },
+          "Format": "{\"requestId\":\"$context.requestId\",\"routeKey\":\"$context.routeKey\",\"status\":\"$context.status\",\"responseLatency\":\"$context.responseLatency\"}"
+        },
+        "DefaultRouteSettings": {
+          "ThrottlingRateLimit": {
+            "Ref": "ApiThrottleRate"
+          },
+          "ThrottlingBurstLimit": {
+            "Ref": "ApiThrottleBurst"
+          }
+        },
+        "ApiId": {
+          "Ref": "StagingHttpApi"
+        },
+        "StageName": "staging",
+        "Tags": {
+          "Application": "DIME-v2",
+          "Environment": "staging",
+          "httpapi:createdBy": "SAM"
+        },
+        "AutoDeploy": true
+      }
+    }
+  },
+  "Rules": {
+    "RegionMatchesDeployment": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "StagingRegion"
+              },
+              {
+                "Ref": "AWS::Region"
+              }
+            ]
+          },
+          "AssertDescription": "StagingRegion must match the Region used for the stack."
+        }
+      ]
+    },
+    "DistinctSecrets": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "TwitchSecretArn"
+                  },
+                  {
+                    "Ref": "PlayerIdentityKeySecretArn"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "Twitch signing and player identity keys must be different secrets."
+        }
+      ]
+    }
+  }
+}

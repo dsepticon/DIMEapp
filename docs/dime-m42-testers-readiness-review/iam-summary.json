@@ -1,0 +1,12 @@
+{
+  "iam-simulation-results": {
+    "cases": 36,
+    "decisions": 72,
+    "allExpected": true
+  },
+  "deployed-iam-simulation-results": {
+    "cases": 36,
+    "decisions": 72,
+    "allExpected": true
+  }
+}

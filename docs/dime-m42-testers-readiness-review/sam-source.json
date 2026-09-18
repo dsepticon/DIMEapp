@@ -1,0 +1,933 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "Isolated DIME v2 synthetic-player staging API. No migration route or legacy resource access.",
+  "Parameters": {
+    "StagingResourcePrefix": {
+      "Type": "String",
+      "Description": "Unique lowercase staging identifier; never use a production or legacy name.",
+      "MinLength": 3,
+      "MaxLength": 20,
+      "AllowedPattern": "^[a-z][a-z0-9-]*[a-z0-9]$"
+    },
+    "StagingRegion": {
+      "Type": "String",
+      "Description": "Must equal the CloudFormation deployment Region.",
+      "AllowedPattern": "^[a-z]{2}(-gov)?-[a-z]+-[0-9]+$"
+    },
+    "TwitchAllowedOrigins": {
+      "Type": "CommaDelimitedList",
+      "Description": "Exact HTTPS Twitch extension asset origins; no wildcard or trailing slash.",
+      "AllowedPattern": "^https://[a-z0-9-]+\\.ext-twitch\\.tv$"
+    },
+    "TwitchSecretArn": {
+      "Type": "String",
+      "Description": "ARN of an existing approved same-Region Secrets Manager SecretString containing the base64 Twitch extension signing key.",
+      "AllowedPattern": "^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "PlayerIdentityKeySecretArn": {
+      "Type": "String",
+      "Description": "ARN of a different existing stable same-Region SecretString containing the base64 global player HMAC key.",
+      "AllowedPattern": "^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "ConfigurationRevision": {
+      "Type": "String",
+      "Description": "Non-secret reviewed revision that forces a Lambda configuration update to refresh dynamic secret references.",
+      "MinLength": 1,
+      "MaxLength": 64,
+      "AllowedPattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "ContentConversionMode": {
+      "Type": "String",
+      "Description": "Server-enforced original-content conversion rollout mode.",
+      "Default": "DISABLED",
+      "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"]
+    },
+    "ContentConversionTesterTags": {
+      "Type": "String",
+      "Description": "Optional comma-separated keyed tester tags; never player identifiers or keys.",
+      "Default": "",
+      "NoEcho": true,
+      "MaxLength": 2048,
+      "AllowedPattern": "^$|^[a-f0-9,]+$"
+    },
+    "LogRetentionDays": {
+      "Type": "Number",
+      "Description": "Retention for the staging Lambda and API access log groups.",
+      "Default": 14,
+      "AllowedValues": [7, 14, 30, 60, 90]
+    },
+    "ApiThrottleRate": {
+      "Type": "Number",
+      "Description": "HTTP API steady-state requests per second.",
+      "Default": 10,
+      "MinValue": 1,
+      "MaxValue": 100
+    },
+    "ApiThrottleBurst": {
+      "Type": "Number",
+      "Description": "HTTP API burst request count.",
+      "Default": 20,
+      "MinValue": 1,
+      "MaxValue": 200
+    },
+    "OAuthClientSecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:us-east-2:861738068626:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "WebIdentityKeySecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:us-east-2:861738068626:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "AuthEncryptionKeySecretArn": {
+      "Type": "String",
+      "AllowedPattern": "^arn:aws:secretsmanager:us-east-2:861738068626:secret:[A-Za-z0-9/_+=.@-]+$"
+    },
+    "OAuthClientId": {
+      "Type": "String",
+      "AllowedValues": ["4228okut24ll35bisjmygbquaf6svm"]
+    },
+    "AccountLinkingMode": {
+      "Type": "String",
+      "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"],
+      "Default": "DISABLED",
+      "Description": "Enable only after binding-aware gameplay is deployed and old invocations have drained."
+    },
+    "WebSignInMode": {
+      "Type": "String",
+      "AllowedValues": ["DISABLED", "TESTERS", "ENABLED"],
+      "Default": "DISABLED",
+      "Description": "Independent public sign-in gate. TESTERS requires a signed one-use owner invitation and matching validated Twitch subject."
+    }
+  },
+  "Rules": {
+    "RegionMatchesDeployment": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "StagingRegion"
+              },
+              {
+                "Ref": "AWS::Region"
+              }
+            ]
+          },
+          "AssertDescription": "StagingRegion must match the Region used for the stack."
+        }
+      ]
+    },
+    "DistinctSecrets": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "TwitchSecretArn"
+                  },
+                  {
+                    "Ref": "PlayerIdentityKeySecretArn"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "Twitch signing and player identity keys must be different secrets."
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "PlayerStateTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "TableName": {
+          "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-player-state"
+        },
+        "BillingMode": "PAY_PER_REQUEST",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true,
+          "SSEType": "KMS"
+        },
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "DeletionProtectionEnabled": true,
+        "TimeToLiveSpecification": {
+          "AttributeName": "expiresAt",
+          "Enabled": true
+        },
+        "Tags": [
+          {
+            "Key": "Application",
+            "Value": "DIME-v2"
+          },
+          {
+            "Key": "Environment",
+            "Value": "staging"
+          }
+        ]
+      }
+    },
+    "EbsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs"
+        },
+        "RetentionInDays": {
+          "Ref": "LogRetentionDays"
+        }
+      }
+    },
+    "ApiAccessLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/apigateway/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}"
+        },
+        "RetentionInDays": {
+          "Ref": "LogRetentionDays"
+        }
+      }
+    },
+    "EbsExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "StagingPlayerStateAndOwnLogs",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "ReadAndConditionallyPutStagingPlayerItems",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:GetItem", "dynamodb:PutItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  }
+                },
+                {
+                  "Sid": "WriteOnlyOwnLogStreams",
+                  "Effect": "Allow",
+                  "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs:log-stream:*"
+                  }
+                },
+                {
+                  "Sid": "CheckCanonicalBindingAndSave",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:ConditionCheckItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": ["BINDING#v1#*", "PLAYER#v1#*", "ACCOUNT#v1#*", "CONTROL#v1#*"]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "EbsFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-ebs"
+        },
+        "Description": "Synthetic-player-only DIME v2 staging EBS; no migration execution.",
+        "CodeUri": {
+          "Bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+          "Key": "dime-v2/review/6bec1b223a1fc12e77765268cca7996cbc3972fb/gameplay-manifest-6bec1b2.zip",
+          "Version": "lxI5GaSEt4Tj16..CRrK9si7.egWtlkY"
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs22.x",
+        "Architectures": ["x86_64"],
+        "MemorySize": 256,
+        "Timeout": 10,
+        "ReservedConcurrentExecutions": 5,
+        "Role": {
+          "Fn::GetAtt": ["EbsExecutionRole", "Arn"]
+        },
+        "LoggingConfig": {
+          "LogFormat": "JSON",
+          "ApplicationLogLevel": "INFO",
+          "SystemLogLevel": "WARN",
+          "LogGroup": {
+            "Ref": "EbsLogGroup"
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "DIME_ENV": "staging",
+            "DIME_STATE_TABLE": {
+              "Ref": "PlayerStateTable"
+            },
+            "DIME_ALLOWED_ORIGINS": {
+              "Fn::Join": [
+                ",",
+                {
+                  "Ref": "TwitchAllowedOrigins"
+                }
+              ]
+            },
+            "DIME_CONFIG_REVISION": {
+              "Ref": "ConfigurationRevision"
+            },
+            "DIME_CONVERSION_MODE": {
+              "Ref": "ContentConversionMode"
+            },
+            "DIME_CONVERSION_TESTER_TAGS": {
+              "Ref": "ContentConversionTesterTags"
+            },
+            "TWITCH_EXTENSION_SECRET_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}"
+            },
+            "DIME_PLAYER_ID_KEY_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}"
+            },
+            "DIME_ACCOUNT_LINKING": {
+              "Ref": "AccountLinkingMode"
+            }
+          }
+        },
+        "Events": {
+          "GetState": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/state",
+              "Method": "GET"
+            }
+          },
+          "PostActions": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/actions",
+              "Method": "POST"
+            }
+          },
+          "PostProfileReset": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/profile/reset",
+              "Method": "POST"
+            }
+          },
+          "GetOriginalState": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/v4/state",
+              "Method": "GET"
+            }
+          },
+          "PostOriginalActions": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/v4/actions",
+              "Method": "POST"
+            }
+          },
+          "PostOriginalPreview": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/v4/content/preview",
+              "Method": "POST"
+            }
+          },
+          "PostOriginalConvert": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/v4/content/convert",
+              "Method": "POST"
+            }
+          },
+          "PostOriginalReset": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/v4/profile/reset",
+              "Method": "POST"
+            }
+          }
+        }
+      },
+      "Metadata": {
+        "SamResourceId": "EbsFunction"
+      }
+    },
+    "StagingHttpApi": {
+      "Type": "AWS::Serverless::HttpApi",
+      "Properties": {
+        "StageName": "staging",
+        "DefinitionBody": {
+          "openapi": "3.0.1",
+          "info": {
+            "title": {
+              "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-api"
+            },
+            "version": "1.0"
+          },
+          "paths": {},
+          "x-amazon-apigateway-cors": {
+            "allowOrigins": {
+              "Ref": "TwitchAllowedOrigins"
+            },
+            "allowHeaders": ["Authorization", "Content-Type"],
+            "allowMethods": ["GET", "POST", "OPTIONS"],
+            "allowCredentials": false,
+            "maxAge": 300
+          }
+        },
+        "DefaultRouteSettings": {
+          "ThrottlingRateLimit": {
+            "Ref": "ApiThrottleRate"
+          },
+          "ThrottlingBurstLimit": {
+            "Ref": "ApiThrottleBurst"
+          }
+        },
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::GetAtt": ["ApiAccessLogGroup", "Arn"]
+          },
+          "Format": "{\"requestId\":\"$context.requestId\",\"routeKey\":\"$context.routeKey\",\"status\":\"$context.status\",\"responseLatency\":\"$context.responseLatency\"}"
+        },
+        "Tags": {
+          "Application": "DIME-v2",
+          "Environment": "staging"
+        }
+      }
+    },
+    "EbsErrorAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Staging EBS Lambda errors; inspect sanitized logs before retrying.",
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Errors",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": {
+              "Ref": "EbsFunction"
+            }
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "EbsThrottleAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Staging EBS reserved-concurrency throttling.",
+        "Namespace": "AWS/Lambda",
+        "MetricName": "Throttles",
+        "Dimensions": [
+          {
+            "Name": "FunctionName",
+            "Value": {
+              "Ref": "EbsFunction"
+            }
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "ApiServerErrorAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmDescription": "Staging HTTP API 5xx responses.",
+        "Namespace": "AWS/ApiGateway",
+        "MetricName": "5xx",
+        "Dimensions": [
+          {
+            "Name": "ApiId",
+            "Value": {
+              "Ref": "StagingHttpApi"
+            }
+          },
+          {
+            "Name": "Stage",
+            "Value": "staging"
+          }
+        ],
+        "Statistic": "Sum",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 1,
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "TreatMissingData": "notBreaching"
+      }
+    },
+    "WebAuthLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Sub": "/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-web-auth"
+        },
+        "RetentionInDays": {
+          "Ref": "LogRetentionDays"
+        }
+      }
+    },
+    "WebAuthExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "ScopedWebAuthenticationAndCanonicalState",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "WebAuthAndCanonicalTransactions",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": [
+                        "AUTH#v1#*",
+                        "BINDING#v1#*",
+                        "PLAYER#v1#*",
+                        "ACCOUNT#v1#*",
+                        "CONTROL#v1#*"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Sid": "DeleteManifestOwnedRecords",
+                  "Effect": "Allow",
+                  "Action": ["dynamodb:DeleteItem"],
+                  "Resource": {
+                    "Fn::GetAtt": ["PlayerStateTable", "Arn"]
+                  },
+                  "Condition": {
+                    "ForAllValues:StringLike": {
+                      "dynamodb:LeadingKeys": [
+                        "AUTH#v1#*",
+                        "BINDING#v1#*",
+                        "PLAYER#v1#*",
+                        "ACCOUNT#v1#*",
+                        "CONTROL#v1#*"
+                      ]
+                    },
+                    "Null": {
+                      "dynamodb:LeadingKeys": "false"
+                    }
+                  }
+                },
+                {
+                  "Sid": "WriteOwnLogs",
+                  "Effect": "Allow",
+                  "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-web-auth:log-stream:*"
+                  }
+                },
+                {
+                  "Sid": "ReadWebKeysAtExplicitStages",
+                  "Effect": "Allow",
+                  "Action": ["secretsmanager:GetSecretValue"],
+                  "Resource": [
+                    {
+                      "Ref": "WebIdentityKeySecretArn"
+                    },
+                    {
+                      "Ref": "AuthEncryptionKeySecretArn"
+                    }
+                  ],
+                  "Condition": {
+                    "StringEquals": {
+                      "secretsmanager:VersionStage": ["AWSCURRENT", "AWSPENDING"]
+                    }
+                  }
+                },
+                {
+                  "Sid": "ReadCurrentWebOAuthSecret",
+                  "Effect": "Allow",
+                  "Action": ["secretsmanager:GetSecretValue"],
+                  "Resource": [
+                    {
+                      "Ref": "OAuthClientSecretArn"
+                    }
+                  ],
+                  "Condition": {
+                    "StringEquals": {
+                      "secretsmanager:VersionStage": "AWSCURRENT"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "WebAuthFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "dime-v2-staging-${StagingResourcePrefix}-${AWS::StackName}-web-auth"
+        },
+        "Description": "Separate DIME OAuth/session and web API boundary. Linking requires verified rollout.",
+        "CodeUri": "/tmp/dime-m43-integration/dist/web-server",
+        "Handler": "index.handler",
+        "Runtime": "nodejs22.x",
+        "Architectures": ["x86_64"],
+        "MemorySize": 256,
+        "Timeout": 20,
+        "ReservedConcurrentExecutions": 5,
+        "Role": {
+          "Fn::GetAtt": ["WebAuthExecutionRole", "Arn"]
+        },
+        "LoggingConfig": {
+          "LogFormat": "JSON",
+          "ApplicationLogLevel": "INFO",
+          "SystemLogLevel": "WARN",
+          "LogGroup": {
+            "Ref": "WebAuthLogGroup"
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "DIME_ENV": "staging",
+            "DIME_STATE_TABLE": {
+              "Ref": "PlayerStateTable"
+            },
+            "DIME_ALLOWED_ORIGINS": {
+              "Fn::Join": [
+                ",",
+                {
+                  "Ref": "TwitchAllowedOrigins"
+                }
+              ]
+            },
+            "DIME_CONFIG_REVISION": {
+              "Ref": "ConfigurationRevision"
+            },
+            "DIME_CONVERSION_MODE": {
+              "Ref": "ContentConversionMode"
+            },
+            "DIME_CONVERSION_TESTER_TAGS": {
+              "Ref": "ContentConversionTesterTags"
+            },
+            "TWITCH_EXTENSION_SECRET_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${TwitchSecretArn}:SecretString}}"
+            },
+            "DIME_PLAYER_ID_KEY_B64": {
+              "Fn::Sub": "{{resolve:secretsmanager:${PlayerIdentityKeySecretArn}:SecretString}}"
+            },
+            "DIME_WEB_ORIGIN": "https://destroyaindustriesminingextension.com",
+            "DIME_OAUTH_CLIENT_ID": {
+              "Ref": "OAuthClientId"
+            },
+            "DIME_ACCOUNT_LINKING": {
+              "Ref": "AccountLinkingMode"
+            },
+            "DIME_WEB_SIGN_IN_MODE": {
+              "Ref": "WebSignInMode"
+            },
+            "DIME_AUTH_KEY_REVISION": "web-runtime-current-20260918-1",
+            "DIME_WEB_ID_SECRET_ARN": {
+              "Ref": "WebIdentityKeySecretArn"
+            },
+            "DIME_AUTH_ENCRYPTION_SECRET_ARN": {
+              "Ref": "AuthEncryptionKeySecretArn"
+            },
+            "DIME_OAUTH_CLIENT_SECRET_ARN": {
+              "Ref": "OAuthClientSecretArn"
+            }
+          }
+        },
+        "Events": {
+          "WebRoute0": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/login",
+              "Method": "GET"
+            }
+          },
+          "WebRoute1": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/callback",
+              "Method": "GET"
+            }
+          },
+          "WebRoute2": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/session",
+              "Method": "GET"
+            }
+          },
+          "WebRoute3": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/logout",
+              "Method": "POST"
+            }
+          },
+          "WebRoute4": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/link/intent",
+              "Method": "POST"
+            }
+          },
+          "WebRoute5": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/link/accept",
+              "Method": "POST"
+            }
+          },
+          "WebRoute6": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/api/v4/state",
+              "Method": "GET"
+            }
+          },
+          "WebRoute7": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/api/v4/actions",
+              "Method": "POST"
+            }
+          },
+          "WebRoute8": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/api/v4/content/preview",
+              "Method": "POST"
+            }
+          },
+          "WebRoute9": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/api/v4/content/convert",
+              "Method": "POST"
+            }
+          },
+          "WebRoute10": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/api/v4/profile/reset",
+              "Method": "POST"
+            }
+          },
+          "WebRoute11": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/unlink",
+              "Method": "POST"
+            }
+          },
+          "WebRoute12": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/delete/intent",
+              "Method": "POST"
+            }
+          },
+          "WebRoute13": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/delete/resume",
+              "Method": "POST"
+            }
+          },
+          "WebRoute14": {
+            "Type": "HttpApi",
+            "Properties": {
+              "ApiId": {
+                "Ref": "StagingHttpApi"
+              },
+              "Path": "/auth/status",
+              "Method": "GET"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "StagingApiUrl": {
+      "Description": "HTTPS base URL for the isolated staging API; use only with a Twitch hosted-test build.",
+      "Value": {
+        "Fn::Sub": "https://${StagingHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/staging"
+      }
+    },
+    "StagingTableName": {
+      "Description": "New synthetic-player-only staging table name.",
+      "Value": {
+        "Ref": "PlayerStateTable"
+      }
+    },
+    "StagingFunctionArn": {
+      "Description": "Isolated staging Lambda ARN.",
+      "Value": {
+        "Fn::GetAtt": ["EbsFunction", "Arn"]
+      }
+    },
+    "LambdaLogGroupName": {
+      "Description": "Staging Lambda structured log group name.",
+      "Value": {
+        "Ref": "EbsLogGroup"
+      }
+    },
+    "ApiLogGroupName": {
+      "Description": "Staging API access log group name.",
+      "Value": {
+        "Ref": "ApiAccessLogGroup"
+      }
+    }
+  }
+}

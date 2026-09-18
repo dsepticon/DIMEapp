@@ -1,0 +1,12 @@
+{
+  "Expiration": "expiry-date=\"Fri, 18 Dec 2026 00:00:00 GMT\", rule-id=\"ExpireReviewArtifacts\"",
+  "ETag": "\"580911d9e3709b3ccb0dda5b4b30f508\"",
+  "ChecksumSHA256": "yAyHk0KLSYENmKc0dvJw/E6xSUEmklDp51NKvVr++bU=",
+  "ChecksumType": "FULL_OBJECT",
+  "ServerSideEncryption": "AES256",
+  "VersionId": "QlkT8PKgd6eHt1Bmr6e_bQW0nohZfz4o",
+  "bucket": "dime-v2-staging-artifacts-861738068626-us-east-2",
+  "key": "dime-v2/review/a51c774340a6d47cb148dfbaa838a905e876cc7f/web-auth-testers-readiness.zip",
+  "sourceCommit": "a51c774340a6d47cb148dfbaa838a905e876cc7f",
+  "sha256": "c80c8793428b49810d98a73476f270fc4eb14941269250e9e7534abd5afef9b5"
+}

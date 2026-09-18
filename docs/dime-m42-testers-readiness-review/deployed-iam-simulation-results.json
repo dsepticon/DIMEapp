@@ -1,0 +1,260 @@
+{
+  "storageAndAdministration": [
+    {
+      "case": "tester invitation ledger",
+      "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem"],
+      "expected": "allowed",
+      "decisions": ["allowed", "allowed", "allowed"]
+    },
+    {
+      "case": "web managed class AUTH",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "allowed",
+      "decisions": ["allowed", "allowed", "allowed", "allowed"]
+    },
+    {
+      "case": "web managed class BINDING",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "allowed",
+      "decisions": ["allowed", "allowed", "allowed", "allowed"]
+    },
+    {
+      "case": "web managed class PLAYER",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "allowed",
+      "decisions": ["allowed", "allowed", "allowed", "allowed"]
+    },
+    {
+      "case": "web managed class ACCOUNT",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "allowed",
+      "decisions": ["allowed", "allowed", "allowed", "allowed"]
+    },
+    {
+      "case": "web managed class CONTROL",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "allowed",
+      "decisions": ["allowed", "allowed", "allowed", "allowed"]
+    },
+    {
+      "case": "gameplay guard BINDING",
+      "actions": ["dynamodb:ConditionCheckItem"],
+      "expected": "allowed",
+      "decisions": ["allowed"]
+    },
+    {
+      "case": "gameplay guard PLAYER",
+      "actions": ["dynamodb:ConditionCheckItem"],
+      "expected": "allowed",
+      "decisions": ["allowed"]
+    },
+    {
+      "case": "gameplay guard ACCOUNT",
+      "actions": ["dynamodb:ConditionCheckItem"],
+      "expected": "allowed",
+      "decisions": ["allowed"]
+    },
+    {
+      "case": "gameplay guard CONTROL",
+      "actions": ["dynamodb:ConditionCheckItem"],
+      "expected": "allowed",
+      "decisions": ["allowed"]
+    },
+    {
+      "case": "missing context",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+    },
+    {
+      "case": "unrelated prefix",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+    },
+    {
+      "case": "mixed prefixes",
+      "actions": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem"
+      ],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+    },
+    {
+      "case": "wrong table",
+      "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny", "implicitDeny", "implicitDeny"]
+    },
+    {
+      "case": "gameplay cannot delete",
+      "actions": ["dynamodb:DeleteItem"],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny"]
+    },
+    {
+      "case": "gameplay cannot check encrypted auth",
+      "actions": ["dynamodb:ConditionCheckItem"],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny"]
+    },
+    {
+      "case": "no scan query table administration or update",
+      "actions": [
+        "dynamodb:Scan",
+        "dynamodb:Query",
+        "dynamodb:DeleteTable",
+        "dynamodb:UpdateTable",
+        "dynamodb:UpdateItem"
+      ],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+    },
+    {
+      "case": "No secret listing or administration WebAuthExecutionRole",
+      "actions": [
+        "secretsmanager:ListSecrets",
+        "secretsmanager:PutSecretValue",
+        "secretsmanager:UpdateSecretVersionStage"
+      ],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny", "implicitDeny", "implicitDeny"]
+    },
+    {
+      "case": "No secret listing or administration EbsExecutionRole",
+      "actions": [
+        "secretsmanager:ListSecrets",
+        "secretsmanager:PutSecretValue",
+        "secretsmanager:UpdateSecretVersionStage"
+      ],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny", "implicitDeny", "implicitDeny"]
+    },
+    {
+      "case": "Gameplay has no new secret reads",
+      "actions": ["secretsmanager:GetSecretValue"],
+      "expected": "implicitDeny",
+      "decisions": ["implicitDeny"]
+    }
+  ],
+  "secretStageCases": [
+    {
+      "purpose": "WebIdentityKeySecretArn",
+      "stage": "AWSCURRENT",
+      "decision": "allowed"
+    },
+    {
+      "purpose": "WebIdentityKeySecretArn",
+      "stage": "AWSPENDING",
+      "decision": "allowed"
+    },
+    {
+      "purpose": "WebIdentityKeySecretArn",
+      "stage": "AWSPREVIOUS",
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "WebIdentityKeySecretArn",
+      "stage": null,
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "AuthEncryptionKeySecretArn",
+      "stage": "AWSCURRENT",
+      "decision": "allowed"
+    },
+    {
+      "purpose": "AuthEncryptionKeySecretArn",
+      "stage": "AWSPENDING",
+      "decision": "allowed"
+    },
+    {
+      "purpose": "AuthEncryptionKeySecretArn",
+      "stage": "AWSPREVIOUS",
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "AuthEncryptionKeySecretArn",
+      "stage": null,
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "OAuthClientSecretArn",
+      "stage": "AWSCURRENT",
+      "decision": "allowed"
+    },
+    {
+      "purpose": "OAuthClientSecretArn",
+      "stage": "AWSPENDING",
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "OAuthClientSecretArn",
+      "stage": "AWSPREVIOUS",
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "OAuthClientSecretArn",
+      "stage": null,
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "Unrelated",
+      "stage": "AWSCURRENT",
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "Unrelated",
+      "stage": "AWSPENDING",
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "Unrelated",
+      "stage": "AWSPREVIOUS",
+      "decision": "implicitDeny"
+    },
+    {
+      "purpose": "Unrelated",
+      "stage": null,
+      "decision": "implicitDeny"
+    }
+  ]
+}

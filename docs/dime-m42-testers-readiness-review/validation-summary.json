@@ -1,0 +1,43 @@
+{
+  "timestampUTC": "2026-09-18T20:14:14.771225+00:00",
+  "unit": {
+    "passed": 592,
+    "files": 66,
+    "newReadinessCases": 40
+  },
+  "chromium": {
+    "releasePassed": 170,
+    "retries": 0,
+    "completeCleanRun": true,
+    "localGuestPassed": 5,
+    "publicGuestPassed": 5
+  },
+  "lint": true,
+  "strictTypecheck": true,
+  "lockedInstall": true,
+  "dependencyVulnerabilities": 0,
+  "builds": ["default", "Twitch", "web", "guest", "gameplay Lambda (unchanged)", "web-auth Lambda"],
+  "samNativeBuildAndValidation": true,
+  "cfnLint": ["source", "packaged", "processed"],
+  "applicableGuardSuites": 9,
+  "syntheticIAM": {
+    "prospectiveCases": 36,
+    "prospectiveDecisions": 72,
+    "deployedCases": 36,
+    "deployedDecisions": 72,
+    "unsignedInvocationRejected": true,
+    "roleWithoutInvocationGrantDenied": true
+  },
+  "liveDormantHttpChecks": 20,
+  "performanceLayouts": 3,
+  "heapCycles": 30,
+  "heapTransitions": 180,
+  "telemetry": {
+    "probesSentOnce": 14,
+    "searchPasses": 2,
+    "cloudWatchQueriesPerPass": 30,
+    "wafQueriesPerPass": 6,
+    "sensitiveMatches": 0
+  },
+  "deployed": false
+}
