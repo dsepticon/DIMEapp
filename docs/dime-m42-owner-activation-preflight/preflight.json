@@ -1,0 +1,16 @@
+{
+  "timestampUTC": "2026-09-18T22:47:07.766940+00:00",
+  "branchAndRemoteMatch": true,
+  "worktreeClean": true,
+  "amplifyExcluded": true,
+  "accountMatches": true,
+  "region": "us-east-2",
+  "artifactsMatch": true,
+  "deployedTemplateUnchanged": true,
+  "stack": "UPDATE_COMPLETE",
+  "signIn": "DISABLED",
+  "linking": "DISABLED",
+  "conversion": "ENABLED",
+  "previousValidationConfirmed": true,
+  "versionsUnchanged": true
+}

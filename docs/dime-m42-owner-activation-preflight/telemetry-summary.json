@@ -1,0 +1,22 @@
+{
+  "initial": {
+    "cloudWatchQueries": 30,
+    "cloudWatchMatches": 0,
+    "wafInterfaces": 6,
+    "wafReturnedSamples": 0,
+    "wafSentinelMatches": 0,
+    "startEpoch": 1789771690,
+    "endEpoch": 1789771698
+  },
+  "delayed": {
+    "cloudWatchQueries": 30,
+    "cloudWatchMatches": 0,
+    "wafInterfaces": 6,
+    "wafReturnedSamples": 0,
+    "wafSentinelMatches": 0,
+    "startEpoch": 1789771690,
+    "endEpoch": 1789771845
+  },
+  "syntheticOnly": true,
+  "rawMessagesOrSamplesReported": false
+}
