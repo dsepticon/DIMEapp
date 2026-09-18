@@ -33,7 +33,7 @@ const equal = (a: string, b: string) =>
   a.length === b.length && timingSafeEqual(Buffer.from(a), Buffer.from(b));
 export type Tokens = { access: string; refresh: string; expiresAt: number };
 export interface IdentityProvider {
-  prepare?(): void;
+  prepare?(): void | Promise<void>;
   authorize(state: string, nonce: string): string;
   exchange(code: string, nonce: string): Promise<{ subject: string; tokens: Tokens }>;
   validate(tokens: Tokens): Promise<{ subject: string; tokens: Tokens }>;
@@ -128,7 +128,7 @@ export class WebAuth {
       nonce = opaque(),
       expiresAt = Math.min(this.clock() + 300000, tester ? tester.exp * 1000 : Infinity);
     // Validate provider configuration before consuming the invitation or writing login state.
-    this.provider.prepare?.();
+    await this.provider.prepare?.();
     await this.repo.transaction(async (tx) => {
       if (tester) {
         const key = invitationUseKey(tester.nonce);

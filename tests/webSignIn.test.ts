@@ -1,3 +1,5 @@
+import { syntheticWebSecrets } from './webSecretsFixture';
+syntheticWebSecrets();
 import { afterEach, expect, it, vi } from 'vitest';
 import { webSignInPreflight, webCapabilities } from '../server/webSignIn';
 import { createWebApi } from '../server/webHttp';

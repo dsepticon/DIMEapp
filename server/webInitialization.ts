@@ -23,22 +23,40 @@ export function stage<T>(category: InitCategory, run: () => T): T {
     throw new WebInitializationError(category);
   }
 }
-/** CloudFormation resolves SecretString at deployment. No runtime Secrets Manager client exists. */
+/** Reject unresolved references where a resolved plaintext value is required. */
 export function resolvedSecret(value: string | undefined): string {
   if (!value || value.startsWith('arn:') || value.startsWith('{{resolve:'))
     throw new WebInitializationError('SECRET_REFERENCE');
   return value;
 }
-/** One canonical format: full plaintext SecretString, padded Base64 of exactly 32 bytes. */
+/** Shared strict parser used by both normal auth and direct readiness. Never trims or guesses. */
+export function inspectWebKey(value: unknown) {
+  const source =
+    typeof value === 'string' &&
+    value.length > 0 &&
+    !value.startsWith('arn:') &&
+    !value.startsWith('{{resolve:');
+  const envelope = source && !/^[\s]*[[{"]/.test(value as string);
+  let encoding = false,
+    length = false,
+    key: Uint8Array | undefined;
+  if (envelope && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value as string)) {
+    const bytes = Buffer.from(value as string, 'base64');
+    encoding = bytes.toString('base64') === value;
+    length = encoding && bytes.length === 32;
+    if (length) key = bytes;
+    else bytes.fill(0);
+  }
+  return { source, envelope, encoding, length, key };
+}
+/** Full plaintext SecretString; padded Base64 of exactly 32 bytes. */
 export function webKey(value: string | undefined, invitation = false): Uint8Array {
-  const raw = resolvedSecret(value);
-  const category = invitation ? 'INVITATION_KEY_FORMAT' : 'SECRET_FORMAT';
-  if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(raw))
-    throw new WebInitializationError(category);
-  const bytes = Buffer.from(raw, 'base64');
-  if (bytes.toString('base64') !== raw) throw new WebInitializationError(category);
-  if (bytes.length !== 32) throw new WebInitializationError('KEY_LENGTH');
-  return bytes;
+  const check = inspectWebKey(value);
+  if (!check.source) throw new WebInitializationError('SECRET_REFERENCE');
+  if (!check.envelope || !check.encoding)
+    throw new WebInitializationError(invitation ? 'INVITATION_KEY_FORMAT' : 'SECRET_FORMAT');
+  if (!check.length) throw new WebInitializationError('KEY_LENGTH');
+  return check.key!;
 }
 /** Inputs are decoded and format/length-validated first. No comparison inputs escape. */
 export function requireDistinctKeys(keys: readonly Uint8Array[]): void {

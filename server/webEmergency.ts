@@ -21,7 +21,7 @@ function cookie(header: string | undefined, name: string) {
 /** Parse unauthenticated input before constructing any credential/storage dependency. */
 export async function emergencyRoute(
   request: Request,
-  configure: () => WebAuth,
+  configure: () => WebAuth | Promise<WebAuth>,
   internalFailure?: (error: unknown) => WebResponse,
 ): Promise<WebResponse | undefined> {
   const path = request.path.split('?')[0];
@@ -42,7 +42,9 @@ export async function emergencyRoute(
     if (logout) {
       const sid = cookie(request.headers.cookie, '__Host-dime-session');
       if (!/^[\w-]{43}$/.test(sid)) return result({ signedOut: true });
-      await configure().logout(sid, { origin: request.headers.origin, csrf: request.headers['x-dime-csrf'] });
+      await (
+        await configure()
+      ).logout(sid, { origin: request.headers.origin, csrf: request.headers['x-dime-csrf'] });
       return result({ signedOut: true });
     }
     if (request.headers.origin !== webOrigin) throw new WebAuthError(403);
@@ -62,7 +64,7 @@ export async function emergencyRoute(
           : raw,
       );
     if (!input.success) throw new WebAuthError(401);
-    const auth = configure();
+    const auth = await configure();
     const resumed = await auth.resumeDeletion(input.data.account, input.data.capability);
     return {
       ...result(resumed, 'retryable' in resumed ? 202 : 200),

@@ -1,3 +1,5 @@
+import { syntheticWebSecrets } from './webSecretsFixture';
+syntheticWebSecrets();
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { handler } from '../server/webHandler';
@@ -88,7 +90,6 @@ it('a structurally valid invalid signature loads only the invitation key and rej
   vi.stubEnv('DIME_OAUTH_CLIENT_SECRET', undefined);
   vi.stubEnv('TWITCH_EXTENSION_SECRET_B64', undefined);
   vi.stubEnv('DIME_PLAYER_ID_KEY_B64', undefined);
-  vi.stubEnv('AWS_REGION', undefined);
   for (let i = 0; i < 2; i++) expect((await request(value)).statusCode).toBe(401);
   expect(send).not.toHaveBeenCalled();
   expect(fetch).not.toHaveBeenCalled();
@@ -130,7 +131,7 @@ for (const [name, value, category] of [
   ['DIME_OAUTH_CLIENT_SECRET', JSON.stringify({ client_secret: 'synthetic' }), 'SECRET_FORMAT'],
   ['DIME_OAUTH_CLIENT_ID', 'znaovl2j45idub9k81om1dkatwxnu2', 'WEB_AUTH_CONFIG'],
   ['DIME_WEB_ORIGIN', origin + '/auth/callback', 'CALLBACK_CONFIG'],
-  ['AWS_REGION', 'us-west-2', 'WEB_AUTH_CONFIG'],
+  ['AWS_REGION', 'us-west-2', 'SECRET_REFERENCE'],
 ] as const)
   it(`fails closed at ${category} for synthetic ${name} configuration, without writes`, async () => {
     const valueToSend = invite();
@@ -176,7 +177,7 @@ it('accepts only documented full plaintext SecretString fixtures', () => {
 });
 for (const errorName of ['AccessDeniedException', 'KMSAccessDeniedException', 'TimeoutError'])
   it(`a synthetic provisioning/provider-preparation ${errorName} cannot write nonce/session state`, async () => {
-    // Dynamic references resolve at deployment, not via a runtime SDK. Inject the failed preparation boundary.
+    // Inject the failed asynchronous runtime preparation boundary.
     const repo = new MemoryRecords(),
       tx = vi.spyOn(repo, 'transaction');
     const fail = () => {
@@ -215,9 +216,9 @@ it('error reporter never serializes request-like exception fields or messages', 
 
 it('owner-only disabled readiness returns booleans with no storage or provider requests', async () => {
   vi.stubEnv('DIME_WEB_SIGN_IN_MODE', 'DISABLED');
-  const result = await handler({ dimeOwnerSelfTest: 'key-readiness-v1' });
+  const result = await handler({ dimeOwnerSelfTest: 'key-readiness-v2', stage: 'AWSPENDING' });
   expect(result.statusCode).toBe(200);
-  expect(Object.values(JSON.parse(result.body))).toEqual([true, true, true, true, true, true]);
+  expect(Object.values(JSON.parse(result.body))).toEqual(Array(11).fill(true));
   expect(send).not.toHaveBeenCalled();
   expect(fetch).not.toHaveBeenCalled();
   expect(logs).not.toHaveBeenCalled();
@@ -225,7 +226,8 @@ it('owner-only disabled readiness returns booleans with no storage or provider r
 it('API Gateway requests cannot invoke the owner-only readiness branch', async () => {
   vi.stubEnv('DIME_WEB_SIGN_IN_MODE', 'DISABLED');
   const result = await handler({
-    dimeOwnerSelfTest: 'key-readiness-v1',
+    dimeOwnerSelfTest: 'key-readiness-v2',
+    stage: 'AWSPENDING',
     rawPath: '/auth/login',
     requestContext: { http: { method: 'GET' } },
   });
@@ -235,7 +237,7 @@ it('API Gateway requests cannot invoke the owner-only readiness branch', async (
   expect(fetch).not.toHaveBeenCalled();
 });
 it('owner readiness fails closed outside dormant mode', async () => {
-  const result = await handler({ dimeOwnerSelfTest: 'key-readiness-v1' });
+  const result = await handler({ dimeOwnerSelfTest: 'key-readiness-v2', stage: 'AWSPENDING' });
   expect(result.statusCode).toBe(503);
   expect(send).not.toHaveBeenCalled();
   expect(fetch).not.toHaveBeenCalled();

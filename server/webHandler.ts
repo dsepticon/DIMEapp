@@ -1,3 +1,5 @@
+import { currentWebSecret } from './webSecrets';
+import { webKeyReadiness } from './webReadiness';
 import { webSignInPreflight } from './webSignIn';
 /** Separate opt-in build. This entry is not imported by the deployed Milestone 4.1 Lambda. */
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
@@ -37,14 +39,14 @@ function runtime() {
     return { region, origin, table };
   });
 }
-function configuredAuth(emergency = false) {
+async function configuredAuth(emergency = false) {
   const { region, origin, table } = runtime();
-  const identity = webKey(process.env.DIME_WEB_ID_KEY_B64, true);
+  const identity = webKey(await currentWebSecret('identity'), true);
   let stored: DynamoAuthRecords | undefined;
   const repo: RecordRepository = {
-    transaction: (run) => {
+    transaction: async (run) => {
       if (!stored) {
-        const encryption = webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64);
+        const encryption = webKey(await currentWebSecret('encryption'));
         requireDistinctKeys([encryption, identity]);
         // Preserve the original four-key separation check before persistent authentication use.
         // Invalid invitations never reach this boundary; emergency shutdown remains independent.
@@ -81,35 +83,35 @@ function configuredAuth(emergency = false) {
       return id;
     });
   let oauth: TwitchOAuth | undefined;
-  const providerInstance = () => {
+  const providerInstance = async () => {
     if (emergency) throw new WebInitializationError('WEB_AUTH_CONFIG');
-    return (oauth ??= stage(
+    if (oauth) return oauth;
+    const secret = oauthSecret(await currentWebSecret('oauth'));
+    return (oauth = stage(
       'WEB_AUTH_CONFIG',
-      () =>
-        new TwitchOAuth(
-          publicClient(),
-          oauthSecret(process.env.DIME_OAUTH_CLIENT_SECRET),
-          origin + '/auth/callback',
-        ),
+      () => new TwitchOAuth(publicClient(), secret, origin + '/auth/callback'),
     ));
   };
   return new WebAuth(
     repo,
     {
-      prepare: () => {
-        providerInstance();
+      prepare: async () => {
+        await providerInstance();
       },
-      authorize: (state, nonce) => providerInstance().authorize(state, nonce),
-      exchange: (code, nonce) => providerInstance().exchange(code, nonce),
-      validate: (tokens) => providerInstance().validate(tokens),
+      authorize: (state, nonce) => {
+        if (!oauth) throw new WebInitializationError('WEB_AUTH_CONFIG');
+        return oauth.authorize(state, nonce);
+      },
+      exchange: async (code, nonce) => (await providerInstance()).exchange(code, nonce),
+      validate: async (tokens) => (await providerInstance()).validate(tokens),
       revoke: (tokens) => revokeTwitchToken(publicClient(), tokens),
     },
     identity,
     origin,
   );
 }
-function configure() {
-  const auth = configuredAuth();
+async function configure() {
+  const auth = await configuredAuth();
   const origins = stage('WEB_AUTH_CONFIG', () => {
     const values = required('DIME_ALLOWED_ORIGINS').split(',');
     if (values.some((value) => !/^https:\/\/[a-z0-9-]+\.ext-twitch\.tv$/.test(value))) throw Error();
@@ -123,7 +125,7 @@ function configure() {
   return createWebApi(
     auth,
     {
-      authorize: (header) => {
+      authorize: async (header) => {
         // Extension credentials are used only by independently enabled, authenticated link acceptance.
         const extensionKey = stage('SECRET_FORMAT', () =>
           decodeSecret(resolvedSecret(process.env.TWITCH_EXTENSION_SECRET_B64)),
@@ -134,8 +136,8 @@ function configure() {
         const keys = [
           extensionKey,
           extensionIdentity,
-          webKey(process.env.DIME_WEB_ID_KEY_B64, true),
-          webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64),
+          webKey(await currentWebSecret('identity'), true),
+          webKey(await currentWebSecret('encryption')),
         ];
         requireDistinctKeys(keys);
         return authenticate(header, [extensionKey], extensionIdentity);
@@ -149,42 +151,9 @@ function configure() {
     initializationFailure,
   );
 }
-/** Direct IAM-authorized Lambda Invoke only; API Gateway always supplies requestContext. */
-function ownerReadiness() {
-  if (process.env.DIME_WEB_SIGN_IN_MODE !== 'DISABLED' || process.env.DIME_ACCOUNT_LINKING !== 'DISABLED')
-    throw new WebInitializationError('WEB_AUTH_CONFIG');
-  const { region } = runtime();
-  const identity = webKey(process.env.DIME_WEB_ID_KEY_B64, true);
-  const encryption = webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64);
-  try {
-    requireDistinctKeys([
-      identity,
-      encryption,
-      stage('SECRET_FORMAT', () => decodeSecret(resolvedSecret(process.env.TWITCH_EXTENSION_SECRET_B64))),
-      stage('SECRET_FORMAT', () => decodeSecret(resolvedSecret(process.env.DIME_PLAYER_ID_KEY_B64))),
-    ]);
-    if (process.env.DIME_OAUTH_CLIENT_ID !== '4228okut24ll35bisjmygbquaf6svm')
-      throw new WebInitializationError('WEB_AUTH_CONFIG');
-    oauthSecret(process.env.DIME_OAUTH_CLIENT_SECRET);
-    new TokenEnvelope(new Map([['v1', encryption]]), 'v1');
-    // Client initialization only: no table/item read, receipt, or transaction.
-    const client = stage('STORAGE_INIT', () => new DynamoDBClient({ region, maxAttempts: 3 }));
-    client.destroy();
-    return {
-      configurationValid: true,
-      keysValidAndDistinct: true,
-      invitationVerifierReady: true,
-      encryptionReady: true,
-      oauthMetadataReady: true,
-      storageReady: true,
-    };
-  } finally {
-    identity.fill(0);
-    encryption.fill(0);
-  }
-}
 export async function handler(event: {
   dimeOwnerSelfTest?: string;
+  stage?: string;
   rawPath?: string;
   rawQueryString?: string;
   headers?: Record<string, string>;
@@ -194,11 +163,24 @@ export async function handler(event: {
   requestContext?: { stage?: string; http?: { method?: string } };
 }) {
   try {
-    if (Object.keys(event).length === 1 && event.dimeOwnerSelfTest === 'key-readiness-v1')
+    if (
+      Object.keys(event).length === 2 &&
+      event.dimeOwnerSelfTest === 'key-readiness-v2' &&
+      (event.stage === 'AWSCURRENT' || event.stage === 'AWSPENDING')
+    )
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-        body: JSON.stringify(ownerReadiness()),
+        body: JSON.stringify(
+          await (async () => {
+            if (
+              process.env.DIME_WEB_SIGN_IN_MODE !== 'DISABLED' ||
+              process.env.DIME_ACCOUNT_LINKING !== 'DISABLED'
+            )
+              throw new WebInitializationError('WEB_AUTH_CONFIG');
+            return webKeyReadiness(event.stage as 'AWSCURRENT' | 'AWSPENDING');
+          })(),
+        ),
       };
     const path =
       routePath(event.rawPath ?? '', event.requestContext?.stage) +
@@ -231,9 +213,11 @@ export async function handler(event: {
       const invitation = new URL(path, 'https://localhost').searchParams.get('invitation') ?? '';
       parseTesterInvitation(invitation);
       // Signature rejection loads only the invitation key. No encryption, OAuth or storage dependency.
-      verifyTesterInvitation(webKey(process.env.DIME_WEB_ID_KEY_B64, true), invitation);
+      verifyTesterInvitation(webKey(await currentWebSecret('identity'), true), invitation);
     }
-    return await configure()(request);
+    return await (
+      await configure()
+    )(request);
   } catch (error) {
     if (error instanceof InvitationError)
       return {
