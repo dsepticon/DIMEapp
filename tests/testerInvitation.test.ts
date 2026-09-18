@@ -12,9 +12,9 @@ import type { RecordTransaction } from '../server/authRecords';
 const origin = 'https://destroyaindustriesminingextension.com',
   key = new Uint8Array(32).fill(73);
 const value = (cookie: string) => cookie.split(';')[0]!.split('=')[1]!;
-function fixture() {
+function fixture(initialSubject = '123456') {
   let now = Date.now(),
-    subject = '123456',
+    subject = initialSubject,
     linkMode = 'DISABLED',
     signMode = 'TESTERS';
   const repo = new MemoryAuthRepository(),
@@ -51,7 +51,7 @@ function fixture() {
     undefined,
     () => signMode,
   );
-  const invite = () => mintTesterInvitation(key, '123456', now).invitation;
+  const invite = () => mintTesterInvitation(key, initialSubject, now).invitation;
   const start = async (invitation = invite()) => {
     const response = await api({ method: 'GET', path: '/auth/login?invitation=' + invitation, headers: {} });
     expect(response.statusCode).toBe(303);
@@ -363,3 +363,27 @@ it('normalized-path aliases and malformed mode combinations cannot bypass admiss
   expect((await f.api({ method: 'GET', path: '/api/v4/state', headers: {} })).statusCode).toBe(403);
   expect(f.writes).toEqual([]);
 });
+
+// Synthetic stand-ins for the two intended tester slots; never real Twitch identities.
+it.each(['90000000000000000001', '90000000000000000002'])(
+  'local provisioning contract: expiry, replay and failed callback preserve isolation for a synthetic tester',
+  async (subject) => {
+    const f = fixture(subject);
+    const invitation = f.invite();
+    const start = await f.start(invitation);
+    const writesBeforeReplay = f.writes.length;
+    const replay = await f.api({ method: 'GET', path: '/auth/login?invitation=' + invitation, headers: {} });
+    expect(replay.statusCode).toBe(401);
+    expect(f.writes).toHaveLength(writesBeforeReplay);
+    f.writes.length = 0;
+    f.subject(subject === '90000000000000000001' ? '90000000000000000002' : '90000000000000000001');
+    await f.finish(start);
+    expect(f.writes).toEqual([]);
+    expect(f.provider.revoke).toHaveBeenCalledOnce();
+    f.tick(900001);
+    expect(
+      (await f.api({ method: 'GET', path: '/auth/login?invitation=' + invitation, headers: {} })).statusCode,
+    ).toBe(401);
+    expect(f.writes).toEqual([]);
+  },
+);
