@@ -117,15 +117,15 @@ for (const [name, value, category] of [
     JSON.stringify({ WEB_IDENTITY_KEY: key.toString('base64') }),
     'INVITATION_KEY_FORMAT',
   ],
-  ['DIME_WEB_ID_KEY_B64', key.toString('hex'), 'INVITATION_KEY_FORMAT'],
+  ['DIME_WEB_ID_KEY_B64', key.toString('hex'), 'KEY_LENGTH'],
   [
     'DIME_AUTH_ENCRYPTION_KEY_B64',
     JSON.stringify({ AUTH_ENCRYPTION_KEY: key.toString('base64') }),
     'SECRET_FORMAT',
   ],
-  ['DIME_AUTH_ENCRYPTION_KEY_B64', key.toString('base64'), 'SECRET_FORMAT'],
-  ['TWITCH_EXTENSION_SECRET_B64', key.toString('base64'), 'SECRET_FORMAT'],
-  ['DIME_PLAYER_ID_KEY_B64', key.toString('base64'), 'SECRET_FORMAT'],
+  ['DIME_AUTH_ENCRYPTION_KEY_B64', key.toString('base64'), 'KEY_REUSE'],
+  ['TWITCH_EXTENSION_SECRET_B64', key.toString('base64'), 'KEY_REUSE'],
+  ['DIME_PLAYER_ID_KEY_B64', key.toString('base64'), 'KEY_REUSE'],
   ['DIME_OAUTH_CLIENT_SECRET', 'arn:aws:secretsmanager:synthetic', 'SECRET_REFERENCE'],
   ['DIME_OAUTH_CLIENT_SECRET', JSON.stringify({ client_secret: 'synthetic' }), 'SECRET_FORMAT'],
   ['DIME_OAUTH_CLIENT_ID', 'znaovl2j45idub9k81om1dkatwxnu2', 'WEB_AUTH_CONFIG'],
@@ -211,4 +211,32 @@ it('error reporter never serializes request-like exception fields or messages', 
     'category',
     'correlationId',
   ]);
+});
+
+it('owner-only disabled readiness returns booleans with no storage or provider requests', async () => {
+  vi.stubEnv('DIME_WEB_SIGN_IN_MODE', 'DISABLED');
+  const result = await handler({ dimeOwnerSelfTest: 'key-readiness-v1' });
+  expect(result.statusCode).toBe(200);
+  expect(Object.values(JSON.parse(result.body))).toEqual([true, true, true, true, true, true]);
+  expect(send).not.toHaveBeenCalled();
+  expect(fetch).not.toHaveBeenCalled();
+  expect(logs).not.toHaveBeenCalled();
+});
+it('API Gateway requests cannot invoke the owner-only readiness branch', async () => {
+  vi.stubEnv('DIME_WEB_SIGN_IN_MODE', 'DISABLED');
+  const result = await handler({
+    dimeOwnerSelfTest: 'key-readiness-v1',
+    rawPath: '/auth/login',
+    requestContext: { http: { method: 'GET' } },
+  });
+  expect(result.statusCode).toBe(503);
+  expect(JSON.parse(result.body)).not.toHaveProperty('keysValidAndDistinct');
+  expect(send).not.toHaveBeenCalled();
+  expect(fetch).not.toHaveBeenCalled();
+});
+it('owner readiness fails closed outside dormant mode', async () => {
+  const result = await handler({ dimeOwnerSelfTest: 'key-readiness-v1' });
+  expect(result.statusCode).toBe(503);
+  expect(send).not.toHaveBeenCalled();
+  expect(fetch).not.toHaveBeenCalled();
 });

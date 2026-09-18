@@ -1,10 +1,12 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 
 export type InitCategory =
   | 'WEB_AUTH_CONFIG'
   | 'SECRET_REFERENCE'
   | 'SECRET_ACCESS'
   | 'SECRET_FORMAT'
+  | 'KEY_LENGTH'
+  | 'KEY_REUSE'
   | 'INVITATION_KEY_FORMAT'
   | 'CALLBACK_CONFIG'
   | 'STORAGE_INIT';
@@ -31,10 +33,24 @@ export function resolvedSecret(value: string | undefined): string {
 export function webKey(value: string | undefined, invitation = false): Uint8Array {
   const raw = resolvedSecret(value);
   const category = invitation ? 'INVITATION_KEY_FORMAT' : 'SECRET_FORMAT';
-  if (!/^[A-Za-z0-9+/]{43}=$/.test(raw)) throw new WebInitializationError(category);
+  if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(raw))
+    throw new WebInitializationError(category);
   const bytes = Buffer.from(raw, 'base64');
-  if (bytes.length !== 32 || bytes.toString('base64') !== raw) throw new WebInitializationError(category);
+  if (bytes.toString('base64') !== raw) throw new WebInitializationError(category);
+  if (bytes.length !== 32) throw new WebInitializationError('KEY_LENGTH');
   return bytes;
+}
+/** Inputs are decoded and format/length-validated first. No comparison inputs escape. */
+export function requireDistinctKeys(keys: readonly Uint8Array[]): void {
+  let reused = false;
+  for (let i = 0; i < keys.length; i++) {
+    for (let j = i + 1; j < keys.length; j++) {
+      const a = keys[i]!,
+        b = keys[j]!;
+      if (a.length === b.length) reused = timingSafeEqual(a, b) || reused;
+    }
+  }
+  if (reused) throw new WebInitializationError('KEY_REUSE');
 }
 export function oauthSecret(value: string | undefined): string {
   const raw = resolvedSecret(value);
@@ -48,6 +64,8 @@ export function initializationFailure(error: unknown) {
     'SECRET_REFERENCE',
     'SECRET_ACCESS',
     'SECRET_FORMAT',
+    'KEY_LENGTH',
+    'KEY_REUSE',
     'INVITATION_KEY_FORMAT',
     'CALLBACK_CONFIG',
     'STORAGE_INIT',

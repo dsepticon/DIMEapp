@@ -11,6 +11,7 @@ import {
   initializationFailure,
   stage,
   webKey,
+  requireDistinctKeys,
   oauthSecret,
   resolvedSecret,
   WebInitializationError,
@@ -44,8 +45,7 @@ function configuredAuth(emergency = false) {
     transaction: (run) => {
       if (!stored) {
         const encryption = webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64);
-        if (Buffer.from(encryption).equals(Buffer.from(identity)))
-          throw new WebInitializationError('SECRET_FORMAT');
+        requireDistinctKeys([encryption, identity]);
         // Preserve the original four-key separation check before persistent authentication use.
         // Invalid invitations never reach this boundary; emergency shutdown remains independent.
         if (!emergency) {
@@ -57,12 +57,7 @@ function configuredAuth(emergency = false) {
             ),
             stage('SECRET_FORMAT', () => decodeSecret(resolvedSecret(process.env.DIME_PLAYER_ID_KEY_B64))),
           ];
-          if (
-            keys.some((key, i) =>
-              keys.slice(i + 1).some((other) => Buffer.from(key).equals(Buffer.from(other))),
-            )
-          )
-            throw new WebInitializationError('SECRET_FORMAT');
+          requireDistinctKeys(keys);
         }
         stored = stage(
           'STORAGE_INIT',
@@ -142,12 +137,7 @@ function configure() {
           webKey(process.env.DIME_WEB_ID_KEY_B64, true),
           webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64),
         ];
-        if (
-          keys.some((key, i) =>
-            keys.slice(i + 1).some((other) => Buffer.from(key).equals(Buffer.from(other))),
-          )
-        )
-          throw new WebInitializationError('SECRET_FORMAT');
+        requireDistinctKeys(keys);
         return authenticate(header, [extensionKey], extensionIdentity);
       },
       origins,
@@ -159,7 +149,42 @@ function configure() {
     initializationFailure,
   );
 }
+/** Direct IAM-authorized Lambda Invoke only; API Gateway always supplies requestContext. */
+function ownerReadiness() {
+  if (process.env.DIME_WEB_SIGN_IN_MODE !== 'DISABLED' || process.env.DIME_ACCOUNT_LINKING !== 'DISABLED')
+    throw new WebInitializationError('WEB_AUTH_CONFIG');
+  const { region } = runtime();
+  const identity = webKey(process.env.DIME_WEB_ID_KEY_B64, true);
+  const encryption = webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64);
+  try {
+    requireDistinctKeys([
+      identity,
+      encryption,
+      stage('SECRET_FORMAT', () => decodeSecret(resolvedSecret(process.env.TWITCH_EXTENSION_SECRET_B64))),
+      stage('SECRET_FORMAT', () => decodeSecret(resolvedSecret(process.env.DIME_PLAYER_ID_KEY_B64))),
+    ]);
+    if (process.env.DIME_OAUTH_CLIENT_ID !== '4228okut24ll35bisjmygbquaf6svm')
+      throw new WebInitializationError('WEB_AUTH_CONFIG');
+    oauthSecret(process.env.DIME_OAUTH_CLIENT_SECRET);
+    new TokenEnvelope(new Map([['v1', encryption]]), 'v1');
+    // Client initialization only: no table/item read, receipt, or transaction.
+    const client = stage('STORAGE_INIT', () => new DynamoDBClient({ region, maxAttempts: 3 }));
+    client.destroy();
+    return {
+      configurationValid: true,
+      keysValidAndDistinct: true,
+      invitationVerifierReady: true,
+      encryptionReady: true,
+      oauthMetadataReady: true,
+      storageReady: true,
+    };
+  } finally {
+    identity.fill(0);
+    encryption.fill(0);
+  }
+}
 export async function handler(event: {
+  dimeOwnerSelfTest?: string;
   rawPath?: string;
   rawQueryString?: string;
   headers?: Record<string, string>;
@@ -169,6 +194,12 @@ export async function handler(event: {
   requestContext?: { stage?: string; http?: { method?: string } };
 }) {
   try {
+    if (Object.keys(event).length === 1 && event.dimeOwnerSelfTest === 'key-readiness-v1')
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+        body: JSON.stringify(ownerReadiness()),
+      };
     const path =
       routePath(event.rawPath ?? '', event.requestContext?.stage) +
       (event.rawQueryString ? '?' + event.rawQueryString : '');
