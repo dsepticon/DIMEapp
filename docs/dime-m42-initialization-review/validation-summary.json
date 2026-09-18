@@ -1,0 +1,27 @@
+{
+  "unit": {
+    "files": 64,
+    "passed": 528
+  },
+  "chromium": {
+    "passed": 170,
+    "failed": 0,
+    "retries": 0,
+    "durationMinutes": 36.2
+  },
+  "logs": {
+    "unit-final.log": "210bfa116c2bc70107bcf8dfe704ea97bb3ce354e2069064d21815011d4d89bc",
+    "chromium-clean.log": "f2ec63c5b9f0457c547a31f99a9c9ad0daa6d6590d2c02e3d28ccd608b9d7441",
+    "sam-final.log": "dec00dd0fc042d3fcea6e9ca3135c64449155fce5ca399119068a6d6534c148d",
+    "sam-validate.log": "43b726c811a48c4f0114f41e430564638166fe83fa7b07aa08093071589626ff",
+    "lint-source.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lint-packaged.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lint-processed-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "guard-source.json": "4aef6bd7c0ead02bb2fbfb5ba5ebe0cbdb87e127690d002e01429cb1e3fa7f3c",
+    "guard-processed-final.json": "066afa4204487d72e314bf4067ba6fae09690edd27a7d365643c5f7d8a9f2b84",
+    "provisioner-tests.log": "921b60a7fd52e978fbb551cacd29df2d6708879400278e1fcc70fceeb0c6f8e0"
+  },
+  "deploymentExecuted": false,
+  "realSecretRetrievals": 0,
+  "realPlayerDataRequests": 0
+}

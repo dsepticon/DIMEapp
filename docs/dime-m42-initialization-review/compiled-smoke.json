@@ -1,0 +1,11 @@
+{
+  "oldMalformedProbe": 503,
+  "correctedMalformedProbe": 401,
+  "invalidSignature": 401,
+  "invalidKeyCategory": "INVITATION_KEY_FORMAT",
+  "validSyntheticSignatureThenRuntimeFailure": "WEB_AUTH_CONFIG",
+  "disabled": 503,
+  "networkRequests": 0,
+  "recordsAccessed": 0,
+  "syntheticOnly": true
+}

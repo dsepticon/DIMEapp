@@ -1,0 +1,13 @@
+{
+  "zip": "/tmp/dime-m42-init-review/DIME-WebAuth-initialization-review-20260918.zip",
+  "bytes": 494017,
+  "sha256": "2f3ef9e70dfc96c6a30d48e52d09a04fd713f6903772b1cc84dfff94f9a931e9",
+  "indexSha256": "5c3e178c955219a8737f6fb384c2929fe23dd943af57005c7022f3e277edf6e7",
+  "archiveEntries": ["index.mjs"],
+  "nativeSamByteIdentical": true,
+  "sourceMaps": false,
+  "testsOrFixtures": false,
+  "frontendFiles": false,
+  "runtimeSecretsManagerClient": false,
+  "invitationProvisioner": false
+}

@@ -1,0 +1,248 @@
+{
+  "browser": "153.0.8010.12",
+  "assetBytes": 369382,
+  "gzipBytes": 106610,
+  "results": [
+    {
+      "heapTrend": [3737598, 5496238, 5813006, 6049606, 6152506, 6279370, 6404670],
+      "heapAfter": 5022122,
+      "scannerEffects": {
+        "p95FrameMs": 16.700000000000045,
+        "worstFrameMs": 16.80000000000001,
+        "frames": 63,
+        "heapBytes": 4917836,
+        "dom": 73,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "laserEffects": {
+        "p95FrameMs": 16.799999999999272,
+        "worstFrameMs": 16.800000000000182,
+        "frames": 543,
+        "heapBytes": 6278113,
+        "dom": 76,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "busiestCityZone": "Avenbolt Commodity Hall",
+      "cityEffects": {
+        "p95FrameMs": 16.799999999999272,
+        "worstFrameMs": 16.80000000000109,
+        "frames": 905,
+        "heapBytes": 6575897,
+        "dom": 61,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "vacuumEffects": {
+        "p95FrameMs": 16.799999999999272,
+        "worstFrameMs": 16.800000000000182,
+        "frames": 399,
+        "heapBytes": 9738972,
+        "dom": 66,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "initialVisibleFragments": 8,
+      "intactFormationStressCount": 8,
+      "collectedFragmentUnits": 80,
+      "layout": "Panel",
+      "readyMs": 123.92790000000014,
+      "durationMs": 87277.987903,
+      "cycles": 6,
+      "transitions": 36,
+      "transitionAverageMs": 78.14868777777731,
+      "transitionWorstMs": 86.48380099999486,
+      "transitionP95Ms": 86.02270299999873,
+      "initial": {
+        "p95FrameMs": 33.39999999999999,
+        "worstFrameMs": 33.39999999999999,
+        "frames": 6,
+        "heapBytes": 3776954,
+        "dom": 56,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "final": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 33.39999999999999,
+        "frames": 3711,
+        "heapBytes": 6703294,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "idle": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 33.39999999999999,
+        "frames": 3771,
+        "heapBytes": 7057631,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "errors": []
+    },
+    {
+      "heapTrend": [3713958, 5593203, 5933523, 6116315, 6251127, 6340011],
+      "heapAfter": 5045142,
+      "scannerEffects": {
+        "p95FrameMs": 16.700000000000045,
+        "worstFrameMs": 16.800000000000068,
+        "frames": 62,
+        "heapBytes": 4884539,
+        "dom": 73,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "laserEffects": {
+        "p95FrameMs": 16.700000000000728,
+        "worstFrameMs": 16.80000000000109,
+        "frames": 550,
+        "heapBytes": 7923326,
+        "dom": 76,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "busiestCityZone": "Avenbolt Commodity Hall",
+      "cityEffects": {
+        "p95FrameMs": 16.700000000000728,
+        "worstFrameMs": 16.80000000000109,
+        "frames": 904,
+        "heapBytes": 8970422,
+        "dom": 61,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "vacuumEffects": {
+        "p95FrameMs": 16.700000000000728,
+        "worstFrameMs": 16.800000000000182,
+        "frames": 406,
+        "heapBytes": 8888267,
+        "dom": 66,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "initialVisibleFragments": 8,
+      "intactFormationStressCount": 8,
+      "collectedFragmentUnits": 80,
+      "layout": "Mobile",
+      "readyMs": 154.04010100000596,
+      "durationMs": 86309.733898,
+      "cycles": 5,
+      "transitions": 30,
+      "transitionAverageMs": 75.35171900000181,
+      "transitionWorstMs": 77.39750099999947,
+      "transitionP95Ms": 76.87079999997513,
+      "initial": {
+        "p95FrameMs": 16.700000000000017,
+        "worstFrameMs": 16.700000000000017,
+        "frames": 8,
+        "heapBytes": 3751514,
+        "dom": 56,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "final": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 16.80000000000291,
+        "frames": 3646,
+        "heapBytes": 6601675,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "idle": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 16.80000000000291,
+        "frames": 3707,
+        "heapBytes": 6703220,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "errors": []
+    },
+    {
+      "heapTrend": [3818118, 5611489, 6003212, 6190980, 6289556, 6378900, 6457877],
+      "heapAfter": 5341016,
+      "scannerEffects": {
+        "p95FrameMs": 16.700000000000045,
+        "worstFrameMs": 16.800000000000182,
+        "frames": 63,
+        "heapBytes": 4758323,
+        "dom": 73,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "laserEffects": {
+        "p95FrameMs": 16.700000000000728,
+        "worstFrameMs": 16.80000000000109,
+        "frames": 548,
+        "heapBytes": 11918797,
+        "dom": 76,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "busiestCityZone": "Avenbolt Commodity Hall",
+      "cityEffects": {
+        "p95FrameMs": 16.799999999999272,
+        "worstFrameMs": 16.80000000000109,
+        "frames": 906,
+        "heapBytes": 8774335,
+        "dom": 61,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "vacuumEffects": {
+        "p95FrameMs": 16.700000000000728,
+        "worstFrameMs": 16.800000000000182,
+        "frames": 401,
+        "heapBytes": 11360271,
+        "dom": 66,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "initialVisibleFragments": 8,
+      "intactFormationStressCount": 8,
+      "collectedFragmentUnits": 80,
+      "layout": "Desktop",
+      "readyMs": 148.69109999999637,
+      "durationMs": 88026.38496400003,
+      "cycles": 6,
+      "transitions": 36,
+      "transitionAverageMs": 76.90950297222217,
+      "transitionWorstMs": 87.46679999999469,
+      "transitionP95Ms": 86.77289799999562,
+      "initial": {
+        "p95FrameMs": 16.700000000000003,
+        "worstFrameMs": 16.700000000000003,
+        "frames": 9,
+        "heapBytes": 3858026,
+        "dom": 56,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "final": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 16.80000000000291,
+        "frames": 3750,
+        "heapBytes": 6732645,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "idle": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 16.80000000000291,
+        "frames": 3810,
+        "heapBytes": 7162349,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "errors": []
+    }
+  ],
+  "limitations": "Local Chromium production builds, actual API service with synthetic in-memory state. Desktop loads the standalone web bundle with synthetic session transport; secure cookie/OAuth behavior is tested separately. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap trend uses forced-GC samples after repeated physical travel; frame worst includes instrumentation and GC. This is not proof against every leak."
+}
