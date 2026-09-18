@@ -1,0 +1,94 @@
+{
+  "reviewOnly": true,
+  "executionAuthorized": false,
+  "currentPrerequisite": "Historical runtime failure remains unproven; secure diagnostic and secret promotion require separate review.",
+  "stack": "dime-v2-review-20260912",
+  "region": "us-east-2",
+  "requiredBefore": {
+    "WebSignInMode": "DISABLED",
+    "AccountLinkingMode": "DISABLED",
+    "ContentConversionMode": "ENABLED"
+  },
+  "proposedParameters": [
+    {
+      "ParameterKey": "StagingResourcePrefix",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "StagingRegion",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "TwitchAllowedOrigins",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "TwitchSecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "PlayerIdentityKeySecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ConfigurationRevision",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ContentConversionMode",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ContentConversionTesterTags",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "LogRetentionDays",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ApiThrottleRate",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "ApiThrottleBurst",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "OAuthClientSecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "WebIdentityKeySecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "AuthEncryptionKeySecretArn",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "OAuthClientId",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "AccountLinkingMode",
+      "UsePreviousValue": true
+    },
+    {
+      "ParameterKey": "WebSignInMode",
+      "ParameterValue": "TESTERS"
+    }
+  ],
+  "requiredAfter": {
+    "WebSignInMode": "TESTERS",
+    "AccountLinkingMode": "DISABLED",
+    "ContentConversionMode": "ENABLED"
+  },
+  "lambdaCodeChange": false,
+  "iamChange": false,
+  "dynamodbChange": false,
+  "routeChange": false,
+  "websiteChange": false,
+  "secretVersionChangeInThisPlan": false,
+  "rollback": "Return only WebSignInMode to DISABLED using a separately reviewed update; retain linking DISABLED. Follow separately reviewed secret-stage rollback if a future promotion was performed."
+}

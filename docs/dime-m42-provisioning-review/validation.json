@@ -1,0 +1,77 @@
+{
+  "lockedInstall": true,
+  "lint": true,
+  "strictTypecheck": true,
+  "vitest": {
+    "passed": 594,
+    "files": 66
+  },
+  "pythonProvisioningTests": 20,
+  "chromium": {
+    "passed": 170,
+    "retries": 0,
+    "workers": 2,
+    "minutes": 19.1,
+    "cleanCompleteRun": true
+  },
+  "guestChromium": {
+    "passed": 5,
+    "minutes": 6.7
+  },
+  "builds": ["default", "Twitch", "web", "guest", "gameplay Lambda", "web-auth Lambda"],
+  "formatting": true,
+  "gitDiffCheck": true,
+  "nativeCleanSam": true,
+  "samValidation": true,
+  "cfnLintSuites": 3,
+  "guardSuites": 9,
+  "cloudFormationValidateTemplate": true,
+  "translatedSourceEqualsProcessed": true,
+  "iamSyntheticCases": 36,
+  "iamActionDecisions": 72,
+  "liveAnonymousDisabledChecks": 20,
+  "syntheticTelemetryProbes": 14,
+  "runtimeReadinessInvoked": false,
+  "realSecretResolutionPerformed": false,
+  "performance": [
+    {
+      "layout": "Panel",
+      "frameP95Ms": 16.8,
+      "frameWorstMs": 16.8,
+      "transitionP95Ms": 87.75,
+      "errors": 0,
+      "canvasCount": 1,
+      "documentScroll": false,
+      "collectedSyntheticFragmentUnits": 80
+    },
+    {
+      "layout": "Mobile",
+      "frameP95Ms": 16.7,
+      "frameWorstMs": 33.4,
+      "transitionP95Ms": 88.87,
+      "errors": 0,
+      "canvasCount": 1,
+      "documentScroll": false,
+      "collectedSyntheticFragmentUnits": 80
+    },
+    {
+      "layout": "Desktop",
+      "frameP95Ms": 16.7,
+      "frameWorstMs": 16.8,
+      "transitionP95Ms": 97.53,
+      "errors": 0,
+      "canvasCount": 1,
+      "documentScroll": false,
+      "collectedSyntheticFragmentUnits": 80
+    }
+  ],
+  "heap": {
+    "cycles": 30,
+    "transitions": 180,
+    "firstBytes": 4929584,
+    "lastBytes": 5024104,
+    "domNodes": 141,
+    "listeners": 185,
+    "errors": 0
+  }
+}

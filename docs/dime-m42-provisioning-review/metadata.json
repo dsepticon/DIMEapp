@@ -1,0 +1,22 @@
+{
+  "stackStatus": "UPDATE_COMPLETE",
+  "signIn": "DISABLED",
+  "linking": "DISABLED",
+  "conversion": "ENABLED",
+  "oauthVersions": [
+    {
+      "version": "861c81fb-3a3e-4826-aea0-369e55bd7683",
+      "stages": ["AWSCURRENT"]
+    },
+    {
+      "version": "3d2124fd-ec32-404e-8978-bd7cbf813a59",
+      "stages": ["AWSPREVIOUS"]
+    }
+  ],
+  "lambdaHashes": {
+    "web-auth": "yAyHk0KLSYENmKc0dvJw/E6xSUEmklDp51NKvVr++bU=",
+    "ebs": "4kbdkFYYfB2vTSanDcaKtcwObvYhNxqLqbbKD1OkKvY="
+  },
+  "secretValuesRetrieved": false,
+  "resourceWrites": false
+}

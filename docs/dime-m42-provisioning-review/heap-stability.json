@@ -1,0 +1,42 @@
+{
+  "samples": [
+    {
+      "cycles": 6,
+      "heapBytes": 4929584,
+      "documents": 1,
+      "nodes": 141,
+      "listeners": 185
+    },
+    {
+      "cycles": 12,
+      "heapBytes": 4984008,
+      "documents": 1,
+      "nodes": 141,
+      "listeners": 185
+    },
+    {
+      "cycles": 18,
+      "heapBytes": 5001568,
+      "documents": 1,
+      "nodes": 141,
+      "listeners": 185
+    },
+    {
+      "cycles": 24,
+      "heapBytes": 5016848,
+      "documents": 1,
+      "nodes": 141,
+      "listeners": 185
+    },
+    {
+      "cycles": 30,
+      "heapBytes": 5024104,
+      "documents": 1,
+      "nodes": 141,
+      "listeners": 185
+    }
+  ],
+  "errors": [],
+  "transitions": 180,
+  "method": "Compiled Panel; actual synthetic API. One browser-owned physical pathfinding loop; no per-step Playwright polling, frame-history array or repeated function injection. GC and heap usage sampled directly through CDP after six warmup cycles, then every six cycles."
+}

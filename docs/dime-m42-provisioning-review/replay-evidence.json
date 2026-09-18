@@ -1,0 +1,40 @@
+{
+  "networkCalls": 0,
+  "realSecretReads": 0,
+  "syntheticIdsOnly": true,
+  "originalHelperSha256": "edebd956ac9e528e342d05a70fed80b1f6aa107897e828df4f6ad895eb4c94e1",
+  "originalSignerSha256": "f66cbcde45aa8701cc7e7b9319e05a42ee9ba03c3bfdf09e7e8f7adc059e84ac",
+  "rows": [
+    {
+      "injectedBoundary": "none",
+      "passed": true,
+      "syntheticGrantCount": 2,
+      "syntheticOutputCapturedInMemory": true
+    },
+    {
+      "injectedBoundary": "key",
+      "passed": false,
+      "originalCategory": "PROVISIONING_FAILED",
+      "syntheticOutputCapturedInMemory": false
+    },
+    {
+      "injectedBoundary": "environment",
+      "passed": false,
+      "originalCategory": "INVITATION_PROVISIONING",
+      "syntheticOutputCapturedInMemory": false
+    },
+    {
+      "injectedBoundary": "timeout",
+      "passed": false,
+      "originalCategory": "INVITATION_PROVISIONING",
+      "syntheticOutputCapturedInMemory": false
+    },
+    {
+      "injectedBoundary": "persistence",
+      "passed": false,
+      "originalCategory": "INVITATION_PROVISIONING",
+      "syntheticOutputCapturedInMemory": false
+    }
+  ],
+  "historicalCauseProven": false
+}
