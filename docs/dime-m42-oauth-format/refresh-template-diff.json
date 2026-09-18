@@ -1,0 +1,6 @@
+{
+  "path": "Resources.WebAuthFunction.Properties.Environment.Variables.DIME_AUTH_KEY_REVISION",
+  "before": "web-runtime-current-20260918-1",
+  "after": "web-oauth-format-20260918-1",
+  "otherDifferences": 0
+}

@@ -1,0 +1,8 @@
+{
+  "correctPublicClient": true,
+  "noUserIdentity": true,
+  "noScopes": true,
+  "temporaryAppTokenRevoked": true,
+  "noWebSessionOrInvitation": true,
+  "currentProviderCredentialValid": true
+}

@@ -1,0 +1,15 @@
+{
+  "formatAndRuntimeHelperChecks": 16,
+  "allHelperChecksPassed": true,
+  "deployedReadinessBooleans": 11,
+  "negativeReadinessChecks": 5,
+  "disabledHttpChecks": 20,
+  "testersHttpChecks": 25,
+  "guestSmokeLayoutsPerPhase": 3,
+  "cloudFormationTemplateValidation": true,
+  "cfnLint": true,
+  "processedSharedGuard": true,
+  "runtimeSecretGuard": true,
+  "applicationCodeChanged": false,
+  "applicationSuitesRebuiltOrRerun": false
+}

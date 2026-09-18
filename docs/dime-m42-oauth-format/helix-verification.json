@@ -1,0 +1,11 @@
+{
+  "verifiedAtUTC": "2026-09-18T21:53:39.377219+00:00",
+  "officialHelix": true,
+  "exactLoginMatchCount": 2,
+  "numericIdentifiersValid": true,
+  "distinctIdentities": true,
+  "appTokenValidated": true,
+  "appTokenRevoked": true,
+  "identifiersStored": false,
+  "providerProfilesStored": false
+}

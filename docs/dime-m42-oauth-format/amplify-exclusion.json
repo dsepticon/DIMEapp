@@ -1,0 +1,6 @@
+{
+  "patterns": ["codex/react-extension-rebuild", "main"],
+  "connectedBranches": ["codex/react-extension-rebuild", "main"],
+  "integrationExcluded": true,
+  "remoteStartingHead": "82b79f21a893c0aa2e58916f6aead23811815eca"
+}

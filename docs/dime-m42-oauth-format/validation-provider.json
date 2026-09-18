@@ -1,0 +1,8 @@
+{
+  "pendingProviderCredentialValid": true,
+  "correctPublicClient": true,
+  "noUserIdentity": true,
+  "noScopes": true,
+  "temporaryAppTokenRevoked": true,
+  "noWebSessionOrInvitation": true
+}

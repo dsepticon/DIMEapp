@@ -1,0 +1,13 @@
+{
+  "stack": "UPDATE_COMPLETE",
+  "signIn": "DISABLED",
+  "linking": "DISABLED",
+  "conversion": "ENABLED",
+  "readinessArtifactUnchanged": true,
+  "gameplayHashUnchanged": true,
+  "routesUnchanged": true,
+  "routeCount": 23,
+  "testerTagsEmpty": true,
+  "failedEvents": 0,
+  "revision": "web-oauth-format-20260918-1"
+}

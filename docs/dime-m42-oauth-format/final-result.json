@@ -1,0 +1,18 @@
+{
+  "finalSignIn": "DISABLED",
+  "finalLinking": "DISABLED",
+  "conversion": "ENABLED",
+  "previousSecretCurrentRestored": true,
+  "correctedVersionRetainedAs": "AWSPREVIOUS",
+  "invitationsDelivered": 0,
+  "completedInvitationBatch": false,
+  "liveOAuthStarted": false,
+  "exactHelixLoginMatches": 2,
+  "readinessPassed": 11,
+  "rollbackHttpChecksPassed": 20,
+  "failureBoundary": "local invitation provisioning after successful Helix verification",
+  "originalChildFailureCategoryRetained": false,
+  "subsequentSyntheticSignerPassed": true,
+  "subsequentIdentityRuntimeParserPassed": true,
+  "unexplainedProvisioningFailure": true
+}
