@@ -1,0 +1,96 @@
+{
+  "browser": "153.0.8010.12",
+  "assetBytes": 376588,
+  "gzipBytes": 108894,
+  "results": [
+    {
+      "heapTrend": [
+        3760076,
+        5541585,
+        5967280,
+        6121204,
+        6319029,
+        6352172,
+        6427692
+      ],
+      "heapAfter": 5081027,
+      "scannerEffects": {
+        "p95FrameMs": 16.700000000000045,
+        "worstFrameMs": 16.800000000000068,
+        "frames": 62,
+        "heapBytes": 6657314,
+        "dom": 73,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "laserEffects": {
+        "p95FrameMs": 16.799999999999272,
+        "worstFrameMs": 16.80000000000109,
+        "frames": 543,
+        "heapBytes": 11747820,
+        "dom": 76,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "busiestCityZone": "Avenbolt Commodity Hall",
+      "cityEffects": {
+        "p95FrameMs": 16.799999999999272,
+        "worstFrameMs": 16.80000000000109,
+        "frames": 906,
+        "heapBytes": 9158450,
+        "dom": 69,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "vacuumEffects": {
+        "p95FrameMs": 16.799999999999727,
+        "worstFrameMs": 16.800000000000182,
+        "frames": 399,
+        "heapBytes": 12640283,
+        "dom": 66,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "initialVisibleFragments": 8,
+      "intactFormationStressCount": 8,
+      "collectedFragmentUnits": 80,
+      "layout": "Panel",
+      "readyMs": 123.36881000000005,
+      "durationMs": 87421.616487,
+      "cycles": 6,
+      "transitions": 36,
+      "transitionAverageMs": 79.14151577777744,
+      "transitionWorstMs": 85.98409900000115,
+      "transitionP95Ms": 85.66911199999959,
+      "initial": {
+        "p95FrameMs": 16.800000000000004,
+        "worstFrameMs": 16.800000000000004,
+        "frames": 7,
+        "heapBytes": 3796740,
+        "dom": 56,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "final": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 16.80000000000291,
+        "frames": 3721,
+        "heapBytes": 6749172,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "idle": {
+        "p95FrameMs": 16.700000000004366,
+        "worstFrameMs": 16.80000000000291,
+        "frames": 3781,
+        "heapBytes": 7205061,
+        "dom": 57,
+        "canvas": 1,
+        "documentScroll": false
+      },
+      "errors": []
+    }
+  ],
+  "limitations": "Local Chromium production builds, actual API service with synthetic in-memory state. Desktop loads the standalone web bundle with synthetic session transport; secure cookie/OAuth behavior is tested separately. Keyboard Panel and touch Mobile physical walking. Real Twitch webview/network performance requires authenticated testing. Heap trend uses forced-GC samples after repeated physical travel; frame worst includes instrumentation and GC. This is not proof against every leak."
+}

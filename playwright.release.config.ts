@@ -8,6 +8,7 @@ const production = [
   'm43Travel.spec.ts',
   'm43WorldView.spec.ts',
   'm43Scanner.spec.ts',
+  'm44Services.spec.ts',
 ];
 export default defineConfig({
   testDir: './tests/e2e',

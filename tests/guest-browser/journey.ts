@@ -190,6 +190,7 @@ export async function journey(page: Page, touch: boolean, width: number) {
     )!.id,
   );
   await openOperations(page);
+  await page.getByRole('button', { name: 'Use available cargo quantity', exact: true }).click();
   await page.getByRole('button', { name: 'Sell selected demo cargo', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Sell selected demo cargo', exact: true })).toBeDisabled();
   await resumeGame(page);

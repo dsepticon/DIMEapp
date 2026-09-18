@@ -1,0 +1,25 @@
+{
+  "baseCommit": "59b006aa72819924b955396b5616708fd14881d4",
+  "branch": "codex/dime-m4-industrial-services",
+  "modeMetadata": {
+    "WebSignInMode": "DISABLED",
+    "AccountLinkingMode": "DISABLED",
+    "ContentConversionMode": "ENABLED",
+    "stackStatus": "UPDATE_COMPLETE"
+  },
+  "amplifyConnectedAndAutomaticBranches": [
+    "codex/react-extension-rebuild",
+    "main"
+  ],
+  "unchangedBundles": {
+    "gameplaySha256": "161f0598d7d0b3bb3611c3b5e112cc4bb19cfd7a02b94f15ff6b6f1ff3dc26d4",
+    "webAuthSha256": "91cbd512c3fe7dc6eb3e161637c7935363a67eb4fdc6146140dcde5c6061a9e3"
+  },
+  "sharedAndServerAndInfrastructureSourceChanged": false,
+  "secretReads": false,
+  "secretPromotion": false,
+  "invitationGeneration": false,
+  "playerDataAccess": false,
+  "deployment": false,
+  "verificationScope": "Local Chromium, synthetic API store and memory-only guest runtime. No authenticated Twitch-console session or real player save was used."
+}

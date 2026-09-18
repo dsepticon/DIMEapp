@@ -3,9 +3,11 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 const host = 'https://destroyaindustriesminingextension.com';
 const review = JSON.parse(readFileSync('infra/web/guest-review/distribution-diff.json', 'utf8'));
-const source = readFileSync('infra/web/guest-review/status-function.js', 'utf8');
+const source = readFileSync('docs/dime-m44-industrial-services-review/guest-function.review.js', 'utf8');
 const security = JSON.parse(readFileSync('infra/web/guest-review/security-headers.json', 'utf8'));
-const manifest = JSON.parse(readFileSync('docs/dime-m43-game-publication-manifest.json', 'utf8'));
+const manifest = JSON.parse(
+  readFileSync('docs/dime-m44-industrial-services-review/guest-publication.review.json', 'utf8'),
+);
 
 test('production-path routing smoke: unchanged default, scoped entry/assets, exact API gate, no fallback', async ({
   page,

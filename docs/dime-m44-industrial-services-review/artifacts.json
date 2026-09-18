@@ -1,0 +1,91 @@
+[
+  {
+    "target": "Twitch",
+    "file": "/tmp/dime-m44-services-review/DIME-Twitch-industrial-services-review-20260918.zip",
+    "size": 110303,
+    "sha256": "3ebb0549fc585496dc3692dad60220fdc4c96e42e72e634ed0368838ac452d77",
+    "files": [
+      {
+        "path": "assets/main-D7PTPCZK.css",
+        "size": 21734,
+        "sha256": "90ad7a79a3ac97fdeb6face9406c80e2a36bee20d797f9ce0a78e23ef6438917"
+      },
+      {
+        "path": "assets/main-DE9VOTik.js",
+        "size": 354854,
+        "sha256": "08014a42342bcb06d3e68c02c2e3d6233ba2b056d91a7da29c138f42058c3c70"
+      },
+      {
+        "path": "index.html",
+        "size": 483,
+        "sha256": "1c094b27555f278dae345109d709b9ff33d23ad8f9233668b549253959bd2f0c"
+      },
+      {
+        "path": "mobile.html",
+        "size": 573,
+        "sha256": "f319fab402795ef264e20ecb685fefa3ae5638e0485fc42717bb68a3c19003b0"
+      },
+      {
+        "path": "panel.html",
+        "size": 573,
+        "sha256": "f319fab402795ef264e20ecb685fefa3ae5638e0485fc42717bb68a3c19003b0"
+      }
+    ]
+  },
+  {
+    "target": "Web",
+    "file": "/tmp/dime-m44-services-review/DIME-Web-industrial-services-review-20260918.zip",
+    "size": 110335,
+    "sha256": "798e528b376e92b8edb8db0e0e0ca1f414f2ff168030a0c82cba3a3fa3a332cb",
+    "files": [
+      {
+        "path": "assets/main-1yX9buOz.js",
+        "size": 355752,
+        "sha256": "2aa0751d10ea13cd4d2240dec1bfda0d4adf556c502d76ec7d732411da308905"
+      },
+      {
+        "path": "assets/main-D7PTPCZK.css",
+        "size": 21734,
+        "sha256": "90ad7a79a3ac97fdeb6face9406c80e2a36bee20d797f9ce0a78e23ef6438917"
+      },
+      {
+        "path": "index.html",
+        "size": 483,
+        "sha256": "cd734c8f6b194c788c8efc1c1821216db80e752d77e1f3b487bc50312aaa20a9"
+      },
+      {
+        "path": "mobile.html",
+        "size": 573,
+        "sha256": "646bb70a336b71f9840e787f39a1e90fa218acaef1d5ba92862eaa16b9362e30"
+      },
+      {
+        "path": "panel.html",
+        "size": 573,
+        "sha256": "646bb70a336b71f9840e787f39a1e90fa218acaef1d5ba92862eaa16b9362e30"
+      }
+    ]
+  },
+  {
+    "target": "Guest",
+    "file": "/tmp/dime-m44-services-review/DIME-Guest-industrial-services-review-20260918.zip",
+    "size": 112928,
+    "sha256": "3fa9fa9d0d423ef727810cc7b949ddef3d2d6f5e35abc5252e6f342028cb0d28",
+    "files": [
+      {
+        "path": "assets/index-CUW7K6FZ.js",
+        "size": 369520,
+        "sha256": "8d8d6fabd1bca989185059bbc2ca4caa7096225950c08e1f8b9b34dd5e0e7696"
+      },
+      {
+        "path": "assets/index-D7PTPCZK.css",
+        "size": 21734,
+        "sha256": "90ad7a79a3ac97fdeb6face9406c80e2a36bee20d797f9ce0a78e23ef6438917"
+      },
+      {
+        "path": "index.html",
+        "size": 505,
+        "sha256": "26c4534c1bcef77f7e1453d42f02be010651eaafd9b8ef41e9379a4df83f364f"
+      }
+    ]
+  }
+]
