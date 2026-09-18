@@ -1,0 +1,10 @@
+{
+  "timestampUTC": "2026-09-18T19:29:41.003449+00:00",
+  "stack": "UPDATE_COMPLETE",
+  "WebSignInMode": "DISABLED",
+  "AccountLinkingMode": "DISABLED",
+  "ContentConversionMode": "ENABLED",
+  "oauthSecretVersionUnchanged": true,
+  "invitationGenerated": false,
+  "activationExecuted": false
+}

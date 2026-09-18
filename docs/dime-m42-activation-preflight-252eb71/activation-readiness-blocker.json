@@ -1,0 +1,7 @@
+{
+  "reviewedBundleMatches": true,
+  "mode": "TESTERS",
+  "readinessStatus": 503,
+  "reason": "READINESS_REQUIRES_DISABLED",
+  "awsCallsRequired": false
+}
