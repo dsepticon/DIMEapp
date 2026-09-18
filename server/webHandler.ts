@@ -163,25 +163,27 @@ export async function handler(event: {
   requestContext?: { stage?: string; http?: { method?: string } };
 }) {
   try {
-    if (
-      Object.keys(event).length === 2 &&
-      event.dimeOwnerSelfTest === 'key-readiness-v2' &&
-      (event.stage === 'AWSCURRENT' || event.stage === 'AWSPENDING')
-    )
+    // Lambda IAM authorizes direct invocations before this handler runs. Never
+    // interpret a readiness marker carried by an HTTP integration as readiness.
+    if (Object.prototype.hasOwnProperty.call(event, 'dimeOwnerSelfTest')) {
+      const mode = process.env.DIME_WEB_SIGN_IN_MODE;
+      const stage = event.stage;
+      if (
+        Object.keys(event).length !== 2 ||
+        event.dimeOwnerSelfTest !== 'key-readiness-v2' ||
+        process.env.DIME_ACCOUNT_LINKING !== 'DISABLED' ||
+        !(
+          (mode === 'DISABLED' && (stage === 'AWSCURRENT' || stage === 'AWSPENDING')) ||
+          (mode === 'TESTERS' && stage === 'AWSCURRENT')
+        )
+      )
+        throw new WebInitializationError('WEB_AUTH_CONFIG');
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-        body: JSON.stringify(
-          await (async () => {
-            if (
-              process.env.DIME_WEB_SIGN_IN_MODE !== 'DISABLED' ||
-              process.env.DIME_ACCOUNT_LINKING !== 'DISABLED'
-            )
-              throw new WebInitializationError('WEB_AUTH_CONFIG');
-            return webKeyReadiness(event.stage as 'AWSCURRENT' | 'AWSPENDING');
-          })(),
-        ),
+        body: JSON.stringify(await webKeyReadiness(stage as 'AWSCURRENT' | 'AWSPENDING')),
       };
+    }
     const path =
       routePath(event.rawPath ?? '', event.requestContext?.stage) +
       (event.rawQueryString ? '?' + event.rawQueryString : '');
