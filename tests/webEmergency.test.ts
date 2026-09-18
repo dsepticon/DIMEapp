@@ -203,7 +203,7 @@ it('the exported handler logs out a synthetic valid session with OAuth secret an
   vi.stubEnv('DIME_AUTH_ENCRYPTION_KEY_B64', Buffer.alloc(32, 1).toString('base64'));
   vi.stubEnv('DIME_WEB_ID_KEY_B64', Buffer.alloc(32, 2).toString('base64'));
   vi.stubEnv('DIME_WEB_SIGN_IN_MODE', 'DISABLED');
-  vi.stubEnv('DIME_OAUTH_CLIENT_ID', 'synthetic-public-id');
+  vi.stubEnv('DIME_OAUTH_CLIENT_ID', '4228okut24ll35bisjmygbquaf6svm');
   for (const key of [
     'DIME_OAUTH_CLIENT_SECRET',
     'TWITCH_EXTENSION_SECRET_B64',

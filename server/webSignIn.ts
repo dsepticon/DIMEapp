@@ -1,4 +1,5 @@
 import type { Request, Response } from './http';
+import { parseTesterInvitation } from './testerInvitation';
 
 /** Public capabilities never advertise invitation-only admission. */
 export function webCapabilities(mode: unknown, linkingEnabled: boolean) {
@@ -25,13 +26,19 @@ export function webSignInPreflight(
   if (capabilities.signInAvailable) return;
   if (mode === 'TESTERS') {
     const url = new URL(request.path, 'https://localhost');
-    if (
-      path === '/auth/login' &&
-      request.method === 'GET' &&
-      url.searchParams.getAll('invitation').length === 1 &&
-      /^[A-Za-z0-9_-]{100,400}\.[A-Za-z0-9_-]{43}$/.test(url.searchParams.get('invitation') ?? '')
-    )
-      return;
+    if (path === '/auth/login' && request.method === 'GET') {
+      try {
+        if (url.searchParams.getAll('invitation').length !== 1) throw Error();
+        parseTesterInvitation(url.searchParams.get('invitation') ?? '');
+        return; // Signature verification is still mandatory at the handler/auth boundary.
+      } catch {
+        return {
+          statusCode: 401,
+          headers,
+          body: JSON.stringify({ message: 'Authentication could not be completed.' }),
+        };
+      }
+    }
     if (
       path === '/auth/callback' &&
       request.method === 'GET' &&

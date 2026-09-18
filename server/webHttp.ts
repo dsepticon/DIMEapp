@@ -26,6 +26,7 @@ export function createWebApi(
   },
   conversionGate: ConversionGate = disabledConversionGate,
   signInMode: () => unknown = () => undefined,
+  internalFailure?: (error: unknown) => WebResponse,
 ) {
   return async (request: Request): Promise<WebResponse> => {
     const mode = signInMode();
@@ -37,7 +38,7 @@ export function createWebApi(
     const linksConfigured = linkMode === 'ENABLED' || linkMode === 'TESTERS';
     const preflight = webSignInPreflight(request, mode, linksConfigured);
     if (preflight) return preflight;
-    const emergency = await emergencyRoute(request, () => auth);
+    const emergency = await emergencyRoute(request, () => auth, internalFailure);
     if (emergency) return emergency;
     const headers = {
       'Content-Type': 'application/json',
@@ -193,6 +194,23 @@ export function createWebApi(
       }
       return result({ message: 'Endpoint not found.' }, 404);
     } catch (error) {
+      if (
+        !(error instanceof WebAuthError) &&
+        !(error instanceof InvitationError) &&
+        !(error instanceof z.ZodError) &&
+        internalFailure
+      ) {
+        const failure = internalFailure(error);
+        return path === '/auth/callback'
+          ? {
+              ...failure,
+              cookies: [
+                auth.cookie('login', '', 0),
+                '__Host-dime-invitation=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0',
+              ],
+            }
+          : failure;
+      }
       if (path === '/auth/callback') {
         try {
           await auth.cancelLogin(

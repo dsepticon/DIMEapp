@@ -22,6 +22,7 @@ function cookie(header: string | undefined, name: string) {
 export async function emergencyRoute(
   request: Request,
   configure: () => WebAuth,
+  internalFailure?: (error: unknown) => WebResponse,
 ): Promise<WebResponse | undefined> {
   const path = request.path.split('?')[0];
   if (request.method !== 'POST' || !['/auth/logout', '/auth/delete/resume'].includes(path ?? '')) return;
@@ -70,6 +71,10 @@ export async function emergencyRoute(
   } catch (error) {
     const status =
       error instanceof WebAuthError ? error.status : error instanceof DeletionAuthorizationError ? 403 : 503;
+    if (status === 503 && internalFailure) {
+      const failure = internalFailure(error);
+      return { ...failure, ...(logout ? { cookies: expiredAuthCookies } : {}) };
+    }
     return result(
       {
         code: status === 503 ? 'RECOVERY_UNAVAILABLE' : 'UNAUTHORIZED',

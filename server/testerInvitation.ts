@@ -47,11 +47,11 @@ export function mintTesterInvitation(key: Uint8Array, subject: string, now = Dat
   const encoded = encode(payload);
   return { invitation: encoded + '.' + sign(key, encoded), expiresAt: payload.exp * 1000 };
 }
-export function verifyTesterInvitation(key: Uint8Array, input: string, now = Date.now()): TesterInvitation {
+/** Untrusted structural preview only. Never authorizes a caller or consumes a nonce. */
+export function parseTesterInvitation(input: string, now = Date.now()): TesterInvitation {
   try {
     if (!/^[A-Za-z0-9_-]{100,400}\.[A-Za-z0-9_-]{43}$/.test(input)) throw new InvitationError();
-    const [payload, signature] = input.split('.') as [string, string];
-    if (!constantEqual(sign(key, payload), signature)) throw new InvitationError();
+    const [payload] = input.split('.') as [string, string];
     const value = schema.parse(JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')));
     if (
       encode(value) !== payload ||
@@ -63,6 +63,12 @@ export function verifyTesterInvitation(key: Uint8Array, input: string, now = Dat
   } catch {
     throw new InvitationError();
   }
+}
+export function verifyTesterInvitation(key: Uint8Array, input: string, now = Date.now()): TesterInvitation {
+  const value = parseTesterInvitation(input, now);
+  const [payload, signature] = input.split('.') as [string, string];
+  if (!constantEqual(sign(key, payload), signature)) throw new InvitationError();
+  return value;
 }
 export const invitationUseKey = (nonce: string) =>
   'tester-use:' +

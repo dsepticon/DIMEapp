@@ -28,7 +28,7 @@ for (const mode of [undefined, '', 'DISABLED', 'TESTERS', 'enabled', ' ENABLED '
         rawQueryString: 'code=synthetic&state=synthetic',
         requestContext: { http: { method: 'GET' } },
       });
-      expect(response.statusCode).toBe(503);
+      expect(response.statusCode).toBe(mode === 'TESTERS' && path === '/auth/login' ? 401 : 503);
       expect(response.headers).not.toHaveProperty('Location');
       expect(response.body).not.toContain('synthetic');
     }

@@ -6,7 +6,16 @@ import { DynamoAuthRecords, TokenEnvelope } from './authRecords';
 import { emergencyRoute } from './webEmergency';
 import { TwitchOAuth, revokeTwitchToken } from './twitchOAuth';
 import { WebAuth } from './webAuth';
-import { createConversionGate } from './conversionGate';
+import { parseTesterInvitation, verifyTesterInvitation, InvitationError } from './testerInvitation';
+import {
+  initializationFailure,
+  stage,
+  webKey,
+  oauthSecret,
+  resolvedSecret,
+  WebInitializationError,
+} from './webInitialization';
+import type { RecordRepository } from './authRecords';
 import { createWebApi } from './webHttp';
 import { authenticate, decodeSecret } from './auth';
 import { routePath } from './handler';
@@ -15,103 +24,139 @@ function required(name: string) {
   if (!value) throw Error('Authentication is not configured.');
   return value;
 }
-let api: ReturnType<typeof createWebApi> | undefined;
-function configure() {
-  const region = required('AWS_REGION'),
-    origin = required('DIME_WEB_ORIGIN');
-  if (region !== 'us-east-2' || origin !== 'https://destroyaindustriesminingextension.com')
-    throw Error('Unreviewed web environment.');
-  const encryption = decodeSecret(required('DIME_AUTH_ENCRYPTION_KEY_B64')),
-    identity = decodeSecret(required('DIME_WEB_ID_KEY_B64'));
-  const extensionKey = decodeSecret(required('TWITCH_EXTENSION_SECRET_B64')),
-    extensionIdentity = decodeSecret(required('DIME_PLAYER_ID_KEY_B64'));
-  const keys = [encryption, identity, extensionKey, extensionIdentity];
-  if (keys.some((key, i) => keys.slice(i + 1).some((other) => Buffer.from(key).equals(Buffer.from(other)))))
-    throw Error('Credential separation is required.');
-  const table = required('DIME_STATE_TABLE');
-  if (table !== 'dime-v2-staging-review01-dime-v2-review-20260912-player-state')
-    throw Error('Unreviewed web storage.');
-  const repo = new DynamoAuthRecords(
-    DynamoDBDocumentClient.from(new DynamoDBClient({ region, maxAttempts: 3 }), {
-      marshallOptions: { removeUndefinedValues: true },
-    }),
-    table,
-    new TokenEnvelope(new Map([['v1', encryption]]), 'v1'),
-  );
-  // Invalid invitations are rejected before OAuth-login credentials/JWKS initialize.
-  let oauth: TwitchOAuth | undefined;
-  const providerInstance = () =>
-    (oauth ??= new TwitchOAuth(
-      required('DIME_OAUTH_CLIENT_ID'),
-      required('DIME_OAUTH_CLIENT_SECRET'),
-      origin + '/auth/callback',
-    ));
-  const provider = {
-    authorize: (state: string, nonce: string) => providerInstance().authorize(state, nonce),
-    exchange: (code: string, nonce: string) => providerInstance().exchange(code, nonce),
-    validate: (tokens: import('./webAuth').Tokens) => providerInstance().validate(tokens),
-    revoke: (tokens: import('./webAuth').Tokens) =>
-      revokeTwitchToken(required('DIME_OAUTH_CLIENT_ID'), tokens),
-  };
-  const auth = new WebAuth(repo, provider, identity, origin);
-  const origins = required('DIME_ALLOWED_ORIGINS').split(',');
-  if (origins.some((value) => !/^https:\/\/[a-z0-9-]+\.ext-twitch\.tv$/.test(value)))
-    throw Error('Invalid Extension origins.');
-  const conversion = createConversionGate(
-    required('DIME_CONVERSION_MODE'),
-    process.env.DIME_CONVERSION_TESTER_TAGS ?? '',
-    extensionIdentity,
-  );
-  if (conversion.mode !== 'ENABLED' || conversion.testerCount !== 0)
-    throw Error('Unreviewed conversion configuration.');
-  return createWebApi(
-    auth,
-    {
-      authorize: (header) => authenticate(header, [extensionKey], extensionIdentity),
-      origins,
-      linkingEnabled: process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
-      linkingMode: () => process.env.DIME_ACCOUNT_LINKING,
-    },
-    conversion,
-    () => process.env.DIME_WEB_SIGN_IN_MODE,
-  );
+function runtime() {
+  return stage('WEB_AUTH_CONFIG', () => {
+    const region = required('AWS_REGION'),
+      origin = required('DIME_WEB_ORIGIN'),
+      table = required('DIME_STATE_TABLE');
+    if (region !== 'us-east-2' || table !== 'dime-v2-staging-review01-dime-v2-review-20260912-player-state')
+      throw Error();
+    if (origin !== 'https://destroyaindustriesminingextension.com')
+      throw new WebInitializationError('CALLBACK_CONFIG');
+    return { region, origin, table };
+  });
 }
-// Emergency routes have no Extension, conversion, OIDC/JWKS or OAuth-login dependency.
-function configureEmergency() {
-  const region = required('AWS_REGION'),
-    origin = required('DIME_WEB_ORIGIN');
-  const table = required('DIME_STATE_TABLE');
-  if (
-    region !== 'us-east-2' ||
-    origin !== 'https://destroyaindustriesminingextension.com' ||
-    table !== 'dime-v2-staging-review01-dime-v2-review-20260912-player-state'
-  )
-    throw Error('Unreviewed recovery environment.');
-  const encryption = decodeSecret(required('DIME_AUTH_ENCRYPTION_KEY_B64'));
-  const identity = decodeSecret(required('DIME_WEB_ID_KEY_B64'));
-  if (Buffer.from(encryption).equals(Buffer.from(identity)))
-    throw Error('Credential separation is required.');
-  const repo = new DynamoAuthRecords(
-    DynamoDBDocumentClient.from(new DynamoDBClient({ region, maxAttempts: 3 }), {
-      marshallOptions: { removeUndefinedValues: true },
-    }),
-    table,
-    new TokenEnvelope(new Map([['v1', encryption]]), 'v1'),
-  );
-  const forbidden = () => {
-    throw Error('Authentication expansion unavailable.');
+function configuredAuth(emergency = false) {
+  const { region, origin, table } = runtime();
+  const identity = webKey(process.env.DIME_WEB_ID_KEY_B64, true);
+  let stored: DynamoAuthRecords | undefined;
+  const repo: RecordRepository = {
+    transaction: (run) => {
+      if (!stored) {
+        const encryption = webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64);
+        if (Buffer.from(encryption).equals(Buffer.from(identity)))
+          throw new WebInitializationError('SECRET_FORMAT');
+        // Preserve the original four-key separation check before persistent authentication use.
+        // Invalid invitations never reach this boundary; emergency shutdown remains independent.
+        if (!emergency) {
+          const keys = [
+            encryption,
+            identity,
+            stage('SECRET_FORMAT', () =>
+              decodeSecret(resolvedSecret(process.env.TWITCH_EXTENSION_SECRET_B64)),
+            ),
+            stage('SECRET_FORMAT', () => decodeSecret(resolvedSecret(process.env.DIME_PLAYER_ID_KEY_B64))),
+          ];
+          if (
+            keys.some((key, i) =>
+              keys.slice(i + 1).some((other) => Buffer.from(key).equals(Buffer.from(other))),
+            )
+          )
+            throw new WebInitializationError('SECRET_FORMAT');
+        }
+        stored = stage(
+          'STORAGE_INIT',
+          () =>
+            new DynamoAuthRecords(
+              DynamoDBDocumentClient.from(new DynamoDBClient({ region, maxAttempts: 3 }), {
+                marshallOptions: { removeUndefinedValues: true },
+              }),
+              table,
+              new TokenEnvelope(new Map([['v1', encryption]]), 'v1'),
+            ),
+        );
+      }
+      return stored.transaction(run);
+    },
+  };
+  const publicClient = () =>
+    stage('WEB_AUTH_CONFIG', () => {
+      const id = required('DIME_OAUTH_CLIENT_ID');
+      if (id !== '4228okut24ll35bisjmygbquaf6svm') throw Error();
+      return id;
+    });
+  let oauth: TwitchOAuth | undefined;
+  const providerInstance = () => {
+    if (emergency) throw new WebInitializationError('WEB_AUTH_CONFIG');
+    return (oauth ??= stage(
+      'WEB_AUTH_CONFIG',
+      () =>
+        new TwitchOAuth(
+          publicClient(),
+          oauthSecret(process.env.DIME_OAUTH_CLIENT_SECRET),
+          origin + '/auth/callback',
+        ),
+    ));
   };
   return new WebAuth(
     repo,
     {
-      authorize: forbidden,
-      exchange: forbidden,
-      validate: forbidden,
-      // Twitch revocation uses only the public client ID and existing encrypted grant.
-      revoke: (tokens) => revokeTwitchToken(required('DIME_OAUTH_CLIENT_ID'), tokens),
+      prepare: () => {
+        providerInstance();
+      },
+      authorize: (state, nonce) => providerInstance().authorize(state, nonce),
+      exchange: (code, nonce) => providerInstance().exchange(code, nonce),
+      validate: (tokens) => providerInstance().validate(tokens),
+      revoke: (tokens) => revokeTwitchToken(publicClient(), tokens),
     },
     identity,
     origin,
+  );
+}
+function configure() {
+  const auth = configuredAuth();
+  const origins = stage('WEB_AUTH_CONFIG', () => {
+    const values = required('DIME_ALLOWED_ORIGINS').split(',');
+    if (values.some((value) => !/^https:\/\/[a-z0-9-]+\.ext-twitch\.tv$/.test(value))) throw Error();
+    if (
+      required('DIME_CONVERSION_MODE') !== 'ENABLED' ||
+      (process.env.DIME_CONVERSION_TESTER_TAGS ?? '') !== ''
+    )
+      throw Error();
+    return values;
+  });
+  return createWebApi(
+    auth,
+    {
+      authorize: (header) => {
+        // Extension credentials are used only by independently enabled, authenticated link acceptance.
+        const extensionKey = stage('SECRET_FORMAT', () =>
+          decodeSecret(resolvedSecret(process.env.TWITCH_EXTENSION_SECRET_B64)),
+        );
+        const extensionIdentity = stage('SECRET_FORMAT', () =>
+          decodeSecret(resolvedSecret(process.env.DIME_PLAYER_ID_KEY_B64)),
+        );
+        const keys = [
+          extensionKey,
+          extensionIdentity,
+          webKey(process.env.DIME_WEB_ID_KEY_B64, true),
+          webKey(process.env.DIME_AUTH_ENCRYPTION_KEY_B64),
+        ];
+        if (
+          keys.some((key, i) =>
+            keys.slice(i + 1).some((other) => Buffer.from(key).equals(Buffer.from(other))),
+          )
+        )
+          throw new WebInitializationError('SECRET_FORMAT');
+        return authenticate(header, [extensionKey], extensionIdentity);
+      },
+      origins,
+      linkingEnabled: process.env.DIME_ACCOUNT_LINKING === 'ENABLED',
+      linkingMode: () => process.env.DIME_ACCOUNT_LINKING,
+    },
+    { mode: 'ENABLED', testerCount: 0, permits: () => true },
+    () => process.env.DIME_WEB_SIGN_IN_MODE,
+    initializationFailure,
   );
 }
 export async function handler(event: {
@@ -145,15 +190,26 @@ export async function handler(event: {
       ),
       body: event.isBase64Encoded ? Buffer.from(event.body ?? '', 'base64').toString('utf8') : event.body,
     };
-    const emergency = await emergencyRoute(request, configureEmergency);
+    const emergency = await emergencyRoute(request, () => configuredAuth(true), initializationFailure);
     if (emergency) return emergency;
-    api ??= configure();
-    return await api(request);
-  } catch {
-    return {
-      statusCode: 503,
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-      body: JSON.stringify({ message: 'Authentication is unavailable.' }),
-    };
+    if (
+      method === 'GET' &&
+      path.split('?')[0] === '/auth/login' &&
+      process.env.DIME_WEB_SIGN_IN_MODE === 'TESTERS'
+    ) {
+      const invitation = new URL(path, 'https://localhost').searchParams.get('invitation') ?? '';
+      parseTesterInvitation(invitation);
+      // Signature rejection loads only the invitation key. No encryption, OAuth or storage dependency.
+      verifyTesterInvitation(webKey(process.env.DIME_WEB_ID_KEY_B64, true), invitation);
+    }
+    return await configure()(request);
+  } catch (error) {
+    if (error instanceof InvitationError)
+      return {
+        statusCode: 401,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+        body: JSON.stringify({ message: 'Authentication could not be completed.' }),
+      };
+    return initializationFailure(error);
   }
 }
