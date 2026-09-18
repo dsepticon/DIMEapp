@@ -57,4 +57,31 @@ class Repair(unittest.TestCase):
             else:self.assertTrue(all(v is True for v in json.loads(result.stdout).values()))
             self.assertNotIn(a,result.stdout)
             self.assertNotIn(b,result.stdout)
+    def test_rollback_restores_old_current_and_retains_candidate_pending(self):
+        import copy
+        old = {p:{'arn':a,'stages':{'old':['AWSCURRENT']}} for p,a in m.ARNS.items()}
+        expected = {p:{'arn':a,'versionId':'new','status':'success'} for p,a in m.ARNS.items()}
+        state = {p:{'arn':a,'stages':{'old':['AWSPREVIOUS'],'new':['AWSCURRENT','AWSPENDING']}} for p,a in m.ARNS.items()}
+        def aws(*args, payload=None):
+            arn = args[args.index('--secret-id')+1]
+            purpose = next(k for k,v in m.ARNS.items() if v==arn)
+            stage = args[args.index('--version-stage')+1]
+            remove = args[args.index('--remove-from-version-id')+1] if '--remove-from-version-id' in args else None
+            move = args[args.index('--move-to-version-id')+1] if '--move-to-version-id' in args else None
+            versions=state[purpose]['stages']
+            for labels in versions.values():
+                if stage in labels: labels.remove(stage)
+            if move: versions.setdefault(move,[]).append(stage)
+            if stage=='AWSCURRENT':
+                versions[remove]=['AWSPREVIOUS']
+                if 'AWSPREVIOUS' in versions[move]:versions[move].remove('AWSPREVIOUS')
+            return {}
+        with tempfile.TemporaryDirectory() as temp, patch.object(m,'EVIDENCE',Path(temp)), patch.object(m,'disabled'), patch.object(m,'metadata',side_effect=lambda:copy.deepcopy(state)), patch.object(m,'aws',aws), contextlib.redirect_stdout(io.StringIO()):
+            Path(temp,'secret-stages-before.json').write_text(json.dumps(old))
+            Path(temp,'pending-versions.json').write_text(json.dumps(expected))
+            m.rollback()
+            m.rollback()
+            for value in state.values():
+                self.assertEqual(value['stages']['old'],['AWSCURRENT'])
+                self.assertEqual(value['stages']['new'],['AWSPENDING'])
 if __name__ == '__main__':unittest.main()

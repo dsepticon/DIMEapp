@@ -1,0 +1,23 @@
+{
+  "unit": {
+    "passed": 533,
+    "files": 65
+  },
+  "chromium": {
+    "passed": 170,
+    "failed": 0,
+    "retries": 0,
+    "minutes": 36.3
+  },
+  "liveGuest": {
+    "passed": 5,
+    "failed": 0,
+    "minutes": 7.7
+  },
+  "secureUtilityTests": 6,
+  "iamCases": 17,
+  "iamDecisions": 49,
+  "httpChecks": 20,
+  "telemetryQueries": 30,
+  "sensitiveMatches": 0
+}

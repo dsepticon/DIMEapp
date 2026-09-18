@@ -189,6 +189,19 @@ def rollback():
         aws('secretsmanager', 'update-secret-version-stage', '--secret-id', arn,
             '--version-stage', 'AWSCURRENT', '--move-to-version-id', current(old[purpose]),
             '--remove-from-version-id', active)
+    restored = metadata()
+    for purpose, arn in ARNS.items():
+        prior_previous = [v for v, labels in old[purpose]['stages'].items() if 'AWSPREVIOUS' in labels]
+        candidate = expected[purpose]['versionId']
+        if not prior_previous and 'AWSPREVIOUS' in restored[purpose]['stages'].get(candidate, []):
+            aws('secretsmanager', 'update-secret-version-stage', '--secret-id', arn,
+                '--version-stage', 'AWSPREVIOUS', '--remove-from-version-id', candidate)
+    restored = metadata()
+    for purpose, arn in ARNS.items():
+        candidate = expected[purpose]['versionId']
+        if 'AWSPENDING' not in restored[purpose]['stages'].get(candidate, []):
+            aws('secretsmanager', 'update-secret-version-stage', '--secret-id', arn,
+                '--version-stage', 'AWSPENDING', '--move-to-version-id', candidate)
     save('secret-stages-rollback.json', metadata())
     print(json.dumps({'rolledBack': True}))
 

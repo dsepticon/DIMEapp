@@ -1,0 +1,50 @@
+[
+  {
+    "operation": "5945efe4-9bcf-42f2-8600-0c0f1fbdbe02",
+    "type": "UPDATE_STACK",
+    "status": "SUCCEEDED",
+    "time": "2026-09-18T17:21:39.177000+00:00",
+    "start": "2026-09-18T17:21:24.025000+00:00",
+    "end": "2026-09-18T17:21:39.177000+00:00"
+  },
+  {
+    "operation": "5945efe4-9bcf-42f2-8600-0c0f1fbdbe02",
+    "type": "UPDATE_STACK",
+    "status": "IN_PROGRESS",
+    "time": "2026-09-18T17:21:24.025000+00:00",
+    "start": "2026-09-18T17:21:24.025000+00:00",
+    "end": null
+  },
+  {
+    "operation": "7253bdcb-95ee-4810-ad71-0aea5adb204a",
+    "type": "UPDATE_STACK",
+    "status": "SUCCEEDED",
+    "time": "2026-09-18T17:13:51.483000+00:00",
+    "start": "2026-09-18T17:13:30.554000+00:00",
+    "end": "2026-09-18T17:13:51.483000+00:00"
+  },
+  {
+    "operation": "7253bdcb-95ee-4810-ad71-0aea5adb204a",
+    "type": "UPDATE_STACK",
+    "status": "IN_PROGRESS",
+    "time": "2026-09-18T17:13:30.554000+00:00",
+    "start": "2026-09-18T17:13:30.554000+00:00",
+    "end": null
+  },
+  {
+    "operation": "86b8a905-dcd0-4713-a791-f89b45a138a5",
+    "type": "UPDATE_STACK",
+    "status": "SUCCEEDED",
+    "time": "2026-09-18T16:46:25.807000+00:00",
+    "start": "2026-09-18T16:46:10.688000+00:00",
+    "end": "2026-09-18T16:46:25.807000+00:00"
+  },
+  {
+    "operation": "86b8a905-dcd0-4713-a791-f89b45a138a5",
+    "type": "UPDATE_STACK",
+    "status": "IN_PROGRESS",
+    "time": "2026-09-18T16:46:10.688000+00:00",
+    "start": "2026-09-18T16:46:10.688000+00:00",
+    "end": null
+  }
+]

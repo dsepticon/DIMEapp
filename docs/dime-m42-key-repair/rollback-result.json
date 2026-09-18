@@ -1,0 +1,18 @@
+{
+  "stack": "UPDATE_COMPLETE",
+  "configuration": {
+    "code": "vALPNDiZJbRuirWAWE/EPlrO9/bMsAEiQDM3TyilDQ4=",
+    "state": "Active",
+    "revision": "web-key-rollback-20260918-1",
+    "signIn": "DISABLED",
+    "linking": "DISABLED",
+    "conversion": "ENABLED",
+    "tagsEmpty": true
+  },
+  "gameplayUnchanged": true,
+  "processedTemplateMatches": true,
+  "failedEvents": 0,
+  "readinessCategory": "SECRET_FORMAT",
+  "activationPrepared": false,
+  "activationExecuted": false
+}

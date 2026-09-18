@@ -1,0 +1,9 @@
+{
+  "zip": "/tmp/dime-m42-key-repair/DIME-WebAuth-key-repair-20260918.zip",
+  "bytes": 494373,
+  "sha256": "bc02cf34389925b46e8ab580584fc43e5acef7f6ccb001224033374f28a50d0e",
+  "indexSha256": "5a7696bb4f309296d74e1f07cc38511bdd8d932e3260a8214aa1cf0fac9206da",
+  "archiveEntries": ["index.mjs"],
+  "nativeSamByteIdentical": true,
+  "gameplayIndexUnchanged": true
+}

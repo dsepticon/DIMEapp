@@ -1,0 +1,8 @@
+{
+  "contractValid": true,
+  "keysDistinct": true,
+  "identityReady": true,
+  "invitationVerifierReady": true,
+  "encryptionReady": true,
+  "crossDomainRejected": true
+}

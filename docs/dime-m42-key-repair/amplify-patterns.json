@@ -1,0 +1,4 @@
+{
+  "patterns": ["codex/react-extension-rebuild", "main"],
+  "enabled": true
+}

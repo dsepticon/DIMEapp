@@ -1,0 +1,110 @@
+[
+  {
+    "case": "tester invitation ledger",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem"],
+    "expected": "allowed",
+    "decisions": ["allowed", "allowed", "allowed"]
+  },
+  {
+    "case": "web managed class AUTH",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "allowed",
+    "decisions": ["allowed", "allowed", "allowed", "allowed"]
+  },
+  {
+    "case": "web managed class BINDING",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "allowed",
+    "decisions": ["allowed", "allowed", "allowed", "allowed"]
+  },
+  {
+    "case": "web managed class PLAYER",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "allowed",
+    "decisions": ["allowed", "allowed", "allowed", "allowed"]
+  },
+  {
+    "case": "web managed class ACCOUNT",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "allowed",
+    "decisions": ["allowed", "allowed", "allowed", "allowed"]
+  },
+  {
+    "case": "web managed class CONTROL",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "allowed",
+    "decisions": ["allowed", "allowed", "allowed", "allowed"]
+  },
+  {
+    "case": "gameplay guard BINDING",
+    "actions": ["dynamodb:ConditionCheckItem"],
+    "expected": "allowed",
+    "decisions": ["allowed"]
+  },
+  {
+    "case": "gameplay guard PLAYER",
+    "actions": ["dynamodb:ConditionCheckItem"],
+    "expected": "allowed",
+    "decisions": ["allowed"]
+  },
+  {
+    "case": "gameplay guard ACCOUNT",
+    "actions": ["dynamodb:ConditionCheckItem"],
+    "expected": "allowed",
+    "decisions": ["allowed"]
+  },
+  {
+    "case": "gameplay guard CONTROL",
+    "actions": ["dynamodb:ConditionCheckItem"],
+    "expected": "allowed",
+    "decisions": ["allowed"]
+  },
+  {
+    "case": "missing context",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "implicitDeny",
+    "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+  },
+  {
+    "case": "unrelated prefix",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "implicitDeny",
+    "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+  },
+  {
+    "case": "mixed prefixes",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:ConditionCheckItem", "dynamodb:DeleteItem"],
+    "expected": "implicitDeny",
+    "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+  },
+  {
+    "case": "wrong table",
+    "actions": ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"],
+    "expected": "implicitDeny",
+    "decisions": ["implicitDeny", "implicitDeny", "implicitDeny"]
+  },
+  {
+    "case": "gameplay cannot delete",
+    "actions": ["dynamodb:DeleteItem"],
+    "expected": "implicitDeny",
+    "decisions": ["implicitDeny"]
+  },
+  {
+    "case": "gameplay cannot check encrypted auth",
+    "actions": ["dynamodb:ConditionCheckItem"],
+    "expected": "implicitDeny",
+    "decisions": ["implicitDeny"]
+  },
+  {
+    "case": "no scan query table administration or update",
+    "actions": [
+      "dynamodb:Scan",
+      "dynamodb:Query",
+      "dynamodb:DeleteTable",
+      "dynamodb:UpdateTable",
+      "dynamodb:UpdateItem"
+    ],
+    "expected": "implicitDeny",
+    "decisions": ["implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny", "implicitDeny"]
+  }
+]

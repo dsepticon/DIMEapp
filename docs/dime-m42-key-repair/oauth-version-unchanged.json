@@ -1,0 +1,6 @@
+{
+  "ARN": "arn:aws:secretsmanager:us-east-2:861738068626:secret:dime/web/oauth/client-secret-s5kwbq",
+  "VersionIdsToStages": {
+    "861c81fb-3a3e-4826-aea0-369e55bd7683": ["AWSCURRENT"]
+  }
+}

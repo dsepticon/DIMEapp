@@ -1,0 +1,48 @@
+{
+  "arn": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m42-keys-5d892c0-rollback-1/df676888-b248-47d4-a540-108a0749a0af",
+  "changes": [
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "StagingHttpApi",
+      "PhysicalResourceId": "t2la0784p6",
+      "ResourceType": "AWS::ApiGatewayV2::Api",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Body",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Dynamic",
+          "ChangeSource": "ResourceAttribute",
+          "CausingEntity": "WebAuthFunction.Arn"
+        }
+      ]
+    },
+    {
+      "Action": "Modify",
+      "LogicalResourceId": "WebAuthFunction",
+      "PhysicalResourceId": "dime-v2-staging-review01-dime-v2-review-20260912-web-auth",
+      "ResourceType": "AWS::Lambda::Function",
+      "Replacement": "False",
+      "Scope": ["Properties"],
+      "Details": [
+        {
+          "Target": {
+            "Attribute": "Properties",
+            "Name": "Environment",
+            "RequiresRecreation": "Never"
+          },
+          "Evaluation": "Static",
+          "ChangeSource": "DirectModification"
+        }
+      ]
+    }
+  ],
+  "onlyChange": "WebAuthFunction.Environment.DIME_AUTH_KEY_REVISION",
+  "parameterChanges": 0,
+  "codeChanges": 0,
+  "failedEvents": 0
+}
