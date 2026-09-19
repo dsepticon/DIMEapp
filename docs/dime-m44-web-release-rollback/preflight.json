@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-19T00:35:42.061090+00:00",
+  "account": "861738068626",
+  "stackRegion": "us-east-2",
+  "websiteRegion": "us-west-2",
+  "artifactHashesMatch": true,
+  "sourceClean": true,
+  "distributionIdentical": true,
+  "changeSetExact": true,
+  "functionHash": "2ce9863f1e3e3b54248291e5d241d7f6c5a20bdbd2676a046838851d43db5251",
+  "signIn": "DISABLED",
+  "linking": "DISABLED",
+  "conversion": "ENABLED"
+}

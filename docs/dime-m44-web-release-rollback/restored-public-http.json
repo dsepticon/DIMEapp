@@ -1,0 +1,156 @@
+[
+  {
+    "path": "/state",
+    "method": "GET",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/v4/state",
+    "method": "GET",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/actions",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/profile/reset",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/v4/actions",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/v4/content/preview",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/v4/content/convert",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/v4/profile/reset",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/v4/actions",
+    "method": "OPTIONS",
+    "status": 204,
+    "redirected": false,
+    "allowOrigin": "https://znaovl2j45idub9k81om1dkatwxnu2.ext-twitch.tv",
+    "cache": null
+  },
+  {
+    "path": "/v4/actions",
+    "method": "OPTIONS",
+    "status": 204,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": null
+  },
+  {
+    "path": "/",
+    "method": "GET",
+    "status": 200,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "Miss from cloudfront",
+    "sha256": "2bcc8de3c43b8ac7feef1f1e21d331f93a4f6a2d37e808ef2b64f006915dae1a",
+    "csp": null
+  },
+  {
+    "path": "/privacy",
+    "method": "GET",
+    "status": 200,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "Miss from cloudfront",
+    "sha256": "8d99be55d7b4d198d8918c9667d977e604214e184d598e6e99d7b6f1c5123d7e",
+    "csp": null
+  },
+  {
+    "path": "/game/",
+    "method": "GET",
+    "status": 200,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "Miss from cloudfront",
+    "sha256": "fa843fc409a4a940943e2c1d05810412b2a92794d7bbb81dc16a609cd4a07f68",
+    "csp": "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+  },
+  {
+    "path": "/auth/status",
+    "method": "GET",
+    "status": 200,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "Miss from cloudfront",
+    "capabilities": {
+      "signInAvailable": false,
+      "linkingAvailable": false
+    }
+  },
+  {
+    "path": "/api/v4/state",
+    "method": "GET",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "FunctionGeneratedResponse from cloudfront"
+  },
+  {
+    "path": "/api/v4/actions",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "FunctionGeneratedResponse from cloudfront"
+  },
+  {
+    "path": "/api/v4/profile/reset",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "FunctionGeneratedResponse from cloudfront"
+  },
+  {
+    "path": "/api/v4/content/convert",
+    "method": "POST",
+    "status": 401,
+    "redirected": false,
+    "allowOrigin": null,
+    "cache": "FunctionGeneratedResponse from cloudfront"
+  }
+]

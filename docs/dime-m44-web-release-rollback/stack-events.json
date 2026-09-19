@@ -1,0 +1,172 @@
+{
+  "OperationEvents": [
+    {
+      "EventId": "820b9574-e60b-46ae-a235-873d0e04b294",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "9cf0f360-b3c2-11f1-9a7e-063362c69eb7",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT",
+      "Timestamp": "2026-09-19T00:40:26.896000+00:00",
+      "StartTime": "2026-09-19T00:39:46.382000+00:00",
+      "EndTime": "2026-09-19T00:40:26.896000+00:00"
+    },
+    {
+      "EventId": "5a0d365e-6c9e-4701-877a-881d9849f889",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "9cf0f360-b3c2-11f1-9a7e-063362c69eb7",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-guest-game-20260916",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-19T00:40:26.895000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "ClientRequestToken": "m44-web-rollback-1789778384"
+    },
+    {
+      "EventId": "2763b023-7667-4f23-8294-c4f1cff702ff",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "9cf0f360-b3c2-11f1-9a7e-063362c69eb7",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-guest-game-20260916",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-19T00:40:26.140000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+      "ClientRequestToken": "m44-web-rollback-1789778384"
+    },
+    {
+      "EventId": "00c553a2-4b6b-498a-aa13-53e6d1a72a91",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "9cf0f360-b3c2-11f1-9a7e-063362c69eb7",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "GuestCapability",
+      "PhysicalResourceId": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+      "ResourceType": "AWS::CloudFront::Function",
+      "Timestamp": "2026-09-19T00:40:24.829000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "ResourceProperties": "{\"FunctionConfig\":{\"Comment\":\"Memory-only guest capability and fail-closed public gameplay gate\",\"Runtime\":\"cloudfront-js-2.0\"},\"AutoPublish\":\"true\",\"FunctionCode\":\"// Scoped review: associated only with /game/* and four exact web API paths.\\n// Never reads cookies, headers, identities, authorization codes or query strings.\\nfunction handler(event) {\\n  var request = event.request;\\n  // Outside /game/, this function is associated ONLY with the four literal API-denial behaviors.\\n  // Fail closed even if CloudFront matched a normalized URI but passes an alternate spelling.\\n  if (request.uri.indexOf('/game/') !== 0) {\\n    return response(401, 'Unauthorized', { code: 'UNAUTHORIZED' });\\n  }\\n  if (request.uri === '/game/status' && request.method === 'GET') {\\n    return response(200, 'OK', {\\n      signInAvailable: false, linkingAvailable: false,\\n      guestDemoAvailable: true, guestStorage: 'memory'\\n    });\\n  }\\n  if (request.uri === '/game/') request.uri = '/game/index.html';\\n  var files = ['/game/index.html', '/game/0.9.0/assets/index-BPyjZOOz.css', '/game/0.9.0/assets/index-DHu8VPJb.js'];\\n  if (files.indexOf(request.uri) === -1) return response(404, 'Not Found', { code: 'NOT_FOUND' });\\n  return request;\\n}\\nfunction response(statusCode, statusDescription, body) {\\n  return {\\n    statusCode: statusCode, statusDescription: statusDescription,\\n    headers: {\\n      'content-type': { value: 'application/json; charset=utf-8' },\\n      'cache-control': { value: 'no-store' },\\n      'x-content-type-options': { value: 'nosniff' },\\n      'referrer-policy': { value: 'no-referrer' }\\n    },\\n    body: JSON.stringify(body)\\n  };\\n}\\n\",\"Name\":\"dime-guest-game-20260916-guest-status\"}",
+      "ClientRequestToken": "m44-web-rollback-1789778384"
+    },
+    {
+      "EventId": "5d620875-91a6-4776-b485-832d5b512fab",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "9cf0f360-b3c2-11f1-9a7e-063362c69eb7",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "GuestCapability",
+      "PhysicalResourceId": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+      "ResourceType": "AWS::CloudFront::Function",
+      "Timestamp": "2026-09-19T00:39:49.378000+00:00",
+      "ResourceStatus": "UPDATE_IN_PROGRESS",
+      "ResourceProperties": "{\"FunctionConfig\":{\"Comment\":\"Memory-only guest capability and fail-closed public gameplay gate\",\"Runtime\":\"cloudfront-js-2.0\"},\"AutoPublish\":\"true\",\"FunctionCode\":\"// Scoped review: associated only with /game/* and four exact web API paths.\\n// Never reads cookies, headers, identities, authorization codes or query strings.\\nfunction handler(event) {\\n  var request = event.request;\\n  // Outside /game/, this function is associated ONLY with the four literal API-denial behaviors.\\n  // Fail closed even if CloudFront matched a normalized URI but passes an alternate spelling.\\n  if (request.uri.indexOf('/game/') !== 0) {\\n    return response(401, 'Unauthorized', { code: 'UNAUTHORIZED' });\\n  }\\n  if (request.uri === '/game/status' && request.method === 'GET') {\\n    return response(200, 'OK', {\\n      signInAvailable: false, linkingAvailable: false,\\n      guestDemoAvailable: true, guestStorage: 'memory'\\n    });\\n  }\\n  if (request.uri === '/game/') request.uri = '/game/index.html';\\n  var files = ['/game/index.html', '/game/0.9.0/assets/index-BPyjZOOz.css', '/game/0.9.0/assets/index-DHu8VPJb.js'];\\n  if (files.indexOf(request.uri) === -1) return response(404, 'Not Found', { code: 'NOT_FOUND' });\\n  return request;\\n}\\nfunction response(statusCode, statusDescription, body) {\\n  return {\\n    statusCode: statusCode, statusDescription: statusDescription,\\n    headers: {\\n      'content-type': { value: 'application/json; charset=utf-8' },\\n      'cache-control': { value: 'no-store' },\\n      'x-content-type-options': { value: 'nosniff' },\\n      'referrer-policy': { value: 'no-referrer' }\\n    },\\n    body: JSON.stringify(body)\\n  };\\n}\\n\",\"Name\":\"dime-guest-game-20260916-guest-status\"}",
+      "ClientRequestToken": "m44-web-rollback-1789778384"
+    },
+    {
+      "EventId": "ba2c2206-f896-437e-abb7-3df2c2304e1f",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "9cf0f360-b3c2-11f1-9a7e-063362c69eb7",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-guest-game-20260916",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-19T00:39:46.396000+00:00",
+      "ResourceStatus": "UPDATE_IN_PROGRESS",
+      "ResourceStatusReason": "User Initiated",
+      "ClientRequestToken": "m44-web-rollback-1789778384"
+    },
+    {
+      "EventId": "88d30d10-ab6a-4ec3-9a2d-1d3d0384413f",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "9cf0f360-b3c2-11f1-9a7e-063362c69eb7",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT",
+      "Timestamp": "2026-09-19T00:39:46.382000+00:00",
+      "StartTime": "2026-09-19T00:39:46.382000+00:00"
+    },
+    {
+      "EventId": "026e8196-a139-4ea7-9f0b-4be11521168c",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "2408b49f-e320-48d5-a538-f3490e1808fb",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "SUCCEEDED",
+      "EventType": "STACK_EVENT",
+      "Timestamp": "2026-09-19T00:37:25.751000+00:00",
+      "StartTime": "2026-09-19T00:36:46.617000+00:00",
+      "EndTime": "2026-09-19T00:37:25.751000+00:00"
+    },
+    {
+      "EventId": "b287d726-96ab-45ba-bff1-2a9e41060899",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "2408b49f-e320-48d5-a538-f3490e1808fb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-guest-game-20260916",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-19T00:37:25.750000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "ClientRequestToken": "m44-web-4675386-c8a8be1-execute-once"
+    },
+    {
+      "EventId": "64f8889e-b75d-4b86-81bf-246b45e9c724",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "2408b49f-e320-48d5-a538-f3490e1808fb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-guest-game-20260916",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-19T00:37:25.085000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS",
+      "ClientRequestToken": "m44-web-4675386-c8a8be1-execute-once"
+    },
+    {
+      "EventId": "fac608b0-46dc-4812-bed9-85aaaca6ffb4",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "2408b49f-e320-48d5-a538-f3490e1808fb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "GuestCapability",
+      "PhysicalResourceId": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+      "ResourceType": "AWS::CloudFront::Function",
+      "Timestamp": "2026-09-19T00:37:23.704000+00:00",
+      "ResourceStatus": "UPDATE_COMPLETE",
+      "ResourceProperties": "{\"FunctionConfig\":{\"Comment\":\"Memory-only guest capability and fail-closed public gameplay gate\",\"Runtime\":\"cloudfront-js-2.0\"},\"AutoPublish\":\"true\",\"FunctionCode\":\"// Scoped review: associated only with /game/* and four exact web API paths.\\n// Never reads cookies, headers, identities, authorization codes or query strings.\\nfunction handler(event) {\\n  var request = event.request;\\n  // Outside /game/, this function is associated ONLY with the four literal API-denial behaviors.\\n  // Fail closed even if CloudFront matched a normalized URI but passes an alternate spelling.\\n  if (request.uri.indexOf('/game/') !== 0) {\\n    return response(401, 'Unauthorized', { code: 'UNAUTHORIZED' });\\n  }\\n  if (request.uri === '/game/status' && request.method === 'GET') {\\n    return response(200, 'OK', {\\n      signInAvailable: false, linkingAvailable: false,\\n      guestDemoAvailable: true, guestStorage: 'memory'\\n    });\\n  }\\n  if (request.uri === '/game/') request.uri = '/game/index.html';\\n  var files = [\\\"/game/index.html\\\",\\\"/game/0.9.0/assets/index-BPyjZOOz.css\\\",\\\"/game/0.9.0/assets/index-DHu8VPJb.js\\\",\\\"/game/0.9.0/assets/index-CUW7K6FZ.js\\\",\\\"/game/0.9.0/assets/index-D7PTPCZK.css\\\"];\\n  if (files.indexOf(request.uri) === -1) return response(404, 'Not Found', { code: 'NOT_FOUND' });\\n  return request;\\n}\\nfunction response(statusCode, statusDescription, body) {\\n  return {\\n    statusCode: statusCode, statusDescription: statusDescription,\\n    headers: {\\n      'content-type': { value: 'application/json; charset=utf-8' },\\n      'cache-control': { value: 'no-store' },\\n      'x-content-type-options': { value: 'nosniff' },\\n      'referrer-policy': { value: 'no-referrer' }\\n    },\\n    body: JSON.stringify(body)\\n  };\\n}\\n\",\"Name\":\"dime-guest-game-20260916-guest-status\"}",
+      "ClientRequestToken": "m44-web-4675386-c8a8be1-execute-once"
+    },
+    {
+      "EventId": "da67ad4b-70de-4c2b-876a-d9f80e707af4",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "2408b49f-e320-48d5-a538-f3490e1808fb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "GuestCapability",
+      "PhysicalResourceId": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+      "ResourceType": "AWS::CloudFront::Function",
+      "Timestamp": "2026-09-19T00:36:48.620000+00:00",
+      "ResourceStatus": "UPDATE_IN_PROGRESS",
+      "ResourceProperties": "{\"FunctionConfig\":{\"Comment\":\"Memory-only guest capability and fail-closed public gameplay gate\",\"Runtime\":\"cloudfront-js-2.0\"},\"AutoPublish\":\"true\",\"FunctionCode\":\"// Scoped review: associated only with /game/* and four exact web API paths.\\n// Never reads cookies, headers, identities, authorization codes or query strings.\\nfunction handler(event) {\\n  var request = event.request;\\n  // Outside /game/, this function is associated ONLY with the four literal API-denial behaviors.\\n  // Fail closed even if CloudFront matched a normalized URI but passes an alternate spelling.\\n  if (request.uri.indexOf('/game/') !== 0) {\\n    return response(401, 'Unauthorized', { code: 'UNAUTHORIZED' });\\n  }\\n  if (request.uri === '/game/status' && request.method === 'GET') {\\n    return response(200, 'OK', {\\n      signInAvailable: false, linkingAvailable: false,\\n      guestDemoAvailable: true, guestStorage: 'memory'\\n    });\\n  }\\n  if (request.uri === '/game/') request.uri = '/game/index.html';\\n  var files = [\\\"/game/index.html\\\",\\\"/game/0.9.0/assets/index-BPyjZOOz.css\\\",\\\"/game/0.9.0/assets/index-DHu8VPJb.js\\\",\\\"/game/0.9.0/assets/index-CUW7K6FZ.js\\\",\\\"/game/0.9.0/assets/index-D7PTPCZK.css\\\"];\\n  if (files.indexOf(request.uri) === -1) return response(404, 'Not Found', { code: 'NOT_FOUND' });\\n  return request;\\n}\\nfunction response(statusCode, statusDescription, body) {\\n  return {\\n    statusCode: statusCode, statusDescription: statusDescription,\\n    headers: {\\n      'content-type': { value: 'application/json; charset=utf-8' },\\n      'cache-control': { value: 'no-store' },\\n      'x-content-type-options': { value: 'nosniff' },\\n      'referrer-policy': { value: 'no-referrer' }\\n    },\\n    body: JSON.stringify(body)\\n  };\\n}\\n\",\"Name\":\"dime-guest-game-20260916-guest-status\"}",
+      "ClientRequestToken": "m44-web-4675386-c8a8be1-execute-once"
+    },
+    {
+      "EventId": "209bb3c1-7ff2-4dae-8f7b-ccd4180b78fe",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "2408b49f-e320-48d5-a538-f3490e1808fb",
+      "EventType": "PROGRESS",
+      "LogicalResourceId": "dime-guest-game-20260916",
+      "PhysicalResourceId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "ResourceType": "AWS::CloudFormation::Stack",
+      "Timestamp": "2026-09-19T00:36:46.624000+00:00",
+      "ResourceStatus": "UPDATE_IN_PROGRESS",
+      "ResourceStatusReason": "User Initiated",
+      "ClientRequestToken": "m44-web-4675386-c8a8be1-execute-once"
+    },
+    {
+      "EventId": "2d17ddd0-f31b-493a-91dc-cbfab0214c2f",
+      "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+      "OperationId": "2408b49f-e320-48d5-a538-f3490e1808fb",
+      "OperationType": "UPDATE_STACK",
+      "OperationStatus": "IN_PROGRESS",
+      "EventType": "STACK_EVENT",
+      "Timestamp": "2026-09-19T00:36:46.617000+00:00",
+      "StartTime": "2026-09-19T00:36:46.617000+00:00"
+    }
+  ]
+}

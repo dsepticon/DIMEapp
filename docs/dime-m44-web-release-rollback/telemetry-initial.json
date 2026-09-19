@@ -1,0 +1,83 @@
+{
+  "phase": "initial",
+  "startEpoch": 1789778656,
+  "endEpoch": 1789778691,
+  "queries": [
+    {
+      "group": "ApiAccessLogGroup",
+      "category": "sentinel",
+      "queryId": "bf7dd9fc-0d65-49ed-b96c-56b717a93ae5",
+      "matches": 0,
+      "status": "Complete"
+    },
+    {
+      "group": "ApiAccessLogGroup",
+      "category": "configurationOrRuntimeError",
+      "queryId": "1e84a16b-c383-471f-a25d-0c90690d122f",
+      "matches": 0,
+      "status": "Complete"
+    },
+    {
+      "group": "EbsLogGroup",
+      "category": "sentinel",
+      "queryId": "1d798b72-f9b7-48fd-890e-7c6a98a4f567",
+      "matches": 0,
+      "status": "Complete"
+    },
+    {
+      "group": "EbsLogGroup",
+      "category": "configurationOrRuntimeError",
+      "queryId": "d9a3e358-ec6e-4e68-9870-a95a20690a5c",
+      "matches": 0,
+      "status": "Complete"
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "category": "sentinel",
+      "queryId": "241dcefb-c536-4bb4-ba4b-e7168699171e",
+      "matches": 0,
+      "status": "Complete"
+    },
+    {
+      "group": "WebAuthLogGroup",
+      "category": "configurationOrRuntimeError",
+      "queryId": "bd3f297c-d9f4-4cc7-adfa-a93977916b3b",
+      "matches": 0,
+      "status": "Complete"
+    }
+  ],
+  "wafSamplingSettingsFalse": 6,
+  "aggregateMetricsEnabled": true,
+  "wafSamples": [
+    {
+      "returned": 0,
+      "population": 0
+    },
+    {
+      "returned": 0,
+      "population": 0
+    },
+    {
+      "returned": 0,
+      "population": 0
+    },
+    {
+      "returned": 0,
+      "population": 0
+    },
+    {
+      "returned": 0,
+      "population": 0
+    },
+    {
+      "returned": 0,
+      "population": 0
+    }
+  ],
+  "cloudfrontLogging": {
+    "standardLogging": false,
+    "realtime": []
+  },
+  "rawMessagesRetrieved": false,
+  "matches": 0
+}

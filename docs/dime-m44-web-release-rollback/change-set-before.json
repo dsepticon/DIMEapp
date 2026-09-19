@@ -1,0 +1,53 @@
+{
+  "Changes": [
+    {
+      "Type": "Resource",
+      "ResourceChange": {
+        "Action": "Modify",
+        "LogicalResourceId": "GuestCapability",
+        "PhysicalResourceId": "arn:aws:cloudfront::861738068626:function/dime-guest-game-20260916-guest-status",
+        "ResourceType": "AWS::CloudFront::Function",
+        "Replacement": "False",
+        "Scope": [
+          "Properties"
+        ],
+        "Details": [
+          {
+            "Target": {
+              "Attribute": "Properties",
+              "Name": "FunctionCode",
+              "RequiresRecreation": "Never"
+            },
+            "Evaluation": "Static",
+            "ChangeSource": "DirectModification"
+          }
+        ]
+      }
+    }
+  ],
+  "ChangeSetName": "m44-4675386-guest-assets-review-1",
+  "ChangeSetId": "arn:aws:cloudformation:us-east-2:861738068626:changeSet/m44-4675386-guest-assets-review-1/30403bbd-da3a-4db1-b3b6-819141e139a0",
+  "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+  "StackName": "dime-guest-game-20260916",
+  "Description": "Review only: add two Milestone 4.4 guest asset paths; preserve every existing path and all routing/security behavior. Do not execute.",
+  "Parameters": null,
+  "CreationTime": "2026-09-19T00:01:57.394000+00:00",
+  "ExecutionStatus": "AVAILABLE",
+  "Status": "CREATE_COMPLETE",
+  "StatusReason": null,
+  "NotificationARNs": [],
+  "RollbackConfiguration": {},
+  "Capabilities": [],
+  "Tags": null,
+  "ParentChangeSetId": null,
+  "IncludeNestedStacks": false,
+  "RootChangeSetId": null,
+  "OnStackFailure": null,
+  "ImportExistingResources": null,
+  "StackDriftStatus": null,
+  "DeploymentMode": null,
+  "DeploymentConfig": {
+    "Mode": "STANDARD",
+    "DisableRollback": false
+  }
+}

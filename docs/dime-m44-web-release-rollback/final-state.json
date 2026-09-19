@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-19T00:47:14.148316+00:00",
+  "guestStack": "UPDATE_COMPLETE",
+  "gameplayStack": "UPDATE_COMPLETE",
+  "distribution": "Deployed",
+  "routingAndPoliciesUnchanged": true,
+  "s3ObjectMetadataUnchanged": true,
+  "newAssetKeysAbsent": true,
+  "s3Writes": 0,
+  "bothLambdasUnchanged": true,
+  "functionSha256": "2ce9863f1e3e3b54248291e5d241d7f6c5a20bdbd2676a046838851d43db5251",
+  "webSignInMode": "DISABLED",
+  "accountLinkingMode": "DISABLED",
+  "conversion": "ENABLED",
+  "wafFullLoggingConfigured": false,
+  "invalidation": "Completed"
+}

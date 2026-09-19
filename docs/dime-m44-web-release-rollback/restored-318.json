@@ -1,0 +1,27 @@
+{
+  "viewport": {
+    "width": 318,
+    "height": 500
+  },
+  "oldGuestPlayable": true,
+  "physicalExit": true,
+  "pausedMenu": true,
+  "refreshResets": true,
+  "independentTabs": true,
+  "noGameplayStorage": true,
+  "requests": [
+    "/game/",
+    "/game/0.9.0/assets/index-DHu8VPJb.js",
+    "/game/0.9.0/assets/index-BPyjZOOz.css",
+    "/game/status",
+    "/game/",
+    "/game/0.9.0/assets/index-DHu8VPJb.js",
+    "/game/0.9.0/assets/index-BPyjZOOz.css",
+    "/game/status",
+    "/game/",
+    "/game/0.9.0/assets/index-DHu8VPJb.js",
+    "/game/0.9.0/assets/index-BPyjZOOz.css",
+    "/game/status"
+  ],
+  "errors": []
+}

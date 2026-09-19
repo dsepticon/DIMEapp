@@ -1,0 +1,9 @@
+[
+    {
+        "StageName": "staging",
+        "AccessLogSettings": {
+            "DestinationArn": "arn:aws:logs:us-east-2:861738068626:log-group:/aws/apigateway/dime-v2-staging-review01-dime-v2-review-20260912",
+            "Format": "{\"requestId\":\"$context.requestId\",\"routeKey\":\"$context.routeKey\",\"status\":\"$context.status\",\"responseLatency\":\"$context.responseLatency\"}"
+        }
+    }
+]
