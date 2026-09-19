@@ -1,0 +1,64 @@
+[
+  {
+    "name": "DIME-Twitch-0.9.0-m44-industrial-services-4675386-rc1.zip",
+    "bytes": 110303,
+    "sha256": "3ebb0549fc585496dc3692dad60220fdc4c96e42e72e634ed0368838ac452d77",
+    "files": [
+      {
+        "path": "assets/main-D7PTPCZK.css",
+        "source": "assets/main-D7PTPCZK.css",
+        "bytes": 21734,
+        "sha256": "90ad7a79a3ac97fdeb6face9406c80e2a36bee20d797f9ce0a78e23ef6438917"
+      },
+      {
+        "path": "assets/main-DE9VOTik.js",
+        "source": "assets/main-DE9VOTik.js",
+        "bytes": 354854,
+        "sha256": "08014a42342bcb06d3e68c02c2e3d6233ba2b056d91a7da29c138f42058c3c70"
+      },
+      {
+        "path": "index.html",
+        "source": "index.html",
+        "bytes": 483,
+        "sha256": "1c094b27555f278dae345109d709b9ff33d23ad8f9233668b549253959bd2f0c"
+      },
+      {
+        "path": "mobile.html",
+        "source": "mobile.html",
+        "bytes": 573,
+        "sha256": "f319fab402795ef264e20ecb685fefa3ae5638e0485fc42717bb68a3c19003b0"
+      },
+      {
+        "path": "panel.html",
+        "source": "panel.html",
+        "bytes": 573,
+        "sha256": "f319fab402795ef264e20ecb685fefa3ae5638e0485fc42717bb68a3c19003b0"
+      }
+    ]
+  },
+  {
+    "name": "DIME-Web-m44-game-4675386-rc1.zip",
+    "bytes": 112982,
+    "sha256": "4cfd280f4c1256db6f0c5f7acc8ac939834d0c3856ba92b1d2aa264c334d0d0c",
+    "files": [
+      {
+        "path": "game/0.9.0/assets/index-CUW7K6FZ.js",
+        "source": "assets/index-CUW7K6FZ.js",
+        "bytes": 369520,
+        "sha256": "8d8d6fabd1bca989185059bbc2ca4caa7096225950c08e1f8b9b34dd5e0e7696"
+      },
+      {
+        "path": "game/0.9.0/assets/index-D7PTPCZK.css",
+        "source": "assets/index-D7PTPCZK.css",
+        "bytes": 21734,
+        "sha256": "90ad7a79a3ac97fdeb6face9406c80e2a36bee20d797f9ce0a78e23ef6438917"
+      },
+      {
+        "path": "game/index.html",
+        "source": "index.html",
+        "bytes": 505,
+        "sha256": "26c4534c1bcef77f7e1453d42f02be010651eaafd9b8ef41e9379a4df83f364f"
+      }
+    ]
+  }
+]

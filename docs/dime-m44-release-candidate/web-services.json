@@ -1,0 +1,35 @@
+[
+  {
+    "viewport": {
+      "width": 318,
+      "height": 500
+    },
+    "synthetic": true,
+    "collection": true,
+    "minimumTouch": true,
+    "mutationCount": 1,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 360,
+      "height": 640
+    },
+    "synthetic": true,
+    "collection": true,
+    "minimumTouch": true,
+    "mutationCount": 1,
+    "errors": []
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 900
+    },
+    "synthetic": true,
+    "collection": true,
+    "minimumTouch": true,
+    "mutationCount": 1,
+    "errors": []
+  }
+]

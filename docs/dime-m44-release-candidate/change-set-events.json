@@ -1,0 +1,25 @@
+{
+    "OperationEvents": [
+        {
+            "EventId": "d60bb50b-500d-49ed-86da-ab8ec32a1dac",
+            "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+            "OperationId": "30403bbd-da3a-4db1-b3b6-819141e139a0",
+            "OperationType": "CREATE_CHANGESET",
+            "OperationStatus": "SUCCEEDED",
+            "EventType": "STACK_EVENT",
+            "Timestamp": "2026-09-19T00:02:00.642000+00:00",
+            "StartTime": "2026-09-19T00:01:57.408000+00:00",
+            "EndTime": "2026-09-19T00:02:00.642000+00:00"
+        },
+        {
+            "EventId": "92411e34-0e37-4c79-a29c-6bdc157bb04a",
+            "StackId": "arn:aws:cloudformation:us-east-2:861738068626:stack/dime-guest-game-20260916/22a7c770-b1f9-11f1-8ea9-0231e30ef3a7",
+            "OperationId": "30403bbd-da3a-4db1-b3b6-819141e139a0",
+            "OperationType": "CREATE_CHANGESET",
+            "OperationStatus": "IN_PROGRESS",
+            "EventType": "STACK_EVENT",
+            "Timestamp": "2026-09-19T00:01:57.408000+00:00",
+            "StartTime": "2026-09-19T00:01:57.408000+00:00"
+        }
+    ]
+}

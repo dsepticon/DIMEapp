@@ -1,0 +1,104 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "REVIEW ONLY: scoped /game capability, security headers and origin-controlled caching. No distribution association.",
+  "Resources": {
+    "GuestCapability": {
+      "Type": "AWS::CloudFront::Function",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-guest-status"
+        },
+        "AutoPublish": true,
+        "FunctionConfig": {
+          "Comment": "Memory-only guest capability and fail-closed public gameplay gate",
+          "Runtime": "cloudfront-js-2.0"
+        },
+        "FunctionCode": "// Scoped review: associated only with /game/* and four exact web API paths.\n// Never reads cookies, headers, identities, authorization codes or query strings.\nfunction handler(event) {\n  var request = event.request;\n  // Outside /game/, this function is associated ONLY with the four literal API-denial behaviors.\n  // Fail closed even if CloudFront matched a normalized URI but passes an alternate spelling.\n  if (request.uri.indexOf('/game/') !== 0) {\n    return response(401, 'Unauthorized', { code: 'UNAUTHORIZED' });\n  }\n  if (request.uri === '/game/status' && request.method === 'GET') {\n    return response(200, 'OK', {\n      signInAvailable: false, linkingAvailable: false,\n      guestDemoAvailable: true, guestStorage: 'memory'\n    });\n  }\n  if (request.uri === '/game/') request.uri = '/game/index.html';\n  var files = [\"/game/index.html\",\"/game/0.9.0/assets/index-BPyjZOOz.css\",\"/game/0.9.0/assets/index-DHu8VPJb.js\",\"/game/0.9.0/assets/index-CUW7K6FZ.js\",\"/game/0.9.0/assets/index-D7PTPCZK.css\"];\n  if (files.indexOf(request.uri) === -1) return response(404, 'Not Found', { code: 'NOT_FOUND' });\n  return request;\n}\nfunction response(statusCode, statusDescription, body) {\n  return {\n    statusCode: statusCode, statusDescription: statusDescription,\n    headers: {\n      'content-type': { value: 'application/json; charset=utf-8' },\n      'cache-control': { value: 'no-store' },\n      'x-content-type-options': { value: 'nosniff' },\n      'referrer-policy': { value: 'no-referrer' }\n    },\n    body: JSON.stringify(body)\n  };\n}\n"
+      }
+    },
+    "GuestHeaders": {
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}-guest-headers"
+          },
+          "Comment": "Guest application only; privacy behavior preserved",
+          "SecurityHeadersConfig": {
+            "ContentSecurityPolicy": {
+              "ContentSecurityPolicy": "default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests",
+              "Override": true
+            },
+            "ContentTypeOptions": {
+              "Override": true
+            },
+            "FrameOptions": {
+              "FrameOption": "DENY",
+              "Override": true
+            },
+            "ReferrerPolicy": {
+              "ReferrerPolicy": "no-referrer",
+              "Override": true
+            }
+          },
+          "CustomHeadersConfig": {
+            "Items": [
+              {
+                "Header": "Permissions-Policy",
+                "Value": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+                "Override": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    "GuestCache": {
+      "Type": "AWS::CloudFront::CachePolicy",
+      "Properties": {
+        "CachePolicyConfig": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}-guest-cache"
+          },
+          "Comment": "Game only: honor no-cache HTML and immutable asset metadata; no viewer credentials",
+          "MinTTL": 0,
+          "DefaultTTL": 0,
+          "MaxTTL": 31536000,
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "EnableAcceptEncodingGzip": true,
+            "EnableAcceptEncodingBrotli": true,
+            "CookiesConfig": {
+              "CookieBehavior": "none"
+            },
+            "HeadersConfig": {
+              "HeaderBehavior": "none"
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "none"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "CapabilityFunctionArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "GuestCapability",
+          "FunctionARN"
+        ]
+      }
+    },
+    "HeadersPolicyId": {
+      "Value": {
+        "Ref": "GuestHeaders"
+      }
+    },
+    "CachePolicyId": {
+      "Value": {
+        "Ref": "GuestCache"
+      }
+    }
+  }
+}

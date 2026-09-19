@@ -1,0 +1,102 @@
+{
+  "source": "4675386b422ce0c3547925183e35776efd13a818",
+  "unit": {
+    "files": 68,
+    "passed": 599
+  },
+  "completeChromium": {
+    "passed": 176,
+    "retries": 0,
+    "minutes": 19.3
+  },
+  "guestChromium": {
+    "passed": 5,
+    "retries": 0
+  },
+  "webProductionLayouts": 3,
+  "oldClientCompatibilityLayouts": 2,
+  "sourceGuardRules": 6,
+  "processedGuardRules": 4,
+  "guestCandidateGuardRules": 4,
+  "guestProcessedGuardRules": 4,
+  "gameplayBundleMatchesDeployed": true,
+  "signIn": "DISABLED",
+  "linking": "DISABLED",
+  "conversion": "ENABLED",
+  "logs": [
+    {
+      "path": "/tmp/dime-m44-rc-4675386/install.log",
+      "sha256": "b8c347c09dd6781a0e92794f64f336c100eb90e90b52b262acf36339cd82eeab"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/lint.log",
+      "sha256": "788d5650660dbc43b2ef13f60808c90a0237e208ef1922d7be4a1a20d346034d"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/typecheck.log",
+      "sha256": "4cf8537dd7bcfab0d0baf71eb2e2e2001126f354c367787bb9d2bfa457b71e71"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/format.log",
+      "sha256": "0b0a1411bf33c8785d7dd20b6b18af20ad6a1d6527f830cb6c2e399fd5370da7"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/default-build.log",
+      "sha256": "fb2ec77c05ea9188dfe5610cc7be2273d58b800b49656c0f04895e6eb91aeca1"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/web-build.log",
+      "sha256": "f885b808f83a42f61f1997fcc51c84360eef7c237102038d2ee65c7f39aa64a2"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/guest-build.log",
+      "sha256": "2d9b12aab4fd3ba0dbba4eec0f8a4eecfe08ed7a51b998b4fb4a481ab60e6c49"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/twitch-build.log",
+      "sha256": "877846160e3904bf617bb3124a09ce6f930aecc7f076f53970628df48100e85e"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/unit.log",
+      "sha256": "12aeb128df4aa98fee65621a7f8fd981839920dd2f654a487e9556d4673a50c8"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/chromium.log",
+      "sha256": "24e7843de4e9907a7c5246cb27df14203207356c392f72d40db3d9ec7888db60"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/guest.log",
+      "sha256": "04420f97b30b0d732fea0319876cd5ac12b7c4da358b67cf8a8e2d64111de39e"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/sam-build.log",
+      "sha256": "9359136d6b430cdbb6a6d9ba0e913afb46835218af047806ce019bb42082a399"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/sam-validate.log",
+      "sha256": "e8b8258ab741a8b5a3c5419be58f3d11de05b8bf2d380e1ae8c736d81440dea6"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/staging-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/staging-guard-normalized.log",
+      "sha256": "cf2d08da993d471bd12110c5e74c96afe946975ad62539a7d94cf3c56c81a228"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/staging-processed-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/staging-processed-guard.log",
+      "sha256": "9642f9735377f0c6c574a8deafbf54837bb6a0f951385055b53a27161a268dc7"
+    },
+    {
+      "path": "/tmp/dime-m44-rc-4675386/performance.log",
+      "sha256": "4426fe689502370d5d201bca0fc187390d6e26275327f41793ed4c13628e646d"
+    }
+  ],
+  "productionPerformanceLayouts": 3,
+  "performanceErrors": 0
+}

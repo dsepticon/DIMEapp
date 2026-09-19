@@ -1,0 +1,17 @@
+{
+  "changedProperties": [
+    "Resources.GuestCapability.Properties.FunctionCode"
+  ],
+  "allOtherTemplateDefinitionsIdentical": true,
+  "functionOutsideAssetArrayIdentical": true,
+  "beforeCodeSha256": "2ce9863f1e3e3b54248291e5d241d7f6c5a20bdbd2676a046838851d43db5251",
+  "afterCodeSha256": "310ce1a1bf865313e827a7eff7ac4632d106be21c7429f3deea5c6327c3ef716",
+  "adds": 0,
+  "modifies": 1,
+  "removes": 0,
+  "replacements": 0,
+  "iamChanges": 0,
+  "distributionChanges": 0,
+  "gameplayLambdaChanges": 0,
+  "tableChanges": 0
+}

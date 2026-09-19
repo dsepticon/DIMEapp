@@ -1,0 +1,50 @@
+{
+  "objects": [
+    {
+      "key": "game/index.html",
+      "backup": "rollback-game-index.html",
+      "sha256": "fa843fc409a4a940943e2c1d05810412b2a92794d7bbb81dc16a609cd4a07f68",
+      "size": 505,
+      "versionId": null,
+      "etag": "\"c584fbc9b2606b42060c1bdf9b47582f\"",
+      "contentType": "text/html; charset=utf-8",
+      "cacheControl": "no-cache, max-age=0, must-revalidate",
+      "contentDisposition": null,
+      "serverSideEncryption": "AES256",
+      "metadata": {}
+    },
+    {
+      "key": "game/0.9.0/assets/index-DHu8VPJb.js",
+      "backup": "rollback-index-DHu8VPJb.js",
+      "sha256": "9f080626b4f0118a55685105554cf0c263feea15e8b02888a04487b711de11c5",
+      "size": 364380,
+      "versionId": null,
+      "etag": "\"21cd41a9b12d8b0a4e9851fe4e94d26b\"",
+      "contentType": "text/javascript; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentDisposition": null,
+      "serverSideEncryption": "AES256",
+      "metadata": {}
+    },
+    {
+      "key": "game/0.9.0/assets/index-BPyjZOOz.css",
+      "backup": "rollback-index-BPyjZOOz.css",
+      "sha256": "235789dd82f9c565f0ee1e9b27709bb2526dfc0aba3b5420ce18df009d1ed9b6",
+      "size": 20842,
+      "versionId": null,
+      "etag": "\"4c58ee4cd099e312c3b59222f7887293\"",
+      "contentType": "text/css; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "contentDisposition": null,
+      "serverSideEncryption": "AES256",
+      "metadata": {}
+    }
+  ],
+  "archive": "DIME-Guest-m44-rollback.zip",
+  "archiveSha256": "6aff72b2dc4f6f128a6c8fd3c13ba223971db86bd1df0adca6f1c3e937e6fff9",
+  "functionEtag": "ETVPDKIKX0DER",
+  "distributionEtag": "E15GZDBBQBW2HX",
+  "restoreEntryCondition": "If-Match: ETag of the failed publication, after verifying it is still current",
+  "retainOldAssets": true,
+  "deletePlayerData": false
+}

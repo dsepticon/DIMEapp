@@ -1,0 +1,25 @@
+{
+  "oldClientSha256": "189c4ac1893d0957cbada62352742952b92cd22fbb75dce7193c413c07d326e8",
+  "results": [
+    {
+      "layout": "panel.html",
+      "convertedSave": true,
+      "oldClientTransferMinorUnits": 100,
+      "pendingReplayExactlyOnce": true,
+      "existingOrderPreserved": true,
+      "newClientLoadsOldSave": true,
+      "oldClientResetCanonical": true,
+      "unexpectedErrors": 0
+    },
+    {
+      "layout": "mobile.html",
+      "convertedSave": true,
+      "oldClientTransferMinorUnits": 100,
+      "pendingReplayExactlyOnce": true,
+      "existingOrderPreserved": true,
+      "newClientLoadsOldSave": true,
+      "oldClientResetCanonical": true,
+      "unexpectedErrors": 0
+    }
+  ]
+}

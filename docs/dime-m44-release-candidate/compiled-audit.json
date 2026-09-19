@@ -1,0 +1,18 @@
+[
+  {
+    "archive": "DIME-Twitch-0.9.0-m44-industrial-services-4675386-rc1.zip",
+    "exactListing": true,
+    "crc": true,
+    "fileHashes": true,
+    "noMapsFixturesOrExternalArtworkFiles": true,
+    "knownSensitiveAndDevelopmentPatternsAbsent": true
+  },
+  {
+    "archive": "DIME-Web-m44-game-4675386-rc1.zip",
+    "exactListing": true,
+    "crc": true,
+    "fileHashes": true,
+    "noMapsFixturesOrExternalArtworkFiles": true,
+    "knownSensitiveAndDevelopmentPatternsAbsent": true
+  }
+]
